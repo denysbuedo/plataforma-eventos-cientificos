@@ -1,0 +1,25 @@
+# Dependencias y resultados de compilación
+node_modules/
+.next/
+dist/
+build/
+coverage/
+*.tsbuildinfo
+
+# Variables locales y credenciales
+.env
+.env.*
+!.env.example
+!.env.*.example
+.aws/
+*.key
+*.pem
+
+# Registros, archivos temporales y herramientas locales
+*.log
+*.tmp
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+.codex/
