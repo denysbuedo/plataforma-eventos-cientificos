@@ -1,6 +1,16 @@
 # Fase 0: fundaciones y aislamiento
 
-Estado: plan pendiente de implementación. Esta entrega prepara la estructura y documentación.
+Estado: diseño documental inicial disponible; implementación y validación automática pendientes.
+
+## Avance documental
+
+- [Arquitectura C4 y límites de módulos](../architecture/arquitectura.md).
+- [Modelo mínimo propuesto](../architecture/modelo-dominio.md), con cardinalidades y restricciones pendientes de validación antes de migraciones.
+- [Matriz inicial de permisos](matriz-permisos.md), con casos para la futura suite de autorización.
+- [ADR-001](../adr/ADR-001-arquitectura.md): registra la arquitectura de partida ya establecida.
+- [ADR-002](../adr/ADR-002-tenancy.md): propone aislamiento por organización/evento y defensa PostgreSQL.
+
+No se han implementado API, RLS, autenticación, migraciones ni pruebas. El siguiente incremento es la prueba técnica de ORM/aislamiento y ADR-003; después se inicializarán el monorepo y la API mínima. La fase permanece abierta.
 
 ## Objetivo
 

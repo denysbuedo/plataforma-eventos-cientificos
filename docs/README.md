@@ -11,6 +11,11 @@
 ## Documentos de trabajo
 
 - [Análisis inicial](architecture/analisis-inicial.md).
+- [Arquitectura C4 y mapa de módulos](architecture/arquitectura.md).
+- [Modelo inicial de dominio](architecture/modelo-dominio.md).
+- [Matriz inicial de permisos](functional/matriz-permisos.md).
+- [ADR-001: arquitectura modular API-first](adr/ADR-001-arquitectura.md).
+- [ADR-002: tenancy y autorización por evento](adr/ADR-002-tenancy.md).
 - [Plan de Fase 0](functional/fase-0.md).
 
 ## Organización

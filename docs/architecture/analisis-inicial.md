@@ -2,6 +2,8 @@
 
 Fecha: 14 de octubre de 2026.
 
+Este documento conserva el diagnóstico de partida. El refinamiento posterior está en el [modelo de dominio](modelo-dominio.md), la [arquitectura](arquitectura.md), la [matriz de permisos](../functional/matriz-permisos.md) y los ADR [001](../adr/ADR-001-arquitectura.md) y [002](../adr/ADR-002-tenancy.md). Las propuestas documentales no equivalen a implementación ni validación del piloto.
+
 ## Estado comprobado
 
 El proyecto parte de documentación de producto y arquitectura. Esta entrega incorpora la estructura de directorios; no incluye aplicaciones, dependencias, migraciones, contratos ejecutables, CI ni pruebas automáticas.

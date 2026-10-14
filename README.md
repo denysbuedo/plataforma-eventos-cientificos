@@ -116,6 +116,10 @@ El informe completo [PROYECTO_TECNICO_INICIAL.md](PROYECTO_TECNICO_INICIAL.md) e
 
 - [Índice de documentación](docs/README.md).
 - [Análisis inicial y cuestiones pendientes](docs/architecture/analisis-inicial.md).
+- [Arquitectura y diagramas C4](docs/architecture/arquitectura.md).
+- [Modelo de dominio propuesto](docs/architecture/modelo-dominio.md).
+- [Matriz de permisos propuesta](docs/functional/matriz-permisos.md).
+- Decisiones: [ADR-001 arquitectura](docs/adr/ADR-001-arquitectura.md) · [ADR-002 tenancy](docs/adr/ADR-002-tenancy.md).
 - [Plan de trabajo de Fase 0](docs/functional/fase-0.md).
 - [Prompt maestro para Codex](docs/development/PROMPT_MAESTRO_CODEX.md).
 - Proyecto técnico: [PDF](docs/reference/Proyecto_Tecnico_Inicial_SEP_v1.pdf) · [DOCX](docs/reference/Proyecto_Tecnico_Inicial_SEP_v1.docx).
