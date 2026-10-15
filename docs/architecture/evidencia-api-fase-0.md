@@ -34,6 +34,8 @@ La primera ejecución detectó un 500 al actualizar con un DTO vacío; se corrig
 
 El [workflow de CI](../../.github/workflows/ci.yml) instala PostgreSQL 16 en Ubuntu 24.04 y verifica instalación, lint, tipos, contrato, snapshots y tests. Su ejecución remota se informa por separado en GitHub Actions; esta evidencia local no la da por aprobada anticipadamente.
 
+La primera ejecución remota pasó instalación, lint, tipos y consistencia de contratos/migraciones; falló al iniciar PostgreSQL antes de los tests. Se ajustó el lanzador a TCP exclusivamente, deshabilitando sockets Unix que pueden apuntar a directorios del sistema, y se añadió salida de logs cuando el arranque falla.
+
 ## Límites y cierre
 
 No hay frontend, marcas/temas de eventos, proveedor OIDC, DNS/TLS real, administración de membresías, dominio verificado externamente ni datos científicos. Los registros marcados como verificados son fixtures locales.

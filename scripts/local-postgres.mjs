@@ -1,6 +1,6 @@
 import { spawnSync } from 'node:child_process';
 import { randomUUID } from 'node:crypto';
-import { closeSync, existsSync, mkdirSync, openSync, writeFileSync } from 'node:fs';
+import { closeSync, existsSync, mkdirSync, openSync, readFileSync, writeFileSync } from 'node:fs';
 import { createServer } from 'node:net';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -22,7 +22,12 @@ function pgRun(name, args) {
     // Give PostgreSQL its own hidden process group on Windows so terminal Ctrl+C
     // reaches the launcher, not the database workers being shut down in finally.
     const result = spawnSync(pgCommand(name), args, { windowsHide: true, detached: process.platform === 'win32', stdio: ['ignore', fd, fd], timeout: 60000 });
-    if (result.error || result.status !== 0) throw new Error(`${name} failed; inspect local logs in ${runDirectory}`);
+    if (result.error || result.status !== 0) {
+      for (const log of [join(runDirectory, `${name}.log`), join(runDirectory, 'postgres.log')]) {
+        if (existsSync(log)) console.error(readFileSync(log, 'utf8').split('\n').slice(-20).join('\n'));
+      }
+      throw new Error(`${name} failed; inspect local logs in ${runDirectory}`);
+    }
   } finally { closeSync(fd); }
 }
 async function freePort() {
@@ -38,7 +43,9 @@ let app;
 try {
   pgRun('initdb', ['-D', data, '-U', 'sep_local_admin', '-A', 'trust', '--encoding=UTF8', '--no-locale']);
   started = true;
-  pgRun('pg_ctl', ['-D', data, '-l', join(runDirectory, 'postgres.log'), '-o', `-h 127.0.0.1 -p ${port}`, '-w', 'start']);
+  // All clients use TCP. Disable Unix sockets so distribution defaults such as
+  // /var/run/postgresql do not require privileges outside this temporary cluster.
+  pgRun('pg_ctl', ['-D', data, '-l', join(runDirectory, 'postgres.log'), '-o', `-h 127.0.0.1 -p ${port} -c unix_socket_directories=`, '-w', 'start']);
   const bootstrap = new Pool({ connectionString: url('sep_local_admin', 'postgres') });
   try {
     await bootstrap.query('CREATE ROLE sep_migrator LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOBYPASSRLS');
