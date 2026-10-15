@@ -1,6 +1,6 @@
 # Fase 0: fundaciones y aislamiento
 
-Estado: diseño documental y prueba técnica de ORM disponibles; API, monorepo y validación completa pendientes.
+Estado: monorepo y API mínima implementados y verificados localmente; cierre de fase pendiente de revisión.
 
 ## Avance documental
 
@@ -12,7 +12,7 @@ Estado: diseño documental y prueba técnica de ORM disponibles; API, monorepo y
 - [ADR-003](../adr/ADR-003-orm-aislamiento.md): elige Drizzle después de la comparación ejecutada con Prisma 7.
 - [Prueba ORM](../architecture/prueba-orm.md): migraciones, RLS, FORCE, integridad compuesta, rollback, pool y concurrencia comprobados; 34 tests aprobados contando 32 casos y 2 grupos.
 
-RLS, migraciones y pruebas existen únicamente dentro del experimento aislado `tests/orm-spike`. No se han implementado API, autenticación, permisos de usuario, dominios ni CI de aplicaciones. El siguiente incremento es inicializar el monorepo y la API mínima con Drizzle, reutilizando el patrón validado y añadiendo autorización real. La fase permanece abierta.
+La [API mínima](../api/fase-0.md) implementa resolución por registro de dominios, autenticación de desarrollo, roles contextuales, RLS/FORCE y auditoría transaccional. Hay monorepo, migraciones, datos ficticios, OpenAPI y workflow de CI. La [evidencia local](../architecture/evidencia-api-fase-0.md) registra 27 tests aprobados y límites de alcance. OIDC productivo, bitácora de denegaciones, portales y administración completa siguen pendientes. La fase permanece abierta; no se avanza automáticamente a Fase 1.
 
 ## Objetivo
 

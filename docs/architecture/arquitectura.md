@@ -1,6 +1,6 @@
 # Arquitectura de referencia
 
-Estado: diseño documental. Contenedores y módulos aún no implementados.
+Estado: arquitectura de referencia con API mínima NestJS y módulos de identidad/eventos implementados. Frontends, workers e integraciones siguen pendientes. La resolución de plataforma está en el guard de contexto y en una función SQL restringida; no existe todavía un módulo administrativo completo de plataforma.
 
 ## C4: contexto
 

@@ -1,6 +1,6 @@
 # Modelo inicial de dominio
 
-Estado: propuesta para Fase 0; no es un esquema de base de datos implementado.
+Estado: propuesta de dominio con esquema mínimo de desarrollo implementado en `apps/api/src/database/schema.ts`. Las migraciones incluyen organizaciones, series, ediciones, eventos, dominios, personas, identidades, afiliaciones, membresías, roles y auditoría. Fechas de evento, períodos de afiliación, historial completo y administración de esas entidades siguen pendientes; este documento no describe todos los campos como ya implementados.
 
 ## Jerarquía y vocabulario
 
@@ -16,7 +16,7 @@ Propuesta: una serie tiene cero o más ediciones; una edición pertenece a una s
 
 Una edición no recibe dominios ni roles de evento en Fase 0. Sus datos son históricos y de agrupación. Una actividad que necesite aislamiento y administración propios se representará como otro `Event`; las relaciones padre/hijo y su navegación quedan pendientes de refinamiento. No se implementará herencia de permisos.
 
-Estas cardinalidades afinan la jerarquía orientativa del proyecto técnico. Deben validarse con el piloto antes de fijar migraciones; especialmente si una edición necesita más de un evento o si existen organizaciones coorganizadoras.
+Estas cardinalidades afinan la jerarquía orientativa del proyecto técnico y se usan provisionalmente en las migraciones de desarrollo. Deben validarse con el piloto antes de estabilizar el modelo para datos persistentes; especialmente si una edición necesita más de un evento o si existen organizaciones coorganizadoras.
 
 ## Relaciones
 

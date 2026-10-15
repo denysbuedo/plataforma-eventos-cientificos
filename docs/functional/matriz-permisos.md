@@ -1,6 +1,6 @@
 # Matriz inicial de permisos
 
-Estado: propuesta; ninguna política está implementada. La matriz distingue capacidades de Fase 0 de las futuras.
+Estado: matriz objetivo con subconjunto implementado. La API mínima verifica lectura de metadatos, creación de borradores por administrador, edición por organizador y vista pública. Consultar el [contrato actual](../api/fase-0.md) para las operaciones disponibles; el resto de capacidades continúa propuesto.
 
 ## Reglas generales
 

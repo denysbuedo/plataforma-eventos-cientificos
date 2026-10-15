@@ -1,0 +1,41 @@
+name: API foundations
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  api:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      SEP_PG_BIN: /usr/lib/postgresql/16/bin
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - name: Install PostgreSQL binaries
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes postgresql-16
+      - name: Install npm and dependencies
+        run: |
+          npm install --global npm@10.9.2
+          npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - name: Check generated contracts and migration snapshots
+        run: |
+          npm run openapi
+          git diff --exit-code -- docs/api/openapi.json
+          npm run db:generate
+          git diff --exit-code -- apps/api/drizzle
+      - run: npm test

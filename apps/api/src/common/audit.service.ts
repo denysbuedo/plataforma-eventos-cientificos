@@ -1,0 +1,15 @@
+import { randomUUID } from 'node:crypto';
+import { Injectable } from '@nestjs/common';
+import type { DbTransaction } from '../database/database.service.js';
+import { auditEntries } from '../database/schema.js';
+import type { RequestContext } from './http.js';
+@Injectable()
+export class AuditService {
+  async record(tx: DbTransaction, context: RequestContext, action: 'event.created' | 'event.updated', resourceId: string): Promise<void> {
+    if (!context.personId) throw new Error('Audit actor missing');
+    await tx.insert(auditEntries).values({
+      id: randomUUID(), organizationId: context.organizationId, eventId: resourceId, personId: context.personId,
+      action, resourceId, requestId: context.requestId,
+    });
+  }
+}

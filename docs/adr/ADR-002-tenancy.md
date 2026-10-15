@@ -62,6 +62,6 @@ Archivos y URLs firmadas requieren autorización previa y ámbito de objeto. Los
 
 ## Criterios para validar la propuesta
 
-Cubrir A1/A2 en organización A y B1 en B; sustitución de IDs; host y cabeceras falsificados; ausencia/revocación de membresía; roles diferentes de una misma persona; consultas directas con el rol de ejecución; conexiones reutilizadas y concurrencia. La prueba ORM cubre aislamiento de datos, IDs, SQL directo, reutilización y concurrencia. Host, cabeceras, membresías y roles HTTP todavía no se han implementado ni probado; el estado de este ADR permanece propuesto.
+Cubrir A1/A2 en organización A y B1 en B; sustitución de IDs; host y cabeceras falsificados; ausencia/revocación de membresía; roles diferentes de una misma persona; consultas directas con el rol de ejecución; conexiones reutilizadas y concurrencia. La prueba ORM cubre aislamiento de datos, IDs, SQL directo, reutilización y concurrencia. El [incremento API](../architecture/evidencia-api-fase-0.md) añade verificación HTTP de host, cabeceras, membresías, roles, revocaciones y concurrencia con autenticación de desarrollo. El diseño completo permanece propuesto hasta revisar el cierre de fase y los ámbitos no implementados.
 
 Referencias: [modelo de dominio](../architecture/modelo-dominio.md), [matriz de permisos](../functional/matriz-permisos.md).

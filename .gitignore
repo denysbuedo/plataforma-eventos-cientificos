@@ -5,6 +5,7 @@ dist/
 build/
 coverage/
 *.tsbuildinfo
+.local/
 
 # Variables locales y credenciales
 .env

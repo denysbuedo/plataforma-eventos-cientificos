@@ -2,7 +2,7 @@
 
 > Plataforma integral, multiinstitución, multievento y multilingüe para gestionar congresos científicos desde la convocatoria hasta la publicación de memorias y certificados.
 
-**Estado:** definición inicial de producto y arquitectura · **Versión:** 0.1.0-planning · **Idiomas iniciales:** español e inglés.
+**Estado:** Fase 0, API mínima verificada localmente · **Versión:** 0.1.0-foundations · **Idiomas iniciales:** español e inglés.
 
 ## Visión
 
@@ -48,7 +48,7 @@ APK futura ─────┘                   └─────────�
 
 ## Estructura inicial del repositorio
 
-Las carpetas ya están preparadas para el desarrollo. Contienen documentación, archivos `.gitkeep` y una prueba técnica ejecutable en `tests/orm-spike/`; todavía no hay aplicaciones ni servicios implementados.
+El monorepo npm contiene una API NestJS en `apps/api`, contratos compartidos e idiomas. Las aplicaciones web y los workers siguen pendientes. La comparación de ORM permanece independiente en `tests/orm-spike/`.
 
 ```text
 apps/
@@ -108,19 +108,23 @@ tests/              # Contratos, seguridad, E2E
 
 ## Desarrollo local
 
-**La API y el monorepo de aplicaciones todavía no están implementados.** Existe una [prueba técnica independiente](tests/orm-spike/README.md), comprobada con Node.js 22.23.2, npm 10.9.2 y PostgreSQL 18.4:
+Entorno comprobado: Node.js 22.23.2, npm 10.9.2, TypeScript 6.0.3, NestJS 12.1.3 y PostgreSQL 18.4. Desde la raíz:
 
 ```powershell
-cd tests/orm-spike
 npm ci
-npm run generate:prisma
+npm run lint
 npm run typecheck
 npm test
+npm run dev:demo
 ```
 
-La prueba crea y detiene su propia instancia local de PostgreSQL con datos ficticios. Consultar su README para localizar los binarios, configurar `SEP_PG_BIN` y conocer sus límites. El resultado registrado es 34 tests aprobados: 32 comprobaciones de aislamiento y 2 grupos. No valida aún dominios, autenticación ni autorización HTTP.
+Los tests y la demo crean su propia instancia PostgreSQL con datos ficticios sin usar el servicio existente. Consultar la [guía local](docs/development/desarrollo-local.md) para configurar `SEP_PG_BIN`, obtener tokens efímeros y usar los hosts simulados. No se requiere Docker.
 
-Cuando se inicialice el monorepo, documentar aquí versiones, variables de entorno sin secretos, migraciones, seed de demo, test, lint, build y arranque real de las aplicaciones.
+La API implementa salud, vista pública del evento publicado, lista/detalle de metadatos, creación de borradores y edición de nombres con auditoría. Las [operaciones y permisos](docs/api/fase-0.md) se describen en el [OpenAPI versionado](docs/api/openapi.json), disponible también en `/api/v1/openapi.json` y `/api/docs` al arrancar.
+
+Resultado local: **27 tests aprobados (26 casos y 1 grupo)** sobre PostgreSQL y HTTP reales. Se comprueban cruces entre organizaciones/eventos, roles distintos, revocaciones, contexto falsificado, concurrencia y rollback de auditoría. El workflow de GitHub Actions verifica lint, tipos, contratos y tests; consultar su ejecución para el resultado remoto.
+
+La autenticación de desarrollo requiere habilitación explícita y está bloqueada en producción. OIDC, dominios/TLS reales, portales, administración completa y módulos científicos siguen pendientes. La fase permanece abierta para revisión. La [prueba comparativa de ORM](tests/orm-spike/README.md) conserva su evidencia anterior por separado.
 
 ## Documentación
 
@@ -135,6 +139,9 @@ El informe completo [PROYECTO_TECNICO_INICIAL.md](PROYECTO_TECNICO_INICIAL.md) e
 - [ADR-003: elección de Drizzle y aislamiento transaccional](docs/adr/ADR-003-orm-aislamiento.md).
 - [Resultados de la prueba ORM](docs/architecture/prueba-orm.md).
 - [Plan de trabajo de Fase 0](docs/functional/fase-0.md).
+- [Desarrollo local y demo](docs/development/desarrollo-local.md).
+- [Contrato API mínimo](docs/api/fase-0.md).
+- [Evidencia del incremento API](docs/architecture/evidencia-api-fase-0.md).
 - [Prompt maestro para Codex](docs/development/PROMPT_MAESTRO_CODEX.md).
 - Proyecto técnico: [PDF](docs/reference/Proyecto_Tecnico_Inicial_SEP_v1.pdf) · [DOCX](docs/reference/Proyecto_Tecnico_Inicial_SEP_v1.docx).
 
