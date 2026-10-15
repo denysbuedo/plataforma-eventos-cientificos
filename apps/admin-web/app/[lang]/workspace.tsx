@@ -92,6 +92,7 @@ export default function Workspace(props: Props) {
     ...(session?.organizationAdmin && site ? [{ id: 'team', label: text.team, icon: 'grid' as const }] : []),
   ];
   const contextNames: Record<string, string> = { a1: 'Biosfera 2026', a2: locale === 'es' ? 'Ciencia Abierta 2027' : 'Open Science 2027', b1: 'Horizontes 2026', orgA: locale === 'es' ? 'Organización A' : 'Organization A' };
+  if (site && !Object.hasOwn(contextNames, contextKey)) contextNames[contextKey] = locale === 'es' ? site.event.nameEs : site.event.nameEn;
   function change(field: keyof SiteContent, value: string | string[]) { setContent((current) => current ? { ...current, [field]: value } : current); }
   const localizedKey = (field: LocalizedField) => `${field}${editLanguage === 'es' ? 'Es' : 'En'}` as keyof SiteContent;
   const heading = currentTab === 'team' ? [text.teamTitle, text.teamHelp] : currentTab === 'content' ? [text.editorialTitle, text.editorialHelp] : currentTab === 'appearance' ? [text.paletteTitle, text.paletteHelp] : currentTab === 'data' ? [text.dataTitle, text.dataHelp] : [text.hello, text.overviewHelp];
