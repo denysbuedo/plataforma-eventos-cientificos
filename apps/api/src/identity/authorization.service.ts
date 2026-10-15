@@ -4,7 +4,7 @@ import { DatabaseService, type DbTransaction } from '../database/database.servic
 import { memberships, people, roleAssignments } from '../database/schema.js';
 import { ApiException, type RequestContext } from '../common/http.js';
 
-export type Capability = 'event-read' | 'event-update' | 'event-create' | 'session-read' | 'site-read' | 'site-update' | 'site-publish' | 'organizers-manage';
+export type Capability = 'event-read' | 'event-update' | 'event-create' | 'session-read' | 'site-read' | 'site-update' | 'site-publish' | 'organizers-manage' | 'people-manage' | 'invitation-accept';
 export interface ContextPermissions {
   organizer: boolean; organizationAdmin: boolean; personName: string; roles: string[];
 }
@@ -25,8 +25,14 @@ export class AuthorizationService {
           context.eventId ? or(isNull(memberships.eventId), eq(memberships.eventId, context.eventId)) : isNull(memberships.eventId)));
       const organizationAdmin = grants.some((grant) => grant.eventId === null && grant.role === 'organization_admin');
       const organizer = grants.some((grant) => grant.eventId === context.eventId && grant.eventId !== null && grant.role === 'organizer');
-      if (!grants.length) throw new ApiException(404, 'NOT_FOUND');
-      const permitted = capability === 'organizers-manage' ? organizationAdmin
+      if (!grants.length) {
+        const [membership] = await tx.select({ id: memberships.id }).from(memberships).where(and(eq(memberships.personId, context.personId),
+          eq(memberships.organizationId, context.organizationId), eq(memberships.active, true),
+          context.eventId ? or(isNull(memberships.eventId), eq(memberships.eventId, context.eventId)) : isNull(memberships.eventId))).limit(1);
+        if (capability !== 'session-read' || !membership) throw new ApiException(404, 'NOT_FOUND');
+      }
+      const permitted = capability === 'people-manage' ? organizationAdmin && context.hostEventId === null && context.eventId === null
+        : capability === 'organizers-manage' ? organizationAdmin
         : capability === 'event-create' ? organizationAdmin && context.hostEventId === null && context.eventId === null
         : ['event-update', 'site-update', 'site-publish'].includes(capability) ? organizer
         : capability === 'session-read' ? true : organizationAdmin || organizer;

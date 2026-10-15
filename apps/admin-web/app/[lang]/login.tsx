@@ -8,6 +8,7 @@ export default function Login({ locale, publicUrl, enabled }: { locale: Locale; 
     { id: 'organizer', title: text.organizer, help: text.organizerHelp, persona: 'mixed', event: 'a1', icon: 'edit' as const },
     { id: 'admin', title: text.orgAdmin, help: text.orgAdminHelp, persona: 'admin', event: 'orgA', icon: 'grid' as const },
     { id: 'participant', title: text.participant, help: text.participantHelp, persona: 'mixed', event: 'b1', icon: 'globe' as const },
+    { id: 'guest', title: text.guest, help: text.guestHelp, persona: 'outsider', event: 'orgA', icon: 'book' as const },
   ];
   async function login() {
     setLoading(true); setError(''); const chosen = options.find((option) => option.id === profile)!;

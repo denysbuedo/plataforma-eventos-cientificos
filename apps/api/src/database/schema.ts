@@ -80,7 +80,10 @@ export const auditEntries = pgTable('audit_entries', {
   requestId: uuid('request_id').notNull(), occurredAt: timestamp('occurred_at', { withTimezone: true }).notNull().defaultNow(),
 }, (t) => [
   foreignKey({ columns: [t.organizationId, t.eventId], foreignColumns: [events.organizationId, events.id] }),
-  policy(sql`${eventScope(sql`${t.organizationId}`, sql`${t.eventId}`)} AND ${actorScope(sql`${t.personId}`)}`),
+  policy(sql`${organizationScope(sql`${t.organizationId}`)} AND ${actorScope(sql`${t.personId}`)} AND
+    ((${eventScope(sql`${t.organizationId}`, sql`${t.eventId}`)}) OR (${t.eventId} IS NULL AND ${t.action} = 'invitation.accepted' AND EXISTS
+      (SELECT 1 FROM organization_invitations i WHERE i.id = ${t.resourceId} AND i.organization_id = ${t.organizationId}
+        AND i.status = 'accepted' AND i.accepted_by = ${t.personId} AND i.token_hash = current_setting('sep.invitation_hash', true))))`),
 ]);
 
 export const siteDrafts = pgTable('site_drafts', {
@@ -102,4 +105,24 @@ export const sitePublications = pgTable('site_publications', {
   foreignKey({ columns: [t.organizationId, t.eventId], foreignColumns: [events.organizationId, events.id] }),
   check('site_publication_revision_positive', sql`${t.revision} > 0`),
   policy(eventScope(sql`${t.organizationId}`, sql`${t.eventId}`)),
+]);
+
+export const organizationInvitations = pgTable('organization_invitations', {
+  id: uuid('id').primaryKey(), organizationId: uuid('organization_id').notNull().references(() => organizations.id),
+  name: text('name').notNull(), email: text('email').notNull(), tokenHash: text('token_hash').notNull().unique(),
+  status: text('status').$type<'pending' | 'accepted' | 'revoked'>().notNull().default('pending'),
+  createdBy: uuid('created_by').notNull().references(() => people.id), createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  expiresAt: timestamp('expires_at', { withTimezone: true }).notNull(),
+  acceptedBy: uuid('accepted_by').references(() => people.id), acceptedAt: timestamp('accepted_at', { withTimezone: true }),
+}, (t) => [
+  uniqueIndex('invitation_pending_email_unique').on(t.organizationId, t.email).where(sql`${t.status} = 'pending'`),
+  check('invitation_status_check', sql`${t.status} IN ('pending','accepted','revoked')`),
+  check('invitation_dates_check', sql`${t.expiresAt} > ${t.createdAt}`),
+  check('invitation_acceptance_check', sql`(${t.status} = 'accepted') = (${t.acceptedBy} IS NOT NULL AND ${t.acceptedAt} IS NOT NULL)`),
+  pgPolicy('invitation_read', { for: 'select', to: runtime, using: sql`${organizationScope(sql`${t.organizationId}`)} AND
+    (current_setting('sep.organization_admin', true) = 'true' OR ${t.tokenHash} = current_setting('sep.invitation_hash', true))` }),
+  pgPolicy('invitation_create', { for: 'insert', to: runtime, withCheck: sql`${organizationScope(sql`${t.organizationId}`)} AND current_setting('sep.organization_admin', true) = 'true' AND ${actorScope(sql`${t.createdBy}`)}` }),
+  pgPolicy('invitation_update', { for: 'update', to: runtime,
+    using: sql`${organizationScope(sql`${t.organizationId}`)} AND (current_setting('sep.organization_admin', true) = 'true' OR ${t.tokenHash} = current_setting('sep.invitation_hash', true))`,
+    withCheck: sql`${organizationScope(sql`${t.organizationId}`)} AND (current_setting('sep.organization_admin', true) = 'true' OR (${t.tokenHash} = current_setting('sep.invitation_hash', true) AND ${actorScope(sql`${t.acceptedBy}`)}))` }),
 ]);

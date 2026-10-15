@@ -46,3 +46,10 @@ export interface EventTeam {
   organizers: { personId: string; name: string }[];
   candidates: { personId: string; name: string }[];
 }
+export interface OrganizationPerson { personId: string; name: string; eventCount: number }
+export interface OrganizationInvitation {
+  id: string; name: string; email: string; status: 'pending' | 'accepted' | 'revoked' | 'expired';
+  createdAt: string; expiresAt: string; acceptedAt: string | null;
+}
+export interface PeopleDirectory { people: OrganizationPerson[]; invitations: OrganizationInvitation[] }
+export interface CreatedInvitation { invitation: OrganizationInvitation; token: string }

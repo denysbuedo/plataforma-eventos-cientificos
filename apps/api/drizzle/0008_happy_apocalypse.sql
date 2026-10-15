@@ -1,0 +1,9 @@
+ALTER POLICY "context_scope" ON "audit_entries" TO sep_runtime USING ("audit_entries"."organization_id" = nullif(current_setting('sep.organization_id', true), '')::uuid AND "audit_entries"."person_id" = nullif(current_setting('sep.person_id', true), '')::uuid AND
+    (("audit_entries"."organization_id" = nullif(current_setting('sep.organization_id', true), '')::uuid AND
+  ("audit_entries"."event_id" = nullif(current_setting('sep.event_id', true), '')::uuid OR current_setting('sep.organization_admin', true) = 'true')) OR ("audit_entries"."event_id" IS NULL AND "audit_entries"."action" = 'invitation.accepted' AND EXISTS
+      (SELECT 1 FROM organization_invitations i WHERE i.id = "audit_entries"."resource_id" AND i.organization_id = "audit_entries"."organization_id"
+        AND i.status = 'accepted' AND i.accepted_by = "audit_entries"."person_id" AND i.token_hash = current_setting('sep.invitation_hash', true))))) WITH CHECK ("audit_entries"."organization_id" = nullif(current_setting('sep.organization_id', true), '')::uuid AND "audit_entries"."person_id" = nullif(current_setting('sep.person_id', true), '')::uuid AND
+    (("audit_entries"."organization_id" = nullif(current_setting('sep.organization_id', true), '')::uuid AND
+  ("audit_entries"."event_id" = nullif(current_setting('sep.event_id', true), '')::uuid OR current_setting('sep.organization_admin', true) = 'true')) OR ("audit_entries"."event_id" IS NULL AND "audit_entries"."action" = 'invitation.accepted' AND EXISTS
+      (SELECT 1 FROM organization_invitations i WHERE i.id = "audit_entries"."resource_id" AND i.organization_id = "audit_entries"."organization_id"
+        AND i.status = 'accepted' AND i.accepted_by = "audit_entries"."person_id" AND i.token_hash = current_setting('sep.invitation_hash', true)))));
