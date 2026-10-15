@@ -1,6 +1,9 @@
 import { Inject, Injectable, type OnModuleDestroy } from '@nestjs/common';
 import { drizzle } from 'drizzle-orm/node-postgres';
-import { sql } from 'drizzle-orm';
+import { and, eq, sql } from 'drizzle-orm';
+import { randomUUID } from 'node:crypto';
+import { identities, people } from './schema.js';
+import { ApiException } from '../common/http.js';
 import { Pool } from 'pg';
 import { APP_CONFIG, type AppConfig } from '../config.js';
 
@@ -32,6 +35,25 @@ export class DatabaseService implements OnModuleDestroy {
     }
   }
   async health(): Promise<void> { await this.pool.query('SELECT 1'); }
+  oidcPerson(issuer: string, subject: string, name: string): Promise<string> {
+    return this.db.transaction(async (tx) => {
+      await tx.execute(sql`SELECT set_config('sep.organization_id', '', true), set_config('sep.event_id', '', true),
+        set_config('sep.organization_admin', 'false', true), set_config('sep.person_id', '', true), set_config('sep.invitation_hash', '', true),
+        set_config('sep.auth_provision', 'true', true), set_config('sep.auth_issuer', ${issuer}, true), set_config('sep.auth_subject', ${subject}, true)`);
+      await tx.execute(sql`SELECT pg_advisory_xact_lock(hashtextextended(${'identity:' + issuer + ':' + subject}, 0))`);
+      const [identity] = await tx.select({ personId: identities.personId, active: identities.active }).from(identities).where(and(eq(identities.issuer, issuer), eq(identities.subject, subject)));
+      if (identity && !identity.active) throw new ApiException(401, 'UNAUTHORIZED');
+      const personId = identity?.personId ?? randomUUID();
+      await tx.execute(sql`SELECT set_config('sep.person_id', ${personId}, true)`);
+      if (!identity) {
+        await tx.insert(people).values({ id: personId, name });
+        await tx.insert(identities).values({ id: randomUUID(), personId, issuer, subject });
+      }
+      const [person] = await tx.select({ active: people.active }).from(people).where(eq(people.id, personId));
+      if (!person?.active) throw new ApiException(401, 'UNAUTHORIZED');
+      return personId;
+    });
+  }
   async resolveDomain(hostname: string): Promise<{ organizationId: string; eventId: string | null } | undefined> {
     const result = await this.db.execute<{ organizationId: string; eventId: string | null }>(sql`
       SELECT organization_id AS "organizationId", event_id AS "eventId" FROM sep_resolve_domain(${hostname})`);
@@ -42,7 +64,8 @@ export class DatabaseService implements OnModuleDestroy {
       await tx.execute(sql`SELECT set_config('sep.organization_id', ${scope.organizationId}, true),
         set_config('sep.event_id', ${scope.eventId ?? ''}, true),
         set_config('sep.person_id', ${scope.personId ?? ''}, true),
-        set_config('sep.organization_admin', ${scope.organizationAdmin ? 'true' : 'false'}, true), set_config('sep.invitation_hash', '', true)`);
+        set_config('sep.organization_admin', ${scope.organizationAdmin ? 'true' : 'false'}, true), set_config('sep.invitation_hash', '', true),
+        set_config('sep.auth_provision', 'false', true), set_config('sep.auth_issuer', '', true), set_config('sep.auth_subject', '', true)`);
       return action(tx);
     });
   }

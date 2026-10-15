@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
-import { cookies } from 'next/headers';
+import { cookies, headers } from 'next/headers';
 import { notFound } from 'next/navigation';
-import { demoConfiguration, SESSION_COOKIE, tokenForCookie } from '@sep/web-server';
+import { apiRequest, bindingFor, demoConfiguration, oidcEnabled, SESSION_COOKIE, tokenForCookie } from '@sep/web-server';
 import Acceptance from './acceptance';
 
 export const dynamic = 'force-dynamic';
@@ -14,5 +14,11 @@ export default async function InvitationPage({ params, searchParams }: {
   const apiToken = tokenForCookie((await cookies()).get(SESSION_COOKIE)?.value);
   const config = demoConfiguration();
   const persona = config && apiToken ? Object.entries(config.tokens).find(([, value]) => value === apiToken)?.[0] : null;
-  return <Acceptance locale={lang as 'es' | 'en'} token={token} contextKey={query.event ?? 'orgA'} authenticated={!!apiToken} accountName={persona ? `Demo ${persona}` : null} demo={!!config} />;
+  const institutional = oidcEnabled(); const contextKey = query.event ?? (institutional ? 'org' : 'orgA');
+  let accountName = persona ? `Demo ${persona}` : null; let authenticated = !!apiToken;
+  if (institutional && apiToken) {
+    try { accountName = (await apiRequest<{ person: { name: string } }>(bindingFor((await headers()).get('host') ?? '', contextKey), 'me', { token: apiToken })).person.name; }
+    catch { authenticated = false; }
+  }
+  return <Acceptance locale={lang as 'es' | 'en'} token={token} contextKey={contextKey} authenticated={authenticated} accountName={accountName} institutional={institutional} demo={!!config} />;
 }

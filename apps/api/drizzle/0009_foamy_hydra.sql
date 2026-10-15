@@ -1,0 +1,2 @@
+CREATE POLICY "oidc_identity_lookup" ON "identities" AS PERMISSIVE FOR SELECT TO "sep_runtime" USING (current_setting('sep.auth_provision', true) = 'true'
+    AND "identities"."issuer" = current_setting('sep.auth_issuer', true) AND "identities"."subject" = current_setting('sep.auth_subject', true));

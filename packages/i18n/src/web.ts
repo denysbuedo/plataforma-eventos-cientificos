@@ -57,6 +57,9 @@ export const webCopy = {
     invitationInvalid: 'No pudimos aceptar la invitación. Puede estar caducada, cancelada o utilizada por otra persona.',
     guest: 'Invitado', guestHelp: 'Accede con el perfil ficticio que puede aceptar invitaciones.',
     awaitingAssignment: 'Tu cuenta ya está vinculada.', awaitingAssignmentHelp: 'Todavía no tienes responsabilidades administrativas en un evento. La organización puede asignártelas desde Equipo.',
+    institutionalAccess: 'ACCESO INSTITUCIONAL', institutionalLogin: 'Entrar con mi cuenta', institutionalHelp: 'Usa tu cuenta institucional. Los permisos se asignan dentro de cada organización y evento.',
+    loginFailed: 'No pudimos completar el inicio de sesión. Inténtalo de nuevo.', accountNotLinked: 'Tu cuenta todavía no está vinculada.', accountNotLinkedHelp: 'Acepta una invitación de la organización para comenzar. Iniciar sesión no concede permisos administrativos.',
+    invitationEmailMismatch: 'Necesitas una cuenta con correo verificado que coincida con el destinatario de esta invitación.',
   },
   en: {
     skip: 'Skip to content', encounter: 'The meeting', call: 'Call for contributions', venue: 'The venue', administration: 'Administration',
@@ -116,6 +119,9 @@ export const webCopy = {
     invitationInvalid: 'We could not accept this invitation. It may have expired, been cancelled, or been used by another person.',
     guest: 'Guest', guestHelp: 'Use the fictional profile that can accept invitations.',
     awaitingAssignment: 'Your account is now linked.', awaitingAssignmentHelp: 'You do not have administrative responsibilities for an event yet. The organization can assign them from Team.',
+    institutionalAccess: 'INSTITUTIONAL SIGN-IN', institutionalLogin: 'Sign in with my account', institutionalHelp: 'Use your institutional account. Permissions are assigned within each organization and event.',
+    loginFailed: 'We could not complete sign-in. Please try again.', accountNotLinked: 'Your account is not linked yet.', accountNotLinkedHelp: 'Accept an invitation from the organization to get started. Signing in does not grant administrative permissions.',
+    invitationEmailMismatch: 'You need an account with a verified email matching this invitation’s recipient.',
   },
 } as const;
 export type WebCopy = { [Key in keyof typeof webCopy.es]: string };

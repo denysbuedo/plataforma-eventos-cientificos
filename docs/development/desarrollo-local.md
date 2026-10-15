@@ -6,7 +6,7 @@ La raíz usa npm workspaces para la API, los portales público y administrativo,
 
 Versiones locales verificadas: Node.js 22.23.2, npm 10.9.2, TypeScript 6.0.3, NestJS 12.1.3, Swagger 12.0.2, Drizzle ORM 0.45.4, Drizzle Kit 0.31.11 y PostgreSQL 18.4. TypeScript 6 mantiene compatibilidad con typescript-eslint 8.71.2. Los paquetes se compilan como ESM, requerido por la versión de NestJS instalada. El lockfile raíz fija las dependencias.
 
-No se requieren Docker, Redis, S3 ni un proveedor OIDC para este incremento.
+No se requieren Docker, Redis, S3 ni un proveedor OIDC para ejecutar la demo. El acceso institucional se configura por separado mediante la [guía OIDC](identidad-institucional.md).
 
 ## Instalación y verificación
 
@@ -67,7 +67,7 @@ npm run build
 node --env-file=.env apps/api/dist/main.js
 ```
 
-El arranque exige `NODE_ENV=development` o `test`, `AUTH_MODE=development-token`, URL del rol runtime y mapa no vacío de tokens. Rechaza el rol propietario, superusuario o con `BYPASSRLS`, y una tabla de eventos sin RLS/FORCE. No hay adaptador productivo: `NODE_ENV=production` impide arrancar. El listener se limita a `127.0.0.1`.
+El modo demo exige `NODE_ENV=development` o `test`, `AUTH_MODE=development-token`, URL del rol runtime y mapa no vacío de tokens. El modo institucional exige `AUTH_MODE=oidc` y su configuración explícita; puede arrancar con `NODE_ENV=production`, pero la integración con el proveedor todavía no está validada. Ambos modos rechazan el rol propietario, superusuario o con `BYPASSRLS`, y tablas privadas sin RLS/FORCE. El listener se limita a `127.0.0.1`.
 
 `npm run db:migrate` exige `MIGRATION_DATABASE_URL`; no reutiliza credenciales runtime. Este comando aplica migraciones a la URL configurada: utilizarlo solo en una base de desarrollo preparada. El lanzador de demo es la opción inicial que aprovisiona roles y fixtures sin intervenir datos persistentes. No se incluye un seed genérico para bases existentes.
 

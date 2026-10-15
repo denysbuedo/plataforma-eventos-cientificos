@@ -34,9 +34,10 @@ export class ContextGuard implements CanActivate {
     const pathEventId = request.params.eventId;
     if (pathEventId && (typeof pathEventId !== 'string' || !uuidPattern.test(pathEventId))) throw new ApiException(400, 'VALIDATION_FAILED');
     if (domain.eventId && pathEventId && domain.eventId !== pathEventId) throw new ApiException(404, 'NOT_FOUND');
+    const principal = ['public-event', 'public-site'].includes(access) ? null : await this.authenticator.authenticate(request.headers.authorization);
     request.security = {
       ...domain, hostEventId: domain.eventId, eventId: domain.eventId ?? (typeof pathEventId === 'string' ? pathEventId : null),
-      personId: ['public-event', 'public-site'].includes(access) ? null : this.authenticator.authenticate(request.headers.authorization), requestId: request.requestId,
+      personId: principal?.personId ?? null, authMode: principal?.authMode, verifiedEmail: principal?.verifiedEmail, requestId: request.requestId,
     };
     return true;
   }

@@ -5,8 +5,10 @@ import http from 'node:http';
 import https from 'node:https';
 import type { ApiError, PublishedSite } from '@sep/contracts';
 import { errorMessage, type ErrorCode, type Locale } from '@sep/i18n';
+import { oidcAccessToken, oidcEnabled } from './oidc.js';
+export { adminOrigin, beginOidc, finishOidc, createOidcSession, localReturnTo, oidcCookieSecure, oidcEnabled, OIDC_FLOW_COOKIE, removeOidcValue } from './oidc.js';
 
-export const SESSION_COOKIE = 'sep_demo_session';
+export const SESSION_COOKIE = oidcEnabled() ? 'sep_session' : 'sep_demo_session';
 export interface DemoConfiguration {
   baseUrl: string; publicUrl: string; adminUrl: string; webSessionSecret: string;
   hosts: Record<string, string>; events: Record<string, string>; tokens: Record<string, string>;
@@ -19,6 +21,11 @@ export function demoConfiguration(): DemoConfiguration | null {
 export function bindingFor(host: string, key: string | undefined): Binding {
   const config = demoConfiguration();
   const normalized = host.toLowerCase().split(':')[0];
+  if (oidcEnabled()) {
+    const localHost = process.env.SEP_LOCAL_CONTEXT_HOST;
+    const resolvedHost = localHost && ['127.0.0.1', 'localhost'].includes(normalized) ? localHost : host;
+    return { host: resolvedHost, key: key ?? 'org', eventId: key && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(key) ? key : null, config: null };
+  }
   if (config && ['127.0.0.1', 'localhost'].includes(normalized)) {
     const selected = key ?? 'a1';
     if (/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(selected)) {
@@ -63,6 +70,7 @@ export async function apiRequest<T>(binding: Binding, path: string, options: { t
   });
 }
 export function tokenForCookie(cookie: string | undefined, config = demoConfiguration()): string | undefined {
+  if (oidcEnabled()) return oidcAccessToken(cookie);
   if (!cookie || !config?.webSessionSecret) return undefined;
   try {
     const [payload, signature, extra] = cookie.split('.');
@@ -95,7 +103,7 @@ export async function backendProxy(request: Request, parts: string[], cookie: st
   try {
     if (!['GET', 'POST', 'PUT', 'PATCH', 'DELETE'].includes(request.method)) throw new ApiTransportError(405, failure('FORBIDDEN'));
     const path = parts.join('/');
-    if (!/^(?:session|people|invitations(?:\/accept|\/[0-9a-f-]{36}\/revoke)?|events(?:\/[0-9a-f-]{36}(?:\/site(?:\/publish)?|\/session|\/organizers(?:\/[0-9a-f-]{36})?)?)?)$/.test(path)) throw new ApiTransportError(404, failure('NOT_FOUND'));
+    if (!/^(?:me|session|people|invitations(?:\/accept|\/[0-9a-f-]{36}\/revoke)?|events(?:\/[0-9a-f-]{36}(?:\/site(?:\/publish)?|\/session|\/organizers(?:\/[0-9a-f-]{36})?)?)?)$/.test(path)) throw new ApiTransportError(404, failure('NOT_FOUND'));
     if (request.method !== 'GET') checkOrigin(request);
     const url = new URL(request.url);
     const binding = bindingFor(request.headers.get('host') ?? '', url.searchParams.get('event') ?? undefined);

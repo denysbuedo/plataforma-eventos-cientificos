@@ -1,8 +1,12 @@
 import { Module } from '@nestjs/common';
-import { AUTHENTICATOR, DevelopmentTokenAuthenticator } from './authenticator.js';
+import { AUTHENTICATOR, DevelopmentTokenAuthenticator, OidcAuthenticator } from './authenticator.js';
+import { APP_CONFIG, type AppConfig } from '../config.js';
+import { DatabaseService } from '../database/database.service.js';
 import { AuthorizationService } from './authorization.service.js';
 import { SessionController } from './session.controller.js';
 import { InvitationsController, InvitationsService } from './invitations.controller.js';
 import { AuditService } from '../common/audit.service.js';
-@Module({ controllers: [SessionController, InvitationsController], providers: [AuthorizationService, InvitationsService, AuditService, { provide: AUTHENTICATOR, useClass: DevelopmentTokenAuthenticator }], exports: [AuthorizationService, AUTHENTICATOR] })
+@Module({ controllers: [SessionController, InvitationsController], providers: [AuthorizationService, InvitationsService, AuditService,
+  { provide: AUTHENTICATOR, inject: [APP_CONFIG, DatabaseService], useFactory: (config: AppConfig, database: DatabaseService) =>
+    config.authMode === 'oidc' ? new OidcAuthenticator(config, database) : new DevelopmentTokenAuthenticator(config) }], exports: [AuthorizationService, AUTHENTICATOR] })
 export class IdentityModule {}

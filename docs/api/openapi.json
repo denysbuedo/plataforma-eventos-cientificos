@@ -92,6 +92,102 @@
         ]
       }
     },
+    "/api/v1/me": {
+      "get": {
+        "operationId": "SessionController_me",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfileDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "identity"
+        ]
+      }
+    },
     "/api/v1/session": {
       "get": {
         "operationId": "SessionController_get[0]",
@@ -1997,7 +2093,7 @@
   },
   "info": {
     "title": "SEP API",
-    "description": "Fase 0: metadatos de eventos, dominios registrados y permisos contextuales. Autenticación de desarrollo; sin soporte productivo OIDC todavía.",
+    "description": "Eventos, sitios, equipos e invitaciones con permisos contextuales. Autenticación OIDC configurable o adaptador exclusivo de desarrollo.",
     "version": "1.0.0",
     "contact": {}
   },
@@ -2009,7 +2105,7 @@
         "scheme": "bearer",
         "bearerFormat": "JWT",
         "type": "http",
-        "description": "Token opaco de desarrollo configurado en servidor; no transporta roles."
+        "description": "Access token OIDC destinado a esta API; en modo demo se admite únicamente el token opaco configurado en servidor. Los roles se resuelven en PostgreSQL."
       }
     },
     "schemas": {
@@ -2096,6 +2192,17 @@
         "required": [
           "id",
           "name"
+        ]
+      },
+      "ProfileDto": {
+        "type": "object",
+        "properties": {
+          "person": {
+            "$ref": "#/components/schemas/PersonDto"
+          }
+        },
+        "required": [
+          "person"
         ]
       },
       "SessionDto": {

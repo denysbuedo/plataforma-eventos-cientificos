@@ -46,7 +46,10 @@ export const people = pgTable('people', {
 export const identities = pgTable('identities', {
   id: uuid('id').primaryKey(), personId: uuid('person_id').notNull().references(() => people.id),
   issuer: text('issuer').notNull(), subject: text('subject').notNull(), active: boolean('active').notNull().default(true),
-}, (t) => [unique().on(t.issuer, t.subject), policy(actorScope(sql`${t.personId}`))]);
+}, (t) => [unique().on(t.issuer, t.subject), policy(actorScope(sql`${t.personId}`)),
+  pgPolicy('oidc_identity_lookup', { for: 'select', to: runtime, using: sql`current_setting('sep.auth_provision', true) = 'true'
+    AND ${t.issuer} = current_setting('sep.auth_issuer', true) AND ${t.subject} = current_setting('sep.auth_subject', true)` }),
+]);
 export const affiliations = pgTable('affiliations', {
   id: uuid('id').primaryKey(), personId: uuid('person_id').notNull().references(() => people.id), institution: text('institution').notNull(),
 }, (t) => [policy(actorScope(sql`${t.personId}`))]);

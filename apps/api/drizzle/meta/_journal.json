@@ -64,6 +64,20 @@
       "when": 1792082318794,
       "tag": "0008_happy_apocalypse",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1792087107544,
+      "tag": "0009_foamy_hydra",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1792087108526,
+      "tag": "0010_oidc_provisioning",
+      "breakpoints": true
     }
   ]
 }

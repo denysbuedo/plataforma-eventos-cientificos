@@ -91,7 +91,7 @@ try {
     const publicUrl = `http://127.0.0.1:${publicPort}`; const adminUrl = `http://127.0.0.1:${adminPort}`;
     const credentials = join(runDirectory, 'demo.json');
     writeFileSync(credentials, JSON.stringify({ baseUrl: `http://127.0.0.1:${environment.PORT}`, publicUrl, adminUrl, hosts: fixture.hosts, events: fixture.events, tokens: auth.tokens, webSessionSecret: randomBytes(32).toString('hex') }, null, 2));
-    const webEnvironment = { ...environment, NODE_ENV: 'production', NEXT_TELEMETRY_DISABLED: '1', SEP_DEMO_MODE: '1', SEP_DEMO_CONFIG: credentials, SEP_API_URL: `http://127.0.0.1:${environment.PORT}`, SEP_PUBLIC_ORIGIN: publicUrl, SEP_ADMIN_ORIGIN: adminUrl };
+    const webEnvironment = { ...environment, NODE_ENV: 'production', NEXT_TELEMETRY_DISABLED: '1', SEP_AUTH_MODE: 'development-token', SEP_DEMO_MODE: '1', SEP_DEMO_CONFIG: credentials, SEP_API_URL: `http://127.0.0.1:${environment.PORT}`, SEP_PUBLIC_ORIGIN: publicUrl, SEP_ADMIN_ORIGIN: adminUrl };
     delete webEnvironment.DATABASE_URL; delete webEnvironment.DEV_AUTH_TOKENS_JSON; delete webEnvironment.SEP_TEST_ADMIN_URL; delete webEnvironment.SEP_TEST_TOKENS;
     await startWeb('public-web', publicPort, webEnvironment);
     await startWeb('admin-web', adminPort, webEnvironment);
