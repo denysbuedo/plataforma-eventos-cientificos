@@ -1,0 +1,35 @@
+generator client {
+  provider = "prisma-client"
+  output = "../generated"
+  moduleFormat = "esm"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Organization {
+  id String @id @db.Uuid
+  events Event[]
+  @@map("organizations")
+}
+
+model Event {
+  organizationId String @map("organization_id") @db.Uuid
+  id String @db.Uuid
+  organization Organization @relation(fields: [organizationId], references: [id])
+  records PrivateRecord[]
+  @@id([organizationId, id])
+  @@map("events")
+}
+
+model PrivateRecord {
+  id String @id @db.Uuid
+  organizationId String @map("organization_id") @db.Uuid
+  eventId String @map("event_id") @db.Uuid
+  title String
+  description String?
+  event Event @relation(fields: [organizationId, eventId], references: [organizationId, id])
+  @@index([organizationId, eventId])
+  @@map("private_records")
+}

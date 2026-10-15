@@ -16,6 +16,9 @@
 - [Matriz inicial de permisos](functional/matriz-permisos.md).
 - [ADR-001: arquitectura modular API-first](adr/ADR-001-arquitectura.md).
 - [ADR-002: tenancy y autorización por evento](adr/ADR-002-tenancy.md).
+- [ADR-003: Drizzle y aislamiento transaccional](adr/ADR-003-orm-aislamiento.md).
+- [Resultados de la prueba ORM](architecture/prueba-orm.md).
+- [Ejecución de la prueba técnica](../tests/orm-spike/README.md).
 - [Plan de Fase 0](functional/fase-0.md).
 
 ## Organización

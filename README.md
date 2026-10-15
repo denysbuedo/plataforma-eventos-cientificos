@@ -33,7 +33,7 @@ El producto gestiona el ciclo **planificación → ciencia → inscripción → 
 - **Estilo:** monolito modular, API-first y eventos de dominio; extracción posterior de servicios solo si se justifica.
 - **Frontend:** Next.js + React + TypeScript, i18n, SSR, diseño responsive.
 - **Backend:** NestJS + TypeScript + OpenAPI.
-- **Datos:** PostgreSQL; ORM a decidir con prueba técnica (Prisma o Drizzle).
+- **Datos:** PostgreSQL + Drizzle, elegido tras [prueba técnica de aislamiento](docs/architecture/prueba-orm.md) y [ADR-003](docs/adr/ADR-003-orm-aislamiento.md).
 - **Identidad:** OpenID Connect (p. ej. Keycloak o IAM institucional).
 - **Asíncrono:** Redis + BullMQ y patrón Transactional Outbox.
 - **Archivos:** almacenamiento S3 compatible con aislamiento por tenant.
@@ -48,7 +48,7 @@ APK futura ─────┘                   └─────────�
 
 ## Estructura inicial del repositorio
 
-Las carpetas ya están preparadas para el desarrollo. Por ahora contienen documentación o archivos `.gitkeep` para conservarlas en Git; todavía no hay aplicaciones ni servicios implementados.
+Las carpetas ya están preparadas para el desarrollo. Contienen documentación, archivos `.gitkeep` y una prueba técnica ejecutable en `tests/orm-spike/`; todavía no hay aplicaciones ni servicios implementados.
 
 ```text
 apps/
@@ -108,7 +108,19 @@ tests/              # Contratos, seguridad, E2E
 
 ## Desarrollo local
 
-**Aún no existe implementación ni comandos de instalación definitivos.** Cuando se inicialice el monorepo, documentar aquí versiones exactas de Node.js, gestor de paquetes, dependencias del sistema, variables de entorno (`.env.example` sin secretos), migraciones, seed de demo, test, lint, build y arranque local. No inventar comandos operativos hasta que existan.
+**La API y el monorepo de aplicaciones todavía no están implementados.** Existe una [prueba técnica independiente](tests/orm-spike/README.md), comprobada con Node.js 22.23.2, npm 10.9.2 y PostgreSQL 18.4:
+
+```powershell
+cd tests/orm-spike
+npm ci
+npm run generate:prisma
+npm run typecheck
+npm test
+```
+
+La prueba crea y detiene su propia instancia local de PostgreSQL con datos ficticios. Consultar su README para localizar los binarios, configurar `SEP_PG_BIN` y conocer sus límites. El resultado registrado es 34 tests aprobados: 32 comprobaciones de aislamiento y 2 grupos. No valida aún dominios, autenticación ni autorización HTTP.
+
+Cuando se inicialice el monorepo, documentar aquí versiones, variables de entorno sin secretos, migraciones, seed de demo, test, lint, build y arranque real de las aplicaciones.
 
 ## Documentación
 
@@ -120,6 +132,8 @@ El informe completo [PROYECTO_TECNICO_INICIAL.md](PROYECTO_TECNICO_INICIAL.md) e
 - [Modelo de dominio propuesto](docs/architecture/modelo-dominio.md).
 - [Matriz de permisos propuesta](docs/functional/matriz-permisos.md).
 - Decisiones: [ADR-001 arquitectura](docs/adr/ADR-001-arquitectura.md) · [ADR-002 tenancy](docs/adr/ADR-002-tenancy.md).
+- [ADR-003: elección de Drizzle y aislamiento transaccional](docs/adr/ADR-003-orm-aislamiento.md).
+- [Resultados de la prueba ORM](docs/architecture/prueba-orm.md).
 - [Plan de trabajo de Fase 0](docs/functional/fase-0.md).
 - [Prompt maestro para Codex](docs/development/PROMPT_MAESTRO_CODEX.md).
 - Proyecto técnico: [PDF](docs/reference/Proyecto_Tecnico_Inicial_SEP_v1.pdf) · [DOCX](docs/reference/Proyecto_Tecnico_Inicial_SEP_v1.docx).

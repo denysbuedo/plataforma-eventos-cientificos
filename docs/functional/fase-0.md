@@ -1,6 +1,6 @@
 # Fase 0: fundaciones y aislamiento
 
-Estado: diseño documental inicial disponible; implementación y validación automática pendientes.
+Estado: diseño documental y prueba técnica de ORM disponibles; API, monorepo y validación completa pendientes.
 
 ## Avance documental
 
@@ -9,8 +9,10 @@ Estado: diseño documental inicial disponible; implementación y validación aut
 - [Matriz inicial de permisos](matriz-permisos.md), con casos para la futura suite de autorización.
 - [ADR-001](../adr/ADR-001-arquitectura.md): registra la arquitectura de partida ya establecida.
 - [ADR-002](../adr/ADR-002-tenancy.md): propone aislamiento por organización/evento y defensa PostgreSQL.
+- [ADR-003](../adr/ADR-003-orm-aislamiento.md): elige Drizzle después de la comparación ejecutada con Prisma 7.
+- [Prueba ORM](../architecture/prueba-orm.md): migraciones, RLS, FORCE, integridad compuesta, rollback, pool y concurrencia comprobados; 34 tests aprobados contando 32 casos y 2 grupos.
 
-No se han implementado API, RLS, autenticación, migraciones ni pruebas. El siguiente incremento es la prueba técnica de ORM/aislamiento y ADR-003; después se inicializarán el monorepo y la API mínima. La fase permanece abierta.
+RLS, migraciones y pruebas existen únicamente dentro del experimento aislado `tests/orm-spike`. No se han implementado API, autenticación, permisos de usuario, dominios ni CI de aplicaciones. El siguiente incremento es inicializar el monorepo y la API mínima con Drizzle, reutilizando el patrón validado y añadiendo autorización real. La fase permanece abierta.
 
 ## Objetivo
 

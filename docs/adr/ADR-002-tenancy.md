@@ -39,7 +39,7 @@ Proponer RLS en tablas privadas de organización/evento, además de filtros y re
 
 El contexto se establecerá localmente en la transacción, nunca como estado persistente de una conexión del pool. Sin contexto, las políticas deben denegar. Verificar rollback, reutilización de conexiones y solicitudes concurrentes. RLS refuerza el ámbito de datos; la aplicación conserva la responsabilidad de autorizar acciones y proteger la identidad global.
 
-No se ha elegido ORM ni se afirma que estas políticas estén implementadas. ADR-003 dependerá de la prueba técnica de migraciones, RLS y transacciones.
+Actualización: [ADR-003](ADR-003-orm-aislamiento.md) elige Drizzle tras la [prueba técnica](../architecture/prueba-orm.md). RLS y FORCE se comprobaron en una tabla privada del experimento, con roles separados, rollback y concurrencia. Las políticas del modelo completo y su aplicación en la API siguen pendientes.
 
 ### Administración y datos públicos
 
@@ -62,6 +62,6 @@ Archivos y URLs firmadas requieren autorización previa y ámbito de objeto. Los
 
 ## Criterios para validar la propuesta
 
-Cubrir A1/A2 en organización A y B1 en B; sustitución de IDs; host y cabeceras falsificados; ausencia/revocación de membresía; roles diferentes de una misma persona; consultas directas con el rol de ejecución; conexiones reutilizadas y concurrencia. Ninguna prueba se ha ejecutado todavía.
+Cubrir A1/A2 en organización A y B1 en B; sustitución de IDs; host y cabeceras falsificados; ausencia/revocación de membresía; roles diferentes de una misma persona; consultas directas con el rol de ejecución; conexiones reutilizadas y concurrencia. La prueba ORM cubre aislamiento de datos, IDs, SQL directo, reutilización y concurrencia. Host, cabeceras, membresías y roles HTTP todavía no se han implementado ni probado; el estado de este ADR permanece propuesto.
 
 Referencias: [modelo de dominio](../architecture/modelo-dominio.md), [matriz de permisos](../functional/matriz-permisos.md).
