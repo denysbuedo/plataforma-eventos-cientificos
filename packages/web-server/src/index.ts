@@ -6,7 +6,7 @@ import https from 'node:https';
 import type { ApiError, PublishedSite } from '@sep/contracts';
 import { errorMessage, type ErrorCode, type Locale } from '@sep/i18n';
 import { oidcAccessToken, oidcEnabled, removeOidcValue } from './oidc.js';
-export { adminOrigin, beginOidc, finishOidc, createOidcSession, localReturnTo, oidcCookieSecure, oidcEnabled, oidcLogoutDestination, OIDC_FLOW_COOKIE, removeOidcValue } from './oidc.js';
+export { adminOrigin, beginOidc, finishOidc, createOidcSession, googleLoginEnabled, localReturnTo, oidcCookieSecure, oidcEnabled, oidcLogoutDestination, OIDC_FLOW_COOKIE, removeOidcValue } from './oidc.js';
 
 export const SESSION_COOKIE = oidcEnabled() ? 'sep_session' : 'sep_demo_session';
 export interface DemoConfiguration {

@@ -26,6 +26,7 @@
 - [ADR-006: designación de organizadores](adr/ADR-006-designacion-organizadores.md).
 - [ADR-007: personas e invitaciones](adr/ADR-007-personas-invitaciones.md).
 - [ADR-008: autenticación OIDC](adr/ADR-008-autenticacion-oidc.md) y [configuración del Keycloak institucional](development/identidad-institucional.md).
+- [Acceso internacional con RedUniv y Google: solicitudes y configuración](development/reduniv-y-google.md).
 - [Desarrollo local, variables y demo](development/desarrollo-local.md).
 - [Contrato mínimo de API](api/fase-0.md) y [OpenAPI generado](api/openapi.json).
 - [Evidencia del incremento API](architecture/evidencia-api-fase-0.md).

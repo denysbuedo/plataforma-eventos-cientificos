@@ -6,7 +6,9 @@ export async function POST(request: Request) {
   try {
     checkOrigin(request);
     const data = await request.formData(); const returnTo = data.get('returnTo');
-    const flow = await beginOidc(typeof returnTo === 'string' ? returnTo : '/es');
+    const provider = data.get('provider') ?? 'reduniv';
+    if (provider !== 'reduniv' && provider !== 'google') return NextResponse.json({ error: { code: 'VALIDATION_FAILED' } }, { status: 400 });
+    const flow = await beginOidc(typeof returnTo === 'string' ? returnTo : '/es', provider);
     removeOidcValue((await cookies()).get(OIDC_FLOW_COOKIE)?.value, 'flow');
     const response = NextResponse.redirect(flow.destination, 303);
     response.headers.set('cache-control', 'no-store');

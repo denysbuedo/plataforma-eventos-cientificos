@@ -27,3 +27,5 @@ Crear o confirmar los roles del cliente y asignar al menos uno a las personas/gr
 Entregar el secreto mediante el canal seguro institucional y configurarlo únicamente en el entorno local privado correspondiente. No incluirlo en este documento, el repositorio o el chat. El generador `scripts/keycloak-client.mjs` produce los archivos locales de cliente y roles para revisión; no modifica Keycloak.
 
 Antes de habilitar producción queda pendiente la aceptación institucional de login LDAP, TOTP, recuperación, claims, roles, renovación, revocación, logout y conservación de historial indicada en la guía. Las pruebas funcionales se han pospuesto por solicitud del propietario.
+
+SEP también necesita acceso para personas internacionales sin cuenta RedUniv. La [solicitud de acceso RedUniv y Google](reduniv-y-google.md) añade Google como broker, confirmación de la política de usuarios externos, creación de identidades sin LDAP y ROLE_USER limitado a SEP. La decisión sobre el realm y el alias Google debe comunicarse antes de activar esa opción. Sus credenciales Google son independientes del cliente OIDC de SEP.

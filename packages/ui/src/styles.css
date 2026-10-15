@@ -140,3 +140,5 @@ svg { flex-shrink:0; }
 .invitation-page { max-width: 780px; margin: 0 auto; padding: 56px 24px; }
 .invitation-page > .brand { margin-bottom: 32px; }
 .invitation-page h1 { font-family: Georgia, serif; font-size: clamp(2rem, 5vw, 3.4rem); line-height: 1.1; }
+.sso-buttons { display: grid; gap: 12px; }
+.sso-buttons .button { width: 100%; }

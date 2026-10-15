@@ -6,6 +6,7 @@ import * as client from 'openid-client';
 
 export const OIDC_FLOW_COOKIE = 'sep_oidc_flow';
 export function oidcEnabled(): boolean { return process.env.SEP_AUTH_MODE === 'oidc'; }
+export function googleLoginEnabled(): boolean { return oidcEnabled() && process.env.SEP_GOOGLE_LOGIN_ENABLED === '1'; }
 function transport(value: string): URL {
   const url = new URL(value);
   const loopback = process.env.OIDC_ALLOW_LOOPBACK_HTTP === '1' && ['localhost', '127.0.0.1', '[::1]'].includes(url.hostname);
@@ -131,11 +132,16 @@ export function localReturnTo(value: string): string {
   const target = new URL(value, origin);
   return target.origin === origin ? target.pathname + target.search : '/es';
 }
-export async function beginOidc(returnTo: string) {
+export async function beginOidc(returnTo: string, provider: 'reduniv' | 'google' = 'reduniv') {
+  const alias = process.env.SEP_GOOGLE_IDP_ALIAS ?? 'google';
+  const redunivAlias = process.env.SEP_REDUNIV_IDP_ALIAS ?? '';
+  if (provider === 'google' && (!googleLoginEnabled() || !/^[A-Za-z0-9_-]{1,64}$/.test(alias))) throw new Error('Google broker is not configured');
+  if (redunivAlias && !/^[A-Za-z0-9_-]{1,64}$/.test(redunivAlias)) throw new Error('Invalid RedUniv broker alias');
   const config = await configuration();
   const flow: Flow = { expires: Date.now() + 600000, verifier: client.randomPKCECodeVerifier(), nonce: client.randomNonce(), state: client.randomState(), returnTo: localReturnTo(returnTo) };
   const destination = client.buildAuthorizationUrl(config, { redirect_uri: `${settings().origin}/api/auth/callback`, scope: 'openid profile email',
-    code_challenge: await client.calculatePKCECodeChallenge(flow.verifier), code_challenge_method: 'S256', state: flow.state, nonce: flow.nonce });
+    code_challenge: await client.calculatePKCECodeChallenge(flow.verifier), code_challenge_method: 'S256', state: flow.state, nonce: flow.nonce,
+    kc_idp_hint: provider === 'google' ? alias : redunivAlias });
   return { destination, cookie: save('flow', flow) };
 }
 export async function finishOidc(callback: URL, cookie: string | undefined): Promise<GrantedSession> {

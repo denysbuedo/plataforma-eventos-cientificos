@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { cookies, headers } from 'next/headers';
 import { notFound } from 'next/navigation';
-import { apiRequest, bindingFor, demoConfiguration, oidcEnabled, SESSION_COOKIE, tokenForCookie } from '@sep/web-server';
+import { apiRequest, bindingFor, demoConfiguration, googleLoginEnabled, oidcEnabled, SESSION_COOKIE, tokenForCookie } from '@sep/web-server';
 import Acceptance from './acceptance';
 
 export const dynamic = 'force-dynamic';
@@ -20,5 +20,5 @@ export default async function InvitationPage({ params, searchParams }: {
     try { accountName = (await apiRequest<{ person: { name: string } }>(bindingFor((await headers()).get('host') ?? '', contextKey), 'me', { token: apiToken })).person.name; }
     catch { authenticated = false; }
   }
-  return <Acceptance locale={lang as 'es' | 'en'} token={token} contextKey={contextKey} authenticated={authenticated} accountName={accountName} institutional={institutional} demo={!!config} />;
+  return <Acceptance locale={lang as 'es' | 'en'} token={token} contextKey={contextKey} authenticated={authenticated} accountName={accountName} institutional={institutional} googleEnabled={googleLoginEnabled()} demo={!!config} />;
 }
