@@ -3,6 +3,7 @@ export interface AppConfig {
   databaseUrl: string;
   authMode: 'development-token' | 'oidc';
   oidc?: { issuer: string; audience: string; jwksUrl: string; authorizedParty?: string; roleClientId: string; allowedClientRoles: string[] };
+  google?: { clientId: string; signingKey: string; audience: string };
   tokens: ReadonlyMap<string, string>;
   port: number;
 }
@@ -37,6 +38,12 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
       authorizedParty: env.OIDC_AUTHORIZED_PARTY || undefined, roleClientId, allowedClientRoles };
   }
   const port = Number(env.PORT ?? '3000');
+  let google: AppConfig['google'];
+  if (env.AUTH_MODE === 'oidc' && env.SEP_GOOGLE_LOGIN_ENABLED === '1') {
+    if (!env.GOOGLE_CLIENT_ID || !/^[0-9a-f]{64}$/i.test(env.GOOGLE_SESSION_SIGNING_KEY ?? '')) throw new Error('Google client ID and a separate 32-byte session signing key are required');
+    if (env.GOOGLE_SESSION_SIGNING_KEY === env.SEP_SESSION_ENCRYPTION_KEY) throw new Error('Google signing and session encryption keys must be different');
+    google = { clientId: env.GOOGLE_CLIENT_ID, signingKey: env.GOOGLE_SESSION_SIGNING_KEY!, audience: env.GOOGLE_API_AUDIENCE ?? 'sep-api' };
+  }
   if (!Number.isInteger(port) || port < 1 || port > 65535) throw new Error('Invalid PORT');
-  return { databaseUrl: env.DATABASE_URL, authMode: env.AUTH_MODE as AppConfig['authMode'], oidc, tokens, port };
+  return { databaseUrl: env.DATABASE_URL, authMode: env.AUTH_MODE as AppConfig['authMode'], oidc, google, tokens, port };
 }

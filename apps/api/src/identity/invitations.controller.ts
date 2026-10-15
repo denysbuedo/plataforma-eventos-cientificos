@@ -92,7 +92,7 @@ export class InvitationsService {
       await tx.execute(sql`SELECT set_config('sep.invitation_hash', ${tokenHash}, true)`);
       const [invitation] = await tx.select().from(organizationInvitations).where(and(eq(organizationInvitations.organizationId, context.organizationId), eq(organizationInvitations.tokenHash, tokenHash))).for('update');
       if (!invitation) throw new ApiException(404, 'NOT_FOUND');
-      if (context.authMode === 'oidc' && (!context.verifiedEmail || context.verifiedEmail !== invitation.email)) throw new ApiException(403, 'FORBIDDEN');
+      if (['oidc', 'google'].includes(context.authMode ?? '') && (!context.verifiedEmail || context.verifiedEmail !== invitation.email)) throw new ApiException(403, 'FORBIDDEN');
       if (invitation.status === 'accepted' && invitation.acceptedBy === context.personId) return { accepted: true };
       if (invitation.status !== 'pending' || invitation.expiresAt.getTime() <= Date.now()) throw new ApiException(409, 'CONFLICT');
       await tx.execute(sql`SELECT pg_advisory_xact_lock(hashtextextended(${'membership:' + context.organizationId + ':' + context.personId}, 0))`);

@@ -2,7 +2,7 @@
 
 Estado: integración implementada y compilada; conexión funcional pendiente. Las nuevas pruebas se posponen por indicación del propietario.
 
-Para usuarios internacionales, la [guía RedUniv y Google](reduniv-y-google.md) recoge la solicitud de broker, los pasos de Google Cloud y la decisión necesaria sobre externos en el realm. SEP tiene preparada una opción Google configurable, deshabilitada hasta completar esa configuración. Los tokens que consume SEP seguirán siendo emitidos por el Keycloak autorizado.
+Para usuarios internacionales, la [guía RedUniv y Google](reduniv-y-google.md) describe el acceso Google directo con callback y credenciales de SEP. Se mantienen dos opciones independientes; Google no se configura como broker en Keycloak ni requiere cuentas LDAP. Los detalles de esta guía corresponden al flujo RedUniv.
 
 Configuración ajustada a la guía institucional [Entrar con RedUniv](../reference/entrar-con-reduniv.md), facilitada desde el proyecto `identidad-2FA`. Realm confirmado: `reduniv-institucional`. Su [documento de descubrimiento](https://identidad.reduniv.edu.cu/realms/reduniv-institucional/.well-known/openid-configuration) respondió HTTP 200 y coincide con los endpoints de la guía; anuncia PKCE S256. Esto comprueba los metadatos públicos, no un login de usuario. No se ha instalado otro Keycloak ni modificado el servidor institucional.
 

@@ -28,4 +28,4 @@ Entregar el secreto mediante el canal seguro institucional y configurarlo única
 
 Antes de habilitar producción queda pendiente la aceptación institucional de login LDAP, TOTP, recuperación, claims, roles, renovación, revocación, logout y conservación de historial indicada en la guía. Las pruebas funcionales se han pospuesto por solicitud del propietario.
 
-SEP también necesita acceso para personas internacionales sin cuenta RedUniv. La [solicitud de acceso RedUniv y Google](reduniv-y-google.md) añade Google como broker, confirmación de la política de usuarios externos, creación de identidades sin LDAP y ROLE_USER limitado a SEP. La decisión sobre el realm y el alias Google debe comunicarse antes de activar esa opción. Sus credenciales Google son independientes del cliente OIDC de SEP.
+SEP también tendrá [acceso directo con Google](reduniv-y-google.md) para personas internacionales. Esa conexión se implementa en SEP con credenciales y callback propios; no requiere crear usuarios externos, habilitar Google como broker ni modificar LDAP en el realm institucional. Esta solicitud a Identidad corresponde exclusivamente al acceso RedUniv.

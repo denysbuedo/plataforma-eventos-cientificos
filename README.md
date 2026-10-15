@@ -34,7 +34,7 @@ El producto gestiona el ciclo **planificación → ciencia → inscripción → 
 - **Frontend:** Next.js + React + TypeScript, i18n, SSR, diseño responsive.
 - **Backend:** NestJS + TypeScript + OpenAPI.
 - **Datos:** PostgreSQL + Drizzle, elegido tras [prueba técnica de aislamiento](docs/architecture/prueba-orm.md) y [ADR-003](docs/adr/ADR-003-orm-aislamiento.md).
-- **Identidad:** OpenID Connect (p. ej. Keycloak o IAM institucional).
+- **Identidad:** dos accesos independientes: RedUniv mediante Keycloak y Google mediante OpenID Connect directo. Integraciones implementadas; activación pendiente de registrar clientes y configurar credenciales. Véase [configuración de RedUniv y Google](docs/development/reduniv-y-google.md).
 - **Asíncrono:** Redis + BullMQ y patrón Transactional Outbox.
 - **Archivos:** almacenamiento S3 compatible con aislamiento por tenant.
 - **Operación:** Ubuntu, Nginx/HAProxy, systemd, métricas/logs; sin requisito inicial de Docker/Kubernetes.

@@ -4,7 +4,7 @@ import { errorMessage, type ErrorCode, type Locale } from '@sep/i18n';
 import type { ApiError, ValidationIssue } from '@sep/contracts';
 import type { DataScope } from '../database/database.service.js';
 
-export interface RequestContext extends DataScope { requestId: string; hostEventId: string | null; authMode?: 'development-token' | 'oidc'; verifiedEmail?: string }
+export interface RequestContext extends DataScope { requestId: string; hostEventId: string | null; authMode?: 'development-token' | 'oidc' | 'google'; verifiedEmail?: string }
 export interface SepRequest extends Request { requestId: string; locale: Locale; security: RequestContext }
 export class ApiException extends HttpException {
   constructor(status: number, code: ErrorCode, issues?: ValidationIssue[]) { super({ code, issues }, status); }

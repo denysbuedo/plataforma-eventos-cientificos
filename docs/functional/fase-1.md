@@ -6,7 +6,7 @@ El avance solicitado después de la demo de API inicia esta fase sobre la base t
 
 - Portales ficticios Biosfera y Horizontes, con temas independientes, español e inglés y diseño adaptable.
 - Acceso local de demostración para organizador, administrador de organización y participante.
-- Opción «Entrar con Google» preparada mediante broker Keycloak, deshabilitada hasta que Identidad apruebe usuarios externos y configure Google. No se ha conectado Google directamente a SEP ni modificado cursos-enlinea.
+- Acceso «Entrar con Google» implementado directamente en SEP, con PKCE, nonce, correo verificado y sesión propia. Activación pendiente de credenciales Google y URLs registradas; no exige cuenta RedUniv ni cambios en Keycloak. Cursos-enlinea se utilizó solo como referencia de lectura.
 - Adaptador OIDC y acceso «Entrar con RedUniv» implementados sobre el realm confirmado `reduniv-institucional`, con renovación y logout central. Activación pendiente de cliente, secreto y orígenes registrados. El login exige un rol general del cliente y puede crear el perfil local, sin conceder roles funcionales. No se ha validado todavía el login contra el proveedor.
 - Resumen con datos reales de eventos accesibles, creación de borradores por administrador y edición de nombres por organizador.
 - Sección Equipo para designar y retirar organizadores entre personas activas vinculadas a la organización. El administrador puede asignarse a sí mismo y continuar al editor con la misma sesión.

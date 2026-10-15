@@ -6,7 +6,7 @@ import { createRemoteJWKSet, jwtVerify } from 'jose';
 import { DatabaseService } from '../database/database.service.js';
 
 export const AUTHENTICATOR = Symbol('AUTHENTICATOR');
-export interface AuthenticatedPerson { personId: string; authMode: 'development-token' | 'oidc'; verifiedEmail?: string }
+export interface AuthenticatedPerson { personId: string; authMode: 'development-token' | 'oidc' | 'google'; verifiedEmail?: string }
 export interface Authenticator { authenticate(authorization: string | undefined): AuthenticatedPerson | Promise<AuthenticatedPerson> }
 @Injectable()
 export class DevelopmentTokenAuthenticator implements Authenticator {
@@ -30,6 +30,7 @@ export class OidcAuthenticator implements Authenticator {
     this.keys = createRemoteJWKSet(new URL(config.oidc.jwksUrl), { timeoutDuration: 5000, cooldownDuration: 30000 });
   }
   async authenticate(authorization: string | undefined): Promise<AuthenticatedPerson> {
+    if (authorization?.startsWith('Bearer sep_google.')) return this.googleSession(authorization);
     const match = /^Bearer ([A-Za-z0-9_.-]{32,16384})$/.exec(authorization ?? '');
     if (!match) throw new ApiException(401, 'UNAUTHORIZED');
     let claims;
@@ -50,5 +51,24 @@ export class OidcAuthenticator implements Authenticator {
     const personId = await this.database.oidcPerson(this.config.oidc!.issuer, claims.sub!, name);
     const verifiedEmail = claims.email_verified === true && typeof claims.email === 'string' ? claims.email.trim().toLowerCase() : undefined;
     return { personId, authMode: 'oidc', verifiedEmail };
+  }
+  private async googleSession(authorization: string): Promise<AuthenticatedPerson> {
+    const match = /^Bearer sep_google\.([A-Za-z0-9_.-]{32,16384})$/.exec(authorization);
+    const config = this.config.google;
+    if (!match || !config) throw new ApiException(401, 'UNAUTHORIZED');
+    let identity;
+    try {
+      const { payload } = await jwtVerify(match[1], Buffer.from(config.signingKey, 'hex'), {
+        issuer: 'sep-google-session', audience: config.audience, algorithms: ['HS256'],
+        requiredClaims: ['sub', 'exp', 'iat', 'email', 'email_verified', 'client_id'], clockTolerance: 5, maxTokenAge: '5m',
+      });
+      if (!payload.sub || payload.sub.length > 255 || payload.client_id !== config.clientId || payload.email_verified !== true
+        || typeof payload.email !== 'string' || payload.email.length > 254 || typeof payload.iat !== 'number' || payload.iat > Date.now() / 1000 + 5
+        || typeof payload.exp !== 'number' || payload.exp - payload.iat > 300) throw new Error('Invalid Google session');
+      identity = payload;
+    } catch { throw new ApiException(401, 'UNAUTHORIZED'); }
+    const name = typeof identity.name === 'string' && identity.name.trim() ? identity.name.trim().slice(0, 120) : 'Usuario';
+    const personId = await this.database.oidcPerson('https://accounts.google.com', identity.sub!, name);
+    return { personId, authMode: 'google', verifiedEmail: (identity.email as string).trim().toLowerCase() };
   }
 }

@@ -2093,7 +2093,7 @@
   },
   "info": {
     "title": "SEP API",
-    "description": "Eventos, sitios, equipos e invitaciones con permisos contextuales. Autenticación OIDC configurable o adaptador exclusivo de desarrollo.",
+    "description": "Eventos, sitios, equipos e invitaciones con permisos contextuales. Acceso RedUniv por OIDC y Google directo con sesión propia de SEP; adaptador exclusivo de desarrollo disponible por separado.",
     "version": "1.0.0",
     "contact": {}
   },
@@ -2105,7 +2105,7 @@
         "scheme": "bearer",
         "bearerFormat": "JWT",
         "type": "http",
-        "description": "Access token OIDC destinado a esta API; en modo demo se admite únicamente el token opaco configurado en servidor. Los roles se resuelven en PostgreSQL."
+        "description": "Access token RedUniv destinado a esta API o credencial interna SEP para una sesión Google verificada. En modo demo solo se admite el token opaco configurado. Los permisos funcionales se resuelven en PostgreSQL."
       }
     },
     "schemas": {

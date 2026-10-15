@@ -1,78 +1,73 @@
-# Acceso institucional e internacional: RedUniv y Google
+# Dos accesos independientes: RedUniv y Google directo
 
-Estado: opción Google vía broker preparada en SEP; activación externa y pruebas pendientes. No se ha configurado Google Cloud ni modificado Keycloak.
+Estado: ambos flujos implementados en SEP y pendientes de credenciales, activación y validación funcional. La propuesta anterior de Google mediante Keycloak queda retirada por indicación del propietario. No se ha modificado cursos-enlinea, Keycloak ni Google Cloud.
 
-## Revisión de cursos-enlinea
+## Referencia revisada
 
-Se revisaron `src/lib/google-oauth.ts`, `src/app/api/auth/google/start/route.ts` y `src/app/api/auth/google/callback/route.ts` del proyecto local `cursos-enlinea`. Allí Google se conecta directamente a la aplicación mediante Authorization Code, state, PKCE S256 y los scopes openid/email/profile. El callback consulta UserInfo, exige correo verificado y crea una sesión propia.
+De cursos-enlinea se leyeron `src/lib/google-oauth.ts`, `src/app/api/auth/google/start/route.ts` y `src/app/api/auth/google/callback/route.ts`. Allí se usa Authorization Code con PKCE S256 y state, scopes openid/email/profile, consulta de UserInfo, correo verificado y sesión propia de la aplicación.
 
-Ese proyecto enlaza automáticamente una cuenta local existente por coincidencia de correo en el primer acceso Google. SEP mantendrá `(issuer, sub)` y exigirá verificación explícita de las cuentas para vincularlas, preservando permisos e historial. No se han modificado archivos de cursos-enlinea ni leído sus secretos.
-
-## Integración propuesta
-
-RedUniv y Google se ofrecen como opciones; Keycloak emite los tokens que consume SEP en ambos casos.
+SEP reproduce ese acceso directo con sus propios componentes y almacenamiento: añade validación OIDC de ID token/nonce y mantiene identidad por `(issuer, sub)`. No copia los secretos, sesiones, tablas o el enlace automático por correo de cursos-enlinea. Vincular ambas cuentas conservando historial requerirá una operación explícita posterior; no se fusionan silenciosamente.
 
 ```mermaid
 flowchart LR
-  U[Usuario] --> S[Acceso de SEP]
-  S --> R[RedUniv: LDAP y TOTP]
-  S --> G[Google]
-  R --> K[Keycloak: identidad y sesión]
-  G --> K
-  K --> P[SEP: permisos por organización y evento]
+  A[Entrar con RedUniv] --> K[Keycloak RedUniv: LDAP y TOTP]
+  B[Entrar con Google] --> G[Google OAuth / OIDC]
+  K --> S[Sesión de SEP]
+  G --> S
+  S --> P[Permisos locales por organización y evento]
 ```
 
-Esta propuesta aprovecha el OIDC ya implementado y mantiene una sola política de sesiones, renovación, audiencia y autorización para SEP. Google no exige que la persona tenga cuenta LDAP ni se convierta en miembro institucional.
+Las personas externas usan Google sin tener cuenta RedUniv ni LDAP. La activación de Google no necesita habilitar un proveedor social o usuarios externos en el realm institucional. Google autentica la persona; no concede automáticamente pertenencias, inscripciones ni roles funcionales.
 
-Identidad debe confirmar si el realm `reduniv-institucional` admite personas externas. Habilitar un proveedor social en un realm compartido exige revisar sus efectos sobre los demás clientes y grupos. No se deben conceder automáticamente permisos de otros sistemas a las personas externas.
+## Qué solicitar a Identidad
 
-Si la política institucional impide externos en ese realm, solicitar un realm público independiente para SEP en el mismo servicio de identidad. Ese realm puede usar Google y RedUniv como proveedores federados. En ese caso cambia el issuer/JWKS de SEP al nuevo realm y se configura un alias de broker para RedUniv. No se instalará automáticamente otro servidor ni se incluirán extranjeros en LDAP para resolver esta necesidad.
-
-## Mensaje para el equipo de Identidad
-
-> Necesitamos incorporar la Plataforma de Eventos Científicos (SEP) con acceso institucional e internacional. Solicitamos clientes OIDC confidenciales separados: sep-admin-dev, sep-admin-test y sep-admin-prod, con Authorization Code y PKCE S256. SEP usa callback /api/auth/callback, retornos de logout /es y /en, scopes openid/profile/email/roles, audience sep-api y los roles generales de cliente ROLE_USER y ROLE_ADMIN. Adjuntamos las URLs exactas y la solicitud de cliente del repositorio.
+> Necesitamos registrar SEP con acceso institucional directo al realm reduniv-institucional. Solicitamos clientes confidenciales separados sep-admin-dev, sep-admin-test y sep-admin-prod; Authorization Code con PKCE S256; scopes openid/profile/email/roles; audience de API sep-api; roles generales de cliente ROLE_USER y ROLE_ADMIN. Registrar callbacks /api/auth/callback, retornos /es y /en, y Web Origins exactos por ambiente. El callback local actual es http://127.0.0.1:6789/api/auth/callback. Los orígenes HTTPS de pruebas y producción quedan por confirmar.
 >
-> Además de RedUniv, necesitamos acceso mediante Google para personas sin cuenta LDAP. Por favor, confirmar si se permiten usuarios externos en reduniv-institucional. Si se permiten, configurar Google como Identity Provider y comunicar su alias y Redirect URI exacto. Si se mantiene exclusivo de usuarios institucionales, proponemos un realm público separado para SEP con Google y RedUniv como proveedores federados.
->
-> El primer acceso Google debe permitir crear una identidad externa en Keycloak, sin crear cuentas LDAP y sin conceder permisos en otras aplicaciones. Definir una asignación de ROLE_USER específica del cliente SEP para esas personas, nunca ROLE_ADMIN automáticamente. Mantener los permisos funcionales dentro de SEP y emitir email/email_verified respetando la verificación real, porque SEP exige correo verificado para aceptar invitaciones. Configurar una vinculación de cuentas con comprobación de identidad, sin fusiones silenciosas por coincidencia de correo. Confirmar también la política TOTP para externos y administradores.
->
-> Entregar el secreto del cliente SEP y configurar el secreto Google únicamente por canales seguros. Necesitamos los client IDs, issuer, alias del proveedor Google y URLs de retorno aprobadas. No enviar secretos por correo, chat o repositorio.
+> Emitir sub, exp, iat, name o preferred_username, email y email_verified, además de la audience y roles correspondientes al cliente. LDAP, TOTP y recuperación siguen administrados en Identidad. Entregar el client ID y el secreto mediante el canal seguro correspondiente; el secreto se configura únicamente en el servidor de SEP. No se necesitan cambios para Google dentro de Keycloak: SEP lo integrará directamente.
 
-La [solicitud de cliente](solicitud-cliente-reduniv.md) contiene los campos de ambientes, responsables y URLs por completar. El origen local actual es `http://127.0.0.1:6789`; los orígenes compartidos y productivos deben definirse con HTTPS.
+La [solicitud de cliente RedUniv](solicitud-cliente-reduniv.md) detalla responsables y URLs. ROLE_ADMIN en Keycloak permite acceso general; la administración de organizaciones/eventos sigue siendo explícita en SEP.
 
-## Pasos para Google Cloud
+## Qué configurar en Google Cloud
 
-1. Preparar un proyecto OAuth administrado por el equipo responsable de Identidad/SEP, con credenciales separadas de cursos-enlinea.
-2. Configurar la audiencia External, nombre, contactos, dominios y las páginas de privacidad/términos correspondientes. Usar solo openid, email y profile para esta integración.
-3. Crear un cliente OAuth de tipo Web application.
-4. Registrar como Authorized redirect URI el valor que muestra el proveedor Google en Keycloak. Si el alias es `google` y se usa el realm institucional, el valor esperado es `https://identidad.reduniv.edu.cu/realms/reduniv-institucional/broker/google/endpoint`. Copiar el valor real del administrador de Keycloak; cambia con el realm o alias.
-5. Entregar Google Client ID y Client Secret a Identidad por canal seguro para configurar el broker. Esas credenciales se guardan en Keycloak, no en SEP. Revisar/publicar la configuración para acceso público de acuerdo con el estado y políticas vigentes de Google.
-6. Dejar vacío Hosted Domain en el proveedor Google de Keycloak si se admite cualquier cuenta Google autorizada. Una restricción a un dominio excluiría a usuarios internacionales de otros dominios.
+1. Preparar un proyecto y credenciales propios para SEP bajo el equipo responsable. No reutilizar el secreto o cliente de cursos-enlinea.
+2. Configurar audiencia External para permitir personas ajenas a la organización. Completar nombre, contactos, dominios y páginas de privacidad/términos que correspondan, y solicitar solo openid, email y profile.
+3. Crear un cliente OAuth de tipo Web application por ambiente.
+4. Registrar como Authorized redirect URI el origen de SEP más `/api/auth/google/callback`. Para el desarrollo actual: `http://127.0.0.1:6789/api/auth/google/callback`. Para producción usar el origen HTTPS real.
+5. Configurar el Google Client ID y Client Secret en el servidor de SEP, mediante un archivo local privado o gestor de secretos. No enviarlos a Keycloak ni incorporarlos al repositorio/chat.
+6. Completar la publicación/configuración de acceso público conforme a las políticas y estado del proyecto Google antes de abrirlo a usuarios internacionales.
 
-## Credenciales y callbacks distintos
-
-| Conexión | Credenciales guardadas en | Callback registrado |
+| Proveedor | Callback local actual | Credenciales almacenadas en |
 |---|---|---|
-| SEP → Keycloak | Servidor privado de SEP | Origen SEP + /api/auth/callback |
-| Keycloak → Google | Keycloak | Issuer del realm + /broker/alias/endpoint |
+| RedUniv | http://127.0.0.1:6789/api/auth/callback | Servidor de SEP |
+| Google | http://127.0.0.1:6789/api/auth/google/callback | Servidor de SEP |
 
-El callback directo de cursos-enlinea `/api/auth/google/callback` no se reutiliza para el broker de SEP. No se copian sus secretos, tokens ni sesiones. Google autentica la cuenta; la pertenencia a un evento, la inscripción y los permisos siguen siendo conceptos separados.
+El puerto corresponde a la demo conservada. Si cambia el origen de la aplicación, actualizar los registros de ambos proveedores antes de conectar las cuentas reales. En Google no se registra el callback `/broker/google/endpoint` de Keycloak para este diseño.
 
-## Activación en SEP
+## Configuración de SEP
 
-La opción se mantiene deshabilitada hasta que Identidad complete y apruebe el broker. Después configurar:
+La [.env.oidc.example](../../.env.oidc.example) reúne la configuración. Se usa `AUTH_MODE=oidc` en la API y `SEP_AUTH_MODE=oidc` en la web como modo de acceso real, con `SEP_DEMO_MODE=0`. El almacenamiento de sesiones requiere origen, directorio privado y clave de cifrado comunes. Las credenciales de proveedor son independientes:
 
-```text
-SEP_GOOGLE_LOGIN_ENABLED=1
-SEP_GOOGLE_IDP_ALIAS=google
-```
+| RedUniv | Google |
+|---|---|
+| OIDC_ISSUER / OIDC_JWKS_URL | GOOGLE_CLIENT_ID |
+| OIDC_CLIENT_ID / OIDC_CLIENT_SECRET | GOOGLE_CLIENT_SECRET |
+| OIDC_AUDIENCE / OIDC_AUTHORIZED_PARTY | GOOGLE_API_AUDIENCE |
+| OIDC_ROLE_CLIENT_ID / OIDC_ALLOWED_CLIENT_ROLES | GOOGLE_SESSION_SIGNING_KEY |
 
-Usar el alias real comunicado por Identidad. El botón envía únicamente una selección RedUniv/Google; el backend obtiene el alias de su configuración y añade `kc_idp_hint`. Los dos caminos mantienen PKCE, state, nonce y el callback OIDC existente, incluidos los enlaces de invitación.
+Para habilitar Google configurar `SEP_GOOGLE_LOGIN_ENABLED=1` y sus credenciales. El servidor web necesita el client ID/secret y una clave independiente de 32 bytes en hexadecimal para las credenciales internas; la API necesita el mismo client ID, audience y clave de firma. Esta clave no es el secreto OAuth de Google ni la clave de cifrado del almacén.
 
-Si se utiliza el realm institucional directamente, `SEP_REDUNIV_IDP_ALIAS` permanece vacío. Si se adopta un realm público con RedUniv federado, configurar ese alias, el nuevo issuer y su JWKS. El cierre central finaliza la sesión Keycloak y la de SEP; no cierra globalmente la cuenta Google del navegador.
+El acceso Google no depende del secreto ni de la disponibilidad de Keycloak. La API conserva la configuración pública de RedUniv para aceptar sus tokens cuando se active esa opción. En el acceso real aparecen ambos botones; cada uno queda deshabilitado si su configuración está incompleta. No se admiten aliases de broker enviados por el navegador.
 
-No se ha implementado Google directo en SEP. Si Identidad no puede ofrecer un broker público, esa alternativa requerirá ampliar el modelo de proveedores, callbacks y sesiones y mantener dos autoridades de identidad. La experiencia de cursos-enlinea sirve como referencia, sin copiar su vinculación automática por correo.
+## Sesiones y autorización
 
-Google cubre cuentas personales y cuentas de organizaciones que lo permitan. Para admitir también a personas sin cuenta Google o RedUniv habría que añadir otro proveedor o un mecanismo de registro y verificación de correo, con su propia política.
+Los flujos usan cookies de transacción separadas, de diez minutos, con state, nonce y PKCE. El callback Google valida el ID token y consulta UserInfo para exigir sub consistente y correo verificado. Después descarta los tokens OAuth Google y conserva únicamente una sesión propia de SEP, cifrada, de un máximo absoluto de ocho horas. No se solicita offline_access ni acceso a Drive, Calendar u otras APIs.
 
-Referencias: [Google en Keycloak](https://www.keycloak.org/docs/latest/server_admin/#_google), [sugerencia de proveedor](https://www.keycloak.org/docs/latest/server_admin/#client-suggested-identity-provider), [OAuth web de Google](https://developers.google.com/identity/protocols/oauth2/web-server), [preparación para producción](https://developers.google.com/identity/protocols/oauth2/production-readiness/overview).
+El navegador recibe solo un identificador opaco HttpOnly/SameSite. El gateway emite credenciales internas `sep_google.` firmadas HS256, de hasta cinco minutos, con issuer/audience propios y el client ID configurado. Nunca envía un Google access token a la API de SEP como si fuera un token RedUniv. La API comprueba la credencial, resuelve la identidad estable `https://accounts.google.com + sub` y consulta los permisos actuales en PostgreSQL. No se incorporan roles administrativos a esa credencial.
+
+Las invitaciones exigen correo verificado coincidente tanto para Google como para RedUniv. Una identidad nueva se crea sin roles ni pertenencias automáticas. Desactivar una persona o su identidad bloquea el acceso en la siguiente petición.
+
+Cerrar una sesión Google elimina la sesión local; no cierra la cuenta global de Google. Las credenciales internas ya emitidas pueden durar hasta cinco minutos después de cerrar sesión. Cambios o revocaciones en Google se comprueban al volver a autenticar; no se consulta continuamente Google durante la sesión propia de ocho horas. Esta política es distinta de RedUniv, que conserva renovación y logout central según la guía institucional.
+
+Faltan configuración real de clientes, secretos, orígenes compartidos/productivos y validación de extremo a extremo, pospuesta por solicitud del propietario. Google cubre personas con cuenta Google; admitir personas sin Google o RedUniv requerirá otro método posterior. El enlace explícito de identidades y la conservación de una sola persona entre proveedores también quedan pendientes.
+
+Referencias: [OIDC de Google](https://developers.google.com/identity/openid-connect), [OAuth web de Google](https://developers.google.com/identity/protocols/oauth2/web-server), [openid-client](https://github.com/panva/openid-client).

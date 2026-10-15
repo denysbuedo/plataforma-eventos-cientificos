@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import type { EventPage, EventTeam, PeopleDirectory, SessionView, SiteDraft } from '@sep/contracts';
 import { webCopy, type Locale } from '@sep/i18n';
-import { apiRequest, bindingFor, demoConfiguration, googleLoginEnabled, oidcEnabled, removeOidcValue, SESSION_COOKIE, tokenForCookie, ApiTransportError } from '@sep/web-server';
+import { apiRequest, bindingFor, demoConfiguration, googleLoginEnabled, redunivLoginEnabled, oidcEnabled, removeOidcValue, SESSION_COOKIE, tokenForCookie, ApiTransportError } from '@sep/web-server';
 import Login from './login';
 import Dashboard from './workspace';
 
@@ -19,7 +19,7 @@ export default async function AdminPage({ params, searchParams }: { params: Prom
   const query = await searchParams;
   const institutional = oidcEnabled(); const contextKey = query.event ?? (institutional ? 'org' : 'a1');
   const returnTo = `/${locale}?event=${encodeURIComponent(contextKey)}${query.tab ? `&tab=${encodeURIComponent(query.tab)}` : ''}`;
-  const login = <Login locale={locale} publicUrl={publicUrl} enabled={!!config} institutional={institutional} googleEnabled={googleLoginEnabled()} returnTo={returnTo} authError={!!query.authError} logoutError={!!query.logoutError} />;
+  const login = <Login locale={locale} publicUrl={publicUrl} enabled={!!config} institutional={institutional} googleEnabled={googleLoginEnabled()} redunivEnabled={redunivLoginEnabled()} returnTo={returnTo} authError={!!query.authError} logoutError={!!query.logoutError} />;
   if (!token) return login;
   let profile: { id: string; name: string } | null = null;
   let session: SessionView | null = null; let events: EventPage = { data: [], limit: 20, offset: 0 }; let site: SiteDraft | null = null; let denied = false;
