@@ -29,6 +29,20 @@
       "when": 1792035499868,
       "tag": "0003_site_privileges",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1792077805649,
+      "tag": "0004_yellow_supreme_intelligence",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1792077806690,
+      "tag": "0005_organizer_privileges",
+      "breakpoints": true
     }
   ]
 }

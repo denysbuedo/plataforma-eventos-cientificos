@@ -1,6 +1,6 @@
 # Matriz inicial de permisos
 
-Estado: matriz objetivo con subconjunto implementado. La API mínima verifica lectura de metadatos, creación de borradores por administrador, edición por organizador y vista pública. Consultar el [contrato actual](../api/fase-0.md) para las operaciones disponibles; el resto de capacidades continúa propuesto.
+Estado: matriz objetivo con subconjunto implementado. La API incorpora lectura de metadatos, creación de borradores por administrador, edición/publicación por organizador y gestión de organizadores por administrador de organización. Consultar el [OpenAPI](../api/openapi.json) y el [incremento de Fase 1](fase-1.md); el resto de capacidades continúa propuesto.
 
 ## Reglas generales
 
@@ -30,7 +30,7 @@ Los permisos de diferentes eventos nunca se combinan. Dentro de un mismo ámbito
 
 Publicar o archivar un evento será una acción separada de editarlo, reservada al organizador en su evento y auditada. Suspender una organización es una operación técnica distinta del estado editorial de sus eventos.
 
-En Fase 0 el organizador es el rol mínimo para probar gestión de evento. Los roles operativos siguientes se documentan para evolución; sus capacidades no se activan hasta implementar cada módulo y sus pruebas. Los roles delegables nunca incluyen superadmin técnico ni administrador de organización. La revocación propia y la pérdida del último organizador necesitan una regla administrativa antes de exponer el endpoint correspondiente.
+En Fase 0 el organizador es el rol mínimo para probar gestión de evento. Los roles operativos siguientes se documentan para evolución; sus capacidades no se activan hasta implementar cada módulo. Los roles delegables nunca incluyen superadmin técnico ni administrador de organización. La gestión de organizadores impide retirar la asignación propia y la del último organizador activo; serializa los cambios mediante el bloqueo del evento. Los candidatos deben tener una membresía activa en la misma organización y una persona activa. La validación funcional de este incremento queda pendiente por indicación del propietario.
 
 ## Catálogo de roles de evento y límites futuros
 

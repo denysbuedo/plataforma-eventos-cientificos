@@ -5,4 +5,4 @@ async function handler(request: Request, context: { params: Promise<{ path: stri
   const { path } = await context.params;
   return backendProxy(request, path, (await cookies()).get(SESSION_COOKIE)?.value);
 }
-export { handler as GET, handler as POST, handler as PUT, handler as PATCH };
+export { handler as GET, handler as POST, handler as PUT, handler as PATCH, handler as DELETE };

@@ -21,6 +21,9 @@ export function bindingFor(host: string, key: string | undefined): Binding {
   const normalized = host.toLowerCase().split(':')[0];
   if (config && ['127.0.0.1', 'localhost'].includes(normalized)) {
     const selected = key ?? 'a1';
+    if (/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(selected)) {
+      return { host: config.hosts.orgA, key: selected, eventId: selected, config };
+    }
     if (!Object.hasOwn(config.hosts, selected) || selected === 'pending') throw new ApiTransportError(404, failure('NOT_FOUND'));
     return { host: config.hosts[selected], key: selected, eventId: config.events[selected] ?? null, config };
   }
@@ -90,9 +93,9 @@ export function errorResponse(error: unknown): Response {
 }
 export async function backendProxy(request: Request, parts: string[], cookie: string | undefined): Promise<Response> {
   try {
-    if (!['GET', 'POST', 'PUT', 'PATCH'].includes(request.method)) throw new ApiTransportError(405, failure('FORBIDDEN'));
+    if (!['GET', 'POST', 'PUT', 'PATCH', 'DELETE'].includes(request.method)) throw new ApiTransportError(405, failure('FORBIDDEN'));
     const path = parts.join('/');
-    if (!/^(?:session|events(?:\/[0-9a-f-]{36}(?:\/site(?:\/publish)?)?)?)$/.test(path)) throw new ApiTransportError(404, failure('NOT_FOUND'));
+    if (!/^(?:session|events(?:\/[0-9a-f-]{36}(?:\/site(?:\/publish)?|\/session|\/organizers(?:\/[0-9a-f-]{36})?)?)?)$/.test(path)) throw new ApiTransportError(404, failure('NOT_FOUND'));
     if (request.method !== 'GET') checkOrigin(request);
     const url = new URL(request.url);
     const binding = bindingFor(request.headers.get('host') ?? '', url.searchParams.get('event') ?? undefined);

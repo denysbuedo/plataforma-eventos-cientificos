@@ -1,7 +1,7 @@
 import { cookies, headers } from 'next/headers';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
-import type { EventPage, SessionView, SiteDraft } from '@sep/contracts';
+import type { EventPage, EventTeam, SessionView, SiteDraft } from '@sep/contracts';
 import { webCopy, type Locale } from '@sep/i18n';
 import { apiRequest, bindingFor, demoConfiguration, SESSION_COOKIE, tokenForCookie, ApiTransportError } from '@sep/web-server';
 import Login from './login';
@@ -20,13 +20,15 @@ export default async function AdminPage({ params, searchParams }: { params: Prom
   const query = await searchParams;
   let session: SessionView | null = null; let events: EventPage = { data: [], limit: 20, offset: 0 }; let site: SiteDraft | null = null; let denied = false;
   let binding;
+  let team: EventTeam | null = null;
   try {
     binding = bindingFor((await headers()).get('host') ?? '', query.event);
-    session = await apiRequest<SessionView>(binding, 'session', { token, locale });
+    session = await apiRequest<SessionView>(binding, binding.eventId ? `events/${binding.eventId}/session` : 'session', { token, locale });
     if (!session.canRead) denied = true;
     else {
       events = await apiRequest<EventPage>(binding, 'events', { token, locale });
       if (session.eventId) site = await apiRequest<SiteDraft>(binding, `events/${session.eventId}/site`, { token, locale });
+      if (session.eventId && session.organizationAdmin) team = await apiRequest<EventTeam>(binding, `events/${session.eventId}/organizers`, { token, locale });
     }
   } catch (error) {
     if (error instanceof ApiTransportError && error.status === 401) return <Login locale={locale} publicUrl={publicUrl} enabled={!!config} />;
@@ -34,5 +36,5 @@ export default async function AdminPage({ params, searchParams }: { params: Prom
     else return <main className="public-empty"><div className="empty-state"><h1>{text.serviceTitle}</h1><p>{text.serviceHelp}</p><a href={`/${locale}`} className="button button-primary">{text.retry}</a></div></main>;
   }
   return <Dashboard key={query.event ?? 'a1'} locale={locale} contextKey={query.event ?? 'a1'} tab={query.tab ?? 'overview'} session={session}
-    events={events} site={site} denied={denied} publicUrl={publicUrl} demo={!!config} contextHosts={config?.hosts ?? {}} contextEvents={config?.events ?? {}} />;
+    events={events} site={site} team={team} denied={denied} publicUrl={publicUrl} demo={!!config} contextHosts={config?.hosts ?? {}} contextEvents={config?.events ?? {}} />;
 }

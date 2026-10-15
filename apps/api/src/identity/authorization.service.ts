@@ -4,7 +4,7 @@ import { DatabaseService, type DbTransaction } from '../database/database.servic
 import { memberships, people, roleAssignments } from '../database/schema.js';
 import { ApiException, type RequestContext } from '../common/http.js';
 
-export type Capability = 'event-read' | 'event-update' | 'event-create' | 'session-read' | 'site-read' | 'site-update' | 'site-publish';
+export type Capability = 'event-read' | 'event-update' | 'event-create' | 'session-read' | 'site-read' | 'site-update' | 'site-publish' | 'organizers-manage';
 export interface ContextPermissions {
   organizer: boolean; organizationAdmin: boolean; personName: string; roles: string[];
 }
@@ -26,7 +26,8 @@ export class AuthorizationService {
       const organizationAdmin = grants.some((grant) => grant.eventId === null && grant.role === 'organization_admin');
       const organizer = grants.some((grant) => grant.eventId === context.eventId && grant.eventId !== null && grant.role === 'organizer');
       if (!grants.length) throw new ApiException(404, 'NOT_FOUND');
-      const permitted = capability === 'event-create' ? organizationAdmin && context.hostEventId === null && context.eventId === null
+      const permitted = capability === 'organizers-manage' ? organizationAdmin
+        : capability === 'event-create' ? organizationAdmin && context.hostEventId === null && context.eventId === null
         : ['event-update', 'site-update', 'site-publish'].includes(capability) ? organizer
         : capability === 'session-read' ? true : organizationAdmin || organizer;
       if (!permitted) throw new ApiException(403, 'FORBIDDEN');

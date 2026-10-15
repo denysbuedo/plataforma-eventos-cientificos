@@ -5,11 +5,11 @@ import { auditEntries } from '../database/schema.js';
 import type { RequestContext } from './http.js';
 @Injectable()
 export class AuditService {
-  async record(tx: DbTransaction, context: RequestContext, action: 'event.created' | 'event.updated' | 'site.draft.saved' | 'site.published', resourceId: string): Promise<void> {
+  async record(tx: DbTransaction, context: RequestContext, action: 'event.created' | 'event.updated' | 'site.draft.saved' | 'site.published' | 'organizer.assigned' | 'organizer.revoked', resourceId: string, subjectId?: string): Promise<void> {
     if (!context.personId) throw new Error('Audit actor missing');
     await tx.insert(auditEntries).values({
       id: randomUUID(), organizationId: context.organizationId, eventId: resourceId, personId: context.personId,
-      action, resourceId, requestId: context.requestId,
+      action, resourceId: subjectId ?? resourceId, requestId: context.requestId,
     });
   }
 }

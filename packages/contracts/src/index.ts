@@ -42,3 +42,7 @@ export interface SessionView {
   person: { id: string; name: string }; organizationId: string; eventId: string | null;
   roles: string[]; canRead: boolean; canEdit: boolean; organizationAdmin: boolean;
 }
+export interface EventTeam {
+  organizers: { personId: string; name: string }[];
+  candidates: { personId: string; name: string }[];
+}

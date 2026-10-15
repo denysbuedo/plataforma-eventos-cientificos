@@ -19,10 +19,10 @@ class SessionDto implements SessionView {
   @ApiProperty() canEdit!: boolean;
   @ApiProperty() organizationAdmin!: boolean;
 }
-@ApiTags('identity') @ApiBearerAuth() @ApiErrors() @Controller('session')
+@ApiTags('identity') @ApiBearerAuth() @ApiErrors() @Controller()
 export class SessionController {
   constructor(private readonly authorization: AuthorizationService) {}
-  @Get() @Access('session-read') @ApiOkResponse({ type: SessionDto })
+  @Get(['session', 'events/:eventId/session']) @Access('session-read') @ApiOkResponse({ type: SessionDto })
   get(@Req() request: SepRequest): Promise<SessionView> {
     const context = request.security;
     return this.authorization.run(context, 'session-read', async (_tx, permissions) => ({

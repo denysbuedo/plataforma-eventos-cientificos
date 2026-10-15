@@ -7,11 +7,13 @@ El avance solicitado después de la demo de API inicia esta fase sobre la base t
 - Portales ficticios Biosfera y Horizontes, con temas independientes, español e inglés y diseño adaptable.
 - Acceso local de demostración para organizador, administrador de organización y participante.
 - Resumen con datos reales de eventos accesibles, creación de borradores por administrador y edición de nombres por organizador.
+- Sección Equipo para designar y retirar organizadores entre personas activas vinculadas a la organización. El administrador puede asignarse a sí mismo y continuar al editor con la misma sesión.
+- Acceso administrativo a eventos recién creados mediante el dominio de la organización, sin exigir un dominio público propio.
 - CMS bilingüe para portada, presentación, convocatoria, temas, sede, fechas y contacto; selección de apariencia.
 - Guardado privado y publicación explícita de una instantánea; control de revisiones para impedir sobrescrituras obsoletas.
 - Permisos comprobados en cada operación de API y aislamiento RLS para borradores y publicaciones; auditoría en la misma transacción.
 
-El participante puede iniciar sesión, pero no administrar el evento donde solo tiene ese rol. El administrador consulta el contenido de su organización; editar o publicar exige además la asignación de organizador.
+El participante puede iniciar sesión, pero no administrar el evento donde solo tiene ese rol. El administrador consulta el contenido de su organización; editar o publicar exige además la asignación de organizador. Puede obtenerla con «Organizar este evento» o designar otras personas desde Equipo. No se permite retirar la asignación propia ni la del último organizador activo. Los cambios quedan auditados con actor, evento y persona afectada.
 
 ## Ejecutar y verificar
 
@@ -29,6 +31,8 @@ Las pruebas de navegador cubren los tres accesos, cierre de sesión, rechazo de 
 
 ## Pendiente para cerrar Fase 1
 
-OIDC real y MFA, administración de organizaciones/dominios/asignaciones, verificación DNS y TLS, carga de marca y archivos y ampliación del CMS. Los eventos creados desde la demo no reciben automáticamente un dominio ni organizadores. Los módulos científicos pertenecen a fases posteriores.
+OIDC real y MFA, administración de organizaciones y dominios, invitación de personas, otros roles operativos, verificación DNS y TLS, carga de marca y archivos y ampliación del CMS. Los eventos creados no reciben automáticamente un dominio público ni organizadores; el administrador puede designar responsables inmediatamente. Los módulos científicos pertenecen a fases posteriores.
+
+La asignación de organizadores es un incremento posterior a las pruebas descritas arriba. A petición del propietario, su validación funcional y las nuevas pruebas quedan pendientes; la compilación no sustituye esa validación.
 
 La autenticación de demostración no es un despliegue productivo. Los botones de perfiles solo están habilitados con configuración local explícita; no se deben publicar en Internet.

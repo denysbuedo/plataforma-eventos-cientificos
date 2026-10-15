@@ -41,7 +41,8 @@ export const domains = pgTable('domains', {
 }, (t) => [foreignKey({ columns: [t.organizationId, t.eventId], foreignColumns: [events.organizationId, events.id] })]);
 export const people = pgTable('people', {
   id: uuid('id').primaryKey(), name: text('name').notNull(), active: boolean('active').notNull().default(true),
-}, (t) => [policy(actorScope(sql`${t.id}`))]);
+}, (t) => [policy(sql`${actorScope(sql`${t.id}`)} OR (current_setting('sep.organization_admin', true) = 'true' AND EXISTS
+  (SELECT 1 FROM memberships m WHERE m.person_id = ${t.id} AND m.organization_id = nullif(current_setting('sep.organization_id', true), '')::uuid AND m.active))`)]);
 export const identities = pgTable('identities', {
   id: uuid('id').primaryKey(), personId: uuid('person_id').notNull().references(() => people.id),
   issuer: text('issuer').notNull(), subject: text('subject').notNull(), active: boolean('active').notNull().default(true),
@@ -58,7 +59,7 @@ export const memberships = pgTable('memberships', {
   uniqueIndex('membership_event_unique').on(t.personId, t.organizationId, t.eventId).where(sql`${t.eventId} IS NOT NULL`),
   foreignKey({ columns: [t.organizationId, t.eventId], foreignColumns: [events.organizationId, events.id] }),
   index('membership_person_organization_idx').on(t.personId, t.organizationId),
-  policy(sql`${organizationScope(sql`${t.organizationId}`)} AND ${actorScope(sql`${t.personId}`)}`),
+  policy(sql`${organizationScope(sql`${t.organizationId}`)} AND (${actorScope(sql`${t.personId}`)} OR current_setting('sep.organization_admin', true) = 'true')`),
 ]);
 export const roleAssignments = pgTable('role_assignments', {
   id: uuid('id').primaryKey(), membershipId: uuid('membership_id').notNull().references(() => memberships.id),
