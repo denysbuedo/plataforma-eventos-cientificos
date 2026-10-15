@@ -1,8 +1,8 @@
-# Desarrollo local de la API
+# Desarrollo local de la plataforma
 
 ## Estado y herramientas
 
-La raíz usa npm workspaces para `apps/api`, `packages/contracts` y `packages/i18n`. La prueba comparativa anterior permanece independiente en `tests/orm-spike`; no se instala con el monorepo ni se incorpora Prisma a la API.
+La raíz usa npm workspaces para la API, los portales público y administrativo, contratos, idiomas, UI y gateway exclusivo del servidor. La prueba comparativa anterior permanece independiente en `tests/orm-spike`; no se instala con el monorepo ni se incorpora Prisma a la API.
 
 Versiones locales verificadas: Node.js 22.23.2, npm 10.9.2, TypeScript 6.0.3, NestJS 12.1.3, Swagger 12.0.2, Drizzle ORM 0.45.4, Drizzle Kit 0.31.11 y PostgreSQL 18.4. TypeScript 6 mantiene compatibilidad con typescript-eslint 8.71.2. Los paquetes se compilan como ESM, requerido por la versión de NestJS instalada. El lockfile raíz fija las dependencias.
 
@@ -19,7 +19,7 @@ npm run typecheck
 npm test
 ```
 
-`npm test` compila los paquetes, crea un cluster PostgreSQL nuevo, aplica dos migraciones dos veces, carga fixtures ficticios, arranca la API en un puerto local libre y ejecuta pruebas HTTP/BD. Detiene la API y PostgreSQL al terminar. No utiliza una base existente ni las URLs del entorno del usuario para la suite.
+`npm test` compila los paquetes de API, crea un cluster PostgreSQL nuevo, aplica las migraciones dos veces, carga fixtures ficticios, arranca la API en un puerto local libre y ejecuta pruebas HTTP/BD. Detiene la API y PostgreSQL al terminar. No utiliza una base existente ni las URLs del entorno del usuario para la suite.
 
 `initdb` y `pg_ctl` deben estar instalados. En Windows se usa por defecto `C:/Program Files/PostgreSQL/18/bin`. Para otra instalación:
 
@@ -36,7 +36,9 @@ En Linux definir `SEP_PG_BIN` con la ruta de binarios, por ejemplo `/usr/lib/pos
 npm run dev:demo
 ```
 
-El lanzador prepara otra instancia aislada y mantiene la API activa hasta Ctrl+C. Muestra la dirección local y la ruta `.local/api-<UUID>/demo.json`, que contiene puerto, hosts, IDs de eventos y tokens aleatorios de esa ejecución. Ese archivo está ignorado por Git. Los tokens no contienen roles y no se reutilizan entre ejecuciones.
+El lanzador prepara otra instancia aislada y mantiene API y portales activos hasta Ctrl+C. Muestra las URLs del portal público y del administrador: abrirlas directamente en el navegador. El selector de eventos resuelve únicamente dominios de los fixtures. La ruta `.local/api-<UUID>/demo.json` contiene puertos, hosts, IDs, tokens aleatorios y clave de sesión de esa ejecución. Ese archivo está ignorado por Git. Los tokens permanecen en el servidor, no contienen roles y no se reutilizan entre ejecuciones.
+
+Para las pruebas de navegador, ejecutar `npm run build`, `npx playwright install chromium` y `npm run test:web`. Esta suite también crea y detiene su propia instancia. El [incremento visual](../functional/fase-1.md) describe perfiles y operaciones disponibles. Usar exactamente la URL administrativa impresa; `SEP_ADMIN_ORIGIN` determina el origen autorizado de los cambios, incluido el inicio de sesión.
 
 En Windows PostgreSQL se inicia en un grupo de procesos separado y oculto para poder cerrarlo limpiamente cuando la terminal recibe Ctrl+C.
 

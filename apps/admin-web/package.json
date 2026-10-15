@@ -1,0 +1,21 @@
+{
+  "name": "@sep/admin-web",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node ../../scripts/next-build.mjs",
+    "dev": "next dev --hostname 127.0.0.1",
+    "start": "next start --hostname 127.0.0.1",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "next": "16.4.1",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "@sep/contracts": "0.1.0",
+    "@sep/i18n": "0.1.0",
+    "@sep/ui": "0.1.0",
+    "@sep/web-server": "0.1.0"
+  }
+}

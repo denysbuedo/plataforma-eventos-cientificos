@@ -9,19 +9,25 @@
   "workspaces": [
     "apps/api",
     "packages/contracts",
-    "packages/i18n"
+    "packages/i18n",
+    "apps/public-web",
+    "apps/admin-web",
+    "packages/ui",
+    "packages/web-server"
   ],
   "scripts": {
-    "build": "npm run build -w @sep/contracts && npm run build -w @sep/i18n && npm run build -w @sep/api",
-    "typecheck": "npm run build -w @sep/contracts && npm run build -w @sep/i18n && npm run typecheck -w @sep/api",
-    "lint": "eslint apps/api/src packages/contracts/src packages/i18n/src scripts tests/api",
-    "test": "npm run build && node scripts/local-postgres.mjs test",
+    "build": "npm run build:api && npm run build -w @sep/ui && npm run build -w @sep/web-server && npm run build -w @sep/public-web && npm run build -w @sep/admin-web",
+    "typecheck": "npm run build -w @sep/contracts && npm run build -w @sep/i18n && npm run build -w @sep/ui && npm run build -w @sep/web-server && npm run typecheck -w @sep/api && npm run typecheck -w @sep/public-web && npm run typecheck -w @sep/admin-web",
+    "lint": "eslint apps/api/src apps/public-web/app apps/admin-web/app packages/contracts/src packages/i18n/src packages/ui/src packages/web-server/src scripts tests/api tests/web",
+    "test": "npm run build:api && node scripts/local-postgres.mjs test",
     "dev:demo": "npm run build && node scripts/local-postgres.mjs demo",
     "start:api": "npm run start -w @sep/api",
     "db:generate": "npm run db:generate -w @sep/api",
     "db:migrate": "npm run db:migrate -w @sep/api",
-    "openapi": "npm run build && node apps/api/dist/export-openapi.js",
-    "check": "npm run lint && npm run typecheck && npm test"
+    "openapi": "npm run build:api && node apps/api/dist/export-openapi.js",
+    "check": "npm run lint && npm run typecheck && npm test",
+    "build:api": "npm run build -w @sep/contracts && npm run build -w @sep/i18n && npm run build -w @sep/api",
+    "test:web": "node scripts/local-postgres.mjs web-test"
   },
   "devDependencies": {
     "@types/express": "5.0.6",
@@ -30,6 +36,9 @@
     "drizzle-kit": "0.31.11",
     "eslint": "10.12.0",
     "typescript": "6.0.3",
-    "typescript-eslint": "8.71.2"
+    "typescript-eslint": "8.71.2",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "@playwright/test": "1.64.1"
   }
 }

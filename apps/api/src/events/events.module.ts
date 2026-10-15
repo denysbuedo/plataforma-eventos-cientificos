@@ -4,5 +4,7 @@ import { AuditService } from '../common/audit.service.js';
 import { EventsController, PublicEventsController } from './events.controller.js';
 import { EventsRepository } from './events.repository.js';
 import { EventsService } from './events.service.js';
-@Module({ imports: [IdentityModule], controllers: [EventsController, PublicEventsController], providers: [EventsService, EventsRepository, AuditService] })
+import { SiteController, PublicSiteController } from './site.controller.js';
+import { SiteService } from './site.service.js';
+@Module({ imports: [IdentityModule], controllers: [EventsController, PublicEventsController, SiteController, PublicSiteController], providers: [EventsService, EventsRepository, SiteService, AuditService] })
 export class EventsModule {}

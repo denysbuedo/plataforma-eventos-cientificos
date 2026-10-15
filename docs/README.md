@@ -20,6 +20,8 @@
 - [Resultados de la prueba ORM](architecture/prueba-orm.md).
 - [Ejecución de la prueba técnica](../tests/orm-spike/README.md).
 - [Plan de Fase 0](functional/fase-0.md).
+- [Fase 1: incremento visual](functional/fase-1.md).
+- [ADR-005: portales, sesiones y publicación](adr/ADR-005-portales-y-publicacion.md).
 - [Desarrollo local, variables y demo](development/desarrollo-local.md).
 - [Contrato mínimo de API](api/fase-0.md) y [OpenAPI generado](api/openapi.json).
 - [Evidencia del incremento API](architecture/evidencia-api-fase-0.md).

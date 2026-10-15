@@ -35,3 +35,4 @@ export function localeFromHeader(header: string | undefined): Locale {
   return candidates.find((item) => item.language === 'es' || item.language === 'en')?.language as Locale ?? 'es';
 }
 export const errorMessage = (code: ErrorCode, locale: Locale) => messages[locale][code];
+export { webCopy, type WebCopy } from './web.js';

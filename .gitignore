@@ -6,6 +6,9 @@ build/
 coverage/
 *.tsbuildinfo
 .local/
+next-env.d.ts
+playwright-report/
+test-results/
 
 # Variables locales y credenciales
 .env

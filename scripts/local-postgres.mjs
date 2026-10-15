@@ -1,15 +1,17 @@
-import { spawnSync } from 'node:child_process';
-import { randomUUID } from 'node:crypto';
+import { spawn, spawnSync } from 'node:child_process';
+import { randomBytes, randomUUID } from 'node:crypto';
 import { closeSync, existsSync, mkdirSync, openSync, readFileSync, writeFileSync } from 'node:fs';
 import { createServer } from 'node:net';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { Pool } from 'pg';
+import { createRequire } from 'node:module';
+import { seedSites } from './site-fixtures.mjs';
 import { migrateDatabase } from '../apps/api/dist/database/migrate.js';
 import { demoAuthentication, fixture, seedDemo } from './demo-fixtures.mjs';
 
 const mode = process.argv[2];
-if (mode !== 'test' && mode !== 'demo') throw new Error('Use npm test or npm run dev:demo');
+if (!['test', 'demo', 'web-test'].includes(mode)) throw new Error('Use npm test or npm run dev:demo');
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const runDirectory = join(root, '.local', `api-${randomUUID()}`);
 const data = join(runDirectory, 'data');
@@ -40,6 +42,22 @@ const port = await freePort();
 const url = (user, database = 'sep_demo') => `postgresql://${user}@127.0.0.1:${port}/${database}`;
 let started = false;
 let app;
+const servers = [];
+const require = createRequire(import.meta.url);
+async function startWeb(name, port, environment) {
+  const log = join(runDirectory, `${name}.log`);
+  const fd = openSync(log, 'a');
+  const child = spawn(process.execPath, [require.resolve('next/dist/bin/next'), 'start', '--hostname', '127.0.0.1', '--port', String(port)], {
+    cwd: join(root, 'apps', name), env: environment, windowsHide: true, detached: process.platform === 'win32', stdio: ['ignore', fd, fd],
+  });
+  closeSync(fd); servers.push(child);
+  for (let attempt = 0; attempt < 120; attempt++) {
+    if (child.exitCode !== null) throw new Error(readFileSync(log, 'utf8').slice(-4000));
+    try { const response = await fetch(`http://127.0.0.1:${port}/es?event=a1`, { signal: AbortSignal.timeout(2000) }); if (response.ok) return; } catch {}
+    await new Promise((done) => setTimeout(done, 250));
+  }
+  throw new Error(`Web server did not start: ${name}`);
+}
 try {
   pgRun('initdb', ['-D', data, '-U', 'sep_local_admin', '-A', 'trust', '--encoding=UTF8', '--no-locale']);
   started = true;
@@ -55,7 +73,7 @@ try {
   await migrateDatabase(url('sep_migrator'));
   await migrateDatabase(url('sep_migrator'));
   const admin = new Pool({ connectionString: url('sep_local_admin') });
-  try { await seedDemo(admin); } finally { await admin.end(); }
+  try { await seedDemo(admin); await seedSites(admin, fixture, mode !== 'test'); } finally { await admin.end(); }
   const auth = demoAuthentication();
   const environment = { ...process.env, NODE_ENV: mode === 'test' ? 'test' : 'development', AUTH_MODE: 'development-token',
     DATABASE_URL: url('sep_runtime'), DEV_AUTH_TOKENS_JSON: JSON.stringify(auth.mapping),
@@ -69,13 +87,32 @@ try {
     Object.assign(process.env, environment);
     const { startApi } = await import('../apps/api/dist/main.js');
     app = await startApi({ manageSignals: false });
+    const publicPort = await freePort(); const adminPort = await freePort();
+    const publicUrl = `http://127.0.0.1:${publicPort}`; const adminUrl = `http://127.0.0.1:${adminPort}`;
     const credentials = join(runDirectory, 'demo.json');
-    writeFileSync(credentials, JSON.stringify({ baseUrl: `http://127.0.0.1:${environment.PORT}`, hosts: fixture.hosts, events: fixture.events, tokens: auth.tokens }, null, 2));
+    writeFileSync(credentials, JSON.stringify({ baseUrl: `http://127.0.0.1:${environment.PORT}`, publicUrl, adminUrl, hosts: fixture.hosts, events: fixture.events, tokens: auth.tokens, webSessionSecret: randomBytes(32).toString('hex') }, null, 2));
+    const webEnvironment = { ...environment, NODE_ENV: 'production', NEXT_TELEMETRY_DISABLED: '1', SEP_DEMO_MODE: '1', SEP_DEMO_CONFIG: credentials, SEP_API_URL: `http://127.0.0.1:${environment.PORT}`, SEP_PUBLIC_ORIGIN: publicUrl, SEP_ADMIN_ORIGIN: adminUrl };
+    delete webEnvironment.DATABASE_URL; delete webEnvironment.DEV_AUTH_TOKENS_JSON; delete webEnvironment.SEP_TEST_ADMIN_URL; delete webEnvironment.SEP_TEST_TOKENS;
+    await startWeb('public-web', publicPort, webEnvironment);
+    await startWeb('admin-web', adminPort, webEnvironment);
+    console.log(`Public portal: ${publicUrl}/es`); console.log(`Administration: ${adminUrl}/es`);
     console.log(`Demo configuration and ephemeral tokens: ${credentials}`);
-    console.log('Use a registered Host header. Ctrl+C stops API and its temporary PostgreSQL.');
-    await new Promise((done) => { process.once('SIGINT', done); process.once('SIGTERM', done); });
+    console.log('Open the portal URLs in your browser. Ctrl+C stops the servers and temporary PostgreSQL.');
+    if (mode === 'web-test') {
+      const result = await new Promise((done) => {
+        const child = spawn(process.execPath, [require.resolve('@playwright/test/cli'), 'test'], { cwd: root, env: { ...environment, SEP_TEST_PUBLIC_URL: publicUrl, SEP_TEST_ADMIN_WEB_URL: adminUrl }, stdio: 'inherit', windowsHide: true });
+        child.on('error', () => done(1)); child.on('exit', (code) => done(code ?? 1));
+      });
+      if (result !== 0) process.exitCode = 1;
+    } else await new Promise((done) => { process.once('SIGINT', done); process.once('SIGTERM', done); });
   }
 } finally {
+  for (const server of servers) {
+    if (server.exitCode === null) {
+      server.kill();
+      await Promise.race([new Promise((done) => server.once('exit', done)), new Promise((done) => setTimeout(done, 3000))]);
+    }
+  }
   if (app) await app.close();
   if (started && existsSync(join(data, 'postmaster.pid'))) pgRun('pg_ctl', ['-D', data, '-m', 'fast', '-w', 'stop']);
   console.log('Temporary API PostgreSQL stopped; installed PostgreSQL service was not modified.');

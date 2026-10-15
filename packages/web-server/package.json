@@ -1,0 +1,16 @@
+{
+  "name": "@sep/web-server",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@sep/contracts": "0.1.0",
+    "@sep/i18n": "0.1.0",
+    "server-only": "0.0.1"
+  }
+}

@@ -2,7 +2,7 @@
 
 > Plataforma integral, multiinstitución, multievento y multilingüe para gestionar congresos científicos desde la convocatoria hasta la publicación de memorias y certificados.
 
-**Estado:** Fase 0, API mínima verificada localmente · **Versión:** 0.1.0-foundations · **Idiomas iniciales:** español e inglés.
+**Estado:** Fase 1 en desarrollo: portal público y administración visual con CMS · **Idiomas iniciales:** español e inglés.
 
 ## Visión
 
@@ -48,7 +48,7 @@ APK futura ─────┘                   └─────────�
 
 ## Estructura inicial del repositorio
 
-El monorepo npm contiene una API NestJS en `apps/api`, contratos compartidos e idiomas. Las aplicaciones web y los workers siguen pendientes. La comparación de ORM permanece independiente en `tests/orm-spike/`.
+El monorepo npm contiene la API NestJS, dos aplicaciones Next.js, componentes visuales, contratos, idiomas y un gateway exclusivo del servidor. Los workers siguen pendientes. La comparación de ORM permanece independiente en `tests/orm-spike/`.
 
 ```text
 apps/
@@ -60,6 +60,7 @@ packages/
   contracts/        # DTOs/contratos versionados
   ui/               # Componentes de interfaz compartidos
   i18n/             # Catálogos de localización
+  web-server/       # Gateway API, sesiones y contexto web; exclusivo del servidor
   configuration/    # Convenciones de entorno, lint, TS
   sdk-typescript/   # Cliente API generado
 services/
@@ -115,6 +116,9 @@ npm ci
 npm run lint
 npm run typecheck
 npm test
+npm run build
+npx playwright install chromium
+npm run test:web
 npm run dev:demo
 ```
 
@@ -122,9 +126,9 @@ Los tests y la demo crean su propia instancia PostgreSQL con datos ficticios sin
 
 La API implementa salud, vista pública del evento publicado, lista/detalle de metadatos, creación de borradores y edición de nombres con auditoría. Las [operaciones y permisos](docs/api/fase-0.md) se describen en el [OpenAPI versionado](docs/api/openapi.json), disponible también en `/api/v1/openapi.json` y `/api/docs` al arrancar.
 
-Resultado local: **27 tests aprobados (26 casos y 1 grupo)** sobre PostgreSQL y HTTP reales. Se comprueban cruces entre organizaciones/eventos, roles distintos, revocaciones, contexto falsificado, concurrencia y rollback de auditoría. El workflow de GitHub Actions verifica lint, tipos, contratos y tests; consultar su ejecución para el resultado remoto.
+Resultado local: **31 tests aprobados (30 casos y 1 grupo)** sobre PostgreSQL y HTTP reales. Se comprueban cruces entre organizaciones/eventos, roles distintos, revocaciones, contexto falsificado, concurrencia, CMS, publicación y auditoría. El workflow de GitHub Actions verifica lint, tipos, compilación, contratos y pruebas de API y navegador; consultar su ejecución para el resultado remoto.
 
-La autenticación de desarrollo requiere habilitación explícita y está bloqueada en producción. OIDC, dominios/TLS reales, portales, administración completa y módulos científicos siguen pendientes. La fase permanece abierta para revisión. La [prueba comparativa de ORM](tests/orm-spike/README.md) conserva su evidencia anterior por separado.
+La demo imprime enlaces al portal público y al administrador, con perfiles para probar los permisos. El CMS permite guardar contenido bilingüe y publicar cambios explícitamente. Consulta el [alcance del incremento visual](docs/functional/fase-1.md). La autenticación de desarrollo requiere habilitación explícita y está bloqueada en producción. OIDC, dominios/TLS reales, administración completa y módulos científicos siguen pendientes. La Fase 1 permanece abierta. La [prueba comparativa de ORM](tests/orm-spike/README.md) conserva su evidencia anterior por separado.
 
 ## Documentación
 
@@ -139,6 +143,7 @@ El informe completo [PROYECTO_TECNICO_INICIAL.md](PROYECTO_TECNICO_INICIAL.md) e
 - [ADR-003: elección de Drizzle y aislamiento transaccional](docs/adr/ADR-003-orm-aislamiento.md).
 - [Resultados de la prueba ORM](docs/architecture/prueba-orm.md).
 - [Plan de trabajo de Fase 0](docs/functional/fase-0.md).
+- [Fase 1: portales y CMS](docs/functional/fase-1.md) y [ADR-005](docs/adr/ADR-005-portales-y-publicacion.md).
 - [Desarrollo local y demo](docs/development/desarrollo-local.md).
 - [Contrato API mínimo](docs/api/fase-0.md).
 - [Evidencia del incremento API](docs/architecture/evidencia-api-fase-0.md).

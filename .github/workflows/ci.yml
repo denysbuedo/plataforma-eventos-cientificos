@@ -1,4 +1,4 @@
-name: API foundations
+name: Platform checks
 
 on:
   push:
@@ -31,6 +31,7 @@ jobs:
           npm install --global npm@10.9.2
           npm ci
       - run: npm run lint
+      - run: npm run build
       - run: npm run typecheck
       - name: Check generated contracts and migration snapshots
         run: |
@@ -39,3 +40,6 @@ jobs:
           npm run db:generate
           git diff --exit-code -- apps/api/drizzle
       - run: npm test
+      - name: Install browser for web checks
+        run: npx playwright install --with-deps chromium
+      - run: npm run test:web

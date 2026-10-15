@@ -8,6 +8,7 @@ import { createApplication } from '../../apps/api/dist/application.js';
 import { loadConfig } from '../../apps/api/dist/config.js';
 import { DatabaseService } from '../../apps/api/dist/database/database.service.js';
 import { fixture } from '../../scripts/demo-fixtures.mjs';
+import { siteContents } from '../../scripts/site-fixtures.mjs';
 
 test('SEP API over real PostgreSQL and HTTP', async (t) => {
   const tokens = JSON.parse(process.env.SEP_TEST_TOKENS ?? '{}');
@@ -204,6 +205,52 @@ test('SEP API over real PostgreSQL and HTTP', async (t) => {
     await assert.rejects(admin.query("INSERT INTO role_assignments (id,membership_id,role) VALUES ($1,$2,'organization_admin')",
       [randomUUID(), fixture.memberships.operatorA1]), { code: '23514' });
     await assert.rejects(admin.query('UPDATE memberships SET event_id = $1 WHERE id = $2', [fixture.events.a2, fixture.memberships.operatorA1]), { code: '23514' });
+  });
+  await t.test('session capabilities are independent for the same person in two events', async () => {
+    const organizer = await call('/api/v1/session');
+    const participant = await call('/api/v1/session', { host: fixture.hosts.b1 });
+    assert.equal(organizer.status, 200); assert.equal(organizer.body.canEdit, true);
+    assert.equal(participant.status, 200); assert.equal(participant.body.canRead, false);
+    assert.equal(participant.body.canEdit, false);
+    assert.equal(organizer.body.person.id, participant.body.person.id);
+  });
+  await t.test('CMS rejects cross-event IDs and unauthorized writes', async () => {
+    for (const id of [fixture.events.a2, fixture.events.b1]) {
+      assert.equal((await call(`/api/v1/events/${id}/site`)).status, 404);
+    }
+    const path = `/api/v1/events/${fixture.events.a1}/site`;
+    assert.equal((await call(path, { user: 'admin', host: fixture.hosts.orgA })).status, 200);
+    assert.equal((await call(path, { user: 'admin', host: fixture.hosts.orgA, method: 'PUT', body: { revision: 1, content: siteContents.a1 } })).status, 403);
+    assert.equal((await call(`/api/v1/events/${fixture.events.b1}/site`, { host: fixture.hosts.b1 })).status, 403);
+    assert.deepEqual((await runtime.query('SELECT * FROM site_drafts')).rows, []);
+    assert.deepEqual((await runtime.query('SELECT * FROM site_publications')).rows, []);
+  });
+  await t.test('CMS validates nested fields and dates', async () => {
+    for (const content of [{ ...siteContents.a1, role: 'organizer' }, { ...siteContents.a1, theme: 'invalid' },
+      { ...siteContents.a1, startDate: '2026-02-30' }, { ...siteContents.a1, endDate: '2020-01-01' }]) {
+      assert.equal((await call(`/api/v1/events/${fixture.events.a1}/site`, { method: 'PUT', body: { revision: 1, content } })).status, 400);
+    }
+  });
+  await t.test('CMS saves privately, prevents stale updates and publishes an audited snapshot', async () => {
+    const path = `/api/v1/events/${fixture.events.a1}/site`;
+    const content = { ...siteContents.a1, heroTitleEs: 'Un título nuevo para publicar' };
+    assert.equal((await call('/api/v1/public/site', { user: null })).status, 404);
+    const saved = await call(path, { method: 'PUT', body: { revision: 1, content } });
+    assert.equal(saved.status, 200); assert.equal(saved.body.revision, 2);
+    assert.equal((await call('/api/v1/public/site', { user: null })).status, 404);
+    assert.equal((await call(path, { method: 'PUT', body: { revision: 1, content } })).status, 409);
+    assert.equal((await call(`${path}/publish`, { method: 'POST', body: { revision: 1 } })).status, 409);
+    const published = await call(`${path}/publish`, { method: 'POST', body: { revision: 2 } });
+    assert.equal(published.status, 201);
+    const publicSite = await call('/api/v1/public/site', { user: null });
+    assert.deepEqual(publicSite.body, published.body);
+    assert.deepEqual(Object.keys(publicSite.body.event).sort(), ['id', 'nameEn', 'nameEs', 'timezone']);
+    const nextDraft = await call(path, { method: 'PUT', body: { revision: 2, content: { ...content, heroTitleEs: 'Cambios aún privados' } } });
+    assert.equal(nextDraft.body.revision, 3);
+    assert.deepEqual((await call('/api/v1/public/site', { user: null })).body, published.body);
+    const audit = (await admin.query('SELECT action FROM audit_entries WHERE request_id = $1', [published.headers['x-request-id']])).rows[0];
+    assert.equal(audit.action, 'site.published');
+    assert.equal((await call('/api/v1/public/site', { user: null, host: fixture.hosts.b1 })).body.revision, 1);
   });
   await t.test('development auth fails closed in production and without explicit configuration', () => {
     assert.throws(() => loadConfig({ ...process.env, NODE_ENV: 'production' }));

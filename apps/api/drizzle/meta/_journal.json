@@ -15,6 +15,20 @@
       "when": 1792027451310,
       "tag": "0001_security",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1792035393498,
+      "tag": "0002_shiny_sunfire",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1792035499868,
+      "tag": "0003_site_privileges",
+      "breakpoints": true
     }
   ]
 }

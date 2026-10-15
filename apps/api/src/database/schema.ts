@@ -1,5 +1,6 @@
 import { sql, type SQL } from 'drizzle-orm';
-import { boolean, check, foreignKey, index, pgPolicy, pgRole, pgTable, text, timestamp, unique, uniqueIndex, uuid } from 'drizzle-orm/pg-core';
+import { boolean, check, foreignKey, index, integer, jsonb, pgPolicy, pgRole, pgTable, primaryKey, text, timestamp, unique, uniqueIndex, uuid } from 'drizzle-orm/pg-core';
+import type { PublishedSite, SiteContent } from '@sep/contracts';
 
 const runtime = pgRole('sep_runtime').existing();
 const organizationScope = (column: SQL) => sql`${column} = nullif(current_setting('sep.organization_id', true), '')::uuid`;
@@ -79,4 +80,25 @@ export const auditEntries = pgTable('audit_entries', {
 }, (t) => [
   foreignKey({ columns: [t.organizationId, t.eventId], foreignColumns: [events.organizationId, events.id] }),
   policy(sql`${eventScope(sql`${t.organizationId}`, sql`${t.eventId}`)} AND ${actorScope(sql`${t.personId}`)}`),
+]);
+
+export const siteDrafts = pgTable('site_drafts', {
+  organizationId: uuid('organization_id').notNull(), eventId: uuid('event_id').notNull(),
+  content: jsonb('content').$type<SiteContent>().notNull(), revision: integer('revision').notNull().default(1),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+}, (t) => [
+  primaryKey({ columns: [t.organizationId, t.eventId] }),
+  foreignKey({ columns: [t.organizationId, t.eventId], foreignColumns: [events.organizationId, events.id] }),
+  check('site_draft_revision_positive', sql`${t.revision} > 0`),
+  policy(eventScope(sql`${t.organizationId}`, sql`${t.eventId}`)),
+]);
+export const sitePublications = pgTable('site_publications', {
+  organizationId: uuid('organization_id').notNull(), eventId: uuid('event_id').notNull(),
+  snapshot: jsonb('snapshot').$type<PublishedSite>().notNull(), revision: integer('revision').notNull(),
+  publishedAt: timestamp('published_at', { withTimezone: true }).notNull().defaultNow(),
+}, (t) => [
+  primaryKey({ columns: [t.organizationId, t.eventId] }),
+  foreignKey({ columns: [t.organizationId, t.eventId], foreignColumns: [events.organizationId, events.id] }),
+  check('site_publication_revision_positive', sql`${t.revision} > 0`),
+  policy(eventScope(sql`${t.organizationId}`, sql`${t.eventId}`)),
 ]);

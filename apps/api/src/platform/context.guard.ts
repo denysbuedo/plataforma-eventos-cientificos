@@ -6,7 +6,7 @@ import { AUTHENTICATOR, type Authenticator } from '../identity/authenticator.js'
 import type { Capability } from '../identity/authorization.service.js';
 
 const ACCESS = 'sep:access';
-export const Access = (access: Capability | 'health' | 'public-event') => SetMetadata(ACCESS, access);
+export const Access = (access: Capability | 'health' | 'public-event' | 'public-site') => SetMetadata(ACCESS, access);
 const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 export function normalizeHost(raw: string | undefined): string {
   if (!raw || !/^(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)*[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.?(:[0-9]{1,5})?$/i.test(raw)) throw new ApiException(400, 'INVALID_HOST');
@@ -36,7 +36,7 @@ export class ContextGuard implements CanActivate {
     if (domain.eventId && pathEventId && domain.eventId !== pathEventId) throw new ApiException(404, 'NOT_FOUND');
     request.security = {
       ...domain, hostEventId: domain.eventId, eventId: domain.eventId ?? (typeof pathEventId === 'string' ? pathEventId : null),
-      personId: access === 'public-event' ? null : this.authenticator.authenticate(request.headers.authorization), requestId: request.requestId,
+      personId: ['public-event', 'public-site'].includes(access) ? null : this.authenticator.authenticate(request.headers.authorization), requestId: request.requestId,
     };
     return true;
   }
