@@ -2,7 +2,7 @@ export const APP_CONFIG = Symbol('APP_CONFIG');
 export interface AppConfig {
   databaseUrl: string;
   authMode: 'development-token' | 'oidc';
-  oidc?: { issuer: string; audience: string; jwksUrl: string; authorizedParty?: string };
+  oidc?: { issuer: string; audience: string; jwksUrl: string; authorizedParty?: string; roleClientId: string; allowedClientRoles: string[] };
   tokens: ReadonlyMap<string, string>;
   port: number;
 }
@@ -30,7 +30,11 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
       const loopback = env.OIDC_ALLOW_LOOPBACK_HTTP === '1' && ['127.0.0.1', 'localhost', '[::1]'].includes(url.hostname);
       if ((url.protocol !== 'https:' && !(url.protocol === 'http:' && loopback)) || url.username || url.password || url.hash || url.search) throw new Error('Invalid OIDC URL');
     }
-    oidc = { issuer: env.OIDC_ISSUER, audience: env.OIDC_AUDIENCE, jwksUrl: env.OIDC_JWKS_URL, authorizedParty: env.OIDC_AUTHORIZED_PARTY || undefined };
+    const roleClientId = env.OIDC_ROLE_CLIENT_ID;
+    const allowedClientRoles = (env.OIDC_ALLOWED_CLIENT_ROLES ?? '').split(',').map((role) => role.trim()).filter(Boolean);
+    if (!roleClientId || !allowedClientRoles.length || allowedClientRoles.some((role) => !/^[A-Za-z0-9_.:-]{1,100}$/.test(role))) throw new Error('Explicit OIDC client access roles are required');
+    oidc = { issuer: env.OIDC_ISSUER, audience: env.OIDC_AUDIENCE, jwksUrl: env.OIDC_JWKS_URL,
+      authorizedParty: env.OIDC_AUTHORIZED_PARTY || undefined, roleClientId, allowedClientRoles };
   }
   const port = Number(env.PORT ?? '3000');
   if (!Number.isInteger(port) || port < 1 || port > 65535) throw new Error('Invalid PORT');

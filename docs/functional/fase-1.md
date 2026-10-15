@@ -6,7 +6,7 @@ El avance solicitado después de la demo de API inicia esta fase sobre la base t
 
 - Portales ficticios Biosfera y Horizontes, con temas independientes, español e inglés y diseño adaptable.
 - Acceso local de demostración para organizador, administrador de organización y participante.
-- Adaptador OIDC y flujo de acceso institucional implementados; activación pendiente de realm, cliente y configuración del Keycloak de RedUniv. El login puede crear el perfil local, sin conceder roles. No se ha validado todavía contra el proveedor.
+- Adaptador OIDC y acceso «Entrar con RedUniv» implementados sobre el realm confirmado `reduniv-institucional`, con renovación y logout central. Activación pendiente de cliente, secreto y orígenes registrados. El login exige un rol general del cliente y puede crear el perfil local, sin conceder roles funcionales. No se ha validado todavía el login contra el proveedor.
 - Resumen con datos reales de eventos accesibles, creación de borradores por administrador y edición de nombres por organizador.
 - Sección Equipo para designar y retirar organizadores entre personas activas vinculadas a la organización. El administrador puede asignarse a sí mismo y continuar al editor con la misma sesión.
 - Sección Personas con directorio e invitaciones por enlace: creación, caducidad de siete días, cancelación y aceptación por una cuenta autenticada. La aceptación vincula la persona a la organización sin concederle roles de evento.
@@ -33,7 +33,7 @@ Las pruebas de navegador cubren los tres accesos, cierre de sesión, rechazo de 
 
 ## Pendiente para cerrar Fase 1
 
-Activación y validación de OIDC con el proveedor institucional, MFA y registro según sus políticas, renovación/cierre global SSO, administración de organizaciones y dominios, entrega de invitaciones por correo, suspensión de membresías, otros roles operativos, verificación DNS y TLS, carga de marca y archivos y ampliación del CMS. La restricción al correo verificado está implementada en modo OIDC. Los eventos creados no reciben automáticamente un dominio público ni organizadores; el administrador puede designar responsables inmediatamente. Los módulos científicos pertenecen a fases posteriores.
+Activación y validación de OIDC, renovación y logout central con el proveedor institucional, MFA y registro según sus políticas, logo oficial, administración de organizaciones y dominios, entrega de invitaciones por correo, suspensión de membresías, otros roles operativos, verificación DNS y TLS, carga de marca y archivos y ampliación del CMS. La restricción al correo verificado está implementada en modo OIDC. Los eventos creados no reciben automáticamente un dominio público ni organizadores; el administrador puede designar responsables inmediatamente. Los módulos científicos pertenecen a fases posteriores.
 
 La asignación de organizadores y las invitaciones son incrementos posteriores a las pruebas descritas arriba. A petición del propietario, su validación funcional y las nuevas pruebas quedan pendientes; la compilación no sustituye esa validación. Los enlaces se comparten manualmente. En la demo, la pantalla de aceptación permite cambiar al perfil ficticio Invitado; no se generan cuentas reales ni se verifica el correo. Ver [ADR-007](../adr/ADR-007-personas-invitaciones.md).
 

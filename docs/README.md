@@ -6,6 +6,7 @@
 - [Proyecto técnico inicial](../PROYECTO_TECNICO_INICIAL.md): referencia inicial de alcance y requisitos.
 - [PDF del proyecto técnico](reference/Proyecto_Tecnico_Inicial_SEP_v1.pdf).
 - [DOCX del proyecto técnico](reference/Proyecto_Tecnico_Inicial_SEP_v1.docx).
+- [Guía institucional Entrar con RedUniv](reference/entrar-con-reduniv.md), facilitada desde el proyecto de identidad.
 - [Prompt maestro para Codex](development/PROMPT_MAESTRO_CODEX.md): guía de ejecución por fases. Las rutas a `README.md` y `PROYECTO_TECNICO_INICIAL.md` que contiene se refieren a la raíz del repositorio.
 
 ## Documentos de trabajo

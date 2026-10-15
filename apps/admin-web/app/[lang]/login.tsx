@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { Brand, Icon, ScienceArt } from '@sep/ui';
 import { webCopy, type Locale } from '@sep/i18n';
-export default function Login({ locale, publicUrl, enabled, institutional = false, returnTo = '/es', authError = false }: { locale: Locale; publicUrl: string; enabled: boolean; institutional?: boolean; returnTo?: string; authError?: boolean }) {
+export default function Login({ locale, publicUrl, enabled, institutional = false, returnTo = '/es', authError = false, logoutError = false }: { locale: Locale; publicUrl: string; enabled: boolean; institutional?: boolean; returnTo?: string; authError?: boolean; logoutError?: boolean }) {
   const text = webCopy[locale]; const [profile, setProfile] = useState('organizer'); const [loading, setLoading] = useState(false); const [error, setError] = useState('');
   const options = [
     { id: 'organizer', title: text.organizer, help: text.organizerHelp, persona: 'mixed', event: 'a1', icon: 'edit' as const },
@@ -23,6 +23,7 @@ export default function Login({ locale, publicUrl, enabled, institutional = fals
     <section className="login-access"><div className="language-switch"><a href="/es" className={locale === 'es' ? 'active' : ''}>ES</a><a href="/en" className={locale === 'en' ? 'active' : ''}>EN</a></div>
       <span className="eyebrow">{institutional ? text.institutionalAccess : text.demoAccess}</span><h2>{text.loginCard}</h2><p className="muted small">{institutional ? text.institutionalHelp : enabled ? text.loginHelp : text.noAuth}</p>
       {authError && <div className="notice notice-error" role="alert">{text.loginFailed}</div>}
+      {logoutError && <div className="notice notice-error" role="alert">{text.centralLogoutFailed}</div>}
       {error && <div className="notice notice-error" role="alert">{error}</div>}
       {institutional ? <form action="/api/auth/start" method="POST"><input type="hidden" name="returnTo" value={returnTo} /><button className="button button-primary">{text.institutionalLogin}<Icon name="arrow" size={16} /></button></form> : <><div className="profile-options" role="radiogroup" aria-label={text.loginHelp}>{options.map((option) => <button type="button" role="radio" aria-checked={profile === option.id} className={`profile-option ${profile === option.id ? 'selected' : ''}`} key={option.id} onClick={() => setProfile(option.id)} disabled={!enabled}><Icon name={option.icon} /><span><strong>{option.title}</strong><small>{option.help}</small></span><span className="radio" /></button>)}</div>
       <button className="button button-primary" onClick={login} disabled={loading || !enabled}>{loading ? text.saving : text.enter}<Icon name="arrow" size={16} /></button></>}

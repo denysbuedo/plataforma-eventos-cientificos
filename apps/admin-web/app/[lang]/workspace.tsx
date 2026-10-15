@@ -32,6 +32,7 @@ export default function Workspace(props: Props) {
   async function request<T>(value: string, method: string, body?: unknown): Promise<T> {
     const response = await fetch(path(value), { method, headers: { 'content-type': 'application/json' }, body: body === undefined ? undefined : JSON.stringify(body) });
     const data = await response.json();
+    if (response.status === 401) window.location.assign(`/${locale}?event=${encodeURIComponent(contextKey)}`);
     if (!response.ok) throw new Error(data.error?.message ?? text.serviceHelp);
     return data as T;
   }
@@ -70,7 +71,11 @@ export default function Workspace(props: Props) {
     catch (error) { setNotice({ error: true, message: error instanceof Error ? error.message : text.serviceHelp }); }
     finally { setBusy(null); }
   }
-  async function logout() { await fetch('/api/auth/logout', { method: 'POST' }); window.location.assign(`/${locale}`); }
+  async function logout() {
+    const response = await fetch(`/api/auth/logout?lang=${locale}`, { method: 'POST' });
+    if (!response.ok) { setNotice({ error: true, message: text.serviceHelp }); return; }
+    const data = await response.json(); window.location.assign(data.redirectTo ?? `/${locale}`);
+  }
   async function assignOrganizer(personId: string) {
     if (!site || !personId) return;
     setBusy('team'); setNotice(null);

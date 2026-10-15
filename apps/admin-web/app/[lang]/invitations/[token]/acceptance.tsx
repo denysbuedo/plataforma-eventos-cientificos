@@ -21,6 +21,7 @@ export default function Acceptance({ locale, token, contextKey, authenticated, a
       const response = await fetch(`/api/backend/invitations/accept?event=${encodeURIComponent(contextKey)}&lang=${locale}`, {
         method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ token }),
       });
+      if (response.status === 401) { window.location.reload(); return; }
       if (!response.ok) throw new Error(response.status === 403 ? text.invitationEmailMismatch : text.invitationInvalid);
       setAccepted(true);
     } catch (error) { setError(error instanceof Error ? error.message : text.serviceHelp); }

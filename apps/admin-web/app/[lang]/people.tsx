@@ -14,6 +14,7 @@ export default function People({ initial, locale, contextKey }: { initial: Peopl
       method, headers: { 'content-type': 'application/json' }, body: body ? JSON.stringify(body) : undefined,
     });
     const data = await response.json();
+    if (response.status === 401) window.location.assign(`/${locale}?event=${encodeURIComponent(contextKey)}&tab=people`);
     if (!response.ok) throw new Error(data.error?.message ?? text.serviceHelp);
     return data;
   }

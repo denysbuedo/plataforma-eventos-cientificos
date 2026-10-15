@@ -5,8 +5,8 @@ import http from 'node:http';
 import https from 'node:https';
 import type { ApiError, PublishedSite } from '@sep/contracts';
 import { errorMessage, type ErrorCode, type Locale } from '@sep/i18n';
-import { oidcAccessToken, oidcEnabled } from './oidc.js';
-export { adminOrigin, beginOidc, finishOidc, createOidcSession, localReturnTo, oidcCookieSecure, oidcEnabled, OIDC_FLOW_COOKIE, removeOidcValue } from './oidc.js';
+import { oidcAccessToken, oidcEnabled, removeOidcValue } from './oidc.js';
+export { adminOrigin, beginOidc, finishOidc, createOidcSession, localReturnTo, oidcCookieSecure, oidcEnabled, oidcLogoutDestination, OIDC_FLOW_COOKIE, removeOidcValue } from './oidc.js';
 
 export const SESSION_COOKIE = oidcEnabled() ? 'sep_session' : 'sep_demo_session';
 export interface DemoConfiguration {
@@ -69,7 +69,7 @@ export async function apiRequest<T>(binding: Binding, path: string, options: { t
     request.end(data);
   });
 }
-export function tokenForCookie(cookie: string | undefined, config = demoConfiguration()): string | undefined {
+export async function tokenForCookie(cookie: string | undefined, config = demoConfiguration()): Promise<string | undefined> {
   if (oidcEnabled()) return oidcAccessToken(cookie);
   if (!cookie || !config?.webSessionSecret) return undefined;
   try {
@@ -107,7 +107,7 @@ export async function backendProxy(request: Request, parts: string[], cookie: st
     if (request.method !== 'GET') checkOrigin(request);
     const url = new URL(request.url);
     const binding = bindingFor(request.headers.get('host') ?? '', url.searchParams.get('event') ?? undefined);
-    const token = tokenForCookie(cookie);
+    const token = await tokenForCookie(cookie);
     if (!token) throw new ApiTransportError(401, failure('UNAUTHORIZED'));
     const query = new URLSearchParams();
     for (const name of ['limit', 'offset']) if (url.searchParams.has(name)) query.set(name, url.searchParams.get(name)!);
@@ -120,7 +120,15 @@ export async function backendProxy(request: Request, parts: string[], cookie: st
     }
     const data = await apiRequest(binding, path + (query.size ? `?${query}` : ''), { token, method: request.method, body, locale });
     return Response.json(data, { headers: { 'cache-control': 'no-store' } });
-  } catch (error) { return errorResponse(error); }
+  } catch (error) {
+    const response = errorResponse(error);
+    if (oidcEnabled() && error instanceof ApiTransportError && error.status === 401) {
+      removeOidcValue(cookie);
+      const secure = process.env.SEP_ADMIN_ORIGIN?.startsWith('https:') ? '; Secure' : '';
+      response.headers.append('set-cookie', `${SESSION_COOKIE}=; Path=/; Max-Age=0; HttpOnly; SameSite=Lax${secure}`);
+    }
+    return response;
+  }
 }
 export async function loadPublicSite(host: string, key: string | undefined, locale: Locale): Promise<{ binding: Binding; site: PublishedSite }> {
   const binding = bindingFor(host, key);

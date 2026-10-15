@@ -11,7 +11,7 @@ export default async function InvitationPage({ params, searchParams }: {
 }) {
   const { lang, token } = await params; const query = await searchParams;
   if (!['es', 'en'].includes(lang) || !/^[A-Za-z0-9_-]{43}$/.test(token)) notFound();
-  const apiToken = tokenForCookie((await cookies()).get(SESSION_COOKIE)?.value);
+  const apiToken = await tokenForCookie((await cookies()).get(SESSION_COOKIE)?.value);
   const config = demoConfiguration();
   const persona = config && apiToken ? Object.entries(config.tokens).find(([, value]) => value === apiToken)?.[0] : null;
   const institutional = oidcEnabled(); const contextKey = query.event ?? (institutional ? 'org' : 'orgA');

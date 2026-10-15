@@ -8,7 +8,7 @@ export async function GET(request: Request) {
   try {
     const flow = await finishOidc(new URL(request.url), jar.get(OIDC_FLOW_COOKIE)?.value);
     await apiRequest(bindingFor(new URL(adminOrigin()).host, undefined), 'me', { token: flow.accessToken });
-    const session = createOidcSession(flow.accessToken, flow.maxAge);
+    const session = createOidcSession(flow);
     removeOidcValue(jar.get(SESSION_COOKIE)?.value);
     response = NextResponse.redirect(new URL(flow.returnTo, adminOrigin()), 303);
     response.cookies.set(SESSION_COOKIE, session, { httpOnly: true, secure: oidcCookieSecure(), sameSite: 'lax', path: '/', maxAge: flow.maxAge });

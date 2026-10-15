@@ -36,9 +36,15 @@ export class OidcAuthenticator implements Authenticator {
     try {
       const { payload } = await jwtVerify(match[1], this.keys, { issuer: this.config.oidc!.issuer, audience: this.config.oidc!.audience,
         algorithms: ['RS256', 'ES256'], requiredClaims: ['exp', 'iat', 'sub'], clockTolerance: 5 });
-      if (!payload.sub || payload.sub.length > 255 || (this.config.oidc!.authorizedParty && payload.azp !== this.config.oidc!.authorizedParty)) throw new Error('Invalid principal');
+      if (!payload.sub || payload.sub.length > 255 || typeof payload.iat !== 'number' || !Number.isFinite(payload.iat) || payload.iat > Date.now() / 1000 + 5
+        || (this.config.oidc!.authorizedParty && payload.azp !== this.config.oidc!.authorizedParty)) throw new Error('Invalid principal');
       claims = payload;
     } catch { throw new ApiException(401, 'UNAUTHORIZED'); }
+    const resources = claims.resource_access;
+    const clientId = this.config.oidc!.roleClientId;
+    const access = resources && typeof resources === 'object' && Object.hasOwn(resources, clientId) ? (resources as Record<string, unknown>)[clientId] : null;
+    const roles = access && typeof access === 'object' && 'roles' in access ? access.roles : null;
+    if (!Array.isArray(roles) || !roles.some((role: unknown) => typeof role === 'string' && this.config.oidc!.allowedClientRoles.includes(role))) throw new ApiException(403, 'FORBIDDEN');
     const name = typeof claims.name === 'string' && claims.name.trim() ? claims.name.trim().slice(0, 120)
       : typeof claims.preferred_username === 'string' ? claims.preferred_username.slice(0, 120) : 'Usuario';
     const personId = await this.database.oidcPerson(this.config.oidc!.issuer, claims.sub!, name);
