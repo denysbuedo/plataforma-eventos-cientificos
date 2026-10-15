@@ -1,4 +1,4 @@
-# Scientific Events Platform (SEP)
+# Plataforma de Eventos Científicos (SEP)
 
 > Plataforma integral, multiinstitución, multievento y multilingüe para gestionar congresos científicos desde la convocatoria hasta la publicación de memorias y certificados.
 
