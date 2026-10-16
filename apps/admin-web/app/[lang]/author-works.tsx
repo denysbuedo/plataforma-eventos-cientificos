@@ -150,7 +150,7 @@ export default function AuthorWorks({ initial, locale, contextKey, publicUrl, pe
           <label className="field"><span>{text.workKeywords}</span><textarea rows={4} value={keywords} maxLength={1700} disabled={busy || !work.editable} onChange={(e) => setKeywords(e.target.value)} /></label>
           {type && <p className="muted small">{text.workExpected}: {type.keywordsMin}–{type.keywordsMax} {text.callKeywords.toLowerCase()}{type.manuscriptRequired ? ` · ${text.callManuscript} ${type.maxPages}` : ''}</p>}
           <p className="muted small"><a href={`/${locale}?event=${encodeURIComponent(contextKey)}&tab=profile`} onClick={event=>{event.preventDefault();guard(()=>window.location.assign(`/${locale}?event=${encodeURIComponent(contextKey)}&tab=profile`));}}>{text.orcidProfileLink}</a></p>
-          <WorkAuthors value={work.authors} onChange={(authors) => setWork({ ...work, authors })} locale={locale} editing={work.canManage!==false} disabled={busy || !work.editable} account={work.canManage===false?undefined:person} />
+          <WorkAuthors value={work.authors} onChange={(authors) => setWork({ ...work, authors })} locale={locale} editing={work.canManage!==false} disabled={busy || !work.editable} account={work.canManage===false?undefined:person} contextKey={contextKey} />
           <section aria-labelledby="work-file-heading">
             <h3 id="work-file-heading">{text.workManuscript}</h3>
             <p>{work.manuscript ? `${work.manuscript.name} · ${work.manuscript.pages} ${text.workPages}` : text.noManuscript}</p>

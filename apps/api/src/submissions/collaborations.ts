@@ -69,7 +69,7 @@ export class WorkCollaborationsService {
     if(!author||author.personId&&author.personId!==context.personId||work.authors.some(item=>item.id!==author.id&&item.personId===context.personId))throw new ApiException(409,'WORK_COLLABORATION_TARGET');
     if(grant.status==='accepted')return this.works.detail(tx,work,state);
     const [orcid]=await tx.select().from(orcidConnections).where(eq(orcidConnections.personId,context.personId!));
-    const authors=work.authors.map(item=>item.id===author.id?{...item,personId:context.personId!,orcid:orcid?.orcid??'',orcidVerified:!!orcid?.connectedAt&&orcid.environment==='production'}:item);
+    const authors=work.authors.map(item=>item.id===author.id?{...item,personId:context.personId!,authorshipConfirmed:true,orcid:orcid?.orcid??'',orcidVerified:!!orcid?.connectedAt&&orcid.environment==='production'}:item);
     const [next]=await tx.update(authorWorks).set({authors,revision:work.revision+1,updatedAt:new Date()}).where(eq(authorWorks.id,work.id)).returning();
     await this.works.record(tx,context,work.id,'collaboration_accepted');await this.audit.record(tx,context,'work.collaboration.accepted',context.eventId!,grant.id);return this.works.detail(tx,next,state);
   });}

@@ -11,8 +11,9 @@ export class WorkAffiliationDto implements WorkAffiliation {
   @Transform(({ value }) => typeof value === 'string' ? value.trim().toUpperCase() : value) @IsIn(COUNTRY_CODES) countryCode!: string;
 }
 export class WorkAuthorDto implements WorkAuthor {
+  @ApiPropertyOptional({description:'Calculado por servidor. Elegir una persona del directorio no confirma su autoría.'}) @ValidateIf((_,value)=>value!==undefined) @IsBoolean() authorshipConfirmed?:boolean;
   @ApiPropertyOptional() @ValidateIf((_,value)=>value!==undefined) @IsString() @ValidateBy({name:'orcid',validator:{validate:(value:unknown)=>value===''||validOrcid(value)}}) orcid?:string;
-  @ApiPropertyOptional({format:'uuid'}) @ValidateIf((_,value)=>value!==undefined) @IsUUID() personId?:string;
+  @ApiPropertyOptional({format:'uuid'}) @Transform(({value})=>typeof value==='string'?value.toLowerCase():value) @ValidateIf((_,value)=>value!==undefined) @IsUUID() personId?:string;
   @ApiPropertyOptional({description:'Estado informativo. El servidor recalcula la verificación; no confía en este valor.'}) @ValidateIf((_,value)=>value!==undefined) @IsBoolean() orcidVerified?:boolean;
   @ApiProperty({ format: 'uuid' }) @Transform(({ value }) => typeof value === 'string' ? value.toLowerCase() : value) @IsUUID() id!: string;
   @ApiProperty({ minLength: 2, maxLength: 150 }) @Transform(({ value }) => typeof value === 'string' ? value.trim() : value)

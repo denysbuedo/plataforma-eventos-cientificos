@@ -7,6 +7,7 @@ import { authorWorks as works, eventConfigurations, events, people, orcidConnect
 import { ApiException, type RequestContext } from '../common/http.js';
 import { AuditService } from '../common/audit.service.js';
 import { ManuscriptsService } from './manuscripts.service.js';
+import { lookupResearcher } from '../identity/researchers.controller.js';
 import type { CreateWorkDto, SaveWorkDto } from './works.dto.js';
 const view = (row: typeof works.$inferSelect): AuthorWork => ({ id: row.id, title: row.title, abstract: row.abstract, keywords: row.keywords,
   authors: row.authors, manuscript: row.manuscript, status: row.status, submittedAt: row.submittedAt?.toISOString() ?? null, responseDeadline: row.responseDeadline, editable: false, versions: [], history: [],
@@ -14,7 +15,7 @@ const view = (row: typeof works.$inferSelect): AuthorWork => ({ id: row.id, titl
   createdAt: row.createdAt.toISOString(), updatedAt: row.updatedAt.toISOString() });
 const summaryFields = { ownerId:works.ownerId, status: works.status, submittedAt: works.submittedAt, responseDeadline: works.responseDeadline, callTimezone: sql<string>`call_snapshot->>'timezone'`, id: works.id, title: works.title, language: works.language, trackId: works.trackId,
   contributionTypeId: works.contributionTypeId, revision: works.revision, createdAt: works.createdAt, updatedAt: works.updatedAt };
-const authorshipKey=(authors:WorkAuthor[])=>JSON.stringify(authors.map(author=>[author.id,author.fullName,author.email,author.corresponding,author.personId??'',author.orcid??'',author.orcidVerified??false,author.affiliations.map(affiliation=>[affiliation.institution,affiliation.countryCode])]));
+const authorshipKey=(authors:WorkAuthor[])=>JSON.stringify(authors.map(author=>[author.id,author.fullName,author.email,author.corresponding,author.personId??'',author.orcid??'',author.orcidVerified??false,author.authorshipConfirmed??null,author.affiliations.map(affiliation=>[affiliation.institution,affiliation.countryCode])]));
 @Injectable()
 export class AuthorWorksService {
   today(timezone: string) {
@@ -31,16 +32,22 @@ export class AuthorWorksService {
   }
   private async authors(tx:DbTransaction,context:RequestContext,authors:WorkAuthor[], previous:WorkAuthor[] = []) {
     const [connection]=await tx.select().from(orcidConnections).where(eq(orcidConnections.personId,context.personId!));
-    if(authors.filter(author=>author.personId===context.personId).length>1)throw new ApiException(400,'VALIDATION_FAILED');
-    return authors.map(author=>{
+    const personIds=authors.flatMap(author=>author.personId?[author.personId]:[]);
+    if(new Set(personIds).size!==personIds.length)throw new ApiException(400,'VALIDATION_FAILED');
+    return Promise.all(authors.map(async author=>{
       if(author.personId&&author.personId!==context.personId) {
         const existing=previous.find(item=>item.id===author.id&&item.personId===author.personId);
-        if(!existing||existing.orcid!==author.orcid)throw new ApiException(400,'VALIDATION_FAILED');
-        return {...author,orcid:existing.orcid,orcidVerified:existing.orcidVerified??false};
+        if(existing){
+          if(existing.orcid!==author.orcid)throw new ApiException(400,'VALIDATION_FAILED');
+          return {...author,orcid:existing.orcid,orcidVerified:existing.orcidVerified??false,authorshipConfirmed:existing.authorshipConfirmed??true};
+        }
+        const candidate=await lookupResearcher(tx,author.personId);
+        if(!candidate)throw new ApiException(400,'RESEARCHER_UNAVAILABLE');
+        return {...author,orcid:candidate.orcid??'',orcidVerified:!!candidate.orcid,authorshipConfirmed:false};
       }
       const verified=!!author.personId&&!!connection?.orcid&&!!connection.connectedAt&&connection.environment==='production';
-      return {...author,orcid:author.personId?connection?.orcid??'':author.orcid??'',orcidVerified:verified};
-    });
+      return {...author,orcid:author.personId?connection?.orcid??'':author.orcid??'',orcidVerified:verified,authorshipConfirmed:author.personId===context.personId};
+    }));
   }
   async finalRound(tx:DbTransaction,row:typeof works.$inferSelect) {
     if(row.status==='final_requested')return true;

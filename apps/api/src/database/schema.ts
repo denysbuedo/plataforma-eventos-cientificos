@@ -1,6 +1,6 @@
 import { sql, type SQL } from 'drizzle-orm';
 import { boolean, check, customType, date, foreignKey, index, integer, jsonb, pgPolicy, pgRole, pgTable, primaryKey, text, timestamp, unique, uniqueIndex, uuid } from 'drizzle-orm/pg-core';
-import type { EventConfiguration, PublishedScientificCall, PublishedSite, ScientificCallContent, SiteContent, WorkAuthor, WorkStatus, WorkContent, Manuscript } from '@sep/contracts';
+import type { EventConfiguration, PublishedScientificCall, PublishedSite, ScientificCallContent, SiteContent, WorkAuthor, WorkStatus, WorkContent, Manuscript, WorkAffiliation } from '@sep/contracts';
 
 const binary = customType<{ data: Buffer; driverData: Buffer }>({ dataType: () => 'bytea' });
 const runtime = pgRole('sep_runtime').existing();
@@ -73,7 +73,11 @@ export const eventConfigurations = pgTable('event_configurations', {
 ]);
 export const people = pgTable('people', {
   id: uuid('id').primaryKey(), name: text('name').notNull(), active: boolean('active').notNull().default(true),
-}, (t) => [registryRead(actorScope(sql`${t.id}`)), policy(sql`${actorScope(sql`${t.id}`)} OR (current_setting('sep.organization_admin', true) = 'true' AND EXISTS
+}, (t) => [
+  pgPolicy('profile_owner_update',{as:'restrictive',for:'update',to:runtime,using:actorScope(sql`${t.id}`),withCheck:actorScope(sql`${t.id}`)}),
+  pgPolicy('directory_actor',{for:'select',to:registryOwner,using:actorScope(sql`${t.id}`)}),
+  pgPolicy('directory_lookup',{for:'select',to:registryOwner,using:sql`current_setting('sep.directory_read',true)='true' AND EXISTS(SELECT 1 FROM researcher_profiles p WHERE p.person_id=${t.id} AND p.discoverable)`}),
+  registryRead(actorScope(sql`${t.id}`)), policy(sql`${actorScope(sql`${t.id}`)} OR (current_setting('sep.organization_admin', true) = 'true' AND EXISTS
   (SELECT 1 FROM memberships m WHERE m.person_id = ${t.id} AND m.organization_id = nullif(current_setting('sep.organization_id', true), '')::uuid AND m.active))`)]);
 export const identities = pgTable('identities', {
   id: uuid('id').primaryKey(), personId: uuid('person_id').notNull().references(() => people.id),
@@ -89,7 +93,15 @@ export const orcidConnections = pgTable('orcid_connections', {
   personId: uuid('person_id').primaryKey().references(()=>people.id),
   orcid: text('orcid'), environment: text('environment').notNull().default('production'), connectedAt: timestamp('connected_at',{withTimezone:true}),
   stateHash: text('state_hash'), expiresAt: timestamp('expires_at',{withTimezone:true}), returnTo: text('return_to'),
-}, t=>[unique().on(t.environment,t.orcid), check('orcid_environment',sql`${t.environment} IN ('production','sandbox')`),policy(actorScope(sql`${t.personId}`))]);
+}, t=>[unique().on(t.environment,t.orcid), check('orcid_environment',sql`${t.environment} IN ('production','sandbox')`),policy(actorScope(sql`${t.personId}`)),
+  pgPolicy('directory_lookup',{for:'select',to:registryOwner,using:sql`current_setting('sep.directory_read',true)='true' AND EXISTS(SELECT 1 FROM researcher_profiles p WHERE p.person_id=${t.personId} AND p.discoverable)`}),
+]);
+export const researcherProfiles = pgTable('researcher_profiles',{
+  personId:uuid('person_id').primaryKey().references(()=>people.id),affiliations:jsonb('affiliations').$type<WorkAffiliation[]>().notNull().default([]),
+  discoverable:boolean('discoverable').notNull().default(false),revision:integer('revision').notNull().default(1),
+},t=>[policy(actorScope(sql`${t.personId}`)),check('researcher_profile_revision',sql`${t.revision}>0`),
+  pgPolicy('directory_projection',{for:'select',to:registryOwner,using:sql`${t.discoverable}`}),
+]);
 export const memberships = pgTable('memberships', {
   id: uuid('id').primaryKey(), personId: uuid('person_id').notNull().references(() => people.id),
   organizationId: uuid('organization_id').notNull().references(() => organizations.id),
@@ -127,7 +139,9 @@ export const auditEntries = pgTable('audit_entries', {
       (SELECT 1 FROM organization_invitations i WHERE i.id = ${t.resourceId} AND i.organization_id = ${t.organizationId}
         AND i.status = 'accepted' AND i.accepted_by = ${t.personId} AND i.token_hash = current_setting('sep.invitation_hash', true)))
       OR (${t.eventId} IS NULL AND ${t.action} = 'identity.orcid.connected' AND ${t.resourceId} = ${t.personId}
-        AND EXISTS (SELECT 1 FROM orcid_connections o WHERE o.person_id=${t.personId} AND o.orcid IS NOT NULL AND o.connected_at IS NOT NULL)))`),
+        AND EXISTS (SELECT 1 FROM orcid_connections o WHERE o.person_id=${t.personId} AND o.orcid IS NOT NULL AND o.connected_at IS NOT NULL))
+      OR (${t.eventId} IS NULL AND ${t.action} = 'identity.profile.updated' AND ${t.resourceId} = ${t.personId}
+        AND EXISTS (SELECT 1 FROM researcher_profiles p WHERE p.person_id=${t.personId})))`),
 ]);
 
 export const siteDrafts = pgTable('site_drafts', {

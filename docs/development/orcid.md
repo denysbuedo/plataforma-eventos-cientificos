@@ -10,7 +10,7 @@ En **Datos del evento → Configuración del evento** el organizador puede activ
 
 Al usar los datos propios en autoría se guarda la referencia a la persona autenticada y el identificador de su perfil. En un autor declarado previamente, **Usar mis datos en este autor** hace esa selección explícita. Los ORCID introducidos para coautores no vinculados se validan mediante formato y dígito de control y permanecen **No autenticados**. El servidor recalcula la verificación: escribir un número o enviar un indicador verified desde el navegador no acredita identidad.
 
-El envío conserva esa información en una versión inmutable. Conectar ORCID después no reescribe versiones previas. La búsqueda de personas y las reclamaciones de autoría con aprobación continúan pendientes.
+El envío conserva esa información en una versión inmutable. Conectar ORCID después no reescribe versiones previas. La [búsqueda voluntaria de personas](busqueda-autores.md) está implementada; las reclamaciones de autoría con aprobación continúan pendientes.
 
 ## Activación
 

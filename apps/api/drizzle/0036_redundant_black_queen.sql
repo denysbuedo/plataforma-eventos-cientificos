@@ -1,0 +1,1 @@
+CREATE POLICY "profile_owner_update" ON "people" AS RESTRICTIVE FOR UPDATE TO "sep_runtime" USING ("people"."id" = nullif(current_setting('sep.person_id', true), '')::uuid) WITH CHECK ("people"."id" = nullif(current_setting('sep.person_id', true), '')::uuid);

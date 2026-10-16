@@ -1101,6 +1101,222 @@
         ]
       }
     },
+    "/api/v1/researchers": {
+      "get": {
+        "operationId": "ResearchersController_search",
+        "parameters": [
+          {
+            "name": "q",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "minLength": 3,
+              "maxLength": 100,
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ResearcherCandidateDto"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "identity"
+        ]
+      }
+    },
+    "/api/v1/me/researcher-profile": {
+      "put": {
+        "operationId": "ResearchersController_save",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveResearcherProfileDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearcherProfileDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "identity"
+        ]
+      }
+    },
     "/api/v1/events": {
       "get": {
         "operationId": "EventsController_list",
@@ -6480,6 +6696,55 @@
           "status"
         ]
       },
+      "WorkAffiliationDto": {
+        "type": "object",
+        "properties": {
+          "institution": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 250
+          },
+          "countryCode": {
+            "type": "string",
+            "description": "ISO 3166-1 alpha-2",
+            "example": "CU"
+          }
+        },
+        "required": [
+          "institution",
+          "countryCode"
+        ]
+      },
+      "ResearcherProfileDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 150
+          },
+          "affiliations": {
+            "maxItems": 5,
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WorkAffiliationDto"
+            }
+          },
+          "discoverable": {
+            "type": "boolean"
+          },
+          "revision": {
+            "type": "number",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "name",
+          "affiliations",
+          "discoverable",
+          "revision"
+        ]
+      },
       "AuthorProfileDto": {
         "type": "object",
         "properties": {
@@ -6505,6 +6770,9 @@
           },
           "orcidAvailable": {
             "type": "boolean"
+          },
+          "researcherProfile": {
+            "$ref": "#/components/schemas/ResearcherProfileDto"
           }
         },
         "required": [
@@ -6513,7 +6781,8 @@
           "email",
           "institutions",
           "orcid",
-          "orcidAvailable"
+          "orcidAvailable",
+          "researcherProfile"
         ]
       },
       "ProfileDto": {
@@ -6783,6 +7052,64 @@
         },
         "required": [
           "returnTo"
+        ]
+      },
+      "ResearcherCandidateDto": {
+        "type": "object",
+        "properties": {
+          "personId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "affiliations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WorkAffiliationDto"
+            }
+          },
+          "orcid": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "personId",
+          "name",
+          "affiliations",
+          "orcid"
+        ]
+      },
+      "SaveResearcherProfileDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 150
+          },
+          "affiliations": {
+            "maxItems": 5,
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WorkAffiliationDto"
+            }
+          },
+          "discoverable": {
+            "type": "boolean"
+          },
+          "revision": {
+            "type": "number",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "name",
+          "affiliations",
+          "discoverable",
+          "revision"
         ]
       },
       "EventDto": {
@@ -7903,28 +8230,13 @@
           "createdAt"
         ]
       },
-      "WorkAffiliationDto": {
-        "type": "object",
-        "properties": {
-          "institution": {
-            "type": "string",
-            "minLength": 2,
-            "maxLength": 250
-          },
-          "countryCode": {
-            "type": "string",
-            "description": "ISO 3166-1 alpha-2",
-            "example": "CU"
-          }
-        },
-        "required": [
-          "institution",
-          "countryCode"
-        ]
-      },
       "WorkAuthorDto": {
         "type": "object",
         "properties": {
+          "authorshipConfirmed": {
+            "type": "boolean",
+            "description": "Calculado por servidor. Elegir una persona del directorio no confirma su autoría."
+          },
           "orcid": {
             "type": "string"
           },

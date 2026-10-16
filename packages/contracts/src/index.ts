@@ -83,9 +83,11 @@ export interface AuthorWorkSummary {
   editable: boolean; status: WorkStatus; submittedAt: string | null; responseDeadline: string | null;
 }
 export interface WorkAffiliation { institution: string; countryCode: string }
-export interface WorkAuthor { id: string; fullName: string; email: string; affiliations: WorkAffiliation[]; corresponding: boolean; orcid?: string; personId?: string; orcidVerified?: boolean }
+export interface WorkAuthor { id: string; fullName: string; email: string; affiliations: WorkAffiliation[]; corresponding: boolean; orcid?: string; personId?: string; orcidVerified?: boolean; authorshipConfirmed?:boolean }
+export interface ResearcherProfile { name:string; affiliations:WorkAffiliation[]; discoverable:boolean; revision:number }
+export interface ResearcherCandidate { personId:string; name:string; affiliations:WorkAffiliation[]; orcid:string|null }
 export interface OrcidConnection { id: string; environment: 'production' | 'sandbox'; connectedAt: string }
-export interface AuthorAccount { id: string; name: string; email: string; institutions: string[]; orcid: OrcidConnection | null; orcidAvailable: boolean }
+export interface AuthorAccount { id: string; name: string; email: string; institutions: string[]; orcid: OrcidConnection | null; orcidAvailable: boolean; researcherProfile?:ResearcherProfile }
 export const WORK_STATUSES = ['draft','submitted','in_review','changes_requested','accepted','rejected','withdrawn','final_requested','final_submitted'] as const;
 export type WorkStatus = typeof WORK_STATUSES[number];
 export interface Manuscript { id: string; name: string; bytes: number; pages: number; sha256: string; scan: 'clean' | 'demo_unscanned' }

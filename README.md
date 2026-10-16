@@ -138,6 +138,8 @@ La demo imprime enlaces al portal público y al administrador, con perfiles para
 
 **Gestión compartida** permite invitar al autor de correspondencia, aceptar acceso y revocarlo. El colaborador puede corregir contenido, gestionar PDF y reenviar dentro de los plazos; la autoría y el retiro quedan bajo control del remitente original. Ver [recorrido y límites](docs/development/gestion-compartida-trabajos.md).
 
+**Autores registrados** incorpora perfil con afiliaciones y visibilidad voluntaria, búsqueda por nombre/institución/ORCID de producción y selección antes de recurrir a la declaración manual. Seleccionar una cuenta no confirma autoría ni concede acceso. Ver [guía de búsqueda](docs/development/busqueda-autores.md).
+
 **Convocatoria científica** permite preparar áreas temáticas, tipos de contribución, requisitos y plazos, con borrador, publicación independiente y retirada. El portal muestra solo la versión publicada. Ver [Fase 2](docs/functional/fase-2.md); validación funcional completa aplazada. El acceso real con RedUniv/Google y el antivirus operativo siguen pendientes de configuración externa.
 
 En **Datos del evento** se administran fechas, zona horaria, modalidad, idiomas y ciclo operativo, separados de la publicación del CMS. Las fechas configuradas se aplican al volver a publicar. Véase [configuración del evento](docs/development/configuracion-eventos.md); validación funcional completa pendiente.
