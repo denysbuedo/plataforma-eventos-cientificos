@@ -1,19 +1,34 @@
 import AuthorshipNav from './authorship-nav';
 import type { AuthorAccount } from '@sep/contracts';
-import { webCopy,type Locale } from '@sep/i18n';
-import { Brand } from '@sep/ui';
+import { webCopy, type Locale } from '@sep/i18n';
+import { Brand, Icon } from '@sep/ui';
 import Image from 'next/image';
 import ResearcherDetails from './researcher-profile';
-export default function Profile({person,locale,contextKey,error,eventId}:{person:AuthorAccount;locale:Locale;contextKey:string;error:boolean;eventId?:string|null}){
-  const text=webCopy[locale];const back=`/${locale}?event=${encodeURIComponent(contextKey)}&tab=works`;
-  return <div className="admin-shell"><aside className="sidebar"><Brand compact/><nav><a href={back}>{text.myWorks}</a>{eventId&&<a href={`/${locale}?event=${encodeURIComponent(contextKey)}&tab=authorship`}><AuthorshipNav eventId={eventId} contextKey={contextKey} locale={locale}/></a>}<a className="active" href={`/${locale}?event=${encodeURIComponent(contextKey)}&tab=profile`}>{text.myProfile}</a></nav></aside>
-    <div className="admin-area"><header className="admin-topbar"><strong>{text.myProfile}</strong><span>{person.name}</span></header><main className="admin-main">
-      <div className="admin-heading"><div><h1>{text.myProfile}</h1><p>{text.orcidProfileHelp}</p></div></div>
-      {error&&<p className="notice notice-error" role="alert">{text.orcidConnectError}</p>}
-      <ResearcherDetails key={person.researcherProfile?.revision??0} initial={person.researcherProfile??{name:person.name,affiliations:[],discoverable:false,revision:0}} locale={locale} contextKey={contextKey}/>
-      <section className="panel form-panel work-content"><div><span className="eyebrow">{text.author}</span><h2>{person.name}</h2>{person.email&&<p>{person.email}</p>}</div>
-        <section className="work-section"><h3>ORCID</h3>{person.orcid?<><a className="orcid-link" href={`https://${person.orcid.environment==='sandbox'?'sandbox.':''}orcid.org/${person.orcid.id}`} target="_blank" rel="noopener noreferrer"><Image src="/orcid-id.png" alt="ORCID iD" width={16} height={16}/>{person.orcid.id}</a><p className="notice notice-muted">{person.orcid.environment==='sandbox'?text.orcidSandbox:text.orcidConnected}</p></>:<><p>{text.orcidNotConnected}</p>{person.orcidAvailable?<form method="post" action={`/api/auth/orcid/start?event=${encodeURIComponent(contextKey)}&lang=${locale}`}><button className="button button-primary" type="submit"><Image src="/orcid-id.png" alt="" width={16} height={16}/>{text.connectOrcid}</button></form>:<p className="notice notice-muted">{text.orcidNotConfigured}</p>}</>}
-        <p className="muted small">{text.orcidIdentityHelp}</p></section>
-      </section>
-    </main></div></div>;
+import { profileCopy } from './profile-copy';
+export default function Profile({person,locale,contextKey,error,eventId}:{person:AuthorAccount;locale:Locale;contextKey:string;error:boolean;eventId?:string|null}) {
+  const text=webCopy[locale], copy=profileCopy[locale];
+  const prefix=`/${locale}?event=${encodeURIComponent(contextKey)}&tab=`;
+  const names=person.name.trim().split(/\s+/u);
+  const initials=[names[0],...(names.length>1?[names.at(-1)!]:[])].map(name=>Array.from(name)[0]??'').join('').toLocaleUpperCase(locale);
+  const status=person.orcid?person.orcid.environment==='sandbox'?'sandbox':'connected':person.orcidAvailable?'disconnected':'unavailable';
+  return <div className="admin-shell"><a className="skip-link" href="#profile-main">{text.skip}</a><aside className="sidebar"><Brand compact/><nav><a href={prefix+'works'}>{text.myWorks}</a>{eventId&&<a href={prefix+'authorship'}><AuthorshipNav eventId={eventId} contextKey={contextKey} locale={locale}/></a>}<a className="active" href={prefix+'profile'}>{text.myProfile}</a></nav></aside>
+    <div className="admin-area"><header className="admin-topbar"><strong>{text.myProfile}</strong><div className="language-switch"><a href={`/es?event=${encodeURIComponent(contextKey)}&tab=profile`}>ES</a><a href={`/en?event=${encodeURIComponent(contextKey)}&tab=profile`}>EN</a></div></header>
+      <main id="profile-main" className="admin-main profile-page">
+        <div className="admin-heading"><div><h1>{text.myProfile}</h1><p>{copy.intro}</p></div></div>
+        {error&&<p className="notice notice-error" role="alert">{text.orcidConnectError}</p>}
+        <section className="profile-identity" aria-label={copy.account}><div className="profile-avatar" aria-hidden="true">{initials}</div><div><span className="profile-kicker">{copy.account}</span><h2>{person.name}</h2>{person.email&&<p className="profile-email">{person.email}</p>}</div></section>
+        <div className="profile-layout">
+          <ResearcherDetails key={person.researcherProfile?.revision??0} initial={person.researcherProfile??{name:person.name,affiliations:[],discoverable:false,revision:0}} locale={locale} contextKey={contextKey}/>
+          <aside className="profile-aside" aria-label="ORCID">
+            <section className="panel profile-card profile-orcid"><div className="profile-card-heading"><div className="profile-orcid-brand"><Image src="/orcid-id.png" alt="" width={28} height={28}/><h2>ORCID</h2></div><span className={`profile-status profile-status-${status}`}>{copy[status]}</span></div>
+              <p className="profile-help">{person.orcid?copy.orcidLinkedHelp:copy.orcidHelp}</p>
+              {person.orcid?<><a className="orcid-link" href={`https://${person.orcid.environment==='sandbox'?'sandbox.':''}orcid.org/${person.orcid.id}`} target="_blank" rel="noopener noreferrer">{person.orcid.id}<Icon name="external" size={16}/></a><p className="profile-caption">{copy.connectedOn} {new Intl.DateTimeFormat(locale,{dateStyle:'medium'}).format(new Date(person.orcid.connectedAt))}</p>{status==='sandbox'&&<p className="profile-sandbox-note">{copy.sandboxHelp}</p>}</>:<>{person.orcidAvailable?<form method="post" action={`/api/auth/orcid/start?event=${encodeURIComponent(contextKey)}&lang=${locale}`}><button className="button button-primary" type="submit">{text.connectOrcid}<Icon name="external" size={16}/></button></form>:<p className="profile-activation-note">{copy.unavailableHelp}</p>}</>}
+              <p className="profile-orcid-footnote">{copy.orcidNote}</p>
+            </section>
+            <section className="profile-privacy-note"><span className="profile-note-icon"><Icon name="lock" size={20}/></span><div><h2>{copy.privacy}</h2><p>{copy.privacyHelp}</p><p>{copy.copiesHelp}</p></div></section>
+          </aside>
+        </div>
+      </main>
+    </div>
+  </div>;
 }

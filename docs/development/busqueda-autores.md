@@ -44,3 +44,7 @@ Pasaron comprobaciones dirigidas con sep_runtime, transacciones revertidas y fun
 La comprobación de gestión compartida también verificó que seleccionar una persona no confirma autoría ni concede acceso, aunque el cliente envíe indicadores falsificados. Aceptar la invitación, corregir y reenviar siguió funcionando. Se preservaron nombres, trabajos, publicaciones y conexiones ORCID existentes de la demo. La batería completa y las interacciones por navegador siguen pendientes.
 
 Compilación y análisis estático correctos. Las comprobaciones HTTP verificaron el perfil en ambos idiomas, búsqueda autenticada por el gateway, rechazo de consulta corta y anónima, y control de revisión al guardar sin modificar datos. La demo mantuvo privados sus perfiles originales, conservó ORCID Sandbox y siguió respondiendo en trabajos, invitaciones y portal público.
+
+## Presentación de Mi perfil
+
+Mi perfil organiza la identidad en una cabecera con iniciales, nombre y correo propio cuando esté disponible. La información académica muestra afiliaciones con institución y país y distingue la visibilidad en la búsqueda de autores. La edición agrupa cada afiliación, conserva el límite de cinco y mantiene la confirmación de cambios sin guardar. ORCID tiene una tarjeta independiente con estado, identificador, fecha y distinción explícita de Sandbox. Los textos están en español e inglés. Se comprobó el diseño en escritorio y móvil y las acciones de edición, añadir afiliación, cancelar, seguir editando y descartar, sin guardar cambios en los perfiles de demo.
