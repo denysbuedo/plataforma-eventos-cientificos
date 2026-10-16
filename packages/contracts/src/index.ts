@@ -60,3 +60,10 @@ export interface ManagedDomain {
   verificationToken: string | null;
 }
 export interface OrganizationSettings { organization: OrganizationProfile; domains: ManagedDomain[] }
+
+export type EventLifecycle = 'planning' | 'scheduled' | 'ongoing' | 'completed' | 'cancelled';
+export interface EventConfiguration {
+  timezone: string; startDate: string | null; endDate: string | null;
+  modality: 'in_person' | 'virtual' | 'hybrid'; languages: ('es' | 'en')[]; defaultLanguage: 'es' | 'en';
+  lifecycle: EventLifecycle; revision: number;
+}

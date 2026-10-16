@@ -14,6 +14,7 @@ El avance solicitado después de la demo de API inicia esta fase sobre la base t
 - Sección Organización con edición del perfil institucional y control de revisión. Registro de dominios de eventos, verificación TXT en servidor, activación condicionada a DNS y preparación HTTPS por operaciones, desactivación y eliminación de registros inactivos. El ingreso administrativo de la organización queda protegido. Compilación disponible; validación funcional pendiente. Ver [guía](../development/organizaciones-y-dominios.md).
 - Acceso administrativo a eventos recién creados mediante el dominio de la organización, sin exigir un dominio público propio.
 - CMS bilingüe para portada, presentación, convocatoria, temas, sede, fechas y contacto; selección de apariencia.
+- Configuración estructurada en Datos del evento: fechas locales, zona horaria, modalidad, idiomas de trabajo y principal. Ciclo operativo manual con transiciones limitadas entre planificación, programado, en curso, finalizado y cancelado. Control de revisión, organizador explícito y auditoría. Las fechas configuradas prevalecen al volver a publicar el CMS; no se alteran instantáneas existentes. Validación funcional completa pendiente. Ver [guía](../development/configuracion-eventos.md).
 - Guardado privado y publicación explícita de una instantánea; control de revisiones para impedir sobrescrituras obsoletas.
 - Permisos comprobados en cada operación de API y aislamiento RLS para borradores y publicaciones; auditoría en la misma transacción.
 
@@ -41,7 +42,7 @@ Por decisión del propietario el 15 de octubre de 2026, se aplazan la activació
 
 ### Siguiente incremento propuesto
 
-La administración del perfil y dominios está implementada con validación funcional pendiente. El siguiente incremento propuesto es la configuración estructurada del evento: fechas, modalidad, idiomas y ciclo de vida, separada del CMS. Después se abordará, en Fase 2, la convocatoria científica y la recepción de contribuciones. Las pruebas funcionales siguen aplazadas por indicación del propietario; la Fase 1 continúa abierta.
+La administración del perfil, dominios y configuración estructurada del evento está implementada con validación funcional pendiente. El siguiente incremento propuesto es, en Fase 2, la convocatoria científica estructurada: áreas temáticas, tipos de contribución, requisitos y plazos, antes de la recepción de trabajos. Las pruebas funcionales siguen aplazadas por indicación del propietario; la Fase 1 continúa abierta.
 
 Activación y validación de RedUniv y Google, renovación y logout central institucional, MFA y registro según sus políticas, logo oficial, alta de organizaciones e ingresos administrativos por el operador, entrega de invitaciones por correo, suspensión de membresías, otros roles operativos, provisión real DNS/TLS y su supervisión periódica, carga de marca y archivos y ampliación del CMS. La restricción al correo verificado está implementada en ambos accesos reales. Los eventos creados no reciben automáticamente un dominio público ni organizadores; el administrador puede registrar dominios y designar responsables. Los módulos científicos pertenecen a fases posteriores.
 

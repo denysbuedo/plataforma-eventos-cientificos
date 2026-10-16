@@ -132,6 +132,8 @@ La demo imprime enlaces al portal público y al administrador, con perfiles para
 
 ## Documentación
 
+En **Datos del evento** se administran fechas, zona horaria, modalidad, idiomas y ciclo operativo, separados de la publicación del CMS. Las fechas configuradas se aplican al volver a publicar. Véase [configuración del evento](docs/development/configuracion-eventos.md); validación funcional completa pendiente.
+
 La sección **Organización** permite editar el perfil institucional y gestionar dominios de eventos con verificación TXT y activación condicionada a preparación HTTPS. No modifica DNS ni certificados; el ingreso administrativo queda protegido. Ver la [guía de organizaciones y dominios](docs/development/organizaciones-y-dominios.md). Este incremento tiene validación funcional pendiente; los accesos reales RedUniv y Google siguen aplazados.
 
 El informe completo [PROYECTO_TECNICO_INICIAL.md](PROYECTO_TECNICO_INICIAL.md) es la referencia inicial del alcance. Antes de implementar nuevas capacidades, registrar decisiones importantes en `docs/adr/` y acuerdos API en `docs/api/`.

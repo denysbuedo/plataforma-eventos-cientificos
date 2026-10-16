@@ -103,7 +103,7 @@ export async function backendProxy(request: Request, parts: string[], cookie: st
   try {
     if (!['GET', 'POST', 'PUT', 'PATCH', 'DELETE'].includes(request.method)) throw new ApiTransportError(405, failure('FORBIDDEN'));
     const path = parts.join('/');
-    if (!/^(?:me|session|people|organization(?:\/domains(?:\/[0-9a-f-]{36}(?:\/(?:verify|activate|deactivate))?)?)?|invitations(?:\/accept|\/[0-9a-f-]{36}\/revoke)?|events(?:\/[0-9a-f-]{36}(?:\/site(?:\/publish)?|\/session|\/organizers(?:\/[0-9a-f-]{36})?)?)?)$/.test(path)) throw new ApiTransportError(404, failure('NOT_FOUND'));
+    if (!/^(?:me|session|people|organization(?:\/domains(?:\/[0-9a-f-]{36}(?:\/(?:verify|activate|deactivate))?)?)?|invitations(?:\/accept|\/[0-9a-f-]{36}\/revoke)?|events(?:\/[0-9a-f-]{36}(?:\/site(?:\/publish)?|\/session|\/configuration|\/lifecycle|\/organizers(?:\/[0-9a-f-]{36})?)?)?)$/.test(path)) throw new ApiTransportError(404, failure('NOT_FOUND'));
     if (request.method !== 'GET') checkOrigin(request);
     const url = new URL(request.url);
     const binding = bindingFor(request.headers.get('host') ?? '', url.searchParams.get('event') ?? undefined);

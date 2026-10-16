@@ -2090,6 +2090,339 @@
         ]
       }
     },
+    "/api/v1/events/{eventId}/configuration": {
+      "get": {
+        "operationId": "EventConfigurationController_get",
+        "parameters": [
+          {
+            "name": "eventId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConfigurationDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "event-configuration"
+        ]
+      },
+      "put": {
+        "operationId": "EventConfigurationController_save",
+        "parameters": [
+          {
+            "name": "eventId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveConfigurationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConfigurationDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "event-configuration"
+        ]
+      }
+    },
+    "/api/v1/events/{eventId}/lifecycle": {
+      "post": {
+        "operationId": "EventConfigurationController_transition",
+        "parameters": [
+          {
+            "name": "eventId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LifecycleDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConfigurationDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "event-configuration"
+        ]
+      }
+    },
     "/api/v1/organization": {
       "get": {
         "operationId": "OrganizationController_get",
@@ -3469,6 +3802,158 @@
         },
         "required": [
           "personId"
+        ]
+      },
+      "ConfigurationDto": {
+        "type": "object",
+        "properties": {
+          "timezone": {
+            "type": "string"
+          },
+          "startDate": {
+            "type": "string",
+            "nullable": true,
+            "format": "date"
+          },
+          "endDate": {
+            "type": "string",
+            "nullable": true,
+            "format": "date"
+          },
+          "modality": {
+            "type": "string",
+            "enum": [
+              "in_person",
+              "virtual",
+              "hybrid"
+            ]
+          },
+          "languages": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 2,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "enum": [
+                "es",
+                "en"
+              ]
+            }
+          },
+          "defaultLanguage": {
+            "type": "string",
+            "enum": [
+              "es",
+              "en"
+            ]
+          },
+          "revision": {
+            "type": "number",
+            "minimum": 0
+          },
+          "lifecycle": {
+            "type": "string",
+            "enum": [
+              "planning",
+              "scheduled",
+              "ongoing",
+              "completed",
+              "cancelled"
+            ]
+          }
+        },
+        "required": [
+          "timezone",
+          "startDate",
+          "endDate",
+          "modality",
+          "languages",
+          "defaultLanguage",
+          "revision",
+          "lifecycle"
+        ]
+      },
+      "SaveConfigurationDto": {
+        "type": "object",
+        "properties": {
+          "timezone": {
+            "type": "string"
+          },
+          "startDate": {
+            "type": "string",
+            "nullable": true,
+            "format": "date"
+          },
+          "endDate": {
+            "type": "string",
+            "nullable": true,
+            "format": "date"
+          },
+          "modality": {
+            "type": "string",
+            "enum": [
+              "in_person",
+              "virtual",
+              "hybrid"
+            ]
+          },
+          "languages": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 2,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "enum": [
+                "es",
+                "en"
+              ]
+            }
+          },
+          "defaultLanguage": {
+            "type": "string",
+            "enum": [
+              "es",
+              "en"
+            ]
+          },
+          "revision": {
+            "type": "number",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "timezone",
+          "startDate",
+          "endDate",
+          "modality",
+          "languages",
+          "defaultLanguage",
+          "revision"
+        ]
+      },
+      "LifecycleDto": {
+        "type": "object",
+        "properties": {
+          "lifecycle": {
+            "type": "string",
+            "enum": [
+              "planning",
+              "scheduled",
+              "ongoing",
+              "completed",
+              "cancelled"
+            ]
+          },
+          "revision": {
+            "type": "number",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "lifecycle",
+          "revision"
         ]
       },
       "OrganizationProfileDto": {

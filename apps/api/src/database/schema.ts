@@ -1,6 +1,6 @@
 import { sql, type SQL } from 'drizzle-orm';
-import { boolean, check, foreignKey, index, integer, jsonb, pgPolicy, pgRole, pgTable, primaryKey, text, timestamp, unique, uniqueIndex, uuid } from 'drizzle-orm/pg-core';
-import type { PublishedSite, SiteContent } from '@sep/contracts';
+import { boolean, check, date, foreignKey, index, integer, jsonb, pgPolicy, pgRole, pgTable, primaryKey, text, timestamp, unique, uniqueIndex, uuid } from 'drizzle-orm/pg-core';
+import type { EventConfiguration, PublishedSite, SiteContent } from '@sep/contracts';
 
 const runtime = pgRole('sep_runtime').existing();
 const registryOwner = pgRole('sep_migrator').existing();
@@ -50,6 +50,25 @@ export const domains = pgTable('domains', {
   active: boolean('active').notNull().default(false), verified: boolean('verified').notNull().default(false),
   verificationToken: text('verification_token'), tlsReady: boolean('tls_ready').notNull().default(false),
 }, (t) => [foreignKey({ columns: [t.organizationId, t.eventId], foreignColumns: [events.organizationId, events.id] })]);
+export const eventConfigurations = pgTable('event_configurations', {
+  organizationId: uuid('organization_id').notNull(), eventId: uuid('event_id').notNull(),
+  startDate: date('start_date'), endDate: date('end_date'),
+  modality: text('modality').$type<EventConfiguration['modality']>().notNull().default('in_person'),
+  languages: text('languages').array().$type<EventConfiguration['languages']>().notNull().default(sql`ARRAY['es','en']::text[]`),
+  defaultLanguage: text('default_language').$type<'es' | 'en'>().notNull().default('es'),
+  lifecycle: text('lifecycle').$type<EventConfiguration['lifecycle']>().notNull().default('planning'),
+  revision: integer('revision').notNull().default(1),
+}, (t) => [
+  primaryKey({ columns: [t.organizationId, t.eventId] }),
+  foreignKey({ columns: [t.organizationId, t.eventId], foreignColumns: [events.organizationId, events.id] }),
+  check('event_configuration_dates', sql`(${t.startDate} IS NULL AND ${t.endDate} IS NULL) OR (${t.startDate} IS NOT NULL AND ${t.endDate} IS NOT NULL AND ${t.endDate} >= ${t.startDate})`),
+  check('event_configuration_modality', sql`${t.modality} IN ('in_person','virtual','hybrid')`),
+  check('event_configuration_languages', sql`cardinality(${t.languages}) BETWEEN 1 AND 2 AND ${t.languages} <@ ARRAY['es','en']::text[] AND ${t.defaultLanguage} = ANY(${t.languages})`),
+  check('event_configuration_lifecycle', sql`${t.lifecycle} IN ('planning','scheduled','ongoing','completed','cancelled')`),
+  check('event_configuration_revision', sql`${t.revision} > 0`),
+  check('event_configuration_scheduled_dates', sql`${t.lifecycle} NOT IN ('scheduled','ongoing','completed') OR ${t.startDate} IS NOT NULL`),
+  policy(eventScope(sql`${t.organizationId}`, sql`${t.eventId}`)),
+]);
 export const people = pgTable('people', {
   id: uuid('id').primaryKey(), name: text('name').notNull(), active: boolean('active').notNull().default(true),
 }, (t) => [registryRead(actorScope(sql`${t.id}`)), policy(sql`${actorScope(sql`${t.id}`)} OR (current_setting('sep.organization_admin', true) = 'true' AND EXISTS

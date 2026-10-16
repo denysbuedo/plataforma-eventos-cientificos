@@ -29,8 +29,8 @@ export class DatabaseService implements OnModuleDestroy {
       pg_get_userbyid(c.relowner) = current_user AS owns_table, c.relrowsecurity, c.relforcerowsecurity
       FROM pg_roles r CROSS JOIN pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace
       WHERE r.rolname = current_user AND n.nspname = 'public'
-      AND c.relname IN ('events','event_series','event_editions','people','identities','affiliations','memberships','role_assignments','audit_entries','site_drafts','site_publications','organization_invitations')`);
-    if (result.rows.length !== 12 || result.rows.some((role) => role.rolsuper || role.rolbypassrls || role.owns_table || !role.relrowsecurity || !role.relforcerowsecurity)) {
+      AND c.relname IN ('events','event_series','event_editions','people','identities','affiliations','memberships','role_assignments','audit_entries','site_drafts','site_publications','organization_invitations','event_configurations')`);
+    if (result.rows.length !== 13 || result.rows.some((role) => role.rolsuper || role.rolbypassrls || role.owns_table || !role.relrowsecurity || !role.relforcerowsecurity)) {
       throw new Error('Runtime database role or RLS configuration is unsafe');
     }
   }

@@ -28,6 +28,7 @@
 - [ADR-008: autenticación OIDC](adr/ADR-008-autenticacion-oidc.md) y [configuración del Keycloak institucional](development/identidad-institucional.md).
 - [RedUniv y Google directo: solicitudes y configuración](development/reduniv-y-google.md) y [ADR-009](adr/ADR-009-google-directo.md).
 - [Administración de organizaciones y dominios](development/organizaciones-y-dominios.md) y [ADR-010](adr/ADR-010-administracion-registro.md).
+- [Configuración del evento y ciclo de vida](development/configuracion-eventos.md) y [ADR-011](adr/ADR-011-configuracion-evento.md).
 - [Desarrollo local, variables y demo](development/desarrollo-local.md).
 - [Contrato mínimo de API](api/fase-0.md) y [OpenAPI generado](api/openapi.json).
 - [Evidencia del incremento API](architecture/evidencia-api-fase-0.md).

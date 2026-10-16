@@ -10,7 +10,7 @@ export class AuditService {
     await tx.insert(auditEntries).values({ id: randomUUID(), organizationId: context.organizationId, eventId: null,
       personId: context.personId, action, resourceId, requestId: context.requestId });
   }
-  async record(tx: DbTransaction, context: RequestContext, action: 'event.created' | 'event.updated' | 'site.draft.saved' | 'site.published' | 'organizer.assigned' | 'organizer.revoked', resourceId: string, subjectId?: string): Promise<void> {
+  async record(tx: DbTransaction, context: RequestContext, action: 'event.created' | 'event.updated' | 'event.configuration.saved' | 'event.lifecycle.changed' | 'site.draft.saved' | 'site.published' | 'organizer.assigned' | 'organizer.revoked', resourceId: string, subjectId?: string): Promise<void> {
     if (!context.personId) throw new Error('Audit actor missing');
     await tx.insert(auditEntries).values({
       id: randomUUID(), organizationId: context.organizationId, eventId: resourceId, personId: context.personId,
