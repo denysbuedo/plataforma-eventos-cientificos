@@ -8,6 +8,8 @@ El bloque de ciclo de vida ofrece solo las transiciones permitidas. Guardar la c
 
 Las fechas se muestran en el CMS como consulta y enlazan a Datos del evento. Después de configurarlas, volver a publicar para actualizar el portal público. Mientras no haya fechas estructuradas, los sitios anteriores mantienen las fechas editoriales que tenían; estas no se importan como confirmación operativa. La modalidad y los idiomas se administran aquí para su uso por los siguientes módulos.
 
+En Datos del evento también está disponible **Publicar cambios**, con una indicación explícita de que guardar no modifica el portal. Primero guardar la configuración y después publicar. **Ver sitio** abre la última publicación, no una vista previa del borrador. La publicación incluye el borrador editorial guardado del evento, además de las fechas configuradas.
+
 ## API y migraciones
 
 | Método | Ruta bajo /api/v1/events/:eventId | Permiso |

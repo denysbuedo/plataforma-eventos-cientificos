@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import type { EventConfiguration, EventLifecycle } from '@sep/contracts';
 import { webCopy, type Locale } from '@sep/i18n';
@@ -8,14 +8,16 @@ const nextStates: Record<EventLifecycle, EventLifecycle[]> = {
   planning: ['scheduled', 'cancelled'], scheduled: ['planning', 'ongoing', 'cancelled'],
   ongoing: ['completed', 'cancelled'], completed: [], cancelled: ['planning'],
 };
-export default function Configuration({ initial, locale, eventId, contextKey, canEdit, archived, onSaved }: {
+export default function Configuration({ initial, locale, eventId, contextKey, canEdit, archived, onSaved, onStatusChange }: {
   initial: EventConfiguration; locale: Locale; eventId: string; contextKey: string; canEdit: boolean; archived: boolean;
   onSaved: (configuration: EventConfiguration) => void;
+  onStatusChange: (status: { dirty: boolean; busy: boolean }) => void;
 }) {
   const text = webCopy[locale]; const router = useRouter();
   const [saved, setSaved] = useState(initial); const [form, setForm] = useState(initial);
   const [busy, setBusy] = useState(false); const [notice, setNotice] = useState<{ error: boolean; message: string } | null>(null);
   const dirty = JSON.stringify(form) !== JSON.stringify(saved);
+  useEffect(() => { onStatusChange({ dirty, busy }); }, [dirty, busy, onStatusChange]);
   const editable = canEdit && !archived && saved.lifecycle !== 'completed';
   async function send(path: string, method: string, body: unknown) {
     const response = await fetch(`/api/backend/events/${eventId}/${path}?event=${encodeURIComponent(contextKey)}&lang=${locale}`, {

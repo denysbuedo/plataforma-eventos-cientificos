@@ -1,5 +1,6 @@
 export const webCopy = {
   es: {
+    configurationPublicationHelp: 'Guardar la configuración no cambia el sitio público. Pulsa Publicar cambios para actualizarlo.', saveConfigurationFirst: 'Guarda los datos y la configuración antes de publicar.',
     configurationTitle: 'Configuración del evento', configurationHelp: 'Las fechas y la zona horaria se reflejan en el portal al volver a publicar. Puedes dejar ambas fechas vacías mientras planificas.',
     modality: 'Modalidad', modalityInPerson: 'Presencial', modalityVirtual: 'Virtual', modalityHybrid: 'Híbrida',
     eventLanguages: 'Idiomas de trabajo del evento', languageSpanish: 'Español', languageEnglish: 'Inglés', defaultEventLanguage: 'Idioma principal',
@@ -86,6 +87,7 @@ export const webCopy = {
     invitationEmailMismatch: 'Necesitas una cuenta con correo verificado que coincida con el destinatario de esta invitación.',
   },
   en: {
+    configurationPublicationHelp: 'Saving configuration does not change the public site. Select Publish changes to update it.', saveConfigurationFirst: 'Save event details and configuration before publishing.',
     configurationTitle: 'Event configuration', configurationHelp: 'Dates and timezone appear in the portal when you publish again. You may leave both dates empty during planning.',
     modality: 'Modality', modalityInPerson: 'In person', modalityVirtual: 'Virtual', modalityHybrid: 'Hybrid',
     eventLanguages: 'Event working languages', languageSpanish: 'Spanish', languageEnglish: 'English', defaultEventLanguage: 'Primary language',
