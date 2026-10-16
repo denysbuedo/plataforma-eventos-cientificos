@@ -10,8 +10,8 @@ Para crear un borrador, el organizador debe haber publicado una convocatoria cie
 2. Crear el borrador. Será privado del creador.
 3. **Ver** abre los detalles en modo de consulta. El formulario aparece únicamente al pulsar **Editar**, desde la lista o desde el detalle. Tras crear un borrador se muestra su detalle sin abrir la edición.
 4. En edición completar el resumen y palabras clave, una por línea. Se muestran los rangos del tipo seleccionado; los mínimos no impiden guardar un borrador incompleto, pero los máximos sí se validan.
-5. Pulsar **Guardar borrador** para guardar y volver al detalle. Esto no envía nada al comité ni publica el trabajo. **Cancelar** descarta los cambios locales y vuelve a consulta.
-6. **Volver al listado** cierra el detalle o la edición y deja únicamente la lista de trabajos. Si hay cambios de edición sin guardar, pide confirmación antes de descartarlos. La opción **Mis trabajos** del menú también vuelve al listado. Cada fila muestra su estado actual y permite editar solo cuando corresponda.
+5. En **Editar** se puede seleccionar o reemplazar el PDF y preparar su retirada. **Guardar cambios** guarda los datos y aplica el cambio de PDF, después vuelve al detalle. Esto no envía ni publica el trabajo.
+6. **Cerrar** cierra el detalle o la edición y deja únicamente la lista de trabajos. Si hay cambios pendientes, incluido un PDF seleccionado, ofrece **Guardar y cerrar**, **Descartar cambios** y **Seguir editando**. Si falla el guardado, conserva la edición y muestra el error. La opción **Mis trabajos** del menú también cierra el panel. Cada fila muestra su estado actual y permite editar solo cuando corresponda.
 
 Cada trabajo conserva una copia de la convocatoria original. Si cambia la convocatoria, aparece una indicación y el borrador mantiene su catálogo y requisitos hasta actualizar explícitamente las reglas antes del envío inicial. El idioma se valida contra los idiomas actuales del evento; la fase final conserva el idioma aceptado.
 
@@ -21,7 +21,11 @@ En **Editar → Autores y afiliaciones**, añadir cada autor con nombre completo
 
 **Subir** y **Bajar** modifican el orden de autoría. Marcar un único **Autor de correspondencia** y completar su correo; el correo del resto es opcional. Si se retira al autor seleccionado para correspondencia, elegir otro antes de guardar. Se puede dejar vacía la lista completa mientras el trabajo sea borrador.
 
-**Guardar borrador** guarda también la autoría y vuelve a consulta. **Cancelar** revierte los cambios locales de autores, orden y afiliaciones. **Volver al listado** funciona desde el detalle y la edición y pide confirmación si hay cambios sin guardar. Añadir coautores no crea cuentas, concede acceso ni envía correos. Solo el propietario puede editar el borrador.
+**Guardar cambios** guarda también la autoría y vuelve a consulta. **Cerrar** protege los cambios locales de autores, orden, afiliaciones y PDF con el mismo diálogo. **Descartar cambios** conserva lo ya guardado y cancela los cambios pendientes. Añadir coautores no crea cuentas, concede acceso ni envía correos. Solo el propietario puede editar el borrador.
+
+La descarga, el historial y el envío formal se muestran en consulta. Adjuntar y retirar PDF se realizan en edición y se aplican al guardar. Si los datos se guardan pero falla la operación del PDF, aparece un aviso explícito, se conserva la revisión actual y el PDF pendiente puede reintentarse o descartarse. Las operaciones de archivo y contenido son peticiones consecutivas, no una transacción única.
+
+Se usa **Cerrar** para quitar el panel y acciones explícitas para guardar o descartar, siguiendo la distinción entre cierre y cancelación descrita por [Nielsen Norman Group](https://www.nngroup.com/articles/cancel-vs-close/).
 
 Al cerrar el plazo o retirar la convocatoria, los borradores quedan en consulta; las respuestas solicitadas usan su propio plazo. Cancelar/finalizar/archivar bloquea cambios. **Actualizar espacio** permite recargar después de un conflicto de revisión. Se puede quitar del listado un borrador nunca enviado. El envío formal y las versiones están descritos en la guía del módulo completo.
 

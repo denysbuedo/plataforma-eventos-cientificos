@@ -1,6 +1,6 @@
 'use client';
 import { useState } from 'react';
-import { MAX_MANUSCRIPT_BYTES, type AuthorWork, type WorkVersion, type WorkContent } from '@sep/contracts';
+import { type AuthorWork, type WorkVersion, type WorkContent } from '@sep/contracts';
 import { webCopy, type Locale } from '@sep/i18n';
 import WorkAuthors from './work-authors';
 export function WorkContentView({content,locale}:{content:WorkContent;locale:Locale}) {
@@ -29,12 +29,7 @@ export default function WorkFlow({work,eventId,locale,contextKey,busy,onBusyChan
     {work.manuscript?<div><p>{work.manuscript.name} · {work.manuscript.pages} {text.workPages} · {Math.ceil(work.manuscript.bytes/1024)} KiB</p>
       {work.manuscript.scan==='demo_unscanned'&&<p className="notice notice-muted">{text.workUnscanned}</p>}
       <a className="button button-outline" href={url(`files/${work.manuscript.id}`)}>{text.downloadManuscript}</a>
-      {!staff&&work.editable&&<button type="button" className="button button-outline" disabled={busy} onClick={()=>{if(window.confirm(text.removeManuscriptConfirm))update('manuscript',{revision:work.revision},'DELETE');}}>{text.removeManuscript}</button>}
     </div>:<p className="muted">{text.noManuscript}</p>}
-    {!staff&&work.editable&&<label className="field"><span>{text.uploadManuscript}</span><input type="file" accept="application/pdf,.pdf" disabled={busy} onChange={(e)=>{
-      const file=e.target.files?.[0];if(!file)return;if(file.size>MAX_MANUSCRIPT_BYTES){setError(text.workFileLimit);e.target.value='';return;}
-      const form=new FormData();form.set('revision',String(work.revision));form.set('file',file);update('manuscript',form);e.target.value='';
-    }}/><small>{text.workFileHelp}</small></label>}
     {!staff&&callChanged&&work.editable&&['draft','withdrawn'].includes(work.status)&&<button type="button" className="button button-outline" disabled={busy} onClick={()=>{if(window.confirm(text.syncCallConfirm))update('synchronize-call',{revision:work.revision});}}>{text.syncCall}</button>}
     {!staff&&canSubmit&&<div className="form-fields"><p className="muted small">{text.workSubmitHelp}</p><label><input type="checkbox" checked={confirmed} disabled={busy} onChange={(e)=>setConfirmed(e.target.checked)}/> {text.confirmSubmission}</label>
       <button type="button" className="button button-primary" disabled={busy||!confirmed||callChanged&&['draft','withdrawn'].includes(work.status)} onClick={()=>{if(window.confirm(text.submitWorkConfirm))update('submit',{revision:work.revision,confirmed:true});}}>{work.status==='final_requested'?text.submitFinal:work.versions.length?text.resubmitWork:text.submitWork}</button>

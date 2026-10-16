@@ -4,8 +4,8 @@ Implementado en español e inglés. Autor y organizador utilizan las mismas APIs
 
 ## Recorrido del autor
 
-1. Abrir **Mis trabajos**, crear un borrador y completar título, resumen, palabras clave y autoría desde **Editar**. Guardar vuelve a consulta; **Volver al listado** cierra el detalle.
-2. Adjuntar el manuscrito PDF en el detalle. El tipo indica si es obligatorio y su máximo de páginas. La demo advierte si no se ha realizado escaneo antivirus.
+1. Abrir **Mis trabajos**, crear un borrador y completar título, resumen, palabras clave y autoría desde **Editar**. Guardar vuelve a consulta; **Cerrar** cierra el panel. Si hay cambios pendientes, ofrece guardar, descartar o seguir editando.
+2. Seleccionar el manuscrito PDF en **Editar** y pulsar **Guardar cambios** para adjuntarlo. También se puede reemplazar o preparar su retirada. El tipo indica si es obligatorio y su máximo de páginas. En consulta se descarga el PDF y la demo advierte si no se ha realizado escaneo antivirus.
 3. Si cambió la convocatoria, actualizar explícitamente sus reglas y revisar área/tipo y requisitos. Preparar antes de apertura está permitido; enviar exige plazo vigente.
 4. Confirmar y pulsar enviar. El trabajo queda bloqueado para edición y aparece su primera versión en el historial. Guardar o adjuntar por separado no constituye envío.
 5. Si el organizador pide cambios, editar y reenviar dentro del plazo indicado. Mientras se prepara la respuesta, la organización conserva acceso únicamente a la última versión enviada.
