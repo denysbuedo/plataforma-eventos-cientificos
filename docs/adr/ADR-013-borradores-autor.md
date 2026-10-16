@@ -2,6 +2,8 @@
 
 Estado: implementado; pruebas funcionales completas pendientes.
 
+Ampliación posterior: [ADR-014](ADR-014-autoria-declarada.md) incorpora coautores y afiliaciones declarados. Los límites sobre esa función descritos aquí corresponden al incremento inicial.
+
 ## Acceso y propiedad
 
 Se inicia el módulo submissions con borradores privados. Cualquier cuenta autenticada y activa puede entrar a Mis trabajos desde el portal de un evento publicado, sin pertenencia institucional o rol de organizador. No se crea membresía ni inscripción al usar este espacio. El propietario procede de la identidad autenticada, nunca del cuerpo de la solicitud. En esta entrega es el creador del borrador; no constituye todavía una lista formal de autores.

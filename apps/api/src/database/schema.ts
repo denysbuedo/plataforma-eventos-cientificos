@@ -1,6 +1,6 @@
 import { sql, type SQL } from 'drizzle-orm';
 import { boolean, check, date, foreignKey, index, integer, jsonb, pgPolicy, pgRole, pgTable, primaryKey, text, timestamp, unique, uniqueIndex, uuid } from 'drizzle-orm/pg-core';
-import type { EventConfiguration, PublishedScientificCall, PublishedSite, ScientificCallContent, SiteContent } from '@sep/contracts';
+import type { EventConfiguration, PublishedScientificCall, PublishedSite, ScientificCallContent, SiteContent, WorkAuthor } from '@sep/contracts';
 
 const runtime = pgRole('sep_runtime').existing();
 const registryOwner = pgRole('sep_migrator').existing();
@@ -148,10 +148,12 @@ export const authorWorks = pgTable('author_works', {
   keywords: text('keywords').array().notNull().default(sql`ARRAY[]::text[]`), language: text('language').$type<'es' | 'en'>().notNull(),
   trackId: uuid('track_id').notNull(), contributionTypeId: uuid('contribution_type_id').notNull(),
   call: jsonb('call_snapshot').$type<PublishedScientificCall>().notNull(), revision: integer('revision').notNull().default(1),
+  authors: jsonb('authors').$type<WorkAuthor[]>().notNull().default(sql`'[]'::jsonb`),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(), updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
 }, (t) => [foreignKey({ columns: [t.organizationId, t.eventId], foreignColumns: [events.organizationId, events.id] }),
   index('author_works_owner_event_idx').on(t.organizationId, t.eventId, t.ownerId),
   check('author_work_revision', sql`${t.revision} > 0`), check('author_work_language', sql`${t.language} IN ('es','en')`),
+  check('author_work_authors_array', sql`jsonb_typeof(${t.authors}) = 'array' AND jsonb_array_length(${t.authors}) <= 20`),
   policy(sql`${organizationScope(sql`${t.organizationId}`)} AND ${t.eventId} = nullif(current_setting('sep.event_id', true), '')::uuid AND ${actorScope(sql`${t.ownerId}`)}`),
 ]);
 

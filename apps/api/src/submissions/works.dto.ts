@@ -1,9 +1,26 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { Transform } from 'class-transformer';
-import { ArrayMaxSize, ArrayUnique, IsArray, IsIn, IsInt, IsString, IsUUID, Max, MaxLength, Min, MinLength } from 'class-validator';
-import type { AuthorWork, AuthorWorkSummary, AuthorWorkspace, PublishedScientificCall } from '@sep/contracts';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Transform, Type } from 'class-transformer';
+import { ArrayMaxSize, ArrayMinSize, ArrayUnique, IsArray, IsBoolean, IsIn, IsInt, IsString, IsUUID, Max, MaxLength, Min, MinLength, ValidateBy, ValidateIf, ValidateNested, isEmail } from 'class-validator';
+import { COUNTRY_CODES, type AuthorWork, type AuthorWorkSummary, type AuthorWorkspace, type PublishedScientificCall, type WorkAffiliation, type WorkAuthor } from '@sep/contracts';
 import { PublicEventDto } from '../events/event.dto.js';
 import { PublishedCallDto } from '../science/call.dto.js';
+export class WorkAffiliationDto implements WorkAffiliation {
+  @ApiProperty({ minLength: 2, maxLength: 250 }) @Transform(({ value }) => typeof value === 'string' ? value.trim() : value)
+  @IsString() @MinLength(2) @MaxLength(250) institution!: string;
+  @ApiProperty({ description: 'ISO 3166-1 alpha-2', example: 'CU' })
+  @Transform(({ value }) => typeof value === 'string' ? value.trim().toUpperCase() : value) @IsIn(COUNTRY_CODES) countryCode!: string;
+}
+export class WorkAuthorDto implements WorkAuthor {
+  @ApiProperty({ format: 'uuid' }) @Transform(({ value }) => typeof value === 'string' ? value.toLowerCase() : value) @IsUUID() id!: string;
+  @ApiProperty({ minLength: 2, maxLength: 150 }) @Transform(({ value }) => typeof value === 'string' ? value.trim() : value)
+  @IsString() @MinLength(2) @MaxLength(150) fullName!: string;
+  @ApiProperty({ maxLength: 254, description: 'Puede estar vacío salvo para el autor de correspondencia.' })
+  @Transform(({ value }) => typeof value === 'string' ? value.trim().toLowerCase() : value) @IsString() @MaxLength(254)
+  @ValidateBy({ name: 'authorEmail', validator: { validate: (value: unknown) => value === '' || typeof value === 'string' && isEmail(value) } }) email!: string;
+  @ApiProperty() @IsBoolean() corresponding!: boolean;
+  @ApiProperty({ type: [WorkAffiliationDto], minItems: 1, maxItems: 5 }) @IsArray() @ArrayMinSize(1) @ArrayMaxSize(5)
+  @ValidateNested({ each: true }) @Type(() => WorkAffiliationDto) affiliations!: WorkAffiliationDto[];
+}
 export class CreateWorkDto {
   @ApiProperty({ minLength: 3, maxLength: 300 }) @Transform(({ value }) => typeof value === 'string' ? value.trim() : value) @IsString() @MinLength(3) @MaxLength(300) title!: string;
   @ApiProperty({ enum: ['es','en'] }) @IsIn(['es','en']) language!: 'es' | 'en';
@@ -11,6 +28,10 @@ export class CreateWorkDto {
   @ApiProperty({ format: 'uuid' }) @IsUUID() contributionTypeId!: string;
 }
 export class SaveWorkDto extends CreateWorkDto {
+  @ApiPropertyOptional({ type: [WorkAuthorDto], maxItems: 20, description: 'Omitir conserva la autoría actual; [] deja el borrador sin autores declarados.' })
+  @ValidateIf((_, value) => value !== undefined) @IsArray() @ArrayMaxSize(20)
+  @ArrayUnique((author: WorkAuthor) => typeof author?.id === 'string' ? author.id.toLowerCase() : undefined)
+  @ValidateNested({ each: true }) @Type(() => WorkAuthorDto) authors?: WorkAuthorDto[];
   @ApiProperty({ maxLength: 50000 }) @IsString() @MaxLength(50000) abstract!: string;
   @ApiProperty({ type: [String], maxItems: 20 }) @IsArray() @ArrayMaxSize(20)
   @Transform(({ value }) => Array.isArray(value) ? value.map((v: unknown) => typeof v === 'string' ? v.trim() : v) : value)
@@ -28,6 +49,7 @@ export class WorkSummaryDto implements AuthorWorkSummary {
   @ApiProperty({ format: 'date-time' }) updatedAt!: string;
 }
 export class WorkDto extends WorkSummaryDto implements AuthorWork {
+  @ApiProperty({ type: [WorkAuthorDto], maxItems: 20 }) authors!: WorkAuthor[];
   @ApiProperty() abstract!: string;
   @ApiProperty({ type: [String] }) keywords!: string[];
   @ApiProperty({ type: PublishedCallDto }) call!: PublishedScientificCall;

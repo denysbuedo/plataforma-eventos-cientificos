@@ -80,7 +80,10 @@ export interface AuthorWorkSummary {
   id: string; title: string; language: 'es' | 'en'; trackId: string; contributionTypeId: string; revision: number;
   createdAt: string; updatedAt: string;
 }
-export interface AuthorWork extends AuthorWorkSummary { abstract: string; keywords: string[]; call: PublishedScientificCall }
+export interface WorkAffiliation { institution: string; countryCode: string }
+export interface WorkAuthor { id: string; fullName: string; email: string; affiliations: WorkAffiliation[]; corresponding: boolean }
+export interface AuthorWork extends AuthorWorkSummary { abstract: string; keywords: string[]; call: PublishedScientificCall; authors: WorkAuthor[] }
+export const MAX_WORK_BODY_BYTES = 384 * 1024;
 export interface AuthorWorkspace {
   event: PublicEventView; works: AuthorWorkSummary[]; call: PublishedScientificCall | null;
   languages: ('es' | 'en')[];
@@ -91,3 +94,5 @@ export interface EventConfiguration {
   modality: 'in_person' | 'virtual' | 'hybrid'; languages: ('es' | 'en')[]; defaultLanguage: 'es' | 'en';
   lifecycle: EventLifecycle; revision: number;
 }
+
+export { COUNTRY_CODES } from './countries.js';

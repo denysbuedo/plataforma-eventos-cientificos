@@ -3,6 +3,7 @@ import { useState } from 'react';
 import type { AuthorWork, AuthorWorkspace } from '@sep/contracts';
 import { webCopy, type Locale } from '@sep/i18n';
 import { Brand } from '@sep/ui';
+import WorkAuthors from './work-authors';
 
 export default function AuthorWorks({ initial, locale, contextKey, publicUrl, person }: {
   initial: AuthorWorkspace; locale: Locale; contextKey: string; publicUrl: string; person: { id: string; name: string };
@@ -56,7 +57,7 @@ export default function AuthorWorks({ initial, locale, contextKey, publicUrl, pe
   async function save() {
     if (!work || !editing) return;
     await action(async () => {
-      const next = await request<AuthorWork>(`/${work.id}`, 'PUT', { title: work.title, abstract: work.abstract, language: work.language,
+      const next = await request<AuthorWork>(`/${work.id}`, 'PUT', { title: work.title, abstract: work.abstract, language: work.language, authors: work.authors,
         trackId: work.trackId, contributionTypeId: work.contributionTypeId, keywords: keywords.split('\n').map((k) => k.trim()).filter(Boolean), revision: work.revision });
       select(next); setWorkspace({ ...workspace, works: workspace.works.map((row) => row.id === next.id ? next : row) });
     }, text.workSaved);
@@ -92,7 +93,7 @@ export default function AuthorWorks({ initial, locale, contextKey, publicUrl, pe
           <dt>{text.contributionTypes}</dt><dd>{type?.[locale === 'es' ? 'nameEs' : 'nameEn']}</dd><dt>{text.workLanguage}</dt><dd>{work.language === 'es' ? text.languageSpanish : text.languageEnglish}</dd></dl>
           <div><h3>{text.workAbstract}</h3><p style={{ whiteSpace: 'pre-wrap' }}>{work.abstract || text.workIncomplete}</p></div>
           <div><h3>{text.callKeywords}</h3>{work.keywords.length ? <ul>{work.keywords.map((keyword) => <li key={keyword}>{keyword}</li>)}</ul> : <p className="muted">{text.workIncomplete}</p>}</div>
-          <p className="muted small">{text.draft} · {text.revision} {work.revision}</p>
+          <WorkAuthors value={work.authors} onChange={() => {}} locale={locale} editing={false} /><p className="muted small">{text.draft} · {text.revision} {work.revision}</p>
         </div> : <form className="form-fields" onSubmit={(e) => { e.preventDefault(); void save(); }}>
           <label className="field"><span>{text.workTitle}</span><input required minLength={3} maxLength={300} value={work.title} disabled={busy || !workspace.editable} onChange={(e) => setWork({ ...work, title: e.target.value })} /></label>
           {choices('trackId', work.trackId, (value) => setWork({ ...work, trackId: value }), true)}{choices('contributionTypeId', work.contributionTypeId, (value) => setWork({ ...work, contributionTypeId: value }), true)}
@@ -101,7 +102,7 @@ export default function AuthorWorks({ initial, locale, contextKey, publicUrl, pe
           {type && <p className="muted small">{text.workWordCount}: {words} · {text.workExpected}: {type.abstractMinWords}–{type.abstractMaxWords}</p>}
           <label className="field"><span>{text.workKeywords}</span><textarea rows={4} value={keywords} maxLength={1700} disabled={busy || !workspace.editable} onChange={(e) => setKeywords(e.target.value)} /></label>
           {type && <p className="muted small">{text.workExpected}: {type.keywordsMin}–{type.keywordsMax} {text.callKeywords.toLowerCase()}{type.manuscriptRequired ? ` · ${text.callManuscript} ${type.maxPages}` : ''}</p>}
-          <p className="notice notice-muted">{text.workDraftOnly}</p><div className="editor-actions"><button className="button button-primary" type="submit" disabled={busy || !workspace.editable || !dirty}>{busy ? text.saving : text.saveDraft}</button><button className="button button-outline" type="button" disabled={busy} onClick={cancelEditing}>{text.cancel}</button><button className="button button-outline" type="button" disabled={busy} onClick={returnToList}>{text.backToWorks}</button></div>
+          <WorkAuthors value={work.authors} onChange={(authors) => setWork({ ...work, authors })} locale={locale} editing disabled={busy || !workspace.editable} /><p className="notice notice-muted">{text.workDraftOnly}</p><div className="editor-actions"><button className="button button-primary" type="submit" disabled={busy || !workspace.editable || !dirty}>{busy ? text.saving : text.saveDraft}</button><button className="button button-outline" type="button" disabled={busy} onClick={cancelEditing}>{text.cancel}</button><button className="button button-outline" type="button" disabled={busy} onClick={returnToList}>{text.backToWorks}</button></div>
         </form>}
       </section>}
     </main></div></div>;

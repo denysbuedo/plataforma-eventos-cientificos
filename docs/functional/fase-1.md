@@ -42,7 +42,7 @@ Por decisión del propietario el 15 de octubre de 2026, se aplazan la activació
 
 ### Siguiente incremento propuesto
 
-La administración del perfil, dominios y configuración estructurada del evento está implementada con validación funcional pendiente. La [Fase 2](fase-2.md) ya incorpora la convocatoria científica estructurada y Mis trabajos con borradores privados del autor. El siguiente incremento propuesto es coautores y afiliaciones, seguido de envío formal con versiones y reconciliación de reglas. Las pruebas funcionales siguen aplazadas por indicación del propietario; la Fase 1 continúa abierta.
+La administración del perfil, dominios y configuración estructurada del evento está implementada con validación funcional pendiente. La [Fase 2](fase-2.md) ya incorpora la convocatoria científica estructurada y Mis trabajos con borradores privados, coautores y afiliaciones declarados. El siguiente incremento propuesto es envío formal con versiones y reconciliación de reglas. Las pruebas funcionales siguen aplazadas por indicación del propietario; la Fase 1 continúa abierta.
 
 Activación y validación de RedUniv y Google, renovación y logout central institucional, MFA y registro según sus políticas, logo oficial, alta de organizaciones e ingresos administrativos por el operador, entrega de invitaciones por correo, suspensión de membresías, otros roles operativos, provisión real DNS/TLS y su supervisión periódica, carga de marca y archivos y ampliación del CMS. La restricción al correo verificado está implementada en ambos accesos reales. Los eventos creados no reciben automáticamente un dominio público ni organizadores; el administrador puede registrar dominios y designar responsables. Los módulos científicos pertenecen a fases posteriores.
 

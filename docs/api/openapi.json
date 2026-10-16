@@ -5372,6 +5372,62 @@
           "reason"
         ]
       },
+      "WorkAffiliationDto": {
+        "type": "object",
+        "properties": {
+          "institution": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 250
+          },
+          "countryCode": {
+            "type": "string",
+            "description": "ISO 3166-1 alpha-2",
+            "example": "CU"
+          }
+        },
+        "required": [
+          "institution",
+          "countryCode"
+        ]
+      },
+      "WorkAuthorDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "fullName": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 150
+          },
+          "email": {
+            "type": "string",
+            "maxLength": 254,
+            "description": "Puede estar vacío salvo para el autor de correspondencia."
+          },
+          "corresponding": {
+            "type": "boolean"
+          },
+          "affiliations": {
+            "minItems": 1,
+            "maxItems": 5,
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WorkAffiliationDto"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "fullName",
+          "email",
+          "corresponding",
+          "affiliations"
+        ]
+      },
       "WorkDto": {
         "type": "object",
         "properties": {
@@ -5408,6 +5464,13 @@
             "type": "string",
             "format": "date-time"
           },
+          "authors": {
+            "maxItems": 20,
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WorkAuthorDto"
+            }
+          },
           "abstract": {
             "type": "string"
           },
@@ -5430,6 +5493,7 @@
           "revision",
           "createdAt",
           "updatedAt",
+          "authors",
           "abstract",
           "keywords",
           "call"
@@ -5488,6 +5552,14 @@
           "contributionTypeId": {
             "type": "string",
             "format": "uuid"
+          },
+          "authors": {
+            "maxItems": 20,
+            "description": "Omitir conserva la autoría actual; [] deja el borrador sin autores declarados.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WorkAuthorDto"
+            }
           },
           "abstract": {
             "type": "string",

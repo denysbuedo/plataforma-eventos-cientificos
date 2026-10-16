@@ -132,7 +132,7 @@ La demo imprime enlaces al portal público y al administrador, con perfiles para
 
 ## Documentación
 
-**Mis trabajos** permite a una cuenta activa preparar borradores privados de título, resumen y palabras clave, con área/tipo de una convocatoria publicada y sus reglas conservadas. No requiere permisos de organizador. Coautores, archivos y envío formal siguen pendientes; ver [guía del autor](docs/development/mis-trabajos.md).
+**Mis trabajos** permite a una cuenta activa preparar borradores privados de título, resumen y palabras clave, con área/tipo de una convocatoria publicada y sus reglas conservadas. Incluye autores ordenados, afiliaciones por institución/país y correspondencia, editables solo por el propietario. No requiere permisos de organizador. Archivos y envío formal siguen pendientes; ver [guía del autor](docs/development/mis-trabajos.md).
 
 El primer incremento del módulo científico permite preparar áreas temáticas, tipos de contribución, requisitos y plazos en **Convocatoria científica**, con borrador, publicación independiente y retirada. El portal muestra solo la versión publicada. El envío de trabajos sigue pendiente. Ver [Fase 2](docs/functional/fase-2.md); validación funcional completa aplazada.
 

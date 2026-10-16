@@ -7,6 +7,7 @@ import type { NestExpressApplication } from '@nestjs/platform-express';
 import { localeFromHeader } from '@sep/i18n';
 import { AppModule } from './app.module.js';
 import type { AppConfig } from './config.js';
+import { MAX_WORK_BODY_BYTES } from '@sep/contracts';
 import { ApiException, ApiExceptionFilter, type SepRequest } from './common/http.js';
 
 export async function createApplication(config: AppConfig) {
@@ -24,6 +25,8 @@ export async function createApplication(config: AppConfig) {
     next();
   });
   app.useGlobalFilters(new ApiExceptionFilter());
+  // Multilingual abstracts and declared affiliations may exceed Express's default JSON limit.
+  app.useBodyParser('json', { limit: MAX_WORK_BODY_BYTES });
   app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true, forbidNonWhitelisted: true,
     forbidUnknownValues: true, validationError: { target: false, value: false },
     exceptionFactory: (errors) => new ApiException(400, 'VALIDATION_FAILED', errors.map((error) => ({ field: error.property, codes: Object.keys(error.constraints ?? {}) }))),

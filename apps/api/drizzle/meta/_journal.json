@@ -148,6 +148,20 @@
       "when": 1792155611394,
       "tag": "0020_author_work_privileges",
       "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "7",
+      "when": 1792161251832,
+      "tag": "0021_minor_owl",
+      "breakpoints": true
+    },
+    {
+      "idx": 22,
+      "version": "7",
+      "when": 1792161251833,
+      "tag": "0022_work_authors_privileges",
+      "breakpoints": true
     }
   ]
 }

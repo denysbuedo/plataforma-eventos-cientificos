@@ -8,6 +8,7 @@ import { ApiException, type RequestContext } from '../common/http.js';
 import { AuditService } from '../common/audit.service.js';
 import type { CreateWorkDto, SaveWorkDto } from './works.dto.js';
 const view = (row: typeof works.$inferSelect): AuthorWork => ({ id: row.id, title: row.title, abstract: row.abstract, keywords: row.keywords,
+  authors: row.authors,
   language: row.language, trackId: row.trackId, contributionTypeId: row.contributionTypeId, call: row.call, revision: row.revision,
   createdAt: row.createdAt.toISOString(), updatedAt: row.updatedAt.toISOString() });
 const summaryFields = { id: works.id, title: works.title, language: works.language, trackId: works.trackId,
@@ -72,6 +73,14 @@ export class AuthorWorksService {
     });
   }
   save(context: RequestContext, id: string, dto: SaveWorkDto): Promise<AuthorWork> {
+    if (dto.authors?.length) {
+      const corresponding = dto.authors.filter((author) => author.corresponding);
+      if (corresponding.length !== 1 || !corresponding[0].email) throw new ApiException(400, 'AUTHOR_CORRESPONDENCE');
+      if (dto.authors.some((author) => {
+        const keys = author.affiliations.map((affiliation) => `${affiliation.countryCode}:${affiliation.institution.trim().normalize('NFC').toLowerCase()}`);
+        return new Set(keys).size !== keys.length;
+      })) throw new ApiException(400, 'AUTHOR_AFFILIATION_DUPLICATE');
+    }
     return this.database.scoped({ ...context, organizationAdmin: false }, async (tx) => {
       const state = await this.state(tx, context, true);
       const [before] = await tx.select().from(works).where(and(this.scope(context), eq(works.id, id))).for('update');
@@ -82,7 +91,7 @@ export class AuthorWorksService {
       const selection = this.validateSelection(before.call, dto);
       const words = dto.abstract.trim() ? dto.abstract.trim().split(/\s+/u).length : 0;
       if (words > selection.type.abstractMaxWords || dto.keywords.length > selection.type.keywordsMax) throw new ApiException(400, 'WORK_REQUIREMENTS');
-      const [row] = await tx.update(works).set({ ...dto, trackId: selection.track.id, contributionTypeId: selection.type.id, revision: dto.revision + 1, updatedAt: new Date() })
+      const [row] = await tx.update(works).set({ ...dto, authors: dto.authors ?? before.authors, trackId: selection.track.id, contributionTypeId: selection.type.id, revision: dto.revision + 1, updatedAt: new Date() })
         .where(and(this.scope(context), eq(works.id, id))).returning();
       await this.audit.record(tx, context, 'work.draft.saved', state.event.id, id); return view(row);
     });

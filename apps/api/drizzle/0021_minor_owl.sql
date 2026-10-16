@@ -1,0 +1,2 @@
+ALTER TABLE "author_works" ADD COLUMN "authors" jsonb DEFAULT '[]'::jsonb NOT NULL;--> statement-breakpoint
+ALTER TABLE "author_works" ADD CONSTRAINT "author_work_authors_array" CHECK (jsonb_typeof("author_works"."authors") = 'array' AND jsonb_array_length("author_works"."authors") <= 20);

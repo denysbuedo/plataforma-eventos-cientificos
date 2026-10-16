@@ -3,7 +3,7 @@ import { createHmac, randomUUID, timingSafeEqual } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import http from 'node:http';
 import https from 'node:https';
-import type { ApiError, PublishedScientificCall, PublishedSite } from '@sep/contracts';
+import { MAX_WORK_BODY_BYTES, type ApiError, type PublishedScientificCall, type PublishedSite } from '@sep/contracts';
 import { errorMessage, type ErrorCode, type Locale } from '@sep/i18n';
 import { oidcAccessToken, oidcEnabled, removeOidcValue } from './oidc.js';
 export { adminOrigin, beginOidc, beginGoogle, finishOidc, finishGoogle, createOidcSession, createGoogleSession, googleLoginEnabled, redunivLoginEnabled, localReturnTo, oidcCookieSecure, oidcEnabled, oidcLogoutDestination, GOOGLE_FLOW_COOKIE, OIDC_FLOW_COOKIE, removeOidcValue } from './oidc.js';
@@ -115,7 +115,7 @@ export async function backendProxy(request: Request, parts: string[], cookie: st
     let body: unknown;
     if (request.method !== 'GET') {
       const text = await request.text();
-      if (text.length > 64000) throw new ApiTransportError(400, failure('VALIDATION_FAILED', locale));
+      if (path.includes('/my-works') ? Buffer.byteLength(text, 'utf8') > MAX_WORK_BODY_BYTES : text.length > 64000) throw new ApiTransportError(400, failure('VALIDATION_FAILED', locale));
       body = text ? JSON.parse(text) : {};
     }
     const data = await apiRequest(binding, path + (query.size ? `?${query}` : ''), { token, method: request.method, body, locale });
