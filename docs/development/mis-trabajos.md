@@ -6,8 +6,9 @@ Para crear un borrador, el organizador debe haber publicado una convocatoria cie
 
 1. Pulsar **Nuevo trabajo** y completar título, área, tipo e idioma.
 2. Crear el borrador. Será privado del creador.
-3. Abrirlo y completar el resumen y palabras clave, una por línea. Se muestran los rangos del tipo seleccionado; los mínimos no impiden guardar un borrador incompleto, pero los máximos sí se validan.
-4. Pulsar **Guardar borrador**. Esto no envía nada al comité ni publica el trabajo.
+3. **Ver** abre los detalles en modo de consulta. El formulario aparece únicamente al pulsar **Editar**, desde la lista o desde el detalle. Tras crear un borrador se muestra su detalle sin abrir la edición.
+4. En edición completar el resumen y palabras clave, una por línea. Se muestran los rangos del tipo seleccionado; los mínimos no impiden guardar un borrador incompleto, pero los máximos sí se validan.
+5. Pulsar **Guardar borrador** para guardar y volver al detalle. Esto no envía nada al comité ni publica el trabajo. **Cancelar** descarta los cambios locales y vuelve a consulta.
 
 Cada trabajo conserva una copia de la convocatoria original. Si cambia la convocatoria, aparece una indicación y el borrador mantiene su catálogo y requisitos. La compatibilidad para el envío se resolverá en un incremento posterior. El idioma se valida contra los idiomas actuales configurados para el evento.
 
