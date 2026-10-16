@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Injectable, Param, Post, Req } from '@nestjs/common';
 import { ApiBearerAuth, ApiOkResponse, ApiProperty, ApiTags } from '@nestjs/swagger';
-import { Transform } from 'class-transformer';
-import { IsIn, IsInt, IsString, IsUUID, Max, MaxLength, Min, isUUID } from 'class-validator';
+import { Transform, Type } from 'class-transformer';
+import { ArrayMaxSize, ArrayMinSize, ArrayUnique, IsArray, IsIn, IsInt, IsString, IsUUID, Max, MaxLength, Min, ValidateNested, isUUID } from 'class-validator';
 import { sql } from 'drizzle-orm';
 import type { AuthorshipWorkspace } from '@sep/contracts';
 import type { ErrorCode } from '@sep/i18n';
@@ -24,6 +24,14 @@ class DecisionDto {
 class ResponsibilityDto {
   @ApiProperty({enum:['accept_responsibility','release_responsibility']}) @IsIn(['accept_responsibility','release_responsibility']) action!:'accept_responsibility'|'release_responsibility';
   @ApiProperty() @IsInt() @Min(1) @Max(2147483646) revision!:number;
+}
+class ReadClaimDto {
+  @ApiProperty({format:'uuid'}) @IsUUID() id!:string;
+  @ApiProperty() @IsInt() @Min(1) @Max(2147483646) revision!:number;
+}
+class ReadAuthorshipDto {
+  @ApiProperty({type:[ReadClaimDto],minItems:1,maxItems:100}) @IsArray() @ArrayMinSize(1) @ArrayMaxSize(100)
+  @ArrayUnique((claim:ReadClaimDto)=>claim?.id?.toLowerCase()) @ValidateNested({each:true}) @Type(()=>ReadClaimDto) claims!:ReadClaimDto[];
 }
 class CandidateViewDto {
   @ApiProperty({format:'uuid'}) workId!:string; @ApiProperty({format:'uuid'}) authorId!:string;
@@ -58,6 +66,14 @@ export async function authorshipRpc(tx:DbTransaction,context:RequestContext,oper
 @Injectable()
 export class AuthorshipService {
   constructor(private readonly database:DatabaseService){}
+  acknowledge(context:RequestContext,claims:ReadClaimDto[]):Promise<AuthorshipWorkspace>{
+    return this.database.scoped({...context,organizationAdmin:false},async tx=>{
+      const response=await tx.execute<{result:{ok:true}|{error:ErrorCode}}>(sql`SELECT public.sep_authorship_read(${JSON.stringify(claims)}::jsonb) AS result`);
+      if('error' in response.rows[0].result)throw new ApiException(401,response.rows[0].result.error);
+      await tx.execute(sql`SELECT set_config('sep.authorship_email',${context.authMode==='development-token'?'':context.verifiedEmail?.toLowerCase()??''},true)`);
+      return await authorshipRpc(tx,context,'list') as AuthorshipWorkspace;
+    });
+  }
   run(context:RequestContext,operation='list',workId:string|null=null,authorId:string|null=null,claimId:string|null=null,revision:number|null=null,message=''):Promise<AuthorshipWorkspace>{
     return this.database.scoped({...context,organizationAdmin:false},async tx=>{
       // Email comes only from the authenticated principal. Demo tokens have no email proof.
@@ -73,7 +89,7 @@ export class AuthorshipController {
   constructor(private readonly service:AuthorshipService){}
   @Get('authorship') @Access('author-work') @ApiOkResponse({type:WorkspaceDto}) list(@Req()req:SepRequest){return this.service.run(req.security);}
   @Post('authorship') @Access('author-work') @ApiOkResponse({type:WorkspaceDto}) candidate(@Req()req:SepRequest,@Body()dto:CandidateDto){return this.service.run(req.security,dto.action,dto.workId,dto.authorId,null,null,dto.message);}
-  @Post('authorship/read') @Access('author-work') @ApiOkResponse({type:WorkspaceDto}) acknowledge(@Req()req:SepRequest){return this.service.run(req.security,'acknowledge');}
+  @Post('authorship/read') @Access('author-work') @ApiOkResponse({type:WorkspaceDto}) acknowledge(@Req()req:SepRequest,@Body()dto:ReadAuthorshipDto){return this.service.acknowledge(req.security,dto.claims);}
   @Post('authorship/claims/:claimId') @Access('author-work') @ApiOkResponse({type:WorkspaceDto}) decision(@Req()req:SepRequest,@Param('claimId')id:string,@Body()dto:DecisionDto){uuid(id);return this.service.run(req.security,dto.action,null,null,id,dto.revision,dto.message);}
   @Post('authorship/works/:workId/responsibility') @Access('author-work') @ApiOkResponse({type:WorkspaceDto}) responsibility(@Req()req:SepRequest,@Param('workId')id:string,@Body()dto:ResponsibilityDto){uuid(id);return this.service.run(req.security,dto.action,id,null,null,dto.revision);}
   @Get('authorship-review') @Access('submissions-manage') @ApiOkResponse({type:WorkspaceDto}) review(@Req()req:SepRequest){return this.service.run(req.security,'staff_list');}

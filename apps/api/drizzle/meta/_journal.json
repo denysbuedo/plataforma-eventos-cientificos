@@ -309,6 +309,13 @@
       "when": 1792185227783,
       "tag": "0043_authorship_responsibility_guard",
       "breakpoints": true
+    },
+    {
+      "idx": 44,
+      "version": "7",
+      "when": 1792185227784,
+      "tag": "0044_authorship_read_receipts",
+      "breakpoints": true
     }
   ]
 }

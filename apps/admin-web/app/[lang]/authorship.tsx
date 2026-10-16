@@ -15,16 +15,44 @@ export default function Authorship({ eventId, contextKey, locale, staff = false 
   const [error, setError] = useState(''), [notice, setNotice] = useState(''), [section, setSection] = useState<Section>('pending');
   const [decision, setDecision] = useState<Decision | null>(null), [message, setMessage] = useState('');
   const dialog = useRef<HTMLDialogElement>(null);
+  const receiptAttempts = useRef(new Set<string>());
   const base = `/api/backend/events/${eventId}/${staff ? 'authorship-review' : 'authorship'}`;
   const query = `?event=${encodeURIComponent(contextKey)}&lang=${locale}`;
   useEffect(() => {
     const controller = new AbortController(); setLoaded(false); setError('');
-    void fetch(base + query, { signal: controller.signal }).then(async response => {
+    void fetch(base + query, { signal: controller.signal, cache: 'no-store' }).then(async response => {
       const next = await response.json(); if (!response.ok) throw new Error(next.error?.message ?? text.error);
+      if (!staff && !next.candidates.length && !next.claims.some((claim: AuthorshipClaim) => claim.status === 'pending') && next.claims.some((claim: AuthorshipClaim) => claim.unread)) setSection('activity');
       setData(next); setLoaded(true);
     }).catch(e => { if (!controller.signal.aborted) setError(e instanceof Error ? e.message : text.error); });
     return () => controller.abort();
-  }, [base, query, text.error]);
+  }, [base, query, text.error, staff]);
+  useEffect(() => {
+    if (staff || !loaded || section === 'pending') return;
+    const claims = data.claims.filter(claim => claim.unread && claim.status !== 'pending' &&
+      (section === 'activity' || claim.status === 'approved' && data.contributions.some(item => item.workId === claim.workId && item.authorId === claim.authorId)))
+      .map(({ id, revision }) => ({ id, revision }));
+    if (!claims.length) return;
+    const key = JSON.stringify([base, query, claims]);
+    let mounted = true;
+    function acknowledgeVisible() {
+      if (document.visibilityState !== 'visible' || receiptAttempts.current.has(key)) return;
+      receiptAttempts.current.add(key);
+      // Keep the receipt in flight when the person returns to My works immediately.
+      void fetch(base + '/read' + query, { method: 'POST', keepalive: true, headers: { 'content-type': 'application/json' }, body: JSON.stringify({ claims }) }).then(async response => {
+        const next = await response.json() as AuthorshipWorkspace & { error?: { message?: string } };
+        if (!response.ok) throw new Error(next.error?.message ?? text.readError);
+        if (mounted) setData(current => ({ ...current, claims: current.claims.map(claim => {
+          const seen = claims.some(item => item.id === claim.id && item.revision === claim.revision);
+          const saved = next.claims.some(item => item.id === claim.id && item.revision === claim.revision && !item.unread);
+          return seen && saved ? { ...claim, unread: false } : claim;
+        }) }));
+      }).catch(() => { if (mounted) setError(text.readError); });
+    }
+    acknowledgeVisible();
+    document.addEventListener('visibilitychange', acknowledgeVisible);
+    return () => { mounted = false; document.removeEventListener('visibilitychange', acknowledgeVisible); };
+  }, [base, query, data.claims, data.contributions, loaded, section, staff, text.readError]);
   useEffect(() => { if (decision) dialog.current?.showModal(); else dialog.current?.close(); }, [decision]);
   async function request(suffix = '', body?: unknown) {
     setBusy(true); setError(''); setNotice('');
@@ -84,7 +112,7 @@ export default function Authorship({ eventId, contextKey, locale, staff = false 
           {waiting.length > 0 && <section className="authorship-group"><h3>{staff ? ui.staffWaiting : ui.waitingGroup}</h3><p className="authorship-group-help">{staff ? ui.staffWaitingHelp : ui.waitingHelp}</p>{waiting.map(claim => claimCard(claim))}</section>}
         </>}
         {section === 'contributions' && !staff && <><p className="authorship-group-help">{ui.contributionHelp}</p>{!data.contributions.length ? <div className="authorship-empty"><h3>{ui.noContributions}</h3><p>{ui.noContributionsHelp}</p></div> : <>{data.contributions.map(item => <article className="authorship-item" key={`${item.workId}:${item.authorId}`}><h4>{item.title}</h4><p className="authorship-caption">{ui.workStatus}: {webCopy[locale].workStatuses[item.status]}</p><details className="authorship-details"><summary>{ui.options}</summary><button className="button button-outline" disabled={busy} onClick={() => choose({ action: 'disown', contribution: item })}>{text.withdraw}</button></details></article>)}<p className="authorship-footnote">{ui.contributionNote}</p></>}</>}
-        {section === 'activity' && <><div className="authorship-group-heading"><p className="authorship-group-help">{ui.activityHelp}</p>{!staff && activity.some(claim => claim.unread) && <button className="button button-outline" disabled={busy} onClick={() => void request('/read', {})}>{text.read}</button>}</div>{!activity.length && <div className="authorship-empty"><p>{ui.noActivity}</p></div>}{activity.map(claim => claimCard(claim))}</>}
+        {section === 'activity' && <><div className="authorship-group-heading"><p className="authorship-group-help">{ui.activityHelp}</p>{!staff && activity.some(claim => claim.unread) && <button className="button button-outline" disabled={busy} onClick={() => void request('/read', { claims: activity.filter(claim => claim.unread).map(({id,revision}) => ({id,revision})) })}>{text.read}</button>}</div>{!activity.length && <div className="authorship-empty"><p>{ui.noActivity}</p></div>}{activity.map(claim => claimCard(claim))}</>}
       </div>
       {!staff && data.responsibilities.length > 0 && <details className="authorship-managers"><summary>{ui.managers}</summary><p className="authorship-group-help">{ui.managersHelp}</p>{data.responsibilities.map(item => <article className="authorship-item" key={item.workId}><h4>{item.title}</h4><p className="authorship-caption">{item.responsibility === 'submitter' ? ui.managedBySubmitter : ui.managedByCorresponding}</p>{(item.canAccept || item.canRelease) && <button className="button button-outline" disabled={busy} onClick={() => choose({ responsibility: item, action: item.canAccept ? 'accept_responsibility' : 'release_responsibility' })}>{item.canAccept ? ui.accept : ui.release}</button>}</article>)}</details>}
     </>}

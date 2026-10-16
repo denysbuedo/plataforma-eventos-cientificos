@@ -1,5 +1,5 @@
 export const authorshipCopy={
-  es:{title:'Autorías',help:'Confirma declaraciones asociadas a tu cuenta o a tu correo verificado u ORCID autenticado. Reconocer una autoría no concede permiso para editar ni reenviar.',
+  es:{readError:'No pudimos guardar la lectura del aviso. Pulsa «Marcar avisos como leídos» para intentarlo de nuevo.',title:'Autorías',help:'Confirma declaraciones asociadas a tu cuenta o a tu correo verificado u ORCID autenticado. Reconocer una autoría no concede permiso para editar ni reenviar.',
     candidates:'Declaraciones por reconocer',emptyCandidates:'No hay declaraciones pendientes que coincidan con tu identidad.',candidateHelp:'Por privacidad, el título y el contenido del trabajo permanecen ocultos hasta la aprobación. Si tienes dudas, consulta con quien realizó el envío.',
     read:'Marcar avisos como leídos',withdraw:'Retirar mi reconocimiento',withdrawReason:'Indica el motivo para retirar tu reconocimiento de autoría:',
     requests:'Solicitudes y avisos',emptyRequests:'No hay solicitudes de reconocimiento en este evento.',contributions:'Mis autorías reconocidas',emptyContributions:'Aún no tienes autorías reconocidas en este evento.',
@@ -12,7 +12,7 @@ export const authorshipCopy={
     limited:'Se muestran hasta 100 entradas por sección y evento.',pending:'Pendiente',approved:'Aprobada',rejected:'Rechazada',revoked:'Revocada',account:'Cuenta seleccionada',email:'Correo verificado',orcid:'ORCID de producción autenticado',
     noFiles:'El reconocimiento acredita la asociación con tu cuenta. La gestión del contenido requiere una invitación independiente.',candidateConfirm:'¿Confirmas que esta declaración se refiere a ti? Se solicitará aprobación al responsable del trabajo.',declineConfirm:'¿Confirmas que esta declaración no se refiere a ti? Se registrará tu respuesta.',notices:'pendientes de revisión',
   },
-  en:{title:'Authorship',help:'Confirm declarations linked to your account, verified email or authenticated ORCID. Authorship recognition does not grant editing or resubmission rights.',
+  en:{readError:'We could not save the read receipt. Select Mark notices as read to retry.',title:'Authorship',help:'Confirm declarations linked to your account, verified email or authenticated ORCID. Authorship recognition does not grant editing or resubmission rights.',
     candidates:'Declarations to recognize',emptyCandidates:'No pending declarations match your identity.',candidateHelp:'For privacy, the title and work content remain hidden until approval. Contact the submitter if you have questions.',
     read:'Mark notices as read',withdraw:'Withdraw my recognition',withdrawReason:'Enter the reason for withdrawing authorship recognition:',
     requests:'Requests and notices',emptyRequests:'There are no authorship requests for this event.',contributions:'My recognized contributions',emptyContributions:'You have no recognized contributions in this event yet.',

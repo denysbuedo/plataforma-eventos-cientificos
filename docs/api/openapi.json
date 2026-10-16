@@ -6812,6 +6812,16 @@
       "post": {
         "operationId": "AuthorshipController_acknowledge",
         "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReadAuthorshipDto"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "",
@@ -9930,6 +9940,38 @@
           "authorId",
           "action",
           "message"
+        ]
+      },
+      "ReadClaimDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "revision": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "id",
+          "revision"
+        ]
+      },
+      "ReadAuthorshipDto": {
+        "type": "object",
+        "properties": {
+          "claims": {
+            "minItems": 1,
+            "maxItems": 100,
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ReadClaimDto"
+            }
+          }
+        },
+        "required": [
+          "claims"
         ]
       },
       "DecisionDto": {
