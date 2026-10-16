@@ -32,6 +32,7 @@
 - [Fase 2: convocatoria científica y próximos incrementos](functional/fase-2.md) y [ADR-012](adr/ADR-012-convocatoria-cientifica.md).
 - [Mis trabajos: borradores privados del autor](development/mis-trabajos.md) y [ADR-013](adr/ADR-013-borradores-autor.md).
 - [ADR-014: autoría declarada, afiliaciones y correspondencia](adr/ADR-014-autoria-declarada.md).
+- [Trabajos: envío, archivos, correcciones y versión final](development/trabajos-envios.md) y [ADR-015: versiones, privacidad y manuscritos](adr/ADR-015-envios-versiones-archivos.md).
 - [Desarrollo local, variables y demo](development/desarrollo-local.md).
 - [Contrato mínimo de API](api/fase-0.md) y [OpenAPI generado](api/openapi.json).
 - [Evidencia del incremento API](architecture/evidencia-api-fase-0.md).

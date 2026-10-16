@@ -1,5 +1,7 @@
 # Mis trabajos
 
+Esta guía describe el editor de autor. El flujo completo implementado de PDF, envío, correcciones, dictámenes y versión final está en [Trabajos y envíos](trabajos-envios.md).
+
 Abrir el portal del evento y pulsar **Mis trabajos**, o elegir el nuevo perfil **Autor** de la demo. Los organizadores también pueden abrir su espacio personal desde el menú al seleccionar un evento. No se necesitan permisos de organizador ni una vinculación a RedUniv.
 
 Para crear un borrador, el organizador debe haber publicado una convocatoria científica con plazo de cierre vigente. Guardar su borrador de convocatoria no basta. Se puede preparar un trabajo antes de la fecha de apertura, pero todavía no se puede enviarlo.
@@ -9,9 +11,9 @@ Para crear un borrador, el organizador debe haber publicado una convocatoria cie
 3. **Ver** abre los detalles en modo de consulta. El formulario aparece únicamente al pulsar **Editar**, desde la lista o desde el detalle. Tras crear un borrador se muestra su detalle sin abrir la edición.
 4. En edición completar el resumen y palabras clave, una por línea. Se muestran los rangos del tipo seleccionado; los mínimos no impiden guardar un borrador incompleto, pero los máximos sí se validan.
 5. Pulsar **Guardar borrador** para guardar y volver al detalle. Esto no envía nada al comité ni publica el trabajo. **Cancelar** descarta los cambios locales y vuelve a consulta.
-6. **Volver al listado** cierra el detalle o la edición y deja únicamente la lista de trabajos. Si hay cambios de edición sin guardar, pide confirmación antes de descartarlos. La opción **Mis trabajos** del menú también vuelve al listado. Cada fila muestra explícitamente su estado actual, Borrador; los estados de envío y revisión se incorporarán con esos módulos.
+6. **Volver al listado** cierra el detalle o la edición y deja únicamente la lista de trabajos. Si hay cambios de edición sin guardar, pide confirmación antes de descartarlos. La opción **Mis trabajos** del menú también vuelve al listado. Cada fila muestra su estado actual y permite editar solo cuando corresponda.
 
-Cada trabajo conserva una copia de la convocatoria original. Si cambia la convocatoria, aparece una indicación y el borrador mantiene su catálogo y requisitos. La compatibilidad para el envío se resolverá en un incremento posterior. El idioma se valida contra los idiomas actuales configurados para el evento.
+Cada trabajo conserva una copia de la convocatoria original. Si cambia la convocatoria, aparece una indicación y el borrador mantiene su catálogo y requisitos hasta actualizar explícitamente las reglas antes del envío inicial. El idioma se valida contra los idiomas actuales del evento; la fase final conserva el idioma aceptado.
 
 ## Autores y afiliaciones
 
@@ -21,7 +23,7 @@ En **Editar → Autores y afiliaciones**, añadir cada autor con nombre completo
 
 **Guardar borrador** guarda también la autoría y vuelve a consulta. **Cancelar** revierte los cambios locales de autores, orden y afiliaciones. **Volver al listado** funciona desde el detalle y la edición y pide confirmación si hay cambios sin guardar. Añadir coautores no crea cuentas, concede acceso ni envía correos. Solo el propietario puede editar el borrador.
 
-Al cerrar el plazo, retirar la convocatoria o cancelar/finalizar/archivar el evento, los trabajos existentes siguen disponibles para consulta del propietario y se bloquea la edición. **Actualizar espacio** permite comprobar cambios y recargar después de un conflicto de revisión. Una nueva publicación vigente puede habilitar la edición de nuevo. No hay borrado ni envío formal en esta versión.
+Al cerrar el plazo o retirar la convocatoria, los borradores quedan en consulta; las respuestas solicitadas usan su propio plazo. Cancelar/finalizar/archivar bloquea cambios. **Actualizar espacio** permite recargar después de un conflicto de revisión. Se puede quitar del listado un borrador nunca enviado. El envío formal y las versiones están descritos en la guía del módulo completo.
 
 ## API
 
@@ -46,4 +48,4 @@ El incremento de autoría pasó compilación y análisis estático. Se comprobar
 
 Pasaron la compilación completa y el análisis estático. Las migraciones se aplicaron a la demo conservando sus datos. Se comprobó creación, edición, detalle propio, conservación de reglas y rechazo de otro actor, incluido contexto administrativo, dentro de una transacción revertida. La API y la pantalla autenticada de autor sin membresía respondieron en español e inglés, y el portal muestra su enlace. En Biosfera no había convocatoria publicada al comprobarlo; no se publicó una ni se dejaron borradores de diagnóstico. No se validaron las interacciones por navegador.
 
-La batería completa sigue aplazada. Al retomarla deberá cubrir cuentas externas sin membresía, cuentas inactivas, cruce de propietarios/organizaciones/eventos, administradores sin acceso a borradores ajenos, límites, revisión concurrente, cambio o retirada de convocatoria, plazo inclusivo y zona horaria, cancelación/finalización, idioma retirado, conservación de reglas, orden de autores, correspondencia única, datos incompletos, países no admitidos, afiliaciones repetidas y compatibilidad de clientes anteriores. El siguiente incremento es envío formal con versiones y reconciliación de reglas; los tipos con manuscrito necesitarán carga privada de archivos antes de completar el envío.
+La batería completa sigue aplazada. Al retomarla deberá cubrir cuentas externas sin membresía, cuentas inactivas, cruce de propietarios/organizaciones/eventos, administradores sin acceso a borradores ajenos, límites, revisión concurrente, cambio o retirada de convocatoria, plazo inclusivo y zona horaria, cancelación/finalización, idioma retirado, conservación de reglas, orden de autores, correspondencia única, datos incompletos, países no admitidos, afiliaciones repetidas y compatibilidad de clientes anteriores. Las comprobaciones dirigidas del flujo ampliado constan en [Trabajos y envíos](trabajos-envios.md).

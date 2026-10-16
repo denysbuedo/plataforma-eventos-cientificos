@@ -37,16 +37,19 @@ Los cambios de esta sección se publican con su propio botón, independientement
 
 Aplicar migraciones 0017 y 0018 antes de arrancar la nueva API. Ver [OpenAPI](../api/openapi.json) y [ADR-012](../adr/ADR-012-convocatoria-cientifica.md).
 
-## Próximos incrementos
+## Módulo de trabajos implementado
 
 Mis trabajos ya incorpora acceso independiente del autor, borradores privados, selección de área/tipo/idioma, resumen y palabras clave, revisión optimista y conservación de las reglas originales. También permite declarar autores ordenados, varias afiliaciones por autor con institución y país, y un autor de correspondencia. La edición permanece reservada al propietario; los coautores declarados no reciben permisos ni cuentas. Compilación y comprobaciones dirigidas no sustituyen la validación funcional pendiente. Ver [guía](../development/mis-trabajos.md).
 
-1. Envío formal con versiones e historial y reconciliación de reglas.
-2. Archivos con almacenamiento privado, validación, escaneo y permisos.
-3. Comités, conflictos, asignación de revisores y evaluación.
-4. Dictámenes, correcciones, versión final y programa.
+También están implementados el envío formal, versiones inmutables, historial, reconciliación explícita de reglas, PDF privado, validación y cliente de escaneo ClamAV. La bandeja del organizador permite dictámenes, correcciones con plazo y solicitud/recepción de versión final. Incluye retiro y eliminación lógica de borradores nunca enviados. Ver [recorrido completo](../development/trabajos-envios.md) y [ADR-015](../adr/ADR-015-envios-versiones-archivos.md).
 
-Antes de recibir contribuciones se debe definir la conservación de reglas/versiones y validar plazos, identidad del autor, propiedad del trabajo y aislamiento. No se anuncia recepción funcional en este incremento.
+La conservación de reglas, versiones y archivos está implementada y se comprobó de forma dirigida. La recepción real requiere completar validación funcional, activar identidad y disponer de ClamAV operativo. La demo admite archivos marcados explícitamente sin escaneo.
+
+## Próximos incrementos
+
+1. Comités, conflictos, asignación de revisores y evaluación por pares.
+2. Programa científico, sesiones y ponentes.
+3. Publicación de trabajos aceptados y memorias.
 
 ## Validación pendiente
 

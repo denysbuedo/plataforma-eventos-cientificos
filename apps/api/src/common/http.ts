@@ -18,7 +18,7 @@ export class ApiExceptionFilter implements ExceptionFilter {
     const raw = exception instanceof HttpException ? exception.getResponse() : undefined;
     const details = typeof raw === 'object' && raw !== null ? raw as { code?: ErrorCode; issues?: ValidationIssue[] } : {};
     const fallback: ErrorCode = status === 404 ? 'NOT_FOUND' : status === 403 ? 'FORBIDDEN' : status === 401 ? 'UNAUTHORIZED'
-      : status === 400 ? 'VALIDATION_FAILED' : 'INTERNAL_ERROR';
+      : status === 400 ? 'VALIDATION_FAILED' : status === 413 ? 'FILE_TOO_LARGE' : 'INTERNAL_ERROR';
     const code = details.code ?? fallback;
     const body: ApiError = { error: { code, message: errorMessage(code, request.locale ?? 'es'), requestId: request.requestId } };
     if (details.issues?.length) body.error.issues = details.issues;

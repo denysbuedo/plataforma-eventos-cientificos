@@ -1,7 +1,8 @@
 import { sql, type SQL } from 'drizzle-orm';
-import { boolean, check, date, foreignKey, index, integer, jsonb, pgPolicy, pgRole, pgTable, primaryKey, text, timestamp, unique, uniqueIndex, uuid } from 'drizzle-orm/pg-core';
-import type { EventConfiguration, PublishedScientificCall, PublishedSite, ScientificCallContent, SiteContent, WorkAuthor } from '@sep/contracts';
+import { boolean, check, customType, date, foreignKey, index, integer, jsonb, pgPolicy, pgRole, pgTable, primaryKey, text, timestamp, unique, uniqueIndex, uuid } from 'drizzle-orm/pg-core';
+import type { EventConfiguration, PublishedScientificCall, PublishedSite, ScientificCallContent, SiteContent, WorkAuthor, WorkStatus, WorkContent, Manuscript } from '@sep/contracts';
 
+const binary = customType<{ data: Buffer; driverData: Buffer }>({ dataType: () => 'bytea' });
 const runtime = pgRole('sep_runtime').existing();
 const registryOwner = pgRole('sep_migrator').existing();
 const organizationScope = (column: SQL) => sql`${column} = nullif(current_setting('sep.organization_id', true), '')::uuid`;
@@ -149,12 +150,45 @@ export const authorWorks = pgTable('author_works', {
   trackId: uuid('track_id').notNull(), contributionTypeId: uuid('contribution_type_id').notNull(),
   call: jsonb('call_snapshot').$type<PublishedScientificCall>().notNull(), revision: integer('revision').notNull().default(1),
   authors: jsonb('authors').$type<WorkAuthor[]>().notNull().default(sql`'[]'::jsonb`),
+  status: text('status').$type<WorkStatus>().notNull().default('draft'), submittedAt: timestamp('submitted_at', { withTimezone: true }),
+  responseDeadline: date('response_deadline'), manuscript: jsonb('manuscript').$type<Manuscript>(),
+  submittedContent: jsonb('submitted_content').$type<WorkContent>(), hidden: boolean('hidden').notNull().default(false),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(), updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
-}, (t) => [foreignKey({ columns: [t.organizationId, t.eventId], foreignColumns: [events.organizationId, events.id] }),
+}, (t) => [unique().on(t.organizationId,t.eventId,t.id), foreignKey({ columns: [t.organizationId, t.eventId], foreignColumns: [events.organizationId, events.id] }),
+  check('work_status_values',sql`${t.status} IN ('draft','submitted','in_review','changes_requested','accepted','rejected','withdrawn','final_requested','final_submitted')`),
   index('author_works_owner_event_idx').on(t.organizationId, t.eventId, t.ownerId),
   check('author_work_revision', sql`${t.revision} > 0`), check('author_work_language', sql`${t.language} IN ('es','en')`),
   check('author_work_authors_array', sql`jsonb_typeof(${t.authors}) = 'array' AND jsonb_array_length(${t.authors}) <= 20`),
   policy(sql`${organizationScope(sql`${t.organizationId}`)} AND ${t.eventId} = nullif(current_setting('sep.event_id', true), '')::uuid AND ${actorScope(sql`${t.ownerId}`)}`),
+  pgPolicy('submitted_staff_read', { for: 'select', to: runtime, using: sql`${organizationScope(sql`${t.organizationId}`)} AND ${t.eventId} = nullif(current_setting('sep.event_id', true), '')::uuid AND current_setting('sep.submissions_staff',true) = 'true' AND ${t.submittedAt} IS NOT NULL` }),
+  pgPolicy('submitted_staff_update', { for: 'update', to: runtime, using: sql`${organizationScope(sql`${t.organizationId}`)} AND ${t.eventId} = nullif(current_setting('sep.event_id', true), '')::uuid AND current_setting('sep.submissions_staff',true) = 'true' AND ${t.submittedAt} IS NOT NULL`, withCheck: sql`${organizationScope(sql`${t.organizationId}`)} AND ${t.eventId} = nullif(current_setting('sep.event_id', true), '')::uuid AND ${t.submittedAt} IS NOT NULL` }),
+]);
+
+const workVisible = (org: SQL, event: SQL, work: SQL) => sql`${organizationScope(org)} AND ${event} = nullif(current_setting('sep.event_id',true),'')::uuid AND EXISTS (SELECT 1 FROM author_works w WHERE w.id=${work} AND w.organization_id=${org} AND w.event_id=${event})`;
+export const workFiles = pgTable('work_files', {
+  id: uuid('id').primaryKey(), organizationId: uuid('organization_id').notNull(), eventId: uuid('event_id').notNull(), workId: uuid('work_id').notNull(),
+  ownerId: uuid('owner_id').notNull().references(() => people.id), metadata: jsonb('metadata').$type<Manuscript>().notNull(), data: binary('data').notNull(),
+}, (t) => [unique().on(t.organizationId,t.eventId,t.workId,t.id), foreignKey({ columns: [t.organizationId,t.eventId,t.workId], foreignColumns: [authorWorks.organizationId,authorWorks.eventId,authorWorks.id] }),
+  pgPolicy('file_read', { for: 'select', to: runtime, using: sql`${workVisible(sql`${t.organizationId}`,sql`${t.eventId}`,sql`${t.workId}`)} AND (${actorScope(sql`${t.ownerId}`)} OR (current_setting('sep.submissions_staff',true)='true' AND EXISTS (SELECT 1 FROM work_versions v WHERE v.file_id=${t.id} AND v.work_id=${t.workId})))` }),
+  pgPolicy('file_insert', { for: 'insert', to: runtime, withCheck: sql`${workVisible(sql`${t.organizationId}`,sql`${t.eventId}`,sql`${t.workId}`)} AND ${actorScope(sql`${t.ownerId}`)}` }),
+  pgPolicy('file_delete', { for: 'delete', to: runtime, using: sql`${workVisible(sql`${t.organizationId}`,sql`${t.eventId}`,sql`${t.workId}`)} AND ${actorScope(sql`${t.ownerId}`)} AND NOT EXISTS (SELECT 1 FROM work_versions v WHERE v.file_id=${t.id})` }),
+]);
+export const workVersions = pgTable('work_versions', {
+  id: uuid('id').primaryKey(), organizationId: uuid('organization_id').notNull(), eventId: uuid('event_id').notNull(), workId: uuid('work_id').notNull(),
+  ownerId: uuid('owner_id').notNull().references(() => people.id), number: integer('number').notNull(), kind: text('kind').$type<'submission'|'final'>().notNull(),
+  content: jsonb('content').$type<WorkContent>().notNull(), fileId: uuid('file_id'), createdAt: timestamp('created_at',{withTimezone:true}).notNull().defaultNow(),
+}, (t) => [foreignKey({columns:[t.organizationId,t.eventId,t.workId,t.fileId],foreignColumns:[workFiles.organizationId,workFiles.eventId,workFiles.workId,workFiles.id]}), unique().on(t.workId,t.number), foreignKey({ columns: [t.organizationId,t.eventId,t.workId],foreignColumns:[authorWorks.organizationId,authorWorks.eventId,authorWorks.id] }),
+  check('version_number_positive',sql`${t.number} > 0 AND ${t.number} <= 10`), check('version_kind_values',sql`${t.kind} IN ('submission','final')`),
+  pgPolicy('version_read',{for:'select',to:runtime,using:workVisible(sql`${t.organizationId}`,sql`${t.eventId}`,sql`${t.workId}`)}),
+  pgPolicy('version_insert',{for:'insert',to:runtime,withCheck:sql`${workVisible(sql`${t.organizationId}`,sql`${t.eventId}`,sql`${t.workId}`)} AND ${actorScope(sql`${t.ownerId}`)}`}),
+]);
+export const workHistory = pgTable('work_history', {
+  id: uuid('id').primaryKey(), organizationId: uuid('organization_id').notNull(), eventId: uuid('event_id').notNull(),workId:uuid('work_id').notNull(),
+  actorId:uuid('actor_id').notNull().references(()=>people.id), actor:text('actor').$type<'author'|'staff'>().notNull(),action:text('action').notNull(),message:text('message').notNull().default(''),
+  createdAt:timestamp('created_at',{withTimezone:true}).notNull().defaultNow(),
+},(t)=>[foreignKey({columns:[t.organizationId,t.eventId,t.workId],foreignColumns:[authorWorks.organizationId,authorWorks.eventId,authorWorks.id]}),
+  pgPolicy('history_read',{for:'select',to:runtime,using:sql`${workVisible(sql`${t.organizationId}`,sql`${t.eventId}`,sql`${t.workId}`)} AND (EXISTS (SELECT 1 FROM author_works w WHERE w.id=${t.workId} AND w.owner_id=nullif(current_setting('sep.person_id',true),'')::uuid) OR ${t.actor}='staff' OR ${t.action} IN ('submitted','final_submitted','withdrawn'))`}),
+  pgPolicy('history_insert',{for:'insert',to:runtime,withCheck:sql`${workVisible(sql`${t.organizationId}`,sql`${t.eventId}`,sql`${t.workId}`)} AND ${actorScope(sql`${t.actorId}`)}`}),
 ]);
 
 export const scientificCallDrafts = pgTable('scientific_call_drafts', {

@@ -5,6 +5,7 @@ import http from 'node:http';
 import https from 'node:https';
 import { MAX_WORK_BODY_BYTES, type ApiError, type PublishedScientificCall, type PublishedSite } from '@sep/contracts';
 import { errorMessage, type ErrorCode, type Locale } from '@sep/i18n';
+import { fileTransport } from './files.js';
 import { oidcAccessToken, oidcEnabled, removeOidcValue } from './oidc.js';
 export { adminOrigin, beginOidc, beginGoogle, finishOidc, finishGoogle, createOidcSession, createGoogleSession, googleLoginEnabled, redunivLoginEnabled, localReturnTo, oidcCookieSecure, oidcEnabled, oidcLogoutDestination, GOOGLE_FLOW_COOKIE, OIDC_FLOW_COOKIE, removeOidcValue } from './oidc.js';
 
@@ -103,15 +104,16 @@ export async function backendProxy(request: Request, parts: string[], cookie: st
   try {
     if (!['GET', 'POST', 'PUT', 'PATCH', 'DELETE'].includes(request.method)) throw new ApiTransportError(405, failure('FORBIDDEN'));
     const path = parts.join('/');
-    if (!/^(?:me|session|people|organization(?:\/domains(?:\/[0-9a-f-]{36}(?:\/(?:verify|activate|deactivate))?)?)?|invitations(?:\/accept|\/[0-9a-f-]{36}\/revoke)?|events(?:\/[0-9a-f-]{36}(?:\/site(?:\/publish)?|\/session|\/my-works(?:\/[0-9a-f-]{36})?|\/configuration|\/call(?:\/(?:publish|withdraw))?|\/lifecycle|\/organizers(?:\/[0-9a-f-]{36})?)?)?)$/.test(path)) throw new ApiTransportError(404, failure('NOT_FOUND'));
+    if (!/^(?:me|session|people|organization(?:\/domains(?:\/[0-9a-f-]{36}(?:\/(?:verify|activate|deactivate))?)?)?|invitations(?:\/accept|\/[0-9a-f-]{36}\/revoke)?|events(?:\/[0-9a-f-]{36}(?:\/site(?:\/publish)?|\/session|\/(?:my-works|submissions)(?:\/[0-9a-f-]{36}(?:\/(?:submit|withdraw|synchronize-call|decision|manuscript|versions\/[0-9a-f-]{36}|files\/[0-9a-f-]{36}))?)?|\/configuration|\/call(?:\/(?:publish|withdraw))?|\/lifecycle|\/organizers(?:\/[0-9a-f-]{36})?)?)?)$/.test(path)) throw new ApiTransportError(404, failure('NOT_FOUND'));
     if (request.method !== 'GET') checkOrigin(request);
     const url = new URL(request.url);
     const binding = bindingFor(request.headers.get('host') ?? '', url.searchParams.get('event') ?? undefined);
     const token = await tokenForCookie(cookie);
     if (!token) throw new ApiTransportError(401, failure('UNAUTHORIZED'));
     const query = new URLSearchParams();
-    for (const name of ['limit', 'offset']) if (url.searchParams.has(name)) query.set(name, url.searchParams.get(name)!);
+    for (const name of ['limit', 'offset', 'status', 'q']) if (url.searchParams.has(name)) query.set(name, url.searchParams.get(name)!);
     const locale: Locale = url.searchParams.get('lang') === 'en' ? 'en' : 'es';
+    if ((request.method === 'POST' && path.endsWith('/manuscript')) || (request.method === 'GET' && /\/files\/[0-9a-f-]{36}$/.test(path))) return await fileTransport(request,binding,path,token,locale);
     let body: unknown;
     if (request.method !== 'GET') {
       const text = await request.text();

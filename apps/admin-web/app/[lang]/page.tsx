@@ -1,7 +1,7 @@
 import { cookies, headers } from 'next/headers';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
-import type { AuthorWorkspace, ScientificCallDraft, EventConfiguration, EventPage, EventTeam, OrganizationSettings, PeopleDirectory, SessionView, SiteDraft } from '@sep/contracts';
+import type { SubmissionPage, AuthorWorkspace, ScientificCallDraft, EventConfiguration, EventPage, EventTeam, OrganizationSettings, PeopleDirectory, SessionView, SiteDraft } from '@sep/contracts';
 import { webCopy, type Locale } from '@sep/i18n';
 import { apiRequest, bindingFor, demoConfiguration, googleLoginEnabled, redunivLoginEnabled, oidcEnabled, removeOidcValue, SESSION_COOKIE, tokenForCookie, ApiTransportError } from '@sep/web-server';
 import Login from './login';
@@ -28,7 +28,7 @@ export default async function AdminPage({ params, searchParams }: { params: Prom
   let team: EventTeam | null = null;
   let directory: PeopleDirectory | null = null;
   let organization: OrganizationSettings | null = null;
-  let configuration: EventConfiguration | null = null; let scientificCall: ScientificCallDraft | null = null;
+  let configuration: EventConfiguration | null = null; let scientificCall: ScientificCallDraft | null = null; let inbox: SubmissionPage | null = null;
   try {
     binding = bindingFor((await headers()).get('host') ?? '', query.event);
     if (query.tab === 'works' && binding.eventId) {
@@ -44,6 +44,7 @@ export default async function AdminPage({ params, searchParams }: { params: Prom
       if (session.eventId) site = await apiRequest<SiteDraft>(binding, `events/${session.eventId}/site`, { token, locale });
       if (session.eventId && ['data', 'call'].includes(query.tab ?? '')) configuration = await apiRequest<EventConfiguration>(binding, `events/${session.eventId}/configuration`, { token, locale });
       if (session.eventId && query.tab === 'call') scientificCall = await apiRequest<ScientificCallDraft>(binding, `events/${session.eventId}/call`, { token, locale });
+      if (session.eventId && query.tab === 'submissions') inbox = await apiRequest<SubmissionPage>(binding, `events/${session.eventId}/submissions`, { token, locale });
       if (session.eventId && session.organizationAdmin) team = await apiRequest<EventTeam>(binding, `events/${session.eventId}/organizers`, { token, locale });
       if (!session.eventId && session.organizationAdmin && query.tab === 'people') directory = await apiRequest<PeopleDirectory>(binding, 'people', { token, locale });
       if (!session.eventId && session.organizationAdmin && query.tab === 'organization') organization = await apiRequest<OrganizationSettings>(binding, 'organization', { token, locale });
@@ -54,5 +55,5 @@ export default async function AdminPage({ params, searchParams }: { params: Prom
     else return <main className="public-empty"><div className="empty-state"><h1>{text.serviceTitle}</h1><p>{text.serviceHelp}</p><a href={`/${locale}`} className="button button-primary">{text.retry}</a></div></main>;
   }
   return <Dashboard key={contextKey} locale={locale} contextKey={contextKey} tab={query.tab ?? 'overview'} session={session} profile={profile}
-    events={events} site={site} team={team} directory={directory} organization={organization} configuration={configuration} scientificCall={scientificCall} denied={denied} publicUrl={publicUrl} demo={!!config} contextHosts={config?.hosts ?? {}} contextEvents={config?.events ?? {}} />;
+    events={events} site={site} team={team} directory={directory} organization={organization} configuration={configuration} scientificCall={scientificCall} inbox={inbox} denied={denied} publicUrl={publicUrl} demo={!!config} contextHosts={config?.hosts ?? {}} contextEvents={config?.events ?? {}} />;
 }

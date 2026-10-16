@@ -73,6 +73,8 @@ El modo demo exige `NODE_ENV=development` o `test`, `AUTH_MODE=development-token
 
 ## Migraciones y contratos
 
+El módulo de trabajos requiere migraciones hasta 0027. Sus manuscritos se guardan en PostgreSQL privado. En acceso real configurar `CLAMAV_HOST` y opcionalmente `CLAMAV_PORT`; la demo permite PDF marcados como no escaneados solo en development/test. Véase [operación de trabajos](trabajos-envios.md).
+
 ```powershell
 npm run db:generate
 npm run openapi

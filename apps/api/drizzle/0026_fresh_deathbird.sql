@@ -1,0 +1,1 @@
+ALTER TABLE "author_works" ADD COLUMN "hidden" boolean DEFAULT false NOT NULL;

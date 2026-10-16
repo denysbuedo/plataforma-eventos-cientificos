@@ -162,6 +162,41 @@
       "when": 1792161251833,
       "tag": "0022_work_authors_privileges",
       "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "7",
+      "when": 1792162179843,
+      "tag": "0023_fast_pestilence",
+      "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1792162179844,
+      "tag": "0024_submission_privileges",
+      "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "7",
+      "when": 1792163271726,
+      "tag": "0025_bouncy_marvel_apes",
+      "breakpoints": true
+    },
+    {
+      "idx": 26,
+      "version": "7",
+      "when": 1792163808799,
+      "tag": "0026_fresh_deathbird",
+      "breakpoints": true
+    },
+    {
+      "idx": 27,
+      "version": "7",
+      "when": 1792163808800,
+      "tag": "0027_draft_removal_privileges",
+      "breakpoints": true
     }
   ]
 }

@@ -29,8 +29,8 @@ export class DatabaseService implements OnModuleDestroy {
       pg_get_userbyid(c.relowner) = current_user AS owns_table, c.relrowsecurity, c.relforcerowsecurity
       FROM pg_roles r CROSS JOIN pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace
       WHERE r.rolname = current_user AND n.nspname = 'public'
-      AND c.relname IN ('events','event_series','event_editions','people','identities','affiliations','memberships','role_assignments','audit_entries','site_drafts','site_publications','organization_invitations','event_configurations','scientific_call_drafts','scientific_call_publications','author_works')`);
-    if (result.rows.length !== 16 || result.rows.some((role) => role.rolsuper || role.rolbypassrls || role.owns_table || !role.relrowsecurity || !role.relforcerowsecurity)) {
+      AND c.relname IN ('events','event_series','event_editions','people','identities','affiliations','memberships','role_assignments','audit_entries','site_drafts','site_publications','organization_invitations','event_configurations','scientific_call_drafts','scientific_call_publications','author_works','work_files','work_versions','work_history')`);
+    if (result.rows.length !== 19 || result.rows.some((role) => role.rolsuper || role.rolbypassrls || role.owns_table || !role.relrowsecurity || !role.relforcerowsecurity)) {
       throw new Error('Runtime database role or RLS configuration is unsafe');
     }
   }
@@ -38,7 +38,7 @@ export class DatabaseService implements OnModuleDestroy {
   oidcPerson(issuer: string, subject: string, name: string): Promise<string> {
     return this.db.transaction(async (tx) => {
       await tx.execute(sql`SELECT set_config('sep.organization_id', '', true), set_config('sep.event_id', '', true),
-        set_config('sep.organization_admin', 'false', true), set_config('sep.person_id', '', true), set_config('sep.invitation_hash', '', true),
+        set_config('sep.submissions_staff', 'false', true), set_config('sep.organization_admin', 'false', true), set_config('sep.person_id', '', true), set_config('sep.invitation_hash', '', true),
         set_config('sep.auth_provision', 'true', true), set_config('sep.auth_issuer', ${issuer}, true), set_config('sep.auth_subject', ${subject}, true)`);
       await tx.execute(sql`SELECT pg_advisory_xact_lock(hashtextextended(${'identity:' + issuer + ':' + subject}, 0))`);
       const [identity] = await tx.select({ personId: identities.personId, active: identities.active }).from(identities).where(and(eq(identities.issuer, issuer), eq(identities.subject, subject)));

@@ -1,7 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
 import { ArrayMaxSize, ArrayMinSize, ArrayUnique, IsArray, IsBoolean, IsIn, IsInt, IsString, IsUUID, Max, MaxLength, Min, MinLength, ValidateBy, ValidateIf, ValidateNested, isEmail } from 'class-validator';
-import { COUNTRY_CODES, type AuthorWork, type AuthorWorkSummary, type AuthorWorkspace, type PublishedScientificCall, type WorkAffiliation, type WorkAuthor } from '@sep/contracts';
+import { COUNTRY_CODES, WORK_STATUSES, type WorkStatus, type Manuscript, type WorkVersionSummary, type WorkHistory, type AuthorWork, type AuthorWorkSummary, type AuthorWorkspace, type PublishedScientificCall, type WorkAffiliation, type WorkAuthor } from '@sep/contracts';
 import { PublicEventDto } from '../events/event.dto.js';
 import { PublishedCallDto } from '../science/call.dto.js';
 export class WorkAffiliationDto implements WorkAffiliation {
@@ -39,6 +39,10 @@ export class SaveWorkDto extends CreateWorkDto {
   @ApiProperty({ minimum: 1 }) @IsInt() @Min(1) @Max(2147483646) revision!: number;
 }
 export class WorkSummaryDto implements AuthorWorkSummary {
+  @ApiProperty({enum:WORK_STATUSES}) status!:WorkStatus;
+  @ApiProperty({type:String,nullable:true,format:'date-time'}) submittedAt!:string|null;
+  @ApiProperty({type:String,nullable:true,format:'date'}) responseDeadline!:string|null;
+  @ApiProperty() editable!:boolean;
   @ApiProperty({ format: 'uuid' }) id!: string;
   @ApiProperty() title!: string;
   @ApiProperty({ enum: ['es','en'] }) language!: 'es' | 'en';
@@ -49,11 +53,35 @@ export class WorkSummaryDto implements AuthorWorkSummary {
   @ApiProperty({ format: 'date-time' }) updatedAt!: string;
 }
 export class WorkDto extends WorkSummaryDto implements AuthorWork {
+  @ApiProperty({type:()=>ManuscriptDto,nullable:true}) manuscript!:Manuscript|null;
+  @ApiProperty({type:()=>[VersionSummaryDto]}) versions!:WorkVersionSummary[];
+  @ApiProperty({type:()=>[HistoryDto]}) history!:WorkHistory[];
   @ApiProperty({ type: [WorkAuthorDto], maxItems: 20 }) authors!: WorkAuthor[];
   @ApiProperty() abstract!: string;
   @ApiProperty({ type: [String] }) keywords!: string[];
   @ApiProperty({ type: PublishedCallDto }) call!: PublishedScientificCall;
 }
+export class ManuscriptDto implements Manuscript {
+  @ApiProperty({format:'uuid'}) id!:string; @ApiProperty() name!:string; @ApiProperty() bytes!:number;
+  @ApiProperty() pages!:number; @ApiProperty() sha256!:string; @ApiProperty({enum:['clean','demo_unscanned']}) scan!:'clean'|'demo_unscanned';
+}
+export class VersionSummaryDto implements WorkVersionSummary {
+  @ApiProperty({format:'uuid'}) id!:string; @ApiProperty() number!:number;
+  @ApiProperty({enum:['submission','final']}) kind!:'submission'|'final'; @ApiProperty({format:'date-time'}) createdAt!:string;
+}
+export class HistoryDto implements WorkHistory {
+  @ApiProperty({format:'uuid'}) id!:string; @ApiProperty() action!:string; @ApiProperty() message!:string;
+  @ApiProperty({enum:['author','staff']}) actor!:'author'|'staff'; @ApiProperty({format:'date-time'}) createdAt!:string;
+}
+export class VersionContentDto extends CreateWorkDto {
+  @ApiProperty() abstract!:string; @ApiProperty({type:[String]}) keywords!:string[];
+  @ApiProperty({type:PublishedCallDto}) call!:PublishedScientificCall;
+  @ApiProperty({type:[WorkAuthorDto]}) authors!:WorkAuthor[];
+  @ApiProperty({type:ManuscriptDto,nullable:true}) manuscript!:Manuscript|null;
+}
+export class VersionDto extends VersionSummaryDto { @ApiProperty({type:VersionContentDto}) content!:VersionContentDto }
+export class StaffWorkDto extends WorkDto { @ApiProperty() canDecide!:boolean }
+export class SubmissionPageDto { @ApiProperty({type:[WorkSummaryDto]}) data!:WorkSummaryDto[]; @ApiProperty() limit!:number; @ApiProperty() offset!:number }
 export class AuthorWorkspaceDto implements AuthorWorkspace {
   @ApiProperty({ type: [String], enum: ['es','en'] }) languages!: ('es' | 'en')[];
   @ApiProperty({ type: PublicEventDto }) event!: PublicEventDto;

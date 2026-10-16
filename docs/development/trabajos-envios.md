@@ -1,0 +1,73 @@
+# Módulo de trabajos
+
+Implementado en español e inglés. Autor y organizador utilizan las mismas APIs privadas y permisos por evento. No requiere que un autor pertenezca a RedUniv ni a la organización.
+
+## Recorrido del autor
+
+1. Abrir **Mis trabajos**, crear un borrador y completar título, resumen, palabras clave y autoría desde **Editar**. Guardar vuelve a consulta; **Volver al listado** cierra el detalle.
+2. Adjuntar el manuscrito PDF en el detalle. El tipo indica si es obligatorio y su máximo de páginas. La demo advierte si no se ha realizado escaneo antivirus.
+3. Si cambió la convocatoria, actualizar explícitamente sus reglas y revisar área/tipo y requisitos. Preparar antes de apertura está permitido; enviar exige plazo vigente.
+4. Confirmar y pulsar enviar. El trabajo queda bloqueado para edición y aparece su primera versión en el historial. Guardar o adjuntar por separado no constituye envío.
+5. Si el organizador pide cambios, editar y reenviar dentro del plazo indicado. Mientras se prepara la respuesta, la organización conserva acceso únicamente a la última versión enviada.
+6. Tras aceptación, responder a una solicitud de versión final. Se conservan idioma, área y tipo aceptados. Cada reenvío crea otra versión; las anteriores se pueden consultar y descargar.
+7. Retirar requiere motivo y conserva el historial. Quitar del listado se permite únicamente para borradores que nunca se enviaron y conserva el registro de auditoría.
+
+## Recorrido del organizador
+
+Abrir **Trabajos recibidos** en el evento donde se tenga asignación de organizador. Filtrar por estado o título, recorrer páginas y abrir un trabajo. Se muestran su contenido formal, versiones, PDF e historial comunicado.
+
+Pulsar **Gestionar estado o dictamen**, elegir la acción y escribir el mensaje al autor. Solicitar correcciones o versión final exige fecha límite. Se puede aceptar o rechazar desde recepción/revisión y revisar la versión final recibida. Una cuenta no puede decidir sobre su propio trabajo. Un administrador institucional necesita también la asignación de organizador del evento.
+
+Estos controles registran decisiones del organizador. La evaluación por revisores y la publicación de trabajos aceptados se implementan por separado. No se envían notificaciones por correo en este incremento.
+
+```mermaid
+stateDiagram-v2
+    draft --> submitted: Enviar
+    submitted --> in_review: Iniciar revisión
+    submitted --> changes_requested: Pedir cambios
+    in_review --> changes_requested: Pedir cambios
+    changes_requested --> submitted: Reenviar
+    submitted --> accepted: Aceptar
+    in_review --> accepted: Aceptar
+    submitted --> rejected: Rechazar
+    in_review --> rejected: Rechazar
+    accepted --> final_requested: Pedir versión final
+    final_requested --> final_submitted: Enviar final
+    final_submitted --> accepted: Validar final
+    final_submitted --> changes_requested: Corregir final
+    changes_requested --> final_submitted: Reenviar final
+    submitted --> withdrawn: Retirar
+    withdrawn --> submitted: Enviar con convocatoria vigente
+```
+
+El diagrama resume las rutas principales; también se admite retirar desde revisión, correcciones, aceptación o fase final. Rechazo es terminal. Las operaciones exigen revisión vigente para evitar sobrescrituras.
+
+## API
+
+Prefijo `/api/v1/events/:eventId`. El propietario y ámbito se resuelven en servidor. Véase [OpenAPI](../api/openapi.json).
+
+| Ruta | Métodos y operación |
+|---|---|
+| `/my-works` | GET espacio propio; POST crear |
+| `/my-works/:id` | GET detalle; PUT guardar; DELETE quitar borrador nunca enviado |
+| `/my-works/:id/submit` | POST envío confirmado con revision |
+| `/my-works/:id/synchronize-call` | POST actualización explícita de reglas |
+| `/my-works/:id/withdraw` | POST retiro con motivo |
+| `/my-works/:id/manuscript` | POST multipart file y revision; DELETE desvincular |
+| `/my-works/:id/versions/:versionId` | GET instantánea formal |
+| `/my-works/:id/files/:fileId` | GET descarga privada |
+| `/submissions` | GET listado paginado del organizador, status y q opcionales |
+| `/submissions/:id` | GET última versión formal |
+| `/submissions/:id/decision` | POST decisión, mensaje, revision y plazo si corresponde |
+| `/submissions/:id/versions/:versionId` | GET versión formal autorizada |
+| `/submissions/:id/files/:fileId` | GET PDF formal autorizado |
+
+## Operación y verificación
+
+Aplicar migraciones hasta 0027. Para acceso real configurar `CLAMAV_HOST` y opcionalmente `CLAMAV_PORT` (3310 por defecto) con ClamD INSTREAM disponible desde la API y firmas actualizadas. Sin escáner operativo se rechaza la carga y no se habilita el uso de archivos marcados como demo. La configuración externa de antivirus y RedUniv/Google continúa pendiente. La demo local puede recorrerse sin esos proveedores.
+
+Pasaron compilación completa y análisis estático. Una comprobación dirigida con el rol runtime y autorización real verificó PDF obligatorio, privacidad de borradores y correcciones, cuatro versiones, corrección después del cierre, aceptación, versión final con conservación del idioma, retiro y eliminación lógica. Se revirtió la transacción completa para conservar los datos de la demo. Se comprobó rechazo sin antivirus en modo real. Esto no sustituye pruebas funcionales completas, validación por navegador ni integración con un ClamAV real; siguen aplazadas por indicación del propietario.
+
+La comprobación HTTP verificó bandeja autorizada, rechazo de una cuenta sin permisos, pantallas de autor/organizador en ambos idiomas, portal público y transporte multipart hasta la comprobación de propiedad sin modificar trabajos. También se rechazó un PDF con acción activa anidada y se verificó el protocolo INSTREAM con respuestas limpia/infectada de un servidor simulado; no equivale a probar un antivirus real.
+
+Los siguientes bloques científicos son comités y revisión por pares, programa y publicación/memorias. El envío de trabajos y su seguimiento ya están implementados.

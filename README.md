@@ -2,7 +2,7 @@
 
 > Plataforma integral, multiinstitución, multievento y multilingüe para gestionar congresos científicos desde la convocatoria hasta la publicación de memorias y certificados.
 
-**Estado:** portal y administración con CMS, convocatoria científica y borradores privados del autor implementados. Fase 1 y validación funcional pendientes de cierre · **Idiomas iniciales:** español e inglés.
+**Estado:** portal y administración con CMS, convocatoria científica y módulo de trabajos implementados: autoría, PDF privado, envío, versiones, correcciones, dictámenes del organizador y versión final. Revisión por pares y validación funcional completa pendientes · **Idiomas iniciales:** español e inglés.
 
 ## Visión
 
@@ -36,7 +36,7 @@ El producto gestiona el ciclo **planificación → ciencia → inscripción → 
 - **Datos:** PostgreSQL + Drizzle, elegido tras [prueba técnica de aislamiento](docs/architecture/prueba-orm.md) y [ADR-003](docs/adr/ADR-003-orm-aislamiento.md).
 - **Identidad:** dos accesos independientes: RedUniv mediante Keycloak y Google mediante OpenID Connect directo. Integraciones implementadas; activación pendiente de registrar clientes y configurar credenciales. Véase [configuración de RedUniv y Google](docs/development/reduniv-y-google.md).
 - **Asíncrono:** Redis + BullMQ y patrón Transactional Outbox.
-- **Archivos:** almacenamiento S3 compatible con aislamiento por tenant.
+- **Archivos:** manuscritos privados en PostgreSQL, con versiones y cuotas; S3 compatible previsto para ampliar almacenamiento. Véase [ADR-015](docs/adr/ADR-015-envios-versiones-archivos.md).
 - **Operación:** Ubuntu, Nginx/HAProxy, systemd, métricas/logs; sin requisito inicial de Docker/Kubernetes.
 
 ```text
@@ -132,9 +132,9 @@ La demo imprime enlaces al portal público y al administrador, con perfiles para
 
 ## Documentación
 
-**Mis trabajos** permite a una cuenta activa preparar borradores privados de título, resumen y palabras clave, con área/tipo de una convocatoria publicada y sus reglas conservadas. Incluye autores ordenados, afiliaciones por institución/país y correspondencia, editables solo por el propietario. No requiere permisos de organizador. Archivos y envío formal siguen pendientes; ver [guía del autor](docs/development/mis-trabajos.md).
+**Mis trabajos** permite preparar borradores privados, declarar autores y afiliaciones, adjuntar PDF y enviar versiones inmutables. Incluye historial, retiro, correcciones y versión final. **Trabajos recibidos** permite al organizador consultar los envíos y comunicar dictámenes con plazos. No equivale a revisión por pares. Ver [guía del módulo](docs/development/trabajos-envios.md).
 
-El primer incremento del módulo científico permite preparar áreas temáticas, tipos de contribución, requisitos y plazos en **Convocatoria científica**, con borrador, publicación independiente y retirada. El portal muestra solo la versión publicada. El envío de trabajos sigue pendiente. Ver [Fase 2](docs/functional/fase-2.md); validación funcional completa aplazada.
+**Convocatoria científica** permite preparar áreas temáticas, tipos de contribución, requisitos y plazos, con borrador, publicación independiente y retirada. El portal muestra solo la versión publicada. Ver [Fase 2](docs/functional/fase-2.md); validación funcional completa aplazada. El acceso real con RedUniv/Google y el antivirus operativo siguen pendientes de configuración externa.
 
 En **Datos del evento** se administran fechas, zona horaria, modalidad, idiomas y ciclo operativo, separados de la publicación del CMS. Las fechas configuradas se aplican al volver a publicar. Véase [configuración del evento](docs/development/configuracion-eventos.md); validación funcional completa pendiente.
 

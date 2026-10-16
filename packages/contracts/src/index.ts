@@ -79,11 +79,22 @@ export interface ScientificCallDraft {
 export interface AuthorWorkSummary {
   id: string; title: string; language: 'es' | 'en'; trackId: string; contributionTypeId: string; revision: number;
   createdAt: string; updatedAt: string;
+  editable: boolean; status: WorkStatus; submittedAt: string | null; responseDeadline: string | null;
 }
 export interface WorkAffiliation { institution: string; countryCode: string }
 export interface WorkAuthor { id: string; fullName: string; email: string; affiliations: WorkAffiliation[]; corresponding: boolean }
-export interface AuthorWork extends AuthorWorkSummary { abstract: string; keywords: string[]; call: PublishedScientificCall; authors: WorkAuthor[] }
+export const WORK_STATUSES = ['draft','submitted','in_review','changes_requested','accepted','rejected','withdrawn','final_requested','final_submitted'] as const;
+export type WorkStatus = typeof WORK_STATUSES[number];
+export interface Manuscript { id: string; name: string; bytes: number; pages: number; sha256: string; scan: 'clean' | 'demo_unscanned' }
+export interface WorkContent { title: string; abstract: string; keywords: string[]; language: 'es' | 'en'; trackId: string; contributionTypeId: string; call: PublishedScientificCall; authors: WorkAuthor[]; manuscript: Manuscript | null }
+export interface WorkVersionSummary { id: string; number: number; kind: 'submission' | 'final'; createdAt: string }
+export interface WorkHistory { id: string; action: string; message: string; actor: 'author' | 'staff'; createdAt: string }
+export interface WorkVersion extends WorkVersionSummary { content: WorkContent }
+export interface AuthorWork extends AuthorWorkSummary, WorkContent { versions: WorkVersionSummary[]; history: WorkHistory[]; editable: boolean }
+export interface StaffWork extends AuthorWork { canDecide: boolean }
+export interface SubmissionPage { data: AuthorWorkSummary[]; limit: number; offset: number }
 export const MAX_WORK_BODY_BYTES = 384 * 1024;
+export const MAX_MANUSCRIPT_BYTES = 5 * 1024 * 1024;
 export interface AuthorWorkspace {
   event: PublicEventView; works: AuthorWorkSummary[]; call: PublishedScientificCall | null;
   languages: ('es' | 'en')[];
