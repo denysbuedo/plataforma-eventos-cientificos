@@ -77,6 +77,7 @@ export interface ScientificCallDraft {
   timezone: string; publication: PublishedScientificCall | null;
 }
 export interface AuthorWorkSummary {
+  canManage?: boolean;
   id: string; title: string; language: 'es' | 'en'; trackId: string; contributionTypeId: string; revision: number;
   createdAt: string; updatedAt: string;
   editable: boolean; status: WorkStatus; submittedAt: string | null; responseDeadline: string | null;
@@ -90,7 +91,9 @@ export type WorkStatus = typeof WORK_STATUSES[number];
 export interface Manuscript { id: string; name: string; bytes: number; pages: number; sha256: string; scan: 'clean' | 'demo_unscanned' }
 export interface WorkContent { title: string; abstract: string; keywords: string[]; language: 'es' | 'en'; trackId: string; contributionTypeId: string; call: PublishedScientificCall; authors: WorkAuthor[]; manuscript: Manuscript | null }
 export interface WorkVersionSummary { id: string; number: number; kind: 'submission' | 'final'; createdAt: string }
-export interface WorkHistory { id: string; action: string; message: string; actor: 'author' | 'staff'; createdAt: string }
+export interface WorkHistory { id: string; action: string; message: string; actor: 'author' | 'staff'; actorId?:string; actorName?:string; createdAt: string }
+export interface WorkCollaboration { id:string; authorId:string; email:string; status:'pending'|'accepted'|'revoked'|'expired'; createdAt:string; expiresAt:string; acceptedAt:string|null }
+export interface CreatedWorkCollaboration { invitation:WorkCollaboration; token:string; work:AuthorWork }
 export interface WorkVersion extends WorkVersionSummary { content: WorkContent }
 export interface AuthorWork extends AuthorWorkSummary, WorkContent { versions: WorkVersionSummary[]; history: WorkHistory[]; editable: boolean }
 export interface StaffWork extends AuthorWork { canDecide: boolean }

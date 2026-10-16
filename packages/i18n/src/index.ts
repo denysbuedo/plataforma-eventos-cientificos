@@ -1,5 +1,6 @@
 const messages = {
   es: {
+    WORK_AUTHOR_MANAGEMENT:'Solo quien creó el trabajo puede modificar la autoría. Tu acceso permite corregir el contenido, gestionar el PDF y reenviar.',WORK_COLLABORATION_TARGET:'La invitación debe corresponder a otro autor de correspondencia vigente. No puedes aceptar tu propia invitación.',WORK_COLLABORATION_EMAIL:'Entra con una cuenta cuyo correo verificado coincida con el destinatario de la invitación.',WORK_COLLABORATION_EXPIRED:'La invitación caducó o fue revocada. Solicita una nueva.',WORK_COLLABORATION_LIMIT:'Se alcanzó el límite de invitaciones de este trabajo.',
     ORCID_UNAVAILABLE:'La conexión con ORCID aún no está configurada.',ORCID_INVALID:'No se pudo verificar el ORCID. Inicia de nuevo la conexión desde tu perfil.',ORCID_CONFLICT:'Este ORCID ya está vinculado. Se requiere revisar las cuentas antes de cambiar la asociación.',ORCID_REQUIRED:'Este evento exige que la cuenta que envía el trabajo tenga ORCID de producción conectado y figure entre sus autores. Conéctalo en Mi perfil y actualiza tu autoría.',
     FINAL_CLASSIFICATION:'La versión final debe conservar el área, tipo e idioma del trabajo aceptado.',
     PDF_INVALID: 'El archivo debe ser un PDF válido, sin cifrado ni contenido activo y de hasta 500 páginas.',
@@ -32,6 +33,7 @@ const messages = {
     INTERNAL_ERROR: 'No se pudo completar la solicitud.',
   },
   en: {
+    WORK_AUTHOR_MANAGEMENT:'Only the work creator can change authorship. Your access allows content corrections, PDF management and resubmission.',WORK_COLLABORATION_TARGET:'The invitation must refer to another current corresponding author. You cannot accept your own invitation.',WORK_COLLABORATION_EMAIL:'Sign in with an account whose verified email matches the invitation recipient.',WORK_COLLABORATION_EXPIRED:'The invitation expired or was revoked. Request a new one.',WORK_COLLABORATION_LIMIT:'This work has reached the invitation limit.',
     ORCID_UNAVAILABLE:'The ORCID connection has not been configured yet.',ORCID_INVALID:'ORCID could not be verified. Start a new connection from your profile.',ORCID_CONFLICT:'This ORCID is already linked. Account review is required before changing the association.',ORCID_REQUIRED:'This event requires the submitting account to have a connected production ORCID and be listed as an author. Connect it in My profile and update your authorship.',
     FINAL_CLASSIFICATION:'The final version must retain the accepted work track, type and language.',
     PDF_INVALID: 'The file must be a valid, unencrypted PDF without active content and with at most 500 pages.',

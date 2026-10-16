@@ -1,3 +1,4 @@
+import { WorkCollaborationsController, WorkCollaborationsService } from './collaborations.js';
 import { Body, Controller, Delete, Get, Module, Param, Post, Put, Req, Res, Query, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { ApiBearerAuth, ApiCreatedResponse, ApiOkResponse, ApiTags, ApiConsumes, ApiBody } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -66,5 +67,5 @@ class SubmissionsStaffController {
   async file(@Req() req:SepRequest,@Param('workId') id:string,@Param('fileId') fileId:string,@Res() res:Response){uuid(id,fileId);sendPdf(res,await this.service.file(req.security,id,fileId));}
 }
 
-@Module({ imports:[IdentityModule], controllers: [AuthorWorksController, SubmissionsStaffController], providers: [AuthorWorksService, AuditService, ManuscriptsService, SubmissionsStaffService] })
+@Module({ imports:[IdentityModule], controllers: [AuthorWorksController, SubmissionsStaffController, WorkCollaborationsController], providers: [AuthorWorksService, AuditService, ManuscriptsService, SubmissionsStaffService, WorkCollaborationsService] })
 export class SubmissionsModule {}

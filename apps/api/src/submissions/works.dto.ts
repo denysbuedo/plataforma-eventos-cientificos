@@ -42,6 +42,7 @@ export class SaveWorkDto extends CreateWorkDto {
   @ApiProperty({ minimum: 1 }) @IsInt() @Min(1) @Max(2147483646) revision!: number;
 }
 export class WorkSummaryDto implements AuthorWorkSummary {
+  @ApiProperty() canManage!:boolean;
   @ApiProperty({enum:WORK_STATUSES}) status!:WorkStatus;
   @ApiProperty({type:String,nullable:true,format:'date-time'}) submittedAt!:string|null;
   @ApiProperty({type:String,nullable:true,format:'date'}) responseDeadline!:string|null;
@@ -73,6 +74,7 @@ export class VersionSummaryDto implements WorkVersionSummary {
   @ApiProperty({enum:['submission','final']}) kind!:'submission'|'final'; @ApiProperty({format:'date-time'}) createdAt!:string;
 }
 export class HistoryDto implements WorkHistory {
+  @ApiProperty({format:'uuid'}) actorId!:string; @ApiProperty() actorName!:string;
   @ApiProperty({format:'uuid'}) id!:string; @ApiProperty() action!:string; @ApiProperty() message!:string;
   @ApiProperty({enum:['author','staff']}) actor!:'author'|'staff'; @ApiProperty({format:'date-time'}) createdAt!:string;
 }

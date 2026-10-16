@@ -34,6 +34,7 @@
 - [ADR-014: autoría declarada, afiliaciones y correspondencia](adr/ADR-014-autoria-declarada.md).
 - [Autoría e identidad: propuesta de búsqueda y reconocimiento](functional/autoria-identidad.md).
 - [Conexión ORCID y activación](development/orcid.md) y [ADR-016](adr/ADR-016-orcid-autenticado.md).
+- [Gestión compartida de trabajos](development/gestion-compartida-trabajos.md) y [ADR-017](adr/ADR-017-gestion-compartida-trabajos.md).
 - [Trabajos: envío, archivos, correcciones y versión final](development/trabajos-envios.md) y [ADR-015: versiones, privacidad y manuscritos](adr/ADR-015-envios-versiones-archivos.md).
 - [Desarrollo local, variables y demo](development/desarrollo-local.md).
 - [Contrato mínimo de API](api/fase-0.md) y [OpenAPI generado](api/openapi.json).

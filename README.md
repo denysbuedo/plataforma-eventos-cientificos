@@ -134,7 +134,9 @@ La demo imprime enlaces al portal público y al administrador, con perfiles para
 
 **Mis trabajos** permite preparar borradores privados, declarar autores y afiliaciones, adjuntar PDF y enviar versiones inmutables. Incluye historial, retiro, correcciones y versión final. **Trabajos recibidos** permite al organizador consultar los envíos y comunicar dictámenes con plazos. No equivale a revisión por pares. Ver [guía del módulo](docs/development/trabajos-envios.md).
 
-**Mi perfil** incorpora conexión autenticada con ORCID; cada evento puede exigirlo a la persona que realiza el envío inicial. El cliente externo sigue pendiente de activación. Ver [configuración y alcance](docs/development/orcid.md).
+**Mi perfil** incorpora conexión autenticada con ORCID; cada evento puede exigirlo a la persona que realiza el envío inicial. La activación se configura por entorno; ORCID de producción sigue pendiente. Ver [configuración y alcance](docs/development/orcid.md).
+
+**Gestión compartida** permite invitar al autor de correspondencia, aceptar acceso y revocarlo. El colaborador puede corregir contenido, gestionar PDF y reenviar dentro de los plazos; la autoría y el retiro quedan bajo control del remitente original. Ver [recorrido y límites](docs/development/gestion-compartida-trabajos.md).
 
 **Convocatoria científica** permite preparar áreas temáticas, tipos de contribución, requisitos y plazos, con borrador, publicación independiente y retirada. El portal muestra solo la versión publicada. Ver [Fase 2](docs/functional/fase-2.md); validación funcional completa aplazada. El acceso real con RedUniv/Google y el antivirus operativo siguen pendientes de configuración externa.
 

@@ -15,21 +15,21 @@ export class SubmissionsStaffService {
     return this.authorization.run(context,'submissions-manage',async tx=>{
       const rows=await tx.select({id:works.id,title:sql<string>`submitted_content->>'title'`,language:sql<'es'|'en'>`submitted_content->>'language'`,trackId:sql<string>`submitted_content->>'trackId'`,contributionTypeId:sql<string>`submitted_content->>'contributionTypeId'`,status:works.status,revision:works.revision,submittedAt:works.submittedAt,responseDeadline:works.responseDeadline,createdAt:works.createdAt,updatedAt:works.updatedAt})
         .from(works).where(and(this.scope(context),query.status?eq(works.status,query.status):undefined,query.q?sql`strpos(lower(submitted_content->>'title'),lower(${query.q})) > 0`:undefined)).orderBy(desc(works.submittedAt),works.id).limit(query.limit).offset(query.offset);
-      return {data:rows.map(row=>({...row,editable:false,submittedAt:row.submittedAt!.toISOString(),createdAt:row.createdAt.toISOString(),updatedAt:row.updatedAt.toISOString()})),...query};
+      return {data:rows.map(row=>({...row,canManage:false,editable:false,submittedAt:row.submittedAt!.toISOString(),createdAt:row.createdAt.toISOString(),updatedAt:row.updatedAt.toISOString()})),...query};
     });
   }
   read(context:RequestContext,id:string):Promise<StaffWork> {
     return this.authorization.run(context,'submissions-manage',async tx=>{
       const state=await this.authors.state(tx,context);const [row]=await tx.select().from(works).where(and(this.scope(context),eq(works.id,id)));
       if(!row?.submittedContent)throw new ApiException(404,'NOT_FOUND');
-      return {...await this.authors.detail(tx,row,state,true),canDecide:row.ownerId!==context.personId && state.active};
+      return {...await this.authors.detail(tx,row,state,true),canDecide:row.ownerId!==context.personId && !row.authors.some(a=>a.personId===context.personId) && !row.submittedContent?.authors.some(a=>a.personId===context.personId) && state.active};
     });
   }
   decide(context:RequestContext,id:string,dto:WorkDecisionDto):Promise<StaffWork> {
     return this.authorization.run(context,'submissions-manage',async tx=>{
       const state=await this.authors.state(tx,context,true);const [row]=await tx.select().from(works).where(and(this.scope(context),eq(works.id,id))).for('update');
       if(!row?.submittedContent)throw new ApiException(404,'NOT_FOUND');
-      if(row.ownerId===context.personId)throw new ApiException(403,'SELF_DECISION');
+      if(row.ownerId===context.personId||row.authors.some(a=>a.personId===context.personId)||row.submittedContent?.authors.some(a=>a.personId===context.personId))throw new ApiException(403,'SELF_DECISION');
       if(!state.active)throw new ApiException(409,'CONFLICT');
       if(row.revision!==dto.revision)throw new ApiException(409,'REVISION_CONFLICT');
       const allowed=dto.decision==='final_requested'?row.status==='accepted':['submitted','in_review','final_submitted'].includes(row.status)&&!(dto.decision==='in_review'&&row.status==='in_review');

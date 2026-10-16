@@ -1,6 +1,6 @@
 # Autoría y cuentas: propuesta de vinculación
 
-Estado: búsqueda de personas, reclamaciones y aprobaciones propuestas para el siguiente incremento. La conexión autenticada con ORCID y la selección explícita de la propia cuenta ya están implementadas; véase [activación de ORCID](../development/orcid.md).
+Estado: búsqueda de personas, reclamaciones y aprobaciones propuestas para el siguiente incremento. La conexión autenticada con ORCID, la selección explícita de la propia cuenta y la invitación/aceptación de [gestión compartida con correspondencia](../development/gestion-compartida-trabajos.md) ya están implementadas; véase [activación de ORCID](../development/orcid.md).
 
 ## Modelo
 
@@ -13,7 +13,7 @@ La declaración conserva nombre, afiliación y contacto correspondientes al trab
 1. Al añadir autor, ofrecer primero búsqueda de personas registradas: nombre y afiliación, con límites y privacidad de contacto. Seleccionar una persona conserva una referencia, no autoriza a editar su perfil ni confirma por sí solo que acepta la autoría.
 2. Si no está registrada, permitir una declaración mínima con nombre, afiliación y contacto. No crear una cuenta de acceso ficticia. Exigir correo verificado al reclamar, no suponer que el correo escrito por otra persona está verificado.
 3. Tras registrarse, ofrecer coincidencias basadas preferentemente en contacto verificado o identificador autenticado. El nombre y la afiliación sirven para encontrar candidatos, no para enlazar automáticamente. No revelar títulos, resúmenes, archivos ni contactos de trabajos privados durante esa búsqueda.
-4. La persona solicita reconocer una declaración. El autor de correspondencia confirma; si se trata de su propia declaración, debe intervenir otro responsable autorizado para evitar autoaprobación. Guardar estados pendiente, aprobada, rechazada y revocada con evidencia y auditoría.
+4. La persona solicita reconocer una declaración. El autor de correspondencia registrado confirma si ya aceptó esa responsabilidad; hasta entonces lo gestiona provisionalmente el remitente original. Si se trata de su propia declaración, debe intervenir otro responsable autorizado para evitar autoaprobación. Guardar estados pendiente, aprobada, rechazada y revocada con evidencia y auditoría. Esta política está acordada, pero aún falta implementar las solicitudes y aprobaciones.
 5. Al aprobar, asociar la declaración a la persona canónica y mostrarla en su espacio de contribuciones. No otorgar propiedad o edición del trabajo automáticamente; esos permisos se gestionan por separado.
 
 Contemplar homónimos, alias, cambio de correo, varias declaraciones de la misma persona, cuentas RedUniv/Google, reclamaciones contradictorias y una vía administrativa de resolución. Unificar personas requiere revisión explícita; nunca fusionar cuentas por nombre.

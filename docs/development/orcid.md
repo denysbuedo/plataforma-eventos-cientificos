@@ -1,6 +1,6 @@
 # Conectar ORCID
 
-Estado: código implementado, cliente y validación real pendientes. RedUniv y Google siguen siendo los accesos de la plataforma. ORCID se conecta desde una cuenta ya autenticada; no crea otra cuenta ni fusiona personas automáticamente.
+Estado: código implementado y conexión Sandbox comprobada por el propietario en la demo local; cliente y validación de producción pendientes. RedUniv y Google siguen siendo los accesos de la plataforma. ORCID se conecta desde una cuenta ya autenticada; no crea otra cuenta ni fusiona personas automáticamente.
 
 ## En la demo
 

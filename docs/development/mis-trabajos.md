@@ -23,7 +23,7 @@ En **Editar → Autores y afiliaciones**, añadir cada autor con nombre completo
 
 **Subir** y **Bajar** modifican el orden de autoría. Marcar un único **Autor de correspondencia** y completar su correo; el correo del resto es opcional. Si se retira al autor seleccionado para correspondencia, elegir otro antes de guardar. Se puede dejar vacía la lista completa mientras el trabajo sea borrador.
 
-**Guardar cambios** guarda también la autoría y vuelve a consulta. **Cerrar** protege los cambios locales de autores, orden, afiliaciones y PDF con el mismo diálogo. **Descartar cambios** conserva lo ya guardado y cancela los cambios pendientes. Añadir coautores no crea cuentas, concede acceso ni envía correos. Solo el propietario puede editar el borrador.
+**Guardar cambios** guarda también la autoría y vuelve a consulta. **Cerrar** protege los cambios locales de autores, orden, afiliaciones y PDF con el mismo diálogo. **Descartar cambios** conserva lo ya guardado y cancela los cambios pendientes. Añadir coautores no crea cuentas, concede acceso ni envía correos. El propietario gestiona la autoría. Puede compartir correcciones de contenido, PDF y reenvío con el autor de correspondencia mediante [invitación aceptada](gestion-compartida-trabajos.md).
 
 La descarga, el historial y el envío formal se muestran en consulta. Adjuntar y retirar PDF se realizan en edición y se aplican al guardar. Si los datos se guardan pero falla la operación del PDF, aparece un aviso explícito, se conserva la revisión actual y el PDF pendiente puede reintentarse o descartarse. Las operaciones de archivo y contenido son peticiones consecutivas, no una transacción única.
 

@@ -3,7 +3,7 @@ import { and, desc, eq, sql } from 'drizzle-orm';
 import { randomUUID } from 'node:crypto';
 import type { AuthorWork, AuthorWorkspace, PublishedScientificCall, WorkContent, WorkStatus, WorkAuthor } from '@sep/contracts';
 import { DatabaseService, type DbTransaction } from '../database/database.service.js';
-import { authorWorks as works, eventConfigurations, events, people, orcidConnections, scientificCallPublications, workFiles, workVersions, workHistory } from '../database/schema.js';
+import { authorWorks as works, eventConfigurations, events, people, orcidConnections, scientificCallPublications, workFiles, workVersions, workHistory, workCollaborations } from '../database/schema.js';
 import { ApiException, type RequestContext } from '../common/http.js';
 import { AuditService } from '../common/audit.service.js';
 import { ManuscriptsService } from './manuscripts.service.js';
@@ -12,8 +12,9 @@ const view = (row: typeof works.$inferSelect): AuthorWork => ({ id: row.id, titl
   authors: row.authors, manuscript: row.manuscript, status: row.status, submittedAt: row.submittedAt?.toISOString() ?? null, responseDeadline: row.responseDeadline, editable: false, versions: [], history: [],
   language: row.language, trackId: row.trackId, contributionTypeId: row.contributionTypeId, call: row.call, revision: row.revision,
   createdAt: row.createdAt.toISOString(), updatedAt: row.updatedAt.toISOString() });
-const summaryFields = { status: works.status, submittedAt: works.submittedAt, responseDeadline: works.responseDeadline, callTimezone: sql<string>`call_snapshot->>'timezone'`, id: works.id, title: works.title, language: works.language, trackId: works.trackId,
+const summaryFields = { ownerId:works.ownerId, status: works.status, submittedAt: works.submittedAt, responseDeadline: works.responseDeadline, callTimezone: sql<string>`call_snapshot->>'timezone'`, id: works.id, title: works.title, language: works.language, trackId: works.trackId,
   contributionTypeId: works.contributionTypeId, revision: works.revision, createdAt: works.createdAt, updatedAt: works.updatedAt };
+const authorshipKey=(authors:WorkAuthor[])=>JSON.stringify(authors.map(author=>[author.id,author.fullName,author.email,author.corresponding,author.personId??'',author.orcid??'',author.orcidVerified??false,author.affiliations.map(affiliation=>[affiliation.institution,affiliation.countryCode])]));
 @Injectable()
 export class AuthorWorksService {
   today(timezone: string) {
@@ -28,11 +29,15 @@ export class AuthorWorksService {
   content(row: typeof works.$inferSelect): WorkContent {
     return {title:row.title,abstract:row.abstract,keywords:row.keywords,language:row.language,trackId:row.trackId,contributionTypeId:row.contributionTypeId,call:row.call,authors:row.authors,manuscript:row.manuscript};
   }
-  private async authors(tx:DbTransaction,context:RequestContext,authors:WorkAuthor[]) {
+  private async authors(tx:DbTransaction,context:RequestContext,authors:WorkAuthor[], previous:WorkAuthor[] = []) {
     const [connection]=await tx.select().from(orcidConnections).where(eq(orcidConnections.personId,context.personId!));
     if(authors.filter(author=>author.personId===context.personId).length>1)throw new ApiException(400,'VALIDATION_FAILED');
     return authors.map(author=>{
-      if(author.personId&&author.personId!==context.personId)throw new ApiException(400,'VALIDATION_FAILED');
+      if(author.personId&&author.personId!==context.personId) {
+        const existing=previous.find(item=>item.id===author.id&&item.personId===author.personId);
+        if(!existing||existing.orcid!==author.orcid)throw new ApiException(400,'VALIDATION_FAILED');
+        return {...author,orcid:existing.orcid,orcidVerified:existing.orcidVerified??false};
+      }
       const verified=!!author.personId&&!!connection?.orcid&&!!connection.connectedAt&&connection.environment==='production';
       return {...author,orcid:author.personId?connection?.orcid??'':author.orcid??'',orcidVerified:verified};
     });
@@ -43,14 +48,15 @@ export class AuthorWorksService {
     const [last]=await tx.select({kind:workVersions.kind}).from(workVersions).where(eq(workVersions.workId,row.id)).orderBy(desc(workVersions.number)).limit(1);
     return last?.kind==='final';
   }
-  async detail(tx:DbTransaction,row:typeof works.$inferSelect,state:{active:boolean;editable:boolean},staff=false):Promise<AuthorWork> {
+  async detail(tx:DbTransaction,row:typeof works.$inferSelect,state:{active:boolean;editable:boolean;personId?:string},staff=false):Promise<AuthorWork> {
     const versions=await tx.select({id:workVersions.id,number:workVersions.number,kind:workVersions.kind,createdAt:workVersions.createdAt}).from(workVersions).where(eq(workVersions.workId,row.id)).orderBy(desc(workVersions.number));
-    const history=await tx.select({id:workHistory.id,action:workHistory.action,message:workHistory.message,actor:workHistory.actor,createdAt:workHistory.createdAt}).from(workHistory).where(and(eq(workHistory.workId,row.id),staff ? sql`(${workHistory.actor}='staff' OR ${workHistory.action} IN ('submitted','final_submitted','withdrawn'))` : undefined)).orderBy(desc(workHistory.createdAt),desc(workHistory.id)).limit(200);
-    return {...view(row),...(staff && row.submittedContent ? row.submittedContent : {}),editable:!staff && this.editable(row,state,row.call.timezone),
+    const history=await tx.select({id:workHistory.id,action:workHistory.action,message:workHistory.message,actor:workHistory.actor,actorId:workHistory.actorId,actorName:workHistory.actorName,createdAt:workHistory.createdAt}).from(workHistory).where(and(eq(workHistory.workId,row.id),staff ? sql`(${workHistory.actor}='staff' OR ${workHistory.action} IN ('submitted','final_submitted','withdrawn'))` : undefined)).orderBy(desc(workHistory.createdAt),desc(workHistory.id)).limit(200);
+    return {...view(row),canManage:!staff && row.ownerId===state.personId,...(staff && row.submittedContent ? row.submittedContent : {}),editable:!staff && this.editable(row,state,row.call.timezone),
       versions:versions.map(v=>({...v,createdAt:v.createdAt.toISOString()})),history:history.map(h=>({...h,createdAt:h.createdAt.toISOString()}))};
   }
   async record(tx:DbTransaction,context:RequestContext,id:string,action:string,message='',actor:'author'|'staff'='author') {
-    await tx.insert(workHistory).values({id:randomUUID(),organizationId:context.organizationId,eventId:context.eventId!,workId:id,actorId:context.personId!,actor,action,message});
+    const [actorProfile]=await tx.select({name:people.name}).from(people).where(eq(people.id,context.personId!));
+    await tx.insert(workHistory).values({actorName:actorProfile?.name??'',id:randomUUID(),organizationId:context.organizationId,eventId:context.eventId!,workId:id,actorId:context.personId!,actor,action,message});
   }
   private async locked(tx:DbTransaction,context:RequestContext,id:string,revision:number,edit=false) {
     const state=await this.state(tx,context,true);
@@ -76,7 +82,7 @@ export class AuthorWorksService {
         if(!state.call || !state.call.content.opensOn || this.today(state.call.timezone)<state.call.content.opensOn)throw new ApiException(409,'SUBMISSION_NOT_OPEN');
         if(row.call.revision!==state.call.revision||row.call.publishedAt!==state.call.publishedAt)throw new ApiException(409,'CALL_CHANGED');
         if(state.requireSubmittingAuthorOrcid) {
-          const authors=await this.authors(tx,context,row.authors);
+          const authors=await this.authors(tx,context,row.authors,row.authors);
           if(!authors.some(author=>author.personId===context.personId&&author.orcidVerified))throw new ApiException(409,'ORCID_REQUIRED');
         }
       }
@@ -96,7 +102,7 @@ export class AuthorWorksService {
       }
       const [{count}]=await tx.select({count:sql<number>`count(*)::int`}).from(workVersions).where(eq(workVersions.workId,id));
       if(count>=10)throw new ApiException(409,'VERSION_LIMIT');
-      const content={...this.content(row),authors:await this.authors(tx,context,row.authors)},kind=finalRound?'final' as const:'submission' as const;
+      const content={...this.content(row),authors:await this.authors(tx,context,row.authors,row.authors)},kind=finalRound?'final' as const:'submission' as const;
       await tx.insert(workVersions).values({id:randomUUID(),organizationId:context.organizationId,eventId:context.eventId!,workId:id,ownerId:context.personId!,number:count+1,kind,content,fileId:row.manuscript?.id??null});
       const [next]=await tx.update(works).set({authors:content.authors,status:kind==='final'?'final_submitted':'submitted',submittedAt:row.submittedAt??new Date(),submittedContent:content,responseDeadline:null,revision:revision+1,updatedAt:new Date()}).where(and(this.scope(context),eq(works.id,id))).returning();
       await this.record(tx,context,id,kind==='final'?'final_submitted':'submitted');await this.audit.record(tx,context,'work.submitted',context.eventId!,id);return this.detail(tx,next,state);
@@ -105,6 +111,7 @@ export class AuthorWorksService {
   withdraw(context:RequestContext,id:string,revision:number,message:string) {
     return this.database.scoped({...context,organizationAdmin:false},async tx=>{
       const {row,state}=await this.locked(tx,context,id,revision);
+      if(row.ownerId!==context.personId)throw new ApiException(403,'FORBIDDEN');
       if(!['submitted','in_review','changes_requested','accepted','final_requested','final_submitted'].includes(row.status))throw new ApiException(409,'CONFLICT');
       const [next]=await tx.update(works).set({status:'withdrawn',responseDeadline:null,revision:revision+1,updatedAt:new Date()}).where(and(this.scope(context),eq(works.id,id))).returning();
       await this.record(tx,context,id,'withdrawn',message);await this.audit.record(tx,context,'work.withdrawn',context.eventId!,id);return this.detail(tx,next,state);
@@ -112,7 +119,8 @@ export class AuthorWorksService {
   }
   version(context:RequestContext,id:string,versionId:string) {
     return this.database.scoped({...context,organizationAdmin:false},async tx=>{
-      await this.state(tx,context); const [row]=await tx.select().from(workVersions).where(and(eq(workVersions.workId,id),eq(workVersions.id,versionId),eq(workVersions.ownerId,context.personId!)));
+      await this.state(tx,context);const [work]=await tx.select({id:works.id}).from(works).where(and(this.scope(context),eq(works.id,id)));if(!work)throw new ApiException(404,'NOT_FOUND');
+      const [row]=await tx.select().from(workVersions).where(and(eq(workVersions.workId,id),eq(workVersions.id,versionId)));
       if(!row)throw new ApiException(404,'NOT_FOUND');return {id:row.id,number:row.number,kind:row.kind,content:row.content,createdAt:row.createdAt.toISOString()};
     });
   }
@@ -146,14 +154,16 @@ export class AuthorWorksService {
   removeDraft(context:RequestContext,id:string,revision:number) {
     return this.database.scoped({...context,organizationAdmin:false},async tx=>{
       const {row}=await this.locked(tx,context,id,revision);
+      if(row.ownerId!==context.personId)throw new ApiException(403,'FORBIDDEN');
       if(row.status!=='draft'||row.submittedAt)throw new ApiException(409,'CONFLICT');
       await tx.delete(workFiles).where(and(eq(workFiles.workId,id),sql`NOT EXISTS (SELECT 1 FROM work_versions v WHERE v.file_id=${workFiles.id})`));
+      await tx.update(workCollaborations).set({status:'revoked'}).where(and(eq(workCollaborations.workId,id),sql`${workCollaborations.status} IN ('pending','accepted')`));
       await tx.update(works).set({hidden:true,manuscript:null,revision:revision+1,updatedAt:new Date()}).where(and(this.scope(context),eq(works.id,id)));
       await this.record(tx,context,id,'draft_deleted');await this.audit.record(tx,context,'work.draft.deleted',context.eventId!,id);return {deleted:true};
     });
   }
   constructor(private readonly database: DatabaseService, private readonly audit: AuditService, private readonly manuscripts: ManuscriptsService) {}
-  scope(context: RequestContext) { return and(eq(works.hidden,false),eq(works.organizationId, context.organizationId), eq(works.eventId, context.eventId!), eq(works.ownerId, context.personId!)); }
+  scope(context: RequestContext) { return and(eq(works.hidden,false),eq(works.organizationId, context.organizationId), eq(works.eventId, context.eventId!), sql`(${works.ownerId}=${context.personId}::uuid OR EXISTS (SELECT 1 FROM work_collaborations c WHERE c.work_id=${works.id} AND c.organization_id=${works.organizationId} AND c.event_id=${works.eventId} AND c.person_id=${context.personId}::uuid AND c.status='accepted'))`); }
   async state(tx: DbTransaction, context: RequestContext, lock = false) {
     if (!context.personId) throw new ApiException(401, 'UNAUTHORIZED');
     if (!context.eventId) throw new ApiException(404, 'NOT_FOUND');
@@ -172,7 +182,7 @@ export class AuthorWorksService {
       const part = (type: string) => parts.find((p) => p.type === type)?.value;
       if (!call.content.closesOn || `${part('year')}-${part('month')}-${part('day')}` > call.content.closesOn) reason = 'closed';
     }
-    return { event, call: inactive ? null : call, reason, active: !inactive, editable: reason === 'available', languages: config?.languages ?? ['es','en'] as ('es' | 'en')[],requireSubmittingAuthorOrcid:config?.requireSubmittingAuthorOrcid??false };
+    return { event, personId:context.personId!, call: inactive ? null : call, reason, active: !inactive, editable: reason === 'available', languages: config?.languages ?? ['es','en'] as ('es' | 'en')[],requireSubmittingAuthorOrcid:config?.requireSubmittingAuthorOrcid??false };
   }
   private validateSelection(call: PublishedScientificCall, dto: CreateWorkDto) {
     const track = call.content.tracks.find((t) => t.id.toLowerCase() === dto.trackId.toLowerCase());
@@ -186,7 +196,7 @@ export class AuthorWorksService {
       const rows = await tx.select(summaryFields).from(works).where(this.scope(context)).orderBy(desc(works.updatedAt), works.id).limit(50);
       if (state.event.status !== 'published' && !rows.length) throw new ApiException(404, 'NOT_FOUND');
       return { event: { id: state.event.id, nameEs: state.event.nameEs, nameEn: state.event.nameEn, timezone: state.event.timezone },
-        works: rows.map(({callTimezone,...row}) => ({ ...row, editable: this.editable(row,state,callTimezone), submittedAt: row.submittedAt?.toISOString() ?? null, createdAt: row.createdAt.toISOString(), updatedAt: row.updatedAt.toISOString() })), call: state.call, editable: state.editable, reason: state.reason, languages: state.languages,requireSubmittingAuthorOrcid:state.requireSubmittingAuthorOrcid };
+        works: rows.map(({callTimezone,ownerId,...row}) => ({ ...row, canManage:ownerId===context.personId, editable: this.editable(row,state,callTimezone), submittedAt: row.submittedAt?.toISOString() ?? null, createdAt: row.createdAt.toISOString(), updatedAt: row.updatedAt.toISOString() })), call: state.call, editable: state.editable, reason: state.reason, languages: state.languages,requireSubmittingAuthorOrcid:state.requireSubmittingAuthorOrcid };
     });
   }
   read(context: RequestContext, id: string): Promise<AuthorWork> {
@@ -202,7 +212,7 @@ export class AuthorWorksService {
       if (!state.editable || !state.call) throw new ApiException(409, 'WORKS_UNAVAILABLE');
       if (!state.languages.includes(dto.language)) throw new ApiException(400, 'VALIDATION_FAILED');
       const selection = this.validateSelection(state.call, dto);
-      const [{ count }] = await tx.select({ count: sql<number>`count(*)::int` }).from(works).where(this.scope(context));
+      const [{ count }] = await tx.select({ count: sql<number>`count(*)::int` }).from(works).where(and(this.scope(context),eq(works.ownerId,context.personId!)));
       if (count >= 50) throw new ApiException(409, 'WORK_LIMIT');
       const [row] = await tx.insert(works).values({ id: randomUUID(), organizationId: context.organizationId, eventId: state.event.id,
         ownerId: context.personId!, ...dto, trackId: selection.track.id, contributionTypeId: selection.type.id, call: state.call }).returning();
@@ -227,11 +237,20 @@ export class AuthorWorksService {
       if (!finalRound&&!state.languages.includes(dto.language)) throw new ApiException(400, 'VALIDATION_FAILED');
       if (finalRound && (dto.trackId !== before.trackId || dto.contributionTypeId !== before.contributionTypeId || dto.language !== before.language)) throw new ApiException(409,'FINAL_CLASSIFICATION');
       if (before.revision !== dto.revision) throw new ApiException(409, 'REVISION_CONFLICT');
+      if(before.ownerId!==context.personId && dto.authors!==undefined && authorshipKey(dto.authors)!==authorshipKey(before.authors))throw new ApiException(403,'WORK_AUTHOR_MANAGEMENT');
       const selection = this.validateSelection(before.call, dto);
       const words = dto.abstract.trim() ? dto.abstract.trim().split(/\s+/u).length : 0;
       if (words > selection.type.abstractMaxWords || dto.keywords.length > selection.type.keywordsMax) throw new ApiException(400, 'WORK_REQUIREMENTS');
-      const [row] = await tx.update(works).set({ ...dto, authors: await this.authors(tx,context,dto.authors ?? before.authors), trackId: selection.track.id, contributionTypeId: selection.type.id, revision: dto.revision + 1, updatedAt: new Date() })
+      const [row] = await tx.update(works).set({ ...dto, authors: await this.authors(tx,context,dto.authors ?? before.authors,before.authors), trackId: selection.track.id, contributionTypeId: selection.type.id, revision: dto.revision + 1, updatedAt: new Date() })
         .where(and(this.scope(context), eq(works.id, id))).returning();
+      if(before.ownerId===context.personId) {
+        for(const grant of await tx.select().from(workCollaborations).where(and(eq(workCollaborations.workId,id),sql`${workCollaborations.status} IN ('pending','accepted')`))) {
+          if(!row.authors.some(author=>author.id===grant.authorId&&author.corresponding&&author.email===grant.email&&(grant.status!=='accepted'||author.personId===grant.personId))) {
+            await tx.update(workCollaborations).set({status:'revoked'}).where(eq(workCollaborations.id,grant.id));
+            await this.record(tx,context,id,'collaboration_revoked','Correspondence or author details changed.');
+          }
+        }
+      }
       await this.audit.record(tx, context, 'work.draft.saved', state.event.id, id); return this.detail(tx,row,state);
     });
   }

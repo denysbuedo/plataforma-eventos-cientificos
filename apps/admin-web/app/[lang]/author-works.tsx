@@ -5,6 +5,7 @@ import { webCopy, type Locale } from '@sep/i18n';
 import { Brand } from '@sep/ui';
 import WorkAuthors, { accountAuthor, type AuthorAccount } from './work-authors';
 import WorkFlow, { WorkContentView } from './work-flow';
+import WorkSharing from './work-sharing';
 
 export default function AuthorWorks({ initial, locale, contextKey, publicUrl, person }: {
   initial: AuthorWorkspace; locale: Locale; contextKey: string; publicUrl: string; person: AuthorAccount;
@@ -46,7 +47,7 @@ export default function AuthorWorks({ initial, locale, contextKey, publicUrl, pe
   function select(next: AuthorWork) { warnOnUnload.current = false; setSaved(next); setWork(next); setKeywords(next.keywords.join('\n')); setEditing(false); setPendingFile(null); setRemoveFile(false); }
   function startEdit(current = work) {
     if (!current?.editable) return;
-    if (!current.authors.length) setWork({ ...current, authors: [accountAuthor(person)] });
+    if (!current.authors.length && current.canManage!==false) setWork({ ...current, authors: [accountAuthor(person)] });
     setEditing(true);
   }
   function closePanel() {
@@ -84,7 +85,7 @@ export default function AuthorWorks({ initial, locale, contextKey, publicUrl, pe
     setBusy(true); setNotice(null);
     let fieldsSaved = false;
     try {
-      let next = await request<AuthorWork>(`/${work.id}`, 'PUT', { title: work.title, abstract: work.abstract, language: work.language, authors: work.authors,
+      let next = await request<AuthorWork>(`/${work.id}`, 'PUT', { title: work.title, abstract: work.abstract, language: work.language, ...(work.canManage===false?{}:{authors:work.authors}),
         trackId: work.trackId, contributionTypeId: work.contributionTypeId, keywords: keywords.split('\n').map((k) => k.trim()).filter(Boolean), revision: work.revision });
       // Preserve the committed revision if the subsequent file operation fails.
       setSaved(next); setWork(next); setKeywords(next.keywords.join('\n'));
@@ -133,12 +134,13 @@ export default function AuthorWorks({ initial, locale, contextKey, publicUrl, pe
         <label className="field"><span>{text.workLanguage}</span><select value={newWork.language} disabled={busy} onChange={(e) => setNewWork({ ...newWork, language: e.target.value as Locale })}>{workspace.languages.map((language) => <option key={language} value={language}>{language === 'es' ? text.languageSpanish : text.languageEnglish}</option>)}</select></label>
         <button className="button button-primary" disabled={busy || !workspace.editable} type="submit">{text.createWork}</button>
       </form></section>}
-      <section id="work-list" className="panel form-panel" tabIndex={-1}><h2>{text.workDrafts}</h2>{!workspace.works.length && <p className="muted">{text.noWorks}</p>}{workspace.works.map((row) => <div className="panel-heading" key={row.id}><div><strong>{row.title}</strong><p>{text.status}: {text.workStatuses[row.status]} · {text.revision} {row.revision}</p></div><div className="editor-actions"><button className="button button-outline" disabled={busy} onClick={() => open(row.id)}>{text.viewWork}</button>{row.editable && <button className="button button-outline" disabled={busy} onClick={() => open(row.id, true)}>{text.editWorkAction}</button>}{row.status === 'draft' && !row.submittedAt && <button className="button button-outline" disabled={busy} onClick={() => removeDraft(row.id)}>{text.removeDraft}</button>}</div></div>)}</section>
+      <section id="work-list" className="panel form-panel" tabIndex={-1}><h2>{text.workDrafts}</h2>{!workspace.works.length && <p className="muted">{text.noWorks}</p>}{workspace.works.map((row) => <div className="panel-heading" key={row.id}><div><strong>{row.title}</strong><p>{text.status}: {text.workStatuses[row.status]}{row.canManage===false?` · ${text.sharedWithYou}`:''} · {text.revision} {row.revision}</p></div><div className="editor-actions"><button className="button button-outline" disabled={busy} onClick={() => open(row.id)}>{text.viewWork}</button>{row.editable && <button className="button button-outline" disabled={busy} onClick={() => open(row.id, true)}>{text.editWorkAction}</button>}{row.canManage!==false && row.status === 'draft' && !row.submittedAt && <button className="button button-outline" disabled={busy} onClick={() => removeDraft(row.id)}>{text.removeDraft}</button>}</div></div>)}</section>
       {work && <section className="panel form-panel work-detail"><div className="work-detail-header"><div><span className="eyebrow">{text.workStatuses[work.status]}</span><h2>{editing ? text.editWork : text.workDetails}</h2></div><div className="editor-actions">{editing ? <span className="draft-state">{dirty ? text.unsaved : text.upToDate}</span> : <button className="button button-outline" disabled={busy || !work.editable} aria-describedby={!work.editable?'work-edit-reason':undefined} onClick={() => startEdit()}>{text.editWorkAction}</button>}<button className="button button-outline" disabled={busy} onClick={returnToList}>{text.backToWorks}</button></div></div>
         {!work.editable && <p id="work-edit-reason" className="work-edit-notice">{['submitted','in_review','final_submitted'].includes(work.status)?text.workLockedSubmitted:work.status==='accepted'?text.workLockedAccepted:work.status==='rejected'?text.workLockedRejected:work.responseDeadline?text.workLockedDeadline:text.workLockedUnavailable}</p>}
         <p className="muted small">{text.workPinnedRules} {work.call.revision}</p>{callChanged && <p className="notice notice-muted">{text.workCallChanged}</p>}
         {!editing ? <div className="form-fields">
-          <WorkContentView content={work} locale={locale} /><WorkFlow key={`${work.id}:${work.revision}`} work={work} eventId={workspace.event.id} locale={locale} contextKey={contextKey} busy={busy} onBusyChange={setBusy} callChanged={callChanged} onUpdate={(next) => { select(next); setWorkspace({ ...workspace, works: workspace.works.map((row) => row.id === next.id ? next : row) }); setNotice({ error: false, message: text.workActionSaved }); }} />
+          <WorkContentView content={work} locale={locale} />{work.canManage===false&&<p className="notice notice-muted">{text.sharedEditorHelp}</p>}<WorkFlow key={`${work.id}:${work.revision}`} work={work} eventId={workspace.event.id} locale={locale} contextKey={contextKey} busy={busy} onBusyChange={setBusy} callChanged={callChanged} onUpdate={(next) => { select(next); setWorkspace({ ...workspace, works: workspace.works.map((row) => row.id === next.id ? next : row) }); setNotice({ error: false, message: text.workActionSaved }); }} />
+          {work.canManage!==false&&<WorkSharing key={work.id} work={work} personId={person.id} eventId={workspace.event.id} locale={locale} contextKey={contextKey} busy={busy} onBusyChange={setBusy} onUpdate={next=>{select(next);setWorkspace(current=>({...current,works:current.works.map(row=>row.id===next.id?next:row)}));}}/>}
         </div> : <form id="work-edit-form" className="form-fields" onSubmit={(e) => { e.preventDefault(); void save(); }}>
           <label className="field"><span>{text.workTitle}</span><input required minLength={3} maxLength={300} value={work.title} disabled={busy || !work.editable} onChange={(e) => setWork({ ...work, title: e.target.value })} /></label>
           {choices('trackId', work.trackId, (value) => setWork({ ...work, trackId: value }), true)}{choices('contributionTypeId', work.contributionTypeId, (value) => setWork({ ...work, contributionTypeId: value }), true)}
@@ -148,7 +150,7 @@ export default function AuthorWorks({ initial, locale, contextKey, publicUrl, pe
           <label className="field"><span>{text.workKeywords}</span><textarea rows={4} value={keywords} maxLength={1700} disabled={busy || !work.editable} onChange={(e) => setKeywords(e.target.value)} /></label>
           {type && <p className="muted small">{text.workExpected}: {type.keywordsMin}–{type.keywordsMax} {text.callKeywords.toLowerCase()}{type.manuscriptRequired ? ` · ${text.callManuscript} ${type.maxPages}` : ''}</p>}
           <p className="muted small"><a href={`/${locale}?event=${encodeURIComponent(contextKey)}&tab=profile`} onClick={event=>{event.preventDefault();guard(()=>window.location.assign(`/${locale}?event=${encodeURIComponent(contextKey)}&tab=profile`));}}>{text.orcidProfileLink}</a></p>
-          <WorkAuthors value={work.authors} onChange={(authors) => setWork({ ...work, authors })} locale={locale} editing disabled={busy || !work.editable} account={person} />
+          <WorkAuthors value={work.authors} onChange={(authors) => setWork({ ...work, authors })} locale={locale} editing={work.canManage!==false} disabled={busy || !work.editable} account={work.canManage===false?undefined:person} />
           <section aria-labelledby="work-file-heading">
             <h3 id="work-file-heading">{text.workManuscript}</h3>
             <p>{work.manuscript ? `${work.manuscript.name} · ${work.manuscript.pages} ${text.workPages}` : text.noManuscript}</p>

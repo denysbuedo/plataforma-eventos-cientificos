@@ -5941,6 +5941,456 @@
           "submissions"
         ]
       }
+    },
+    "/api/v1/events/{eventId}/my-works/{workId}/collaborations": {
+      "get": {
+        "operationId": "WorkCollaborationsController_list",
+        "parameters": [
+          {
+            "name": "workId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CollaborationDto"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "submissions"
+        ]
+      },
+      "post": {
+        "operationId": "WorkCollaborationsController_create",
+        "parameters": [
+          {
+            "name": "workId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCollaborationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreatedCollaborationDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "submissions"
+        ]
+      }
+    },
+    "/api/v1/events/{eventId}/my-works/{workId}/collaborations/{invitationId}/revoke": {
+      "post": {
+        "operationId": "WorkCollaborationsController_revoke",
+        "parameters": [
+          {
+            "name": "workId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "invitationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WorkRevisionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "submissions"
+        ]
+      }
+    },
+    "/api/v1/events/{eventId}/work-collaborations/accept": {
+      "post": {
+        "operationId": "WorkCollaborationsController_accept",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AcceptCollaborationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "submissions"
+        ]
+      }
     }
   },
   "info": {
@@ -7209,6 +7659,9 @@
       "WorkSummaryDto": {
         "type": "object",
         "properties": {
+          "canManage": {
+            "type": "boolean"
+          },
           "status": {
             "type": "string",
             "enum": [
@@ -7271,6 +7724,7 @@
           }
         },
         "required": [
+          "canManage",
           "status",
           "submittedAt",
           "responseDeadline",
@@ -7410,6 +7864,13 @@
       "HistoryDto": {
         "type": "object",
         "properties": {
+          "actorId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "actorName": {
+            "type": "string"
+          },
           "id": {
             "type": "string",
             "format": "uuid"
@@ -7433,6 +7894,8 @@
           }
         },
         "required": [
+          "actorId",
+          "actorName",
           "id",
           "action",
           "message",
@@ -7510,6 +7973,9 @@
       "WorkDto": {
         "type": "object",
         "properties": {
+          "canManage": {
+            "type": "boolean"
+          },
           "status": {
             "type": "string",
             "enum": [
@@ -7612,6 +8078,7 @@
           }
         },
         "required": [
+          "canManage",
           "status",
           "submittedAt",
           "responseDeadline",
@@ -7656,8 +8123,7 @@
         "type": "object",
         "properties": {
           "revision": {
-            "type": "number",
-            "minimum": 1
+            "type": "number"
           }
         },
         "required": [
@@ -7891,6 +8357,9 @@
       "StaffWorkDto": {
         "type": "object",
         "properties": {
+          "canManage": {
+            "type": "boolean"
+          },
           "status": {
             "type": "string",
             "enum": [
@@ -7996,6 +8465,7 @@
           }
         },
         "required": [
+          "canManage",
           "status",
           "submittedAt",
           "responseDeadline",
@@ -8051,6 +8521,99 @@
           "message",
           "decision",
           "responseDeadline"
+        ]
+      },
+      "CollaborationDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "authorId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "email": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "accepted",
+              "revoked",
+              "expired"
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "acceptedAt": {
+            "type": "string",
+            "nullable": true,
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "authorId",
+          "email",
+          "status",
+          "createdAt",
+          "expiresAt",
+          "acceptedAt"
+        ]
+      },
+      "CreateCollaborationDto": {
+        "type": "object",
+        "properties": {
+          "revision": {
+            "type": "number"
+          },
+          "authorId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "revision",
+          "authorId"
+        ]
+      },
+      "CreatedCollaborationDto": {
+        "type": "object",
+        "properties": {
+          "invitation": {
+            "$ref": "#/components/schemas/CollaborationDto"
+          },
+          "token": {
+            "type": "string"
+          },
+          "work": {
+            "$ref": "#/components/schemas/WorkDto"
+          }
+        },
+        "required": [
+          "invitation",
+          "token",
+          "work"
+        ]
+      },
+      "AcceptCollaborationDto": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "token"
         ]
       }
     }
