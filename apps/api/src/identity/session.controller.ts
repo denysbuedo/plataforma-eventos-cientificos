@@ -1,3 +1,4 @@
+import { emptyResearcherBackground } from '@sep/contracts';
 import { Controller, Get, Req } from '@nestjs/common';
 import { ApiBearerAuth, ApiOkResponse, ApiProperty, ApiTags } from '@nestjs/swagger';
 import { Access } from '../platform/context.guard.js';
@@ -44,7 +45,7 @@ export class SessionController {
       const institutions = await tx.select({institution:affiliations.institution}).from(affiliations).where(eq(affiliations.personId,person.id));
       const [profile]=await tx.select().from(researcherProfiles).where(eq(researcherProfiles.personId,person.id));
       const [connection]=await tx.select({id:orcidConnections.orcid,environment:orcidConnections.environment,connectedAt:orcidConnections.connectedAt}).from(orcidConnections).where(eq(orcidConnections.personId,person.id));
-      return { person: {...person,email:request.security.verifiedEmail ?? '',institutions:profile?profile.affiliations.map(item=>item.institution):institutions.map(item=>item.institution),researcherProfile:{name:person.name,affiliations:profile?.affiliations??institutions.map(item=>({institution:item.institution,countryCode:''})),discoverable:profile?.discoverable??false,revision:profile?.revision??0},orcidAvailable:this.orcid.available(),orcid:connection?.id&&connection.connectedAt?{id:connection.id,environment:connection.environment,connectedAt:connection.connectedAt.toISOString()}:null} };
+      return { person: {...person,email:request.security.verifiedEmail ?? '',institutions:profile?profile.affiliations.map(item=>item.institution):institutions.map(item=>item.institution),researcherProfile:{background:profile?.background??emptyResearcherBackground(),name:person.name,affiliations:profile?.affiliations??institutions.map(item=>({institution:item.institution,countryCode:''})),discoverable:profile?.discoverable??false,revision:profile?.revision??0},orcidAvailable:this.orcid.available(),orcid:connection?.id&&connection.connectedAt?{id:connection.id,environment:connection.environment,connectedAt:connection.connectedAt.toISOString()}:null} };
     });
   }
   @Get(['session', 'events/:eventId/session']) @Access('session-read') @ApiOkResponse({ type: SessionDto })

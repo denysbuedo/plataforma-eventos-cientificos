@@ -297,6 +297,20 @@ dialog::backdrop { background:rgb(18 36 28 / 45%); }
 .profile-checkbox input { width:18px; height:18px; accent-color:var(--green); margin:3px 0 0; flex-shrink:0; }
 .profile-search-setting .profile-help { padding-left:29px; }
 .profile-edit-footer { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:14px; border-top:1px solid var(--line); margin-top:24px; padding-top:22px; }
+.profile-background-fields { display:grid; gap:18px; margin-top:18px; }
+.profile-background-fields .field small { color:var(--muted); font-size:12px; font-weight:400; line-height:1.75; }
+.profile-background-facts { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px 24px; margin:18px 0 0; }
+.profile-background-facts dt { font-size:12px; color:var(--muted); }
+.profile-background-facts dd { margin:4px 0 0; font-size:14px; overflow-wrap:anywhere; }
+.profile-research-interests,.profile-biography { margin-top:20px; }
+.profile-research-interests h4,.profile-biography h4 { font-size:12px; color:var(--muted); font-weight:500; margin:0 0 10px; }
+.profile-research-interests ul { display:flex; flex-wrap:wrap; gap:8px; list-style:none; padding:0; margin:0; }
+.profile-research-interests li { padding:5px 10px; border-radius:6px; background:#eef3e8; color:var(--green); font-size:12px; overflow-wrap:anywhere; }
+.profile-biography p { font-size:14px; white-space:pre-wrap; overflow-wrap:anywhere; line-height:1.8; }
+.profile-website { display:inline-flex; align-items:center; gap:8px; color:var(--green); font-size:13px; margin-top:18px; }
+.profile-additional { margin-top:20px; }
+.profile-additional summary { cursor:pointer; width:fit-content; color:var(--green); font-size:13px; font-weight:600; }
+@media(max-width:580px) { .profile-background-facts { grid-template-columns:1fr; } }
 .participant-main { max-width:1400px; width:100%; }
 .participant-main .admin-heading p { font-size:14px; line-height:1.75; }
 .participant-main .panel { border-radius:12px; }

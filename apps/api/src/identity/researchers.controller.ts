@@ -1,9 +1,9 @@
 import { Body, Controller, Get, Injectable, Put, Query, Req } from '@nestjs/common';
-import { ApiBearerAuth, ApiOkResponse, ApiProperty, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOkResponse, ApiProperty, ApiPropertyOptional, ApiTags } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
-import { ArrayMaxSize, IsArray, IsBoolean, IsInt, IsString, Max, MaxLength, Min, MinLength, ValidateNested } from 'class-validator';
+import { ArrayMaxSize, ArrayUnique, IsArray, IsBoolean, IsIn, IsInt, IsObject, IsString, IsUrl, Max, MaxLength, Min, MinLength, ValidateIf, ValidateNested } from 'class-validator';
 import { and, eq, sql } from 'drizzle-orm';
-import type { ResearcherCandidate, ResearcherProfile } from '@sep/contracts';
+import { EDUCATION_LEVELS, emptyResearcherBackground, type ResearcherBackground, type ResearcherCandidate, type ResearcherProfile } from '@sep/contracts';
 import { DatabaseService, type DbTransaction } from '../database/database.service.js';
 import { people,researcherProfiles } from '../database/schema.js';
 import { ApiException,type RequestContext,type SepRequest } from '../common/http.js';
@@ -11,7 +11,19 @@ import { AuditService } from '../common/audit.service.js';
 import { Access } from '../platform/context.guard.js';
 import { ApiErrors } from '../common/openapi.js';
 import { WorkAffiliationDto } from '../submissions/works.dto.js';
+class ResearcherBackgroundDto implements ResearcherBackground {
+  @ApiProperty({enum:EDUCATION_LEVELS,default:''}) @IsIn(EDUCATION_LEVELS) educationLevel:ResearcherBackground['educationLevel']='';
+  @ApiProperty({maxLength:150,default:''}) @Transform(({value})=>typeof value==='string'?value.trim():value) @IsString() @MaxLength(150) degreeTitle='';
+  @ApiProperty({maxLength:150,default:''}) @Transform(({value})=>typeof value==='string'?value.trim():value) @IsString() @MaxLength(150) position='';
+  @ApiProperty({type:[String],maxItems:10,default:[]}) @Transform(({value})=>Array.isArray(value)?value.map(item=>typeof item==='string'?item.trim().normalize('NFC'):item):value)
+  @IsArray() @ArrayMaxSize(10) @ArrayUnique((item:unknown)=>typeof item==='string'?item.toLowerCase():item) @IsString({each:true}) @MinLength(1,{each:true}) @MaxLength(80,{each:true}) researchInterests:string[]=[];
+  @ApiProperty({maxLength:1500,default:''}) @Transform(({value})=>typeof value==='string'?value.trim():value) @IsString() @MaxLength(1500) biography='';
+  @ApiProperty({maxLength:300,default:''}) @Transform(({value})=>typeof value==='string'?value.trim():value) @ValidateIf((_,value)=>value!=='') @IsString() @MaxLength(300)
+  @IsUrl({protocols:['http','https'],require_protocol:true,require_tld:false,disallow_auth:true}) website='';
+}
 export class SaveResearcherProfileDto implements ResearcherProfile {
+  @ApiPropertyOptional({type:ResearcherBackgroundDto,description:'Omitir conserva los datos previos. Campos declarados y opcionales; no acredita títulos.'})
+  @ValidateIf((_,value)=>value!==undefined) @IsObject() @ValidateNested() @Type(()=>ResearcherBackgroundDto) background?:ResearcherBackgroundDto;
   @ApiProperty({minLength:2,maxLength:150}) @Transform(({value})=>typeof value==='string'?value.trim():value) @IsString() @MinLength(2) @MaxLength(150) name!:string;
   @ApiProperty({type:[WorkAffiliationDto],maxItems:5}) @IsArray() @ArrayMaxSize(5) @ValidateNested({each:true}) @Type(()=>WorkAffiliationDto) affiliations!:WorkAffiliationDto[];
   @ApiProperty() @IsBoolean() discoverable!:boolean;
@@ -50,7 +62,7 @@ export class ResearchersService {
     const [before]=await tx.select().from(researcherProfiles).where(eq(researcherProfiles.personId,context.personId!));if((before?.revision??0)!==dto.revision)throw new ApiException(409,'REVISION_CONFLICT');
     if(dto.discoverable&&!dto.affiliations.length)throw new ApiException(400,'RESEARCHER_AFFILIATION_REQUIRED');
     const keys=dto.affiliations.map(item=>`${item.institution.trim().normalize('NFC').toLowerCase()}:${item.countryCode}`);if(new Set(keys).size!==keys.length)throw new ApiException(400,'AUTHOR_AFFILIATION_DUPLICATE');
-    const values={affiliations:dto.affiliations,discoverable:dto.discoverable,revision:dto.revision+1};
+    const values={affiliations:dto.affiliations,discoverable:dto.discoverable,revision:dto.revision+1,background:dto.background??before?.background??emptyResearcherBackground()};
     await tx.insert(researcherProfiles).values({personId:context.personId!,...values}).onConflictDoUpdate({target:researcherProfiles.personId,set:values});
     await tx.update(people).set({name:dto.name}).where(eq(people.id,context.personId!));
     await this.audit.organization(tx,context,'identity.profile.updated',context.personId!);

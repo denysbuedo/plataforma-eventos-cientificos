@@ -84,7 +84,13 @@ export interface AuthorWorkSummary {
 }
 export interface WorkAffiliation { institution: string; countryCode: string }
 export interface WorkAuthor { id: string; fullName: string; email: string; affiliations: WorkAffiliation[]; corresponding: boolean; orcid?: string; personId?: string; orcidVerified?: boolean; authorshipConfirmed?:boolean }
-export interface ResearcherProfile { name:string; affiliations:WorkAffiliation[]; discoverable:boolean; revision:number }
+export const EDUCATION_LEVELS = ['', 'short_cycle', 'bachelor', 'master', 'doctorate', 'other'] as const;
+export interface ResearcherBackground {
+  educationLevel:typeof EDUCATION_LEVELS[number]; degreeTitle:string; position:string;
+  researchInterests:string[]; biography:string; website:string;
+}
+export const emptyResearcherBackground = ():ResearcherBackground => ({educationLevel:'',degreeTitle:'',position:'',researchInterests:[],biography:'',website:''});
+export interface ResearcherProfile { name:string; affiliations:WorkAffiliation[]; discoverable:boolean; revision:number; background?:ResearcherBackground }
 export interface ResearcherCandidate { personId:string; name:string; affiliations:WorkAffiliation[]; orcid:string|null }
 export interface OrcidConnection { id: string; environment: 'production' | 'sandbox'; connectedAt: string }
 export interface AuthorAccount { id: string; name: string; email: string; institutions: string[]; orcid: OrcidConnection | null; orcidAvailable: boolean; researcherProfile?:ResearcherProfile }

@@ -1,0 +1,1 @@
+ALTER TABLE "researcher_profiles" ADD COLUMN "background" jsonb DEFAULT '{"educationLevel":"","degreeTitle":"","position":"","researchInterests":[],"biography":"","website":""}'::jsonb NOT NULL;

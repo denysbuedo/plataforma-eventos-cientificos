@@ -1,6 +1,6 @@
 import { sql, type SQL } from 'drizzle-orm';
 import { boolean, check, customType, date, foreignKey, index, integer, jsonb, pgPolicy, pgRole, pgTable, primaryKey, text, timestamp, unique, uniqueIndex, uuid } from 'drizzle-orm/pg-core';
-import type { EventConfiguration, PublishedScientificCall, PublishedSite, ScientificCallContent, SiteContent, WorkAuthor, WorkStatus, WorkContent, Manuscript, WorkAffiliation } from '@sep/contracts';
+import type { EventConfiguration, PublishedScientificCall, PublishedSite, ScientificCallContent, SiteContent, WorkAuthor, WorkStatus, WorkContent, Manuscript, WorkAffiliation, ResearcherBackground } from '@sep/contracts';
 
 const binary = customType<{ data: Buffer; driverData: Buffer }>({ dataType: () => 'bytea' });
 const runtime = pgRole('sep_runtime').existing();
@@ -122,6 +122,7 @@ export const orcidConnections = pgTable('orcid_connections', {
   pgPolicy('directory_lookup',{for:'select',to:registryOwner,using:sql`current_setting('sep.directory_read',true)='true' AND EXISTS(SELECT 1 FROM researcher_profiles p WHERE p.person_id=${t.personId} AND p.discoverable)`}),
 ]);
 export const researcherProfiles = pgTable('researcher_profiles',{
+  background:jsonb('background').$type<ResearcherBackground>().notNull().default({educationLevel:'',degreeTitle:'',position:'',researchInterests:[],biography:'',website:''}),
   personId:uuid('person_id').primaryKey().references(()=>people.id),affiliations:jsonb('affiliations').$type<WorkAffiliation[]>().notNull().default([]),
   discoverable:boolean('discoverable').notNull().default(false),revision:integer('revision').notNull().default(1),
 },t=>[policy(actorScope(sql`${t.personId}`)),check('researcher_profile_revision',sql`${t.revision}>0`),

@@ -1,7 +1,7 @@
 export const profileCopy = {
   es: {
     intro:'Tu información académica y tu identidad de investigador, en un solo lugar.',
-    account:'Cuenta de investigador', details:'Información académica', detailsHelp:'Estos datos se usan al añadirte como autor de un trabajo.',
+    account:'Cuenta de investigador', details:'Formación y trayectoria', detailsHelp:'Estos datos se usan al añadirte como autor de un trabajo.',
     affiliations:'Afiliaciones', affiliationsHelp:'Añade las instituciones a las que perteneces y su país. Puedes registrar hasta cinco.', affiliation:'Afiliación',
     emptyTitle:'Añade tu primera afiliación', emptyHelp:'Completa tu institución y país para reutilizarlos cuando participes como autor.',
     edit:'Editar mis datos', save:'Guardar cambios', cancel:'Cancelar', personal:'Nombre del investigador',
@@ -18,7 +18,7 @@ export const profileCopy = {
   },
   en: {
     intro:'Your academic information and researcher identity, in one place.',
-    account:'Researcher account', details:'Academic information', detailsHelp:'These details are used when you add yourself as an author.',
+    account:'Researcher account', details:'Education and background', detailsHelp:'These details are used when you add yourself as an author.',
     affiliations:'Affiliations', affiliationsHelp:'Add your institutions and their countries. You can list up to five.', affiliation:'Affiliation',
     emptyTitle:'Add your first affiliation', emptyHelp:'Enter your institution and country to reuse them when contributing as an author.',
     edit:'Edit my details', save:'Save changes', cancel:'Cancel', personal:'Researcher name',
@@ -33,4 +33,9 @@ export const profileCopy = {
     privacy:'You choose what to share', privacyHelp:'You can change your profile visibility at any time. Your email is not shown in search.',
     copiesHelp:'Updating your profile does not change details in works already submitted.', orcidNote:'Connecting ORCID does not change how you sign in.',
   },
+} as const;
+
+export const researcherCopy = {
+  es:{education:'Formación y actividad',level:'Nivel de formación completado',degree:'Grado académico o científico / título obtenido',degreeHelp:'Escribe el nombre oficial usado en tu país. Indica títulos ya obtenidos; un posdoctorado o un cargo no son un grado.',position:'Cargo o función actual',positionHelp:'Por ejemplo: investigador, docente, doctorando o profesional.',areas:'Áreas de investigación',areasHelp:'Hasta 10 áreas, separadas por punto y coma.',biography:'Breve reseña profesional',website:'Sitio web profesional',optional:'Opcional',additional:'Más sobre tu trayectoria',empty:'Puedes añadir tu formación, cargo y áreas de investigación desde Editar mis datos.',levels:{'':'Sin especificar',short_cycle:'Titulación superior de ciclo corto',bachelor:'Grado / licenciatura o equivalente',master:'Maestría / máster o equivalente',doctorate:'Doctorado',other:'Otra titulación'},degreeExample:'Ej.: Doctor en Ciencias Técnicas / PhD in Engineering'},
+  en:{education:'Education and current activity',level:'Highest completed education level',degree:'Academic or scientific degree / qualification awarded',degreeHelp:'Use the official name from your country. List awarded qualifications; a postdoctoral position or job title is not a degree.',position:'Current position or role',positionHelp:'For example: researcher, lecturer, doctoral student or professional.',areas:'Research interests',areasHelp:'Up to 10 interests, separated by semicolons.',biography:'Short professional biography',website:'Professional website',optional:'Optional',additional:'More about your background',empty:'You can add your qualifications, position and research interests in Edit my details.',levels:{'':'Not specified',short_cycle:'Short-cycle higher education qualification',bachelor:'Bachelor’s degree or equivalent',master:'Master’s degree or equivalent',doctorate:'Doctoral degree',other:'Other qualification'},degreeExample:'For example: Doctor en Ciencias Técnicas / PhD in Engineering'},
 } as const;

@@ -7443,6 +7443,59 @@
           "status"
         ]
       },
+      "ResearcherBackgroundDto": {
+        "type": "object",
+        "properties": {
+          "educationLevel": {
+            "type": "string",
+            "enum": [
+              "",
+              "short_cycle",
+              "bachelor",
+              "master",
+              "doctorate",
+              "other"
+            ],
+            "default": ""
+          },
+          "degreeTitle": {
+            "type": "object",
+            "maxLength": 150,
+            "default": ""
+          },
+          "position": {
+            "type": "object",
+            "maxLength": 150,
+            "default": ""
+          },
+          "researchInterests": {
+            "maxItems": 10,
+            "default": [],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "biography": {
+            "type": "object",
+            "maxLength": 1500,
+            "default": ""
+          },
+          "website": {
+            "type": "object",
+            "maxLength": 300,
+            "default": ""
+          }
+        },
+        "required": [
+          "educationLevel",
+          "degreeTitle",
+          "position",
+          "researchInterests",
+          "biography",
+          "website"
+        ]
+      },
       "WorkAffiliationDto": {
         "type": "object",
         "properties": {
@@ -7465,6 +7518,14 @@
       "ResearcherProfileDto": {
         "type": "object",
         "properties": {
+          "background": {
+            "description": "Omitir conserva los datos previos. Campos declarados y opcionales; no acredita títulos.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ResearcherBackgroundDto"
+              }
+            ]
+          },
           "name": {
             "type": "string",
             "minLength": 2,
@@ -7832,6 +7893,14 @@
       "SaveResearcherProfileDto": {
         "type": "object",
         "properties": {
+          "background": {
+            "description": "Omitir conserva los datos previos. Campos declarados y opcionales; no acredita títulos.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ResearcherBackgroundDto"
+              }
+            ]
+          },
           "name": {
             "type": "string",
             "minLength": 2,
