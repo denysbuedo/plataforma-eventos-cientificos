@@ -50,4 +50,6 @@ Las respuestas devuelven OrganizationSettings. Errores específicos: REVISION_CO
 
 Las migraciones 0011 y 0012 añaden el perfil institucional, la revisión y los campos de provisión del dominio, y crean funciones limitadas sobre el registro. No se recrean organizaciones, eventos ni sesiones.
 
+Las migraciones 0013 y 0014 corrigen la autorización dentro de las funciones SECURITY DEFINER bajo FORCE RLS. Sin ellas la sección Organización devuelve un error interno. Se aplicaron a la demo conservando sus datos y se comprobó de forma dirigida la lectura de la API, el registro transaccional con rollback y la carga autenticada de la pantalla. La validación funcional completa permanece pendiente.
+
 La compilación y el análisis estático no sustituyen las pruebas funcionales aplazadas. Al retomarlas deberán cubrir: organizador/participante rechazados, cruce entre organizaciones, IDs ajenos, hostname duplicado, eventos archivados, control de revisión, concurrencia, TXT ausente/incorrecto, TLS pendiente, ingreso institucional protegido y auditoría/rollback.

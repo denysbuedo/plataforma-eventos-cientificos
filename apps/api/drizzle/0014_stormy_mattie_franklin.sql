@@ -1,0 +1,1 @@
+CREATE POLICY "registry_event_lock" ON "events" AS PERMISSIVE FOR UPDATE TO "sep_migrator" USING (current_setting('sep.organization_admin', true) = 'true' AND "events"."organization_id" = nullif(current_setting('sep.organization_id', true), '')::uuid) WITH CHECK (false);

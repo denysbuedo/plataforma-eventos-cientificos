@@ -92,6 +92,20 @@
       "when": 1792109978101,
       "tag": "0012_registry_management",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1792111933279,
+      "tag": "0013_wooden_stryfe",
+      "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1792111953381,
+      "tag": "0014_stormy_mattie_franklin",
+      "breakpoints": true
     }
   ]
 }

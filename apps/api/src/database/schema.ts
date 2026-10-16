@@ -3,11 +3,14 @@ import { boolean, check, foreignKey, index, integer, jsonb, pgPolicy, pgRole, pg
 import type { PublishedSite, SiteContent } from '@sep/contracts';
 
 const runtime = pgRole('sep_runtime').existing();
+const registryOwner = pgRole('sep_migrator').existing();
 const organizationScope = (column: SQL) => sql`${column} = nullif(current_setting('sep.organization_id', true), '')::uuid`;
 const actorScope = (column: SQL) => sql`${column} = nullif(current_setting('sep.person_id', true), '')::uuid`;
 const eventScope = (organization: SQL, event: SQL) => sql`${organizationScope(organization)} AND
   (${event} = nullif(current_setting('sep.event_id', true), '')::uuid OR current_setting('sep.organization_admin', true) = 'true')`;
 const policy = (scope: SQL) => pgPolicy('context_scope', { for: 'all', to: runtime, using: scope, withCheck: scope });
+const registryRead = (scope: SQL) => pgPolicy('registry_authorization_read', { for: 'select', to: registryOwner,
+  using: sql`current_setting('sep.organization_admin', true) = 'true' AND ${scope}` });
 
 // Control-plane registry: no direct runtime grants; access only through the narrow domain resolver.
 export const organizations = pgTable('organizations', {
@@ -35,6 +38,11 @@ export const events = pgTable('events', {
   foreignKey({ columns: [t.organizationId, t.editionId], foreignColumns: [editions.organizationId, editions.id] }),
   check('events_status_check', sql`${t.status} IN ('draft', 'published', 'archived')`),
   policy(eventScope(sql`${t.organizationId}`, sql`${t.id}`)),
+  registryRead(organizationScope(sql`${t.organizationId}`)),
+  // SELECT FOR UPDATE in the registry function needs an UPDATE USING policy;
+  // WITH CHECK false still prevents the function owner from changing event rows.
+  pgPolicy('registry_event_lock', { for: 'update', to: registryOwner,
+    using: sql`current_setting('sep.organization_admin', true) = 'true' AND ${organizationScope(sql`${t.organizationId}`)}`, withCheck: sql`false` }),
 ]);
 export const domains = pgTable('domains', {
   id: uuid('id').primaryKey(), organizationId: uuid('organization_id').notNull().references(() => organizations.id),
@@ -44,7 +52,7 @@ export const domains = pgTable('domains', {
 }, (t) => [foreignKey({ columns: [t.organizationId, t.eventId], foreignColumns: [events.organizationId, events.id] })]);
 export const people = pgTable('people', {
   id: uuid('id').primaryKey(), name: text('name').notNull(), active: boolean('active').notNull().default(true),
-}, (t) => [policy(sql`${actorScope(sql`${t.id}`)} OR (current_setting('sep.organization_admin', true) = 'true' AND EXISTS
+}, (t) => [registryRead(actorScope(sql`${t.id}`)), policy(sql`${actorScope(sql`${t.id}`)} OR (current_setting('sep.organization_admin', true) = 'true' AND EXISTS
   (SELECT 1 FROM memberships m WHERE m.person_id = ${t.id} AND m.organization_id = nullif(current_setting('sep.organization_id', true), '')::uuid AND m.active))`)]);
 export const identities = pgTable('identities', {
   id: uuid('id').primaryKey(), personId: uuid('person_id').notNull().references(() => people.id),
@@ -66,6 +74,7 @@ export const memberships = pgTable('memberships', {
   foreignKey({ columns: [t.organizationId, t.eventId], foreignColumns: [events.organizationId, events.id] }),
   index('membership_person_organization_idx').on(t.personId, t.organizationId),
   policy(sql`${organizationScope(sql`${t.organizationId}`)} AND (${actorScope(sql`${t.personId}`)} OR current_setting('sep.organization_admin', true) = 'true')`),
+  registryRead(sql`${organizationScope(sql`${t.organizationId}`)} AND ${actorScope(sql`${t.personId}`)}`),
 ]);
 export const roleAssignments = pgTable('role_assignments', {
   id: uuid('id').primaryKey(), membershipId: uuid('membership_id').notNull().references(() => memberships.id),
@@ -78,6 +87,7 @@ export const roleAssignments = pgTable('role_assignments', {
   check('role_code_check', sql`${t.role} IN ('organization_admin', 'organizer', 'participant')`),
   check('role_period_check', sql`${t.validUntil} IS NULL OR ${t.validUntil} > ${t.validFrom}`),
   policy(sql`EXISTS (SELECT 1 FROM memberships m WHERE m.id = ${t.membershipId})`),
+  registryRead(sql`EXISTS (SELECT 1 FROM memberships m WHERE m.id = ${t.membershipId})`),
 ]);
 export const auditEntries = pgTable('audit_entries', {
   id: uuid('id').primaryKey(), organizationId: uuid('organization_id').notNull().references(() => organizations.id),
