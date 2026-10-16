@@ -260,6 +260,55 @@
       "when": 1792180678408,
       "tag": "0036_redundant_black_queen",
       "breakpoints": true
+    },
+    {
+      "idx": 37,
+      "version": "7",
+      "when": 1792184724062,
+      "tag": "0037_chilly_captain_america",
+      "breakpoints": true
+    },
+    {
+      "idx": 38,
+      "version": "7",
+      "when": 1792184828136,
+      "tag": "0038_amazing_mandrill",
+      "breakpoints": true
+    },
+    {
+      "idx": 39,
+      "version": "7",
+      "when": 1792184922495,
+      "tag": "0039_curvy_invisible_woman",
+      "breakpoints": true
+    },
+    {
+      "idx": 40,
+      "version": "7",
+      "when": 1792184922496,
+      "tag": "0040_authorship_workflow",
+      "breakpoints": true
+    },
+    {
+      "idx": 41,
+      "version": "7",
+      "when": 1792185227781,
+      "tag": "0041_military_terror",
+      "breakpoints": true
+    },
+    {
+      "idx": 42,
+      "version": "7",
+      "when": 1792185227782,
+      "tag": "0042_authorship_notifications",
+      "breakpoints": true
+    },
+    {
+      "idx": 43,
+      "version": "7",
+      "when": 1792185227783,
+      "tag": "0043_authorship_responsibility_guard",
+      "breakpoints": true
     }
   ]
 }

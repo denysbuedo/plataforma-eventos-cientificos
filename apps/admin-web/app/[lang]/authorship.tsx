@@ -1,0 +1,42 @@
+'use client';
+import { useEffect, useRef, useState } from 'react';
+import type { AuthorshipClaim, AuthorshipContribution, AuthorshipWorkspace } from '@sep/contracts';
+import { webCopy,type Locale } from '@sep/i18n';
+import { authorshipCopy } from './authorship-copy';
+const empty:AuthorshipWorkspace={candidates:[],claims:[],contributions:[],responsibilities:[]};
+type Decision={action:'approve'|'reject'|'cancel'|'revoke';claim:AuthorshipClaim}|{action:'disown';contribution:AuthorshipContribution};
+export default function Authorship({eventId,contextKey,locale,staff=false}:{eventId:string;contextKey:string;locale:Locale;staff?:boolean}){
+  const text=authorshipCopy[locale];const [data,setData]=useState(empty);const [busy,setBusy]=useState(false);const [loaded,setLoaded]=useState(false);const [error,setError]=useState('');const [notice,setNotice]=useState('');
+  const [decision,setDecision]=useState<Decision|null>(null);const [message,setMessage]=useState('');const dialog=useRef<HTMLDialogElement>(null);
+  const base=`/api/backend/events/${eventId}/${staff?'authorship-review':'authorship'}`;
+  const query=`?event=${encodeURIComponent(contextKey)}&lang=${locale}`;
+  useEffect(()=>{const controller=new AbortController();setLoaded(false);void fetch(base+query,{signal:controller.signal}).then(async response=>{const next=await response.json();if(!response.ok)throw new Error(next.error?.message??text.error);setData(next);setLoaded(true);}).catch(e=>{if(!controller.signal.aborted)setError(e instanceof Error?e.message:text.error);});return()=>controller.abort();},[base,query,text.error]);
+  useEffect(()=>{if(decision)dialog.current?.showModal();else dialog.current?.close();},[decision]);
+  async function request(suffix='',body?:unknown){setBusy(true);setError('');setNotice('');try{const response=await fetch(base+suffix+query,{method:body===undefined?'GET':'POST',headers:{'content-type':'application/json'},body:body===undefined?undefined:JSON.stringify(body)});const next=await response.json();if(!response.ok)throw new Error(next.error?.message??text.error);setData(next);setLoaded(true);setDecision(null);setMessage('');if(body!==undefined)setNotice(text.saved);}catch(e){setError(e instanceof Error?e.message:text.error);}finally{setBusy(false);}}
+  const pending=data.claims.filter(claim=>claim.status==='pending').length;
+  const reasonRequired=!!decision&&(staff||['reject','revoke','disown'].includes(decision.action));
+  return <section className="panel form-panel authorship-workspace" aria-label={staff?text.review:text.title}>
+    <div className="panel-heading"><div><h2>{staff?text.review:text.title}</h2><p>{staff?text.reviewHelp:text.help}</p>{loaded&&pending>0&&<span className="draft-state">{pending} {text.notices}</span>}</div><button className="button button-outline" disabled={busy} onClick={()=>void request()}>{text.reload}</button></div>
+    {error&&<p className="notice notice-error" role="alert">{error}</p>}{notice&&<p className="notice" role="status">{notice}</p>}
+    {!staff&&loaded&&<>
+      <section className="work-section"><h3>{text.candidates}</h3><p className="muted small">{text.candidateHelp}</p>{!data.candidates.length&&<p className="muted">{text.emptyCandidates}</p>}
+        <div className="work-author-list">{data.candidates.map(candidate=><article className="work-author-card" key={`${candidate.workId}:${candidate.authorId}`}><div className="work-author-info"><strong>{candidate.fullName}</strong><p className="muted small">{text[candidate.basis]}</p></div><div className="editor-actions"><button className="button button-outline" disabled={busy} onClick={()=>{if(window.confirm(text.candidateConfirm))void request('',{workId:candidate.workId,authorId:candidate.authorId,action:'request'});}}>{text.request}</button><button className="button button-outline" disabled={busy} onClick={()=>{if(window.confirm(text.declineConfirm))void request('',{workId:candidate.workId,authorId:candidate.authorId,action:'decline'});}}>{text.decline}</button></div></article>)}</div>
+      </section>
+      <section className="work-section"><h3>{text.contributions}</h3>{!data.contributions.length&&<p className="muted">{text.emptyContributions}</p>}{data.contributions.map(item=><article className="authorship-card" key={`${item.workId}:${item.authorId}`}><strong>{item.title}</strong><p>{webCopy[locale].workStatuses[item.status]}</p><p className="muted small">{text.noFiles}</p><button className="button button-outline" disabled={busy} onClick={()=>{setMessage('');setDecision({action:'disown',contribution:item});}}>{text.withdraw}</button></article>)}</section>
+      {data.responsibilities.length>0&&<section className="work-section"><h3>{text.responsibilities}</h3>{data.responsibilities.map(item=><article className="authorship-card" key={item.workId}><strong>{item.title}</strong><p className="muted small">{text[item.responsibility]}</p><div className="editor-actions">{(item.canAccept||item.canRelease)&&<button className="button button-outline" disabled={busy} onClick={()=>{if(window.confirm(text.responsibilityConfirm))void request(`/works/${item.workId}/responsibility`,{revision:item.revision,action:item.canAccept?'accept_responsibility':'release_responsibility'});}}>{item.canAccept?text.acceptResponsibility:text.releaseResponsibility}</button>}</div></article>)}</section>}
+    </>}
+    {loaded&&<section className="work-section"><div className="panel-heading"><h3>{text.requests}</h3>{!staff&&data.claims.some(claim=>claim.unread)&&<button className="button button-outline" disabled={busy} onClick={()=>void request('/read',{})}>{text.read}</button>}</div>{!data.claims.length&&<p className="muted">{text.emptyRequests}</p>}{data.claims.map(claim=><article className="authorship-card" key={claim.id}>
+      <div className="panel-heading"><div><strong>{claim.unread?'● ':''}{claim.title||text.privateTitle}</strong><p>{claim.claimantName} · {claim.fullName}</p></div><span className={`authorship-status authorship-status-${claim.status}`}>{text[claim.status]}</span></div>
+      <p className="muted small">{text[claim.basis]} · {new Intl.DateTimeFormat(locale,{dateStyle:'medium'}).format(new Date(claim.createdAt))}</p><p className="muted small">{text[claim.responsibility]}</p>
+      {claim.message&&<p className="authorship-message">{claim.message}</p>}{claim.stale&&<p className="notice notice-muted">{text.stale}</p>}{claim.needsIndependentReview&&claim.status==='pending'&&<p className="notice notice-muted">{text.independent}</p>}
+      <div className="editor-actions">{(['approve','reject','cancel','revoke'] as const).filter(action=>action==='approve'?claim.canDecide&&!claim.stale:action==='reject'?claim.canDecide:action==='cancel'?claim.canCancel:claim.canRevoke).map(action=><button className="button button-outline" key={action} disabled={busy} onClick={()=>{setMessage('');setDecision({claim,action});}}>{text[action]}</button>)}</div>
+    </article>)}</section>}
+    <p className="muted small">{text.limited}</p>
+    <dialog className="researcher-close-dialog" ref={dialog} aria-labelledby={`authorship-decision-${staff?'staff':'author'}`} onCancel={event=>{event.preventDefault();if(!busy)setDecision(null);}}>
+      <h2 id={`authorship-decision-${staff?'staff':'author'}`}>{text.decision}</h2>{decision&&<form className="form-fields" onSubmit={event=>{event.preventDefault();if(decision.action==='disown')void request('',{workId:decision.contribution.workId,authorId:decision.contribution.authorId,action:'disown',message});else void request(`/claims/${decision.claim.id}`,{action:decision.action,revision:decision.claim.revision,message});}}>
+        <p>{decision.action==='disown'?`${text.withdraw} · ${decision.contribution.title}`:`${text[decision.action]} · ${decision.claim.claimantName}`}</p><label className="field"><span>{text.reason}</span><textarea rows={4} maxLength={2000} minLength={reasonRequired?3:undefined} required={reasonRequired} value={message} disabled={busy} onChange={event=>setMessage(event.target.value)}/><small>{text.reasonHelp}</small></label>
+        {error&&<p className="notice notice-error" role="alert">{error}</p>}<div className="editor-actions"><button className="button button-primary" disabled={busy} type="submit">{text.confirm}</button><button className="button button-outline" disabled={busy} type="button" onClick={()=>setDecision(null)}>{text.close}</button></div>
+      </form>}
+    </dialog>
+  </section>;
+}

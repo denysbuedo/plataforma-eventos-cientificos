@@ -8,6 +8,7 @@ import People from './people';
 import Organization from './organization';
 import Configuration from './event-configuration';
 import ScientificCall from './scientific-call';
+import { authorshipCopy } from './authorship-copy';
 import SubmissionsInbox from './submissions-inbox';
 
 type Props = { locale: Locale; contextKey: string; tab: string; session: SessionView | null; events: EventPage; site: SiteDraft | null; team: EventTeam | null; directory: PeopleDirectory | null; organization: OrganizationSettings | null; configuration: EventConfiguration | null; scientificCall: ScientificCallDraft | null; inbox: SubmissionPage | null;
@@ -101,7 +102,7 @@ export default function Workspace(props: Props) {
     finally { setBusy(null); }
   }
   const navigation: { id: string; label: string; icon: IconName }[] = [
-    { id: 'profile', label: text.myProfile, icon: 'settings' as const }, ...(session?.eventId ? [{ id: 'works', label: text.myWorks, icon: 'book' as const }] : []), ...(session?.canEdit ? [{ id: 'submissions', label: text.receivedWorks, icon: 'book' as const }] : []), { id: 'overview', label: text.overview, icon: 'grid' }, { id: 'call', label: text.scientificCall, icon: 'book' }, { id: 'content', label: text.content, icon: 'edit' },
+    { id: 'profile', label: text.myProfile, icon: 'settings' as const }, ...(session?.eventId ? [{ id: 'works', label: text.myWorks, icon: 'book' as const }, { id:'authorship',label:authorshipCopy[locale].title,icon:'book' as const }] : []), ...(session?.canEdit ? [{ id: 'submissions', label: text.receivedWorks, icon: 'book' as const }] : []), { id: 'overview', label: text.overview, icon: 'grid' }, { id: 'call', label: text.scientificCall, icon: 'book' }, { id: 'content', label: text.content, icon: 'edit' },
     { id: 'appearance', label: text.appearance, icon: 'palette' }, { id: 'data', label: text.eventData, icon: 'settings' },
     ...(session?.organizationAdmin && site ? [{ id: 'team', label: text.team, icon: 'grid' as const }] : []),
     ...(session?.organizationAdmin ? [{ id: 'people', label: text.people, icon: 'book' as const }] : []),

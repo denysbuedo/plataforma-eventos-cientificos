@@ -188,3 +188,14 @@ dialog::backdrop { background:rgb(18 36 28 / 45%); }
   .work-metadata>div+div { border-left:0; border-top:1px solid var(--line); }
   .work-author-card { padding:14px; gap:10px; }
 }
+
+.authorship-card { padding: 1.15rem 0; border-bottom: 1px solid var(--border, #e2e8f0); }
+.authorship-card:last-child { border-bottom: 0; }
+.authorship-status { display: inline-flex; padding: .3rem .75rem; border-radius: 99rem; font-size: .82rem; background: #edf2f7; color: #334155; white-space: nowrap; }
+.authorship-status-pending { background: #fff3ce; color: #805300; }
+.authorship-status-approved { background: #e2f5e9; color: #186438; }
+.authorship-status-rejected, .authorship-status-revoked { background: #fce8e8; color: #923333; }
+.authorship-message { white-space: pre-wrap; overflow-wrap: anywhere; border-left: 3px solid #cbd5e1; padding-left: .85rem; }
+.authorship-workspace .work-author-card { align-items: flex-start; flex-wrap: wrap; }
+
+.authorship-nav-count { margin-left: auto; padding: .1rem .45rem; border-radius: 99rem; background: #fff3ce; color: #805300; font-size: .8rem; }

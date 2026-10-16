@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { WORK_STATUSES } from '@sep/contracts';
 import type { StaffWork,SubmissionPage,WorkStatus } from '@sep/contracts';
 import { webCopy,type Locale } from '@sep/i18n';
+import Authorship from './authorship';
 import WorkFlow,{WorkContentView} from './work-flow';
 export default function SubmissionsInbox({initial,eventId,contextKey,locale}:{initial:SubmissionPage;eventId:string;contextKey:string;locale:Locale}) {
   const text=webCopy[locale];const [page,setPage]=useState(initial);const [work,setWork]=useState<StaffWork|null>(null);const [busy,setBusy]=useState(false);const [error,setError]=useState('');
@@ -14,6 +15,7 @@ export default function SubmissionsInbox({initial,eventId,contextKey,locale}:{in
   async function refresh(offset=page.offset){await run(async()=>{setPage(await request<SubmissionPage>(`?limit=${page.limit}&offset=${offset}${filter?`&status=${filter}`:''}${search.trim()?`&q=${encodeURIComponent(search.trim())}`:''}`));setWork(null);setDeciding(false);});}
   const actions:WorkStatus[]=work?.status==='accepted'?['final_requested']:work&&['submitted','in_review','final_submitted'].includes(work.status)?['in_review','changes_requested','accepted','rejected'].filter(s=>s!==work.status) as WorkStatus[]:[];
   return <>
+    <Authorship eventId={eventId} contextKey={contextKey} locale={locale} staff/>
     <p className="notice notice-muted">{text.staffScopeHelp}</p>{error&&<div className="notice notice-error" role="alert">{error}</div>}
     <section className="panel form-panel"><div className="panel-heading"><h2>{text.receivedWorks}</h2><button className="button button-outline" disabled={busy} onClick={()=>refresh()}>{text.reloadWorks}</button></div>
       <form className="form-fields" onSubmit={(e)=>{e.preventDefault();void refresh(0);}}><div className="field-row"><label className="field"><span>{text.status}</span><select value={filter} disabled={busy} onChange={(e)=>setFilter(e.target.value)}><option value="">{text.allWorkStates}</option>{WORK_STATUSES.filter(status=>status!=='draft').map(status=><option key={status} value={status}>{text.workStatuses[status]}</option>)}</select></label><label className="field"><span>{text.searchWorkTitle}</span><input value={search} maxLength={100} disabled={busy} onChange={(e)=>setSearch(e.target.value)}/></label></div><button type="submit" className="button button-outline" disabled={busy}>{text.applyWorkFilter}</button></form>

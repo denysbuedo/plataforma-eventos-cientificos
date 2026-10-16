@@ -21,7 +21,7 @@ El directorio muestra nombre, afiliaciones y ORCID conectado en producción. No 
 
 **Añadirme con mis datos** sigue disponible para la propia cuenta aunque no publique su perfil. Ahora reutiliza también los países guardados. **Quitar vinculación y declarar manualmente** retira la referencia en la edición pendiente; al guardar se recalculan indicadores y, si cambia la correspondencia vinculada, se aplican las reglas de revocación de gestión compartida.
 
-Una selección no añade el trabajo al espacio privado de esa otra persona. El acceso de gestión sigue requiriendo la invitación y aceptación implementadas por separado. La aceptación válida del autor de correspondencia confirma su vinculación; el reconocimiento general de coautores con aprobación continúa pendiente. Un ORCID autenticado acredita el identificador de la cuenta, no la aceptación de cada autoría.
+Una selección no añade el trabajo al espacio privado de esa otra persona. El acceso de gestión sigue requiriendo la invitación y aceptación implementadas por separado. La aceptación válida del autor de correspondencia confirma su vinculación; el reconocimiento general con aprobación se implementó posteriormente en [su flujo específico](reconocimiento-autorias.md). Un ORCID autenticado acredita el identificador de la cuenta, no la aceptación de cada autoría.
 
 ## API y aislamiento
 
@@ -35,7 +35,7 @@ El directorio es global entre organizaciones porque las personas pueden colabora
 
 Aplicar migraciones 0034–0036. `researcher_profiles` conserva RLS/FORCE de su propietario. Una función SECURITY DEFINER acotada consulta la proyección visible, comprueba la cuenta activa, limita resultados y restablece su contexto al terminar o fallar. El runtime no obtiene lectura directa de perfiles ajenos, correos o conexiones ORCID. Una política restrictiva permite cambiar el nombre solo a su propietario, incluso con contexto administrativo. La búsqueda está limitada a sesenta consultas por minuto y cuenta en cada proceso API; una futura operación con múltiples procesos necesitará coordinación del límite.
 
-Los datos de autoría guardados son instantáneas del trabajo. Los cambios de perfil o visibilidad no actualizan versiones antiguas ni otorgan edición. No hay fusión automática de personas, reconocimiento retrospectivo ni envío de correo.
+Los datos de autoría guardados son instantáneas del trabajo. Los cambios de perfil o visibilidad no actualizan versiones antiguas ni otorgan edición. No hay fusión automática de personas ni envío de correo. El reconocimiento retrospectivo se gestiona ahora mediante solicitudes verificadas y aprobación.
 
 ## Verificación
 

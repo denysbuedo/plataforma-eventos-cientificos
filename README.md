@@ -2,7 +2,7 @@
 
 > Plataforma integral, multiinstitución, multievento y multilingüe para gestionar congresos científicos desde la convocatoria hasta la publicación de memorias y certificados.
 
-**Estado:** portal y administración con CMS, convocatoria científica y módulo de trabajos implementados: autoría, PDF privado, envío, versiones, correcciones, dictámenes del organizador y versión final. Revisión por pares y validación funcional completa pendientes · **Idiomas iniciales:** español e inglés.
+**Estado:** portal y administración con CMS, convocatoria científica y módulo de trabajos implementados: autoría, PDF privado, envío, versiones, correcciones, dictámenes del organizador, versión final, gestión compartida y [reconocimiento de autorías con aprobación y avisos internos](docs/development/reconocimiento-autorias.md). Revisión por pares y validación funcional completa pendientes · **Idiomas iniciales:** español e inglés.
 
 ## Visión
 

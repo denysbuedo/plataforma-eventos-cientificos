@@ -1,3 +1,4 @@
+import { authorshipRpc } from './authorship.js';
 import { Injectable } from '@nestjs/common';
 import { and, desc, eq, sql } from 'drizzle-orm';
 import { randomUUID } from 'node:crypto';
@@ -258,6 +259,7 @@ export class AuthorWorksService {
           }
         }
       }
+      if(before.ownerId===context.personId)await authorshipRpc(tx,context,'synchronize',id);
       await this.audit.record(tx, context, 'work.draft.saved', state.event.id, id); return this.detail(tx,row,state);
     });
   }

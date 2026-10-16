@@ -96,6 +96,16 @@ export interface WorkVersionSummary { id: string; number: number; kind: 'submiss
 export interface WorkHistory { id: string; action: string; message: string; actor: 'author' | 'staff'; actorId?:string; actorName?:string; createdAt: string }
 export interface WorkCollaboration { id:string; authorId:string; email:string; status:'pending'|'accepted'|'revoked'|'expired'; createdAt:string; expiresAt:string; acceptedAt:string|null }
 export interface CreatedWorkCollaboration { invitation:WorkCollaboration; token:string; work:AuthorWork }
+export type AuthorshipBasis = 'account'|'email'|'orcid';
+export interface AuthorshipCandidate { workId:string; authorId:string; fullName:string; basis:AuthorshipBasis }
+export interface AuthorshipContribution { workId:string; authorId:string; fullName:string; title:string; status:WorkStatus }
+export interface AuthorshipClaim extends AuthorshipCandidate {
+  id:string; claimantName:string; status:'pending'|'approved'|'rejected'|'revoked'; revision:number;
+  createdAt:string; decidedAt:string|null; message:string; title:string|null; stale:boolean;
+  responsibility:'submitter'|'corresponding'; needsIndependentReview:boolean; canDecide:boolean; canCancel:boolean; canRevoke:boolean; unread:boolean;
+}
+export interface AuthorshipResponsibility { workId:string; title:string; revision:number; responsibility:'submitter'|'corresponding'; canAccept:boolean; canRelease:boolean }
+export interface AuthorshipWorkspace { candidates:AuthorshipCandidate[]; contributions:AuthorshipContribution[]; claims:AuthorshipClaim[]; responsibilities:AuthorshipResponsibility[] }
 export interface WorkVersion extends WorkVersionSummary { content: WorkContent }
 export interface AuthorWork extends AuthorWorkSummary, WorkContent { versions: WorkVersionSummary[]; history: WorkHistory[]; editable: boolean }
 export interface StaffWork extends AuthorWork { canDecide: boolean }

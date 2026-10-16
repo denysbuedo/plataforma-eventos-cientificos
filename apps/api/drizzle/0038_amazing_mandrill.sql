@@ -1,0 +1,1 @@
+ALTER TABLE "authorship_claims" ADD COLUMN "verified_orcid" text;

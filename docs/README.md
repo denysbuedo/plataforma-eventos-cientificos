@@ -54,3 +54,5 @@
 | `reference/` | Documentos de referencia en formatos de distribución. |
 
 Los documentos de planificación describen trabajo futuro. No constituyen evidencia de funcionalidades implementadas. Las decisiones pendientes se resolverán mediante ADR y validación del producto.
+
+- [Reconocimiento de autorías, responsabilidad y avisos](development/reconocimiento-autorias.md) y [ADR-019](adr/ADR-019-reconocimiento-autorias.md).

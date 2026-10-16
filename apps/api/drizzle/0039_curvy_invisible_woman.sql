@@ -1,0 +1,1 @@
+CREATE POLICY "authorship_people" ON "people" AS PERMISSIVE FOR SELECT TO "sep_migrator" USING (current_setting('sep.authorship_rpc',true)='true');
