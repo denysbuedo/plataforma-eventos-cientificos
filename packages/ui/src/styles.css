@@ -199,3 +199,54 @@ dialog::backdrop { background:rgb(18 36 28 / 45%); }
 .authorship-workspace .work-author-card { align-items: flex-start; flex-wrap: wrap; }
 
 .authorship-nav-count { margin-left: auto; padding: .1rem .45rem; border-radius: 99rem; background: #fff3ce; color: #805300; font-size: .8rem; }
+
+.authorship-header { display:flex; justify-content:space-between; align-items:flex-start; gap:24px; }
+.authorship-header h2 { font-size:24px; line-height:1.25; }
+.authorship-header p { margin-top:8px; max-width:650px; color:var(--muted); font-size:14px; }
+.authorship-sections { display:flex; gap:6px; border-bottom:1px solid var(--line); margin-top:26px; overflow-x:auto; }
+.authorship-sections button { display:flex; align-items:center; gap:9px; background:none; border:0; border-bottom:3px solid transparent; padding:13px 16px; color:var(--muted); font-weight:600; white-space:nowrap; }
+.authorship-sections button[aria-pressed="true"] { color:var(--green); border-bottom-color:var(--green); background:#f4f8f1; }
+.authorship-sections button>span { border-radius:99px; padding:0 7px; background:#edf1eb; font-size:12px; }
+.authorship-section-content { padding-top:24px; }
+.authorship-group+.authorship-group { margin-top:30px; }
+.authorship-group h3 { font-size:18px; }
+.authorship-group-help { color:var(--muted); font-size:14px; margin:6px 0 16px; max-width:740px; }
+.authorship-item { border:1px solid var(--line); border-radius:10px; padding:20px; margin-top:12px; background:white; overflow-wrap:anywhere; }
+.authorship-item h4 { font-size:17px; line-height:1.5; margin:0; }
+.authorship-item-heading { display:flex; align-items:flex-start; justify-content:space-between; gap:18px; }
+.authorship-item-kicker,.authorship-caption { font-size:13px; color:var(--muted); margin-bottom:5px; }
+.authorship-caption { margin-top:6px; }
+.authorship-item .editor-actions { margin-top:16px; }
+.authorship-badges { display:flex; flex-wrap:wrap; align-items:center; justify-content:flex-end; gap:8px; }
+.authorship-new { font-size:12px; font-weight:600; color:var(--green); }
+.authorship-next-step { font-size:14px; margin-top:12px; }
+.authorship-details { margin-top:16px; color:var(--muted); font-size:13px; }
+.authorship-details summary,.authorship-managers summary { cursor:pointer; width:fit-content; font-weight:600; padding:4px 0; }
+.authorship-details summary:focus-visible,.authorship-managers summary:focus-visible { outline:3px solid #dc946c; outline-offset:4px; }
+.authorship-facts { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px 24px; margin:16px 0; }
+.authorship-facts dt { color:var(--muted); font-size:12px; }
+.authorship-facts dd { color:var(--ink); margin:3px 0 0; }
+.authorship-empty { text-align:center; background:#f8faf6; border:1px dashed var(--line); border-radius:10px; padding:38px 24px; }
+.authorship-empty h3 { font-size:20px; }
+.authorship-empty p { max-width:510px; margin:8px auto 0; color:var(--muted); font-size:14px; }
+.authorship-empty .button { margin-top:20px; }
+.authorship-empty-mark { display:inline-grid; place-items:center; width:40px; height:40px; border-radius:50%; background:#e6f0df; color:var(--green); font-size:24px; margin-bottom:12px; }
+.authorship-managers { border-top:1px solid var(--line); margin-top:28px; padding-top:20px; font-size:14px; }
+.authorship-managers .button { margin-top:12px; }
+.authorship-footnote { color:var(--muted); font-size:13px; padding:18px 0 0; max-width:740px; }
+.authorship-group-heading { display:flex; justify-content:space-between; align-items:flex-start; gap:16px; }
+.authorship-dialog p { margin:0; }
+.authorship-dialog-subject { font-weight:600; }
+.authorship-loading { margin-top:24px; color:var(--muted); }
+@media(max-width:580px) {
+  .authorship-header { gap:12px; }
+  .authorship-header h2 { font-size:22px; }
+  .authorship-header>.button { padding:9px 12px; }
+  .authorship-sections button { flex:1; justify-content:center; padding:12px 6px; font-size:12px; gap:5px; white-space:normal; }
+  .authorship-item { padding:16px; }
+  .authorship-item-heading,.authorship-group-heading { flex-direction:column; gap:10px; }
+  .authorship-badges { justify-content:flex-start; }
+  .authorship-facts { grid-template-columns:1fr; }
+  .authorship-workspace .button { white-space:normal; }
+  .authorship-workspace .editor-actions .button { min-height:44px; font-size:12px; }
+}
