@@ -9,6 +9,7 @@ Para crear un borrador, el organizador debe haber publicado una convocatoria cie
 3. **Ver** abre los detalles en modo de consulta. El formulario aparece únicamente al pulsar **Editar**, desde la lista o desde el detalle. Tras crear un borrador se muestra su detalle sin abrir la edición.
 4. En edición completar el resumen y palabras clave, una por línea. Se muestran los rangos del tipo seleccionado; los mínimos no impiden guardar un borrador incompleto, pero los máximos sí se validan.
 5. Pulsar **Guardar borrador** para guardar y volver al detalle. Esto no envía nada al comité ni publica el trabajo. **Cancelar** descarta los cambios locales y vuelve a consulta.
+6. **Volver al listado** cierra el detalle o la edición y deja únicamente la lista de trabajos. Si hay cambios de edición sin guardar, pide confirmación antes de descartarlos. La opción **Mis trabajos** del menú también vuelve al listado. Cada fila muestra explícitamente su estado actual, Borrador; los estados de envío y revisión se incorporarán con esos módulos.
 
 Cada trabajo conserva una copia de la convocatoria original. Si cambia la convocatoria, aparece una indicación y el borrador mantiene su catálogo y requisitos. La compatibilidad para el envío se resolverá en un incremento posterior. El idioma se valida contra los idiomas actuales configurados para el evento.
 

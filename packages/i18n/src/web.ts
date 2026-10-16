@@ -1,5 +1,6 @@
 export const webCopy = {
   es: {
+    backToWorks: 'Volver al listado',
     viewWork: 'Ver', editWorkAction: 'Editar', workDetails: 'Detalles del trabajo', workIncomplete: 'Sin completar',
     myWorks: 'Mis trabajos', authorSpace: 'Espacio del autor', author: 'Autor', authorHelp: 'Prepara borradores privados sin permisos de organizador.',
     worksHelp: 'Prepara tus contribuciones. Guardar un borrador no lo envía al comité ni lo publica.', newWork: 'Nuevo trabajo', createWork: 'Crear borrador',
@@ -111,6 +112,7 @@ export const webCopy = {
     invitationEmailMismatch: 'Necesitas una cuenta con correo verificado que coincida con el destinatario de esta invitación.',
   },
   en: {
+    backToWorks: 'Back to list',
     viewWork: 'View', editWorkAction: 'Edit', workDetails: 'Work details', workIncomplete: 'Not completed',
     myWorks: 'My works', authorSpace: 'Author workspace', author: 'Author', authorHelp: 'Prepare private drafts without organizer permissions.',
     worksHelp: 'Prepare your contributions. Saving a draft does not send it to the committee or publish it.', newWork: 'New work', createWork: 'Create draft',
