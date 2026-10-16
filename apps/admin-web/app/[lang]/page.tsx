@@ -1,6 +1,6 @@
 import Authorship from './authorship';
-import { authorshipCopy } from './authorship-copy';
-import { Brand } from '@sep/ui';
+import { authorshipCopy, authorshipUi } from './authorship-copy';
+import ParticipantShell from './participant-shell';
 import { cookies, headers } from 'next/headers';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
@@ -38,17 +38,16 @@ export default async function AdminPage({ params, searchParams }: { params: Prom
     binding = bindingFor((await headers()).get('host') ?? '', query.event);
     if (query.tab === 'profile') {
       const person=(await apiRequest<{person:AuthorAccount}>(binding,'me',{token,locale})).person;
-      return <Profile person={person} locale={locale} contextKey={contextKey} eventId={binding.eventId} error={!!query.orcidError}/>;
+      return <Profile person={person} locale={locale} contextKey={contextKey} eventId={binding.eventId} publicUrl={publicUrl?`${publicUrl}/${locale}?event=${encodeURIComponent(contextKey)}`:''} error={!!query.orcidError}/>;
     }
     if (query.tab === 'authorship' && binding.eventId) {
       const person=(await apiRequest<{person:AuthorAccount}>(binding,'me',{token,locale})).person;
-      const prefix=`/${locale}?event=${encodeURIComponent(contextKey)}&tab=`;
-      return <div className="admin-shell"><aside className="sidebar"><Brand compact/><nav><a href={prefix+'works'}>{text.myWorks}</a><a className="active" href={prefix+'authorship'}>{authorshipCopy[locale].title}</a><a href={prefix+'profile'}>{text.myProfile}</a></nav></aside><div className="admin-area"><header className="admin-topbar"><strong>{authorshipCopy[locale].title}</strong><span>{person.name}</span><div className="language-switch"><a href={`/es?event=${encodeURIComponent(contextKey)}&tab=authorship`}>ES</a><a href={`/en?event=${encodeURIComponent(contextKey)}&tab=authorship`}>EN</a></div></header><main className="admin-main"><Authorship eventId={binding.eventId} contextKey={contextKey} locale={locale}/></main></div></div>;
+      return <ParticipantShell person={person} locale={locale} contextKey={contextKey} eventId={binding.eventId} tab="authorship" publicUrl={publicUrl?`${publicUrl}/${locale}?event=${encodeURIComponent(contextKey)}`:''}><div className="admin-heading"><div><h1>{authorshipCopy[locale].title}</h1><p>{authorshipUi[locale].help}</p></div></div><Authorship eventId={binding.eventId} contextKey={contextKey} locale={locale}/></ParticipantShell>;
     }
     if (query.tab === 'works' && binding.eventId) {
       const authorWorkspace = await apiRequest<AuthorWorkspace>(binding, `events/${binding.eventId}/my-works`, { token, locale });
       const author = (await apiRequest<{ person: AuthorAccount }>(binding, 'me', { token, locale })).person;
-      return <AuthorWorks key={contextKey} initial={authorWorkspace} locale={locale} contextKey={contextKey} person={author} publicUrl={`${publicUrl}/${locale}?event=${encodeURIComponent(contextKey)}`} />;
+      return <AuthorWorks key={contextKey} initial={authorWorkspace} locale={locale} contextKey={contextKey} person={author} publicUrl={publicUrl?`${publicUrl}/${locale}?event=${encodeURIComponent(contextKey)}`:''} />;
     }
     if (institutional) profile = (await apiRequest<{ person: { id: string; name: string } }>(binding, 'me', { token, locale })).person;
     session = await apiRequest<SessionView>(binding, binding.eventId ? `events/${binding.eventId}/session` : 'session', { token, locale });

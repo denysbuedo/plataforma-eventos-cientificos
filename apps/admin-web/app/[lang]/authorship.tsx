@@ -70,6 +70,9 @@ export default function Authorship({ eventId, contextKey, locale, staff = false 
     else if ('responsibility' in decision) void request(`/works/${decision.responsibility.workId}/responsibility`, { action: decision.action, revision: decision.responsibility.revision });
     else void request(`/claims/${decision.claim.id}`, { action: decision.action, revision: decision.claim.revision, message });
   }
+  useEffect(() => {
+    if (loaded && !staff) window.dispatchEvent(new CustomEvent('sep:authorship-count', { detail: { eventId, count: data.candidates.length + data.claims.filter(claim => claim.unread || claim.canDecide).length } }));
+  }, [data, loaded, staff, eventId]);
   const pending = data.claims.filter(claim => claim.status === 'pending');
   const toReview = pending.filter(claim => claim.canDecide);
   const waiting = pending.filter(claim => !claim.canDecide);
@@ -95,7 +98,7 @@ export default function Authorship({ eventId, contextKey, locale, staff = false 
     </article>;
   }
   return <section className="panel form-panel authorship-workspace" aria-label={staff ? text.review : text.title}>
-    <header className="authorship-header"><div><h2>{staff ? text.review : text.title}</h2><p>{staff ? ui.reviewHelp : ui.help}</p></div><button className="button button-outline" disabled={busy} onClick={() => void request()}>{text.reload}</button></header>
+    <header className="authorship-header"><div><h2>{staff ? text.review : text.requests}</h2>{staff&&<p>{ui.reviewHelp}</p>}</div><button className="button button-outline" disabled={busy} onClick={() => void request()}>{text.reload}</button></header>
     {error && !decision && <p className="notice notice-error" role="alert">{error}</p>}{notice && <p className="notice" role="status">{notice}</p>}
     {!loaded && !error && <p className="authorship-loading" role="status">{ui.loading}</p>}
     {loaded && <>

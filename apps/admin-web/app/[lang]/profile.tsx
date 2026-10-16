@@ -1,19 +1,17 @@
-import AuthorshipNav from './authorship-nav';
+import ParticipantShell from './participant-shell';
 import type { AuthorAccount } from '@sep/contracts';
 import { webCopy, type Locale } from '@sep/i18n';
-import { Brand, Icon } from '@sep/ui';
+import { Icon } from '@sep/ui';
 import Image from 'next/image';
 import ResearcherDetails from './researcher-profile';
 import { profileCopy } from './profile-copy';
-export default function Profile({person,locale,contextKey,error,eventId}:{person:AuthorAccount;locale:Locale;contextKey:string;error:boolean;eventId?:string|null}) {
+export default function Profile({person,locale,contextKey,error,eventId,publicUrl}:{person:AuthorAccount;locale:Locale;contextKey:string;error:boolean;eventId?:string|null;publicUrl:string}) {
   const text=webCopy[locale], copy=profileCopy[locale];
-  const prefix=`/${locale}?event=${encodeURIComponent(contextKey)}&tab=`;
   const names=person.name.trim().split(/\s+/u);
   const initials=[names[0],...(names.length>1?[names.at(-1)!]:[])].map(name=>Array.from(name)[0]??'').join('').toLocaleUpperCase(locale);
   const status=person.orcid?person.orcid.environment==='sandbox'?'sandbox':'connected':person.orcidAvailable?'disconnected':'unavailable';
-  return <div className="admin-shell"><a className="skip-link" href="#profile-main">{text.skip}</a><aside className="sidebar"><Brand compact/><nav><a href={prefix+'works'}>{text.myWorks}</a>{eventId&&<a href={prefix+'authorship'}><AuthorshipNav eventId={eventId} contextKey={contextKey} locale={locale}/></a>}<a className="active" href={prefix+'profile'}>{text.myProfile}</a></nav></aside>
-    <div className="admin-area"><header className="admin-topbar"><strong>{text.myProfile}</strong><div className="language-switch"><a href={`/es?event=${encodeURIComponent(contextKey)}&tab=profile`}>ES</a><a href={`/en?event=${encodeURIComponent(contextKey)}&tab=profile`}>EN</a></div></header>
-      <main id="profile-main" className="admin-main profile-page">
+  return <ParticipantShell person={person} locale={locale} contextKey={contextKey} eventId={eventId} tab="profile" publicUrl={publicUrl}>
+    <div className="profile-page">
         <div className="admin-heading"><div><h1>{text.myProfile}</h1><p>{copy.intro}</p></div></div>
         {error&&<p className="notice notice-error" role="alert">{text.orcidConnectError}</p>}
         <section className="profile-identity" aria-label={copy.account}><div className="profile-avatar" aria-hidden="true">{initials}</div><div><span className="profile-kicker">{copy.account}</span><h2>{person.name}</h2>{person.email&&<p className="profile-email">{person.email}</p>}</div></section>
@@ -28,7 +26,6 @@ export default function Profile({person,locale,contextKey,error,eventId}:{person
             <section className="profile-privacy-note"><span className="profile-note-icon"><Icon name="lock" size={20}/></span><div><h2>{copy.privacy}</h2><p>{copy.privacyHelp}</p><p>{copy.copiesHelp}</p></div></section>
           </aside>
         </div>
-      </main>
     </div>
-  </div>;
+  </ParticipantShell>;
 }

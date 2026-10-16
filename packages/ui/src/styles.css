@@ -297,6 +297,74 @@ dialog::backdrop { background:rgb(18 36 28 / 45%); }
 .profile-checkbox input { width:18px; height:18px; accent-color:var(--green); margin:3px 0 0; flex-shrink:0; }
 .profile-search-setting .profile-help { padding-left:29px; }
 .profile-edit-footer { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:14px; border-top:1px solid var(--line); margin-top:24px; padding-top:22px; }
+.participant-main { max-width:1400px; width:100%; }
+.participant-main .admin-heading p { font-size:14px; line-height:1.75; }
+.participant-main .panel { border-radius:12px; }
+.participant-main>.panel+.panel { margin-top:24px; }
+.participant-main .form-panel { padding:26px; }
+.participant-main .form-panel>h2 { font-size:19px; margin-bottom:18px; }
+.participant-main .panel-heading { padding:18px 0; gap:18px; }
+.participant-main .panel-heading p { font-size:13px; }
+.participant-main .field { font-size:12px; }
+.participant-main .field input,.participant-main .field select,.participant-main .field textarea { font-size:14px; }
+.participant-brand { display:inline-flex; width:fit-content; }
+.participant-shell .sidebar nav a>span { display:flex; align-items:center; flex:1; gap:8px; min-width:0; }
+.participant-breadcrumb { display:flex; gap:10px; align-items:center; font-size:12px; color:var(--muted); }
+.participant-breadcrumb strong { font-weight:600; color:var(--ink); }
+.participant-topbar .topbar-right { margin-left:auto; }
+.participant-account { position:relative; }
+.participant-account>summary { display:flex; align-items:center; gap:10px; list-style:none; cursor:pointer; border-radius:8px; padding:5px; font-size:13px; }
+.participant-account>summary::-webkit-details-marker { display:none; }
+.participant-account>summary:hover { background:#f5f8f1; }
+.participant-account>summary:focus-visible { outline:3px solid #dc946c; outline-offset:3px; }
+.participant-avatar { display:grid; place-items:center; flex:0 0 34px; height:34px; background:#eaf1e3; color:var(--green); border-radius:11px; font-size:12px; font-weight:600; }
+.participant-name { max-width:220px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.participant-chevron { color:var(--muted); font-size:17px; }
+.participant-account-menu { position:absolute; top:calc(100% + 10px); right:0; z-index:30; width:260px; border:1px solid var(--line); background:white; border-radius:12px; box-shadow:0 14px 40px #183b2e21; padding:8px; }
+.participant-account-menu>p { padding:12px; color:var(--muted); font-size:12px; overflow-wrap:anywhere; border-bottom:1px solid var(--line); margin-bottom:6px; }
+.participant-account-menu a,.participant-account-menu button { display:flex; align-items:center; gap:10px; color:var(--ink); font-size:13px; width:100%; text-align:left; border:0; background:none; padding:12px; border-radius:7px; }
+.participant-account-menu a:hover,.participant-account-menu button:hover { background:#f1f6eb; }
+.participant-account-menu a[aria-current="page"] { background:#f1f6eb; font-weight:600; }
+.participant-account-menu .participant-mobile-portal { display:none; }
+.participant-no-event { padding:12px; color:#c7dbcf; font-size:12px; line-height:1.8; }
+.participant-list-heading { display:flex; align-items:center; gap:10px; margin-bottom:16px; }
+.participant-list-heading h2 { font-size:19px; }
+.participant-main .authorship-header h2 { font-size:19px; }
+.participant-work-list>p.muted { padding:30px 20px; text-align:center; border:1px dashed var(--line); border-radius:9px; background:#f8faf6; font-size:14px; }
+.participant-work-row { display:flex; align-items:flex-start; gap:16px; border:1px solid var(--line); border-radius:9px; padding:20px; margin-top:12px; }
+.participant-work-summary { flex:1; min-width:0; }
+.participant-work-summary>strong { font-size:16px; line-height:1.6; overflow-wrap:anywhere; }
+.participant-work-summary>p { display:flex; align-items:center; flex-wrap:wrap; gap:10px; margin-top:10px; font-size:12px; color:var(--muted); }
+.participant-work-row .editor-actions { flex-wrap:wrap; justify-content:flex-end; }
+.participant-work-status { background:#f0f3ed; color:var(--muted); border-radius:99px; padding:4px 10px; }
+.participant-work-status-submitted,.participant-work-status-in_review { background:#eaf0fa; color:#375a82; }
+.participant-work-status-changes_requested,.participant-work-status-final_requested { background:#fff2cf; color:#805917; }
+.participant-work-status-accepted,.participant-work-status-final_submitted { background:#e5f2e6; color:#245b35; }
+.participant-work-status-rejected { background:#fbe8e6; color:#8a3b33; }
+@media(max-width:1000px) { .participant-work-row { flex-wrap:wrap; }.participant-work-row .editor-actions { margin-left:52px; justify-content:flex-start; }.participant-breadcrumb>span { display:none; } }
+@media(max-width:580px) {
+  .participant-main .authorship-sections { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:0; overflow:visible; }
+  .participant-main .authorship-sections button { min-width:0; flex-wrap:wrap; padding:12px 4px; }
+  .participant-shell .sidebar .workspace-label { display:none; }
+  .participant-shell .sidebar-bottom { display:none; }
+  .participant-shell .sidebar nav a { min-height:44px; }
+  .participant-shell .sidebar nav a>svg { display:none; }
+  .participant-topbar { padding:0 14px; gap:8px; }
+  .participant-topbar .topbar-right { gap:7px; }
+  .participant-breadcrumb { font-size:11px; }
+  .participant-name { max-width:70px; font-size:12px; }
+  .participant-account>summary { gap:6px; padding:3px; }
+  .participant-avatar { flex-basis:28px; height:28px; border-radius:9px; font-size:10px; }
+  .participant-chevron { display:none; }
+  .participant-account-menu .participant-mobile-portal { display:flex; }
+  .participant-main .form-panel { padding:20px; }
+  .participant-main .admin-heading p { font-size:13px; }
+  .participant-main .editor-actions .button { font-size:12px; min-height:44px; }
+  .participant-main .field input,.participant-main .field select,.participant-main .field textarea { font-size:16px; }
+  .participant-work-row { padding:16px; gap:12px; }
+  .participant-work-row>.profile-affiliation-icon { display:none; }
+  .participant-work-row .editor-actions { margin-left:0; }
+}
 @media(max-width:1100px) { .profile-layout { grid-template-columns:minmax(0,1fr); }.profile-aside { grid-template-columns:repeat(2,minmax(0,1fr)); align-items:start; }.profile-privacy-note { padding:16px 6px; } }
 @media(max-width:580px) {
   .profile-identity { padding:22px 18px; gap:16px; }
