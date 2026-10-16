@@ -34,6 +34,14 @@ Las pruebas de navegador cubren los tres accesos, cierre de sesión, rechazo de 
 
 ## Pendiente para cerrar Fase 1
 
+### Accesos reales aplazados
+
+Por decisión del propietario el 15 de octubre de 2026, se aplazan la activación y validación de RedUniv y Google. Ambos flujos tienen código implementado; faltan registrar clientes, configurar credenciales y comprobar los accesos reales. Se retomarán más adelante siguiendo la [guía de configuración](../development/reduniv-y-google.md). La demo conserva los perfiles ficticios; este pendiente no bloquea el desarrollo local de la administración.
+
+### Siguiente incremento propuesto
+
+Administración de organizaciones y dominios: editar los datos de la organización, gestionar los dominios asociados a sus eventos y distinguir los registros pendientes de los dominios verificados y activos. El registro de un dominio no debe habilitarlo automáticamente ni modificar DNS/TLS externos. Después se abordará la configuración estructurada del evento y, en Fase 2, la convocatoria científica y la recepción de contribuciones. Las pruebas funcionales siguen aplazadas por indicación del propietario; la Fase 1 continúa abierta.
+
 Activación y validación de OIDC, renovación y logout central con el proveedor institucional, MFA y registro según sus políticas, logo oficial, administración de organizaciones y dominios, entrega de invitaciones por correo, suspensión de membresías, otros roles operativos, verificación DNS y TLS, carga de marca y archivos y ampliación del CMS. La restricción al correo verificado está implementada en modo OIDC. Los eventos creados no reciben automáticamente un dominio público ni organizadores; el administrador puede designar responsables inmediatamente. Los módulos científicos pertenecen a fases posteriores.
 
 La asignación de organizadores y las invitaciones son incrementos posteriores a las pruebas descritas arriba. A petición del propietario, su validación funcional y las nuevas pruebas quedan pendientes; la compilación no sustituye esa validación. Los enlaces se comparten manualmente. En la demo, la pantalla de aceptación permite cambiar al perfil ficticio Invitado; no se generan cuentas reales ni se verifica el correo. Ver [ADR-007](../adr/ADR-007-personas-invitaciones.md).
