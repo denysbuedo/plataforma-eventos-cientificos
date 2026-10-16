@@ -7,6 +7,7 @@ import { apiRequest, bindingFor, demoConfiguration, googleLoginEnabled, redunivL
 import Login from './login';
 import Dashboard from './workspace';
 import AuthorWorks from './author-works';
+import type { AuthorAccount } from './work-authors';
 
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = { title: 'SEP · Workspace', robots: { index: false, follow: false } };
@@ -33,7 +34,7 @@ export default async function AdminPage({ params, searchParams }: { params: Prom
     binding = bindingFor((await headers()).get('host') ?? '', query.event);
     if (query.tab === 'works' && binding.eventId) {
       const authorWorkspace = await apiRequest<AuthorWorkspace>(binding, `events/${binding.eventId}/my-works`, { token, locale });
-      const author = (await apiRequest<{ person: { id: string; name: string } }>(binding, 'me', { token, locale })).person;
+      const author = (await apiRequest<{ person: AuthorAccount }>(binding, 'me', { token, locale })).person;
       return <AuthorWorks key={contextKey} initial={authorWorkspace} locale={locale} contextKey={contextKey} person={author} publicUrl={`${publicUrl}/${locale}?event=${encodeURIComponent(contextKey)}`} />;
     }
     if (institutional) profile = (await apiRequest<{ person: { id: string; name: string } }>(binding, 'me', { token, locale })).person;

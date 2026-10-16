@@ -3,8 +3,12 @@ import { useMemo } from 'react';
 import { COUNTRY_CODES, type WorkAuthor } from '@sep/contracts';
 import { webCopy, type Locale } from '@sep/i18n';
 
-export default function WorkAuthors({ value, onChange, locale, editing, disabled = false }: {
-  value: WorkAuthor[]; onChange: (authors: WorkAuthor[]) => void; locale: Locale; editing: boolean; disabled?: boolean;
+export interface AuthorAccount { id: string; name: string; email?: string; institutions?: string[] }
+export function accountAuthor(account: AuthorAccount, corresponding = true): WorkAuthor {
+  return {id:crypto.randomUUID(),fullName:account.name,email:account.email??'',corresponding,affiliations:(account.institutions?.length?account.institutions.slice(0,5):['']).map(institution=>({institution,countryCode:''}))};
+}
+export default function WorkAuthors({ value, onChange, locale, editing, disabled = false, account }: {
+  value: WorkAuthor[]; onChange: (authors: WorkAuthor[]) => void; locale: Locale; editing: boolean; disabled?: boolean; account?: AuthorAccount;
 }) {
   const text = webCopy[locale];
   const countries = useMemo(() => {
@@ -17,12 +21,13 @@ export default function WorkAuthors({ value, onChange, locale, editing, disabled
     const target = index + direction; if (target < 0 || target >= value.length) return;
     const next = [...value]; [next[index], next[target]] = [next[target], next[index]]; onChange(next);
   }
-  if (!editing) return <section><h3>{text.workAuthors}</h3>{!value.length ? <p className="muted">{text.noDeclaredAuthors}</p> : <ol>{value.map((author) => <li key={author.id} style={{ marginBottom: '1rem' }}>
-    <strong>{author.fullName}</strong>{author.corresponding && <span> · {text.correspondingAuthor}</span>}
-    {author.email && <p className="muted small">{author.email}</p>}
-    <ul>{author.affiliations.map((affiliation, index) => <li key={index}>{affiliation.institution} · {country(affiliation.countryCode)}</li>)}</ul>
+  if (!editing) return <section className="work-section"><h3>{text.workAuthors}</h3>{!value.length ? <p className="muted">{text.noDeclaredAuthors}</p> : <ol className="work-author-list">{value.map((author,index) => <li key={author.id} className="work-author-card">
+    <span className="work-author-number" aria-hidden="true">{index+1}</span><div className="work-author-info"><div className="work-author-heading"><strong>{author.fullName}</strong>{author.corresponding && <span className="work-corresponding">{text.correspondingAuthor}</span>}</div>
+    {author.email && <a className="work-author-email" href={`mailto:${author.email}`}>{author.email}</a>}
+    <ul className="work-affiliations">{author.affiliations.map((affiliation, index) => <li key={index}>{affiliation.institution}<span> · {country(affiliation.countryCode)}</span></li>)}</ul></div>
   </li>)}</ol>}</section>;
   return <section>
+    {account && <div className="work-self-author"><p>{text.accountAuthorHelp}</p><button className="button button-outline" type="button" disabled={disabled || value.length>=20 || value.some(author=>author.fullName===account.name && (!account.email||author.email===account.email))} onClick={()=>onChange([...value,accountAuthor(account,value.length===0)])}>{text.addMyselfAuthor}</button></div>}
     <div className="panel-heading"><h3>{text.workAuthors}</h3><button className="button button-outline" type="button" disabled={disabled || value.length >= 20} onClick={() => onChange([...value, { id: crypto.randomUUID(), fullName: '', email: '', corresponding: value.length === 0, affiliations: [{ institution: '', countryCode: '' }] }])}>{text.addWorkAuthor}</button></div>
     <p className="muted small">{text.workAuthorsHelp}</p>{!value.length && <p className="muted">{text.noDeclaredAuthors}</p>}
     {value.map((author, authorIndex) => <article className="panel form-panel" key={author.id} style={{ marginBottom: '1rem' }}>

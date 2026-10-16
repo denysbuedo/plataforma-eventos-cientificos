@@ -4,7 +4,17 @@ import { type AuthorWork, type WorkVersion, type WorkContent } from '@sep/contra
 import { webCopy, type Locale } from '@sep/i18n';
 import WorkAuthors from './work-authors';
 export function WorkContentView({content,locale}:{content:WorkContent;locale:Locale}) {
-  const text=webCopy[locale];return <div className="form-fields"><h3>{content.title}</h3><p>{content.call.content.tracks.find(t=>t.id===content.trackId)?.[locale==='es'?'nameEs':'nameEn']} · {content.call.content.contributionTypes.find(t=>t.id===content.contributionTypeId)?.[locale==='es'?'nameEs':'nameEn']}</p><p style={{whiteSpace:'pre-wrap'}}>{content.abstract}</p><p>{content.keywords.join(' · ')}</p><WorkAuthors value={content.authors} onChange={()=>{}} locale={locale} editing={false}/><p>{text.revision}: {content.call.revision}</p></div>;
+  const text=webCopy[locale];return <div className="work-content">
+    <h3 className="work-title">{content.title}</h3>
+    <dl className="work-metadata">
+      <div><dt>{text.scientificTracks}</dt><dd>{content.call.content.tracks.find(t=>t.id===content.trackId)?.[locale==='es'?'nameEs':'nameEn']??text.workIncomplete}</dd></div>
+      <div><dt>{text.contributionTypes}</dt><dd>{content.call.content.contributionTypes.find(t=>t.id===content.contributionTypeId)?.[locale==='es'?'nameEs':'nameEn']??text.workIncomplete}</dd></div>
+      <div><dt>{text.workLanguage}</dt><dd>{content.language==='es'?text.languageSpanish:text.languageEnglish}</dd></div>
+    </dl>
+    <section className="work-section"><h3>{text.workAbstract}</h3><p className="work-abstract">{content.abstract||text.workIncomplete}</p></section>
+    <section className="work-section"><h3>{text.callKeywords}</h3><p className="work-keywords">{content.keywords.length?content.keywords.map(k=>k.trim().replace(/[;,]+$/u,'')).join('; '):text.workIncomplete}</p></section>
+    <WorkAuthors value={content.authors} onChange={()=>{}} locale={locale} editing={false}/>
+  </div>;
 }
 export default function WorkFlow({work,eventId,locale,contextKey,busy,onBusyChange,onUpdate,callChanged=false,staff=false}:{
   work:AuthorWork;eventId:string;locale:Locale;contextKey:string;busy:boolean;onBusyChange:(busy:boolean)=>void;onUpdate:(work:AuthorWork)=>void;callChanged?:boolean;staff?:boolean;

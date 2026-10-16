@@ -17,6 +17,8 @@ Cada trabajo conserva una copia de la convocatoria original. Si cambia la convoc
 
 ## Autores y afiliaciones
 
+Al editar un trabajo sin autores se precargan los datos disponibles de la propia cuenta. **Añadirme con mis datos** permite incorporarlos a un trabajo con coautores. Nombre e instituciones se leen del perfil; el correo se obtiene únicamente si la sesión lo acredita como verificado. En demo puede faltar. Completar correo y país cuando no estén disponibles. Esto no crea todavía una vinculación persistente entre autoría y cuenta; la búsqueda de personas y reconocimiento con aprobación están [propuestos por separado](../functional/autoria-identidad.md).
+
 En **Editar → Autores y afiliaciones**, añadir cada autor con nombre completo y al menos una institución con país. Se admiten hasta 20 autores y cinco afiliaciones por autor. Los países se eligen de una lista traducida; se conserva su código ISO.
 
 **Subir** y **Bajar** modifican el orden de autoría. Marcar un único **Autor de correspondencia** y completar su correo; el correo del resto es opcional. Si se retira al autor seleccionado para correspondencia, elegir otro antes de guardar. Se puede dejar vacía la lista completa mientras el trabajo sea borrador.

@@ -5722,6 +5722,44 @@
           "status"
         ]
       },
+      "AuthorProfileDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "institutions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "email",
+          "institutions"
+        ]
+      },
+      "ProfileDto": {
+        "type": "object",
+        "properties": {
+          "person": {
+            "$ref": "#/components/schemas/AuthorProfileDto"
+          }
+        },
+        "required": [
+          "person"
+        ]
+      },
       "PersonDto": {
         "type": "object",
         "properties": {
@@ -5736,17 +5774,6 @@
         "required": [
           "id",
           "name"
-        ]
-      },
-      "ProfileDto": {
-        "type": "object",
-        "properties": {
-          "person": {
-            "$ref": "#/components/schemas/PersonDto"
-          }
-        },
-        "required": [
-          "person"
         ]
       },
       "SessionDto": {

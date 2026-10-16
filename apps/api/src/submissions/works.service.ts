@@ -193,7 +193,7 @@ export class AuthorWorksService {
       if (count >= 50) throw new ApiException(409, 'WORK_LIMIT');
       const [row] = await tx.insert(works).values({ id: randomUUID(), organizationId: context.organizationId, eventId: state.event.id,
         ownerId: context.personId!, ...dto, trackId: selection.track.id, contributionTypeId: selection.type.id, call: state.call }).returning();
-      await this.audit.record(tx, context, 'work.created', state.event.id, row.id); return view(row);
+      await this.audit.record(tx, context, 'work.created', state.event.id, row.id); return this.detail(tx,row,state);
     });
   }
   save(context: RequestContext, id: string, dto: SaveWorkDto): Promise<AuthorWork> {

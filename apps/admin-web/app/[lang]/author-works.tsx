@@ -3,11 +3,11 @@ import { useEffect, useRef, useState } from 'react';
 import { MAX_MANUSCRIPT_BYTES, type AuthorWork, type AuthorWorkspace } from '@sep/contracts';
 import { webCopy, type Locale } from '@sep/i18n';
 import { Brand } from '@sep/ui';
-import WorkAuthors from './work-authors';
-import WorkFlow from './work-flow';
+import WorkAuthors, { accountAuthor, type AuthorAccount } from './work-authors';
+import WorkFlow, { WorkContentView } from './work-flow';
 
 export default function AuthorWorks({ initial, locale, contextKey, publicUrl, person }: {
-  initial: AuthorWorkspace; locale: Locale; contextKey: string; publicUrl: string; person: { id: string; name: string };
+  initial: AuthorWorkspace; locale: Locale; contextKey: string; publicUrl: string; person: AuthorAccount;
 }) {
   const text = webCopy[locale]; const [workspace, setWorkspace] = useState(initial);
   const [saved, setSaved] = useState<AuthorWork | null>(null); const [work, setWork] = useState<AuthorWork | null>(null);
@@ -44,6 +44,11 @@ export default function AuthorWorks({ initial, locale, contextKey, publicUrl, pe
     if (!response.ok) throw new Error(data.error?.message ?? text.serviceHelp); return data as T;
   }
   function select(next: AuthorWork) { warnOnUnload.current = false; setSaved(next); setWork(next); setKeywords(next.keywords.join('\n')); setEditing(false); setPendingFile(null); setRemoveFile(false); }
+  function startEdit(current = work) {
+    if (!current?.editable) return;
+    if (!current.authors.length) setWork({ ...current, authors: [accountAuthor(person)] });
+    setEditing(true);
+  }
   function closePanel() {
     warnOnUnload.current = false;
     setWork(null); setSaved(null); setEditing(false); setCreating(false); setKeywords(''); setNotice(null); setPendingFile(null); setRemoveFile(false);
@@ -63,7 +68,7 @@ export default function AuthorWorks({ initial, locale, contextKey, publicUrl, pe
     finally { setBusy(false); }
   }
   async function open(id: string, startEditing = false) {
-    guard(() => { void action(async () => { const savedWork = await request<AuthorWork>(`/${id}`, 'GET'); select(savedWork); setEditing(startEditing && savedWork.editable); setCreating(false); }); });
+    guard(() => { void action(async () => { const savedWork = await request<AuthorWork>(`/${id}`, 'GET'); select(savedWork); if (startEditing && savedWork.editable) startEdit(savedWork); setCreating(false); }); });
   }
   async function create() {
     if (dirty && !window.confirm(text.discardWorkChanges)) return;
@@ -128,14 +133,11 @@ export default function AuthorWorks({ initial, locale, contextKey, publicUrl, pe
         <button className="button button-primary" disabled={busy || !workspace.editable} type="submit">{text.createWork}</button>
       </form></section>}
       <section id="work-list" className="panel form-panel" tabIndex={-1}><h2>{text.workDrafts}</h2>{!workspace.works.length && <p className="muted">{text.noWorks}</p>}{workspace.works.map((row) => <div className="panel-heading" key={row.id}><div><strong>{row.title}</strong><p>{text.status}: {text.workStatuses[row.status]} · {text.revision} {row.revision}</p></div><div className="editor-actions"><button className="button button-outline" disabled={busy} onClick={() => open(row.id)}>{text.viewWork}</button>{row.editable && <button className="button button-outline" disabled={busy} onClick={() => open(row.id, true)}>{text.editWorkAction}</button>}{row.status === 'draft' && !row.submittedAt && <button className="button button-outline" disabled={busy} onClick={() => removeDraft(row.id)}>{text.removeDraft}</button>}</div></div>)}</section>
-      {work && <section className="panel form-panel"><div className="panel-heading"><h2>{editing ? text.editWork : text.workDetails}</h2><button className="button button-outline" disabled={busy} onClick={returnToList}>{text.backToWorks}</button>{editing ? <span>{dirty ? text.unsaved : text.upToDate}</span> : <button className="button button-primary" disabled={busy || !work.editable} onClick={() => setEditing(true)}>{text.editWorkAction}</button>}</div>
+      {work && <section className="panel form-panel work-detail"><div className="work-detail-header"><div><span className="eyebrow">{text.workStatuses[work.status]}</span><h2>{editing ? text.editWork : text.workDetails}</h2></div><div className="editor-actions">{editing ? <span className="draft-state">{dirty ? text.unsaved : text.upToDate}</span> : <button className="button button-outline" disabled={busy || !work.editable} aria-describedby={!work.editable?'work-edit-reason':undefined} onClick={() => startEdit()}>{text.editWorkAction}</button>}<button className="button button-outline" disabled={busy} onClick={returnToList}>{text.backToWorks}</button></div></div>
+        {!work.editable && <p id="work-edit-reason" className="work-edit-notice">{['submitted','in_review','final_submitted'].includes(work.status)?text.workLockedSubmitted:work.status==='accepted'?text.workLockedAccepted:work.status==='rejected'?text.workLockedRejected:work.responseDeadline?text.workLockedDeadline:text.workLockedUnavailable}</p>}
         <p className="muted small">{text.workPinnedRules} {work.call.revision}</p>{callChanged && <p className="notice notice-muted">{text.workCallChanged}</p>}
         {!editing ? <div className="form-fields">
-          <h3>{work.title}</h3><dl><dt>{text.scientificTracks}</dt><dd>{work.call.content.tracks.find((track) => track.id === work.trackId)?.[locale === 'es' ? 'nameEs' : 'nameEn']}</dd>
-          <dt>{text.contributionTypes}</dt><dd>{type?.[locale === 'es' ? 'nameEs' : 'nameEn']}</dd><dt>{text.workLanguage}</dt><dd>{work.language === 'es' ? text.languageSpanish : text.languageEnglish}</dd></dl>
-          <div><h3>{text.workAbstract}</h3><p style={{ whiteSpace: 'pre-wrap' }}>{work.abstract || text.workIncomplete}</p></div>
-          <div><h3>{text.callKeywords}</h3>{work.keywords.length ? <ul>{work.keywords.map((keyword) => <li key={keyword}>{keyword}</li>)}</ul> : <p className="muted">{text.workIncomplete}</p>}</div>
-          <WorkAuthors value={work.authors} onChange={() => {}} locale={locale} editing={false} /><p className="muted small">{text.workStatuses[work.status]} · {text.revision} {work.revision}</p><WorkFlow key={`${work.id}:${work.revision}`} work={work} eventId={workspace.event.id} locale={locale} contextKey={contextKey} busy={busy} onBusyChange={setBusy} callChanged={callChanged} onUpdate={(next) => { select(next); setWorkspace({ ...workspace, works: workspace.works.map((row) => row.id === next.id ? next : row) }); setNotice({ error: false, message: text.workActionSaved }); }} />
+          <WorkContentView content={work} locale={locale} /><WorkFlow key={`${work.id}:${work.revision}`} work={work} eventId={workspace.event.id} locale={locale} contextKey={contextKey} busy={busy} onBusyChange={setBusy} callChanged={callChanged} onUpdate={(next) => { select(next); setWorkspace({ ...workspace, works: workspace.works.map((row) => row.id === next.id ? next : row) }); setNotice({ error: false, message: text.workActionSaved }); }} />
         </div> : <form id="work-edit-form" className="form-fields" onSubmit={(e) => { e.preventDefault(); void save(); }}>
           <label className="field"><span>{text.workTitle}</span><input required minLength={3} maxLength={300} value={work.title} disabled={busy || !work.editable} onChange={(e) => setWork({ ...work, title: e.target.value })} /></label>
           {choices('trackId', work.trackId, (value) => setWork({ ...work, trackId: value }), true)}{choices('contributionTypeId', work.contributionTypeId, (value) => setWork({ ...work, contributionTypeId: value }), true)}
@@ -144,7 +146,7 @@ export default function AuthorWorks({ initial, locale, contextKey, publicUrl, pe
           {type && <p className="muted small">{text.workWordCount}: {words} · {text.workExpected}: {type.abstractMinWords}–{type.abstractMaxWords}</p>}
           <label className="field"><span>{text.workKeywords}</span><textarea rows={4} value={keywords} maxLength={1700} disabled={busy || !work.editable} onChange={(e) => setKeywords(e.target.value)} /></label>
           {type && <p className="muted small">{text.workExpected}: {type.keywordsMin}–{type.keywordsMax} {text.callKeywords.toLowerCase()}{type.manuscriptRequired ? ` · ${text.callManuscript} ${type.maxPages}` : ''}</p>}
-          <WorkAuthors value={work.authors} onChange={(authors) => setWork({ ...work, authors })} locale={locale} editing disabled={busy || !work.editable} />
+          <WorkAuthors value={work.authors} onChange={(authors) => setWork({ ...work, authors })} locale={locale} editing disabled={busy || !work.editable} account={person} />
           <section aria-labelledby="work-file-heading">
             <h3 id="work-file-heading">{text.workManuscript}</h3>
             <p>{work.manuscript ? `${work.manuscript.name} · ${work.manuscript.pages} ${text.workPages}` : text.noManuscript}</p>
