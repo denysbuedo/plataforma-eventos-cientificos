@@ -2,7 +2,7 @@
 
 > Plataforma integral, multiinstitución, multievento y multilingüe para gestionar congresos científicos desde la convocatoria hasta la publicación de memorias y certificados.
 
-**Estado:** portal y administración con CMS; primer incremento científico de convocatoria implementado. Fase 1 y validación funcional pendientes de cierre · **Idiomas iniciales:** español e inglés.
+**Estado:** portal y administración con CMS, convocatoria científica y borradores privados del autor implementados. Fase 1 y validación funcional pendientes de cierre · **Idiomas iniciales:** español e inglés.
 
 ## Visión
 
@@ -131,6 +131,8 @@ Resultado local: **31 tests aprobados (30 casos y 1 grupo)** sobre PostgreSQL y 
 La demo imprime enlaces al portal público y al administrador, con perfiles para explorar los permisos. El CMS permite guardar contenido bilingüe y publicar cambios explícitamente. El administrador dispone de Personas, invitaciones por enlace y asignación de organizadores por evento; estos incrementos tienen validación funcional pendiente. El adaptador OIDC y el login institucional están implementados, ajustados al realm reduniv-institucional, con activación pendiente del cliente, secreto y orígenes registrados; ver la [guía de identidad](docs/development/identidad-institucional.md). Consulta el [alcance del incremento visual](docs/functional/fase-1.md). La autenticación de desarrollo requiere habilitación explícita y está bloqueada en producción. La validación OIDC, políticas de registro/MFA del proveedor, entrega de correo, dominios/TLS reales, administración completa y módulos científicos siguen pendientes. La Fase 1 permanece abierta. La [prueba comparativa de ORM](tests/orm-spike/README.md) conserva su evidencia anterior por separado.
 
 ## Documentación
+
+**Mis trabajos** permite a una cuenta activa preparar borradores privados de título, resumen y palabras clave, con área/tipo de una convocatoria publicada y sus reglas conservadas. No requiere permisos de organizador. Coautores, archivos y envío formal siguen pendientes; ver [guía del autor](docs/development/mis-trabajos.md).
 
 El primer incremento del módulo científico permite preparar áreas temáticas, tipos de contribución, requisitos y plazos en **Convocatoria científica**, con borrador, publicación independiente y retirada. El portal muestra solo la versión publicada. El envío de trabajos sigue pendiente. Ver [Fase 2](docs/functional/fase-2.md); validación funcional completa aplazada.
 

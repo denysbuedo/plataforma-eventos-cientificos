@@ -1,11 +1,12 @@
 import { cookies, headers } from 'next/headers';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
-import type { ScientificCallDraft, EventConfiguration, EventPage, EventTeam, OrganizationSettings, PeopleDirectory, SessionView, SiteDraft } from '@sep/contracts';
+import type { AuthorWorkspace, ScientificCallDraft, EventConfiguration, EventPage, EventTeam, OrganizationSettings, PeopleDirectory, SessionView, SiteDraft } from '@sep/contracts';
 import { webCopy, type Locale } from '@sep/i18n';
 import { apiRequest, bindingFor, demoConfiguration, googleLoginEnabled, redunivLoginEnabled, oidcEnabled, removeOidcValue, SESSION_COOKIE, tokenForCookie, ApiTransportError } from '@sep/web-server';
 import Login from './login';
 import Dashboard from './workspace';
+import AuthorWorks from './author-works';
 
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = { title: 'SEP · Workspace', robots: { index: false, follow: false } };
@@ -30,6 +31,11 @@ export default async function AdminPage({ params, searchParams }: { params: Prom
   let configuration: EventConfiguration | null = null; let scientificCall: ScientificCallDraft | null = null;
   try {
     binding = bindingFor((await headers()).get('host') ?? '', query.event);
+    if (query.tab === 'works' && binding.eventId) {
+      const authorWorkspace = await apiRequest<AuthorWorkspace>(binding, `events/${binding.eventId}/my-works`, { token, locale });
+      const author = (await apiRequest<{ person: { id: string; name: string } }>(binding, 'me', { token, locale })).person;
+      return <AuthorWorks key={contextKey} initial={authorWorkspace} locale={locale} contextKey={contextKey} person={author} publicUrl={`${publicUrl}/${locale}?event=${encodeURIComponent(contextKey)}`} />;
+    }
     if (institutional) profile = (await apiRequest<{ person: { id: string; name: string } }>(binding, 'me', { token, locale })).person;
     session = await apiRequest<SessionView>(binding, binding.eventId ? `events/${binding.eventId}/session` : 'session', { token, locale });
     if (!session.canRead) denied = true;

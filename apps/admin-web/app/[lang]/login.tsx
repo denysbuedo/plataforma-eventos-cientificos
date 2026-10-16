@@ -9,6 +9,7 @@ export default function Login({ locale, publicUrl, enabled, institutional = fals
     { id: 'organizer', title: text.organizer, help: text.organizerHelp, persona: 'mixed', event: 'a1', icon: 'edit' as const },
     { id: 'admin', title: text.orgAdmin, help: text.orgAdminHelp, persona: 'admin', event: 'orgA', icon: 'grid' as const },
     { id: 'participant', title: text.participant, help: text.participantHelp, persona: 'mixed', event: 'b1', icon: 'globe' as const },
+    { id: 'author', title: text.author, help: text.authorHelp, persona: 'outsider', event: 'a1', icon: 'book' as const },
     { id: 'guest', title: text.guest, help: text.guestHelp, persona: 'outsider', event: 'orgA', icon: 'book' as const },
   ];
   async function login() {
@@ -17,7 +18,7 @@ export default function Login({ locale, publicUrl, enabled, institutional = fals
       const response = await fetch('/api/auth/login', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ persona: chosen.persona }) });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error?.message ?? text.noAuth);
-      window.location.assign(`/${locale}?event=${chosen.event}`);
+      window.location.assign(returnTo.includes('&tab=works') ? returnTo : `/${locale}?event=${chosen.event}${chosen.id === 'author' ? '&tab=works' : ''}`);
     } catch (failure) { setError(failure instanceof Error ? failure.message : text.noAuth); setLoading(false); }
   }
   return <main className="login-page"><section className="login-story"><Brand /><h1>{text.loginTitle}</h1><p>{text.loginSubtitle}</p><ScienceArt theme="forest" /></section>

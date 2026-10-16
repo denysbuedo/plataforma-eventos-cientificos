@@ -76,6 +76,16 @@ export interface ScientificCallDraft {
   content: ScientificCallContent; revision: number; publishedRevision: number | null; publishedAt: string | null;
   timezone: string; publication: PublishedScientificCall | null;
 }
+export interface AuthorWorkSummary {
+  id: string; title: string; language: 'es' | 'en'; trackId: string; contributionTypeId: string; revision: number;
+  createdAt: string; updatedAt: string;
+}
+export interface AuthorWork extends AuthorWorkSummary { abstract: string; keywords: string[]; call: PublishedScientificCall }
+export interface AuthorWorkspace {
+  event: PublicEventView; works: AuthorWorkSummary[]; call: PublishedScientificCall | null;
+  languages: ('es' | 'en')[];
+  editable: boolean; reason: 'available' | 'no_call' | 'closed' | 'inactive';
+}
 export interface EventConfiguration {
   timezone: string; startDate: string | null; endDate: string | null;
   modality: 'in_person' | 'virtual' | 'hybrid'; languages: ('es' | 'en')[]; defaultLanguage: 'es' | 'en';

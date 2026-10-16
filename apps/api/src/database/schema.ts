@@ -142,6 +142,19 @@ export const sitePublications = pgTable('site_publications', {
   policy(eventScope(sql`${t.organizationId}`, sql`${t.eventId}`)),
 ]);
 
+export const authorWorks = pgTable('author_works', {
+  id: uuid('id').primaryKey(), organizationId: uuid('organization_id').notNull(), eventId: uuid('event_id').notNull(),
+  ownerId: uuid('owner_id').notNull().references(() => people.id), title: text('title').notNull(), abstract: text('abstract').notNull().default(''),
+  keywords: text('keywords').array().notNull().default(sql`ARRAY[]::text[]`), language: text('language').$type<'es' | 'en'>().notNull(),
+  trackId: uuid('track_id').notNull(), contributionTypeId: uuid('contribution_type_id').notNull(),
+  call: jsonb('call_snapshot').$type<PublishedScientificCall>().notNull(), revision: integer('revision').notNull().default(1),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(), updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+}, (t) => [foreignKey({ columns: [t.organizationId, t.eventId], foreignColumns: [events.organizationId, events.id] }),
+  index('author_works_owner_event_idx').on(t.organizationId, t.eventId, t.ownerId),
+  check('author_work_revision', sql`${t.revision} > 0`), check('author_work_language', sql`${t.language} IN ('es','en')`),
+  policy(sql`${organizationScope(sql`${t.organizationId}`)} AND ${t.eventId} = nullif(current_setting('sep.event_id', true), '')::uuid AND ${actorScope(sql`${t.ownerId}`)}`),
+]);
+
 export const scientificCallDrafts = pgTable('scientific_call_drafts', {
   organizationId: uuid('organization_id').notNull(), eventId: uuid('event_id').notNull(),
   content: jsonb('content').$type<ScientificCallContent>().notNull(), revision: integer('revision').notNull(),

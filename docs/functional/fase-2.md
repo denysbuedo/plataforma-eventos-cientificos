@@ -39,11 +39,12 @@ Aplicar migraciones 0017 y 0018 antes de arrancar la nueva API. Ver [OpenAPI](..
 
 ## Próximos incrementos
 
-1. Mis trabajos: acceso del autor, borradores, elección de área/tipo y requisitos de la revisión aplicable.
-2. Coautores, afiliaciones y envío con versiones e historial.
-3. Archivos con almacenamiento privado, validación, escaneo y permisos.
-4. Comités, conflictos, asignación de revisores y evaluación.
-5. Dictámenes, correcciones, versión final y programa.
+Mis trabajos ya incorpora acceso independiente del autor, borradores privados, selección de área/tipo/idioma, resumen y palabras clave, revisión optimista y conservación de las reglas originales. Compilación y comprobaciones dirigidas no sustituyen la validación funcional pendiente. Ver [guía](../development/mis-trabajos.md).
+
+1. Coautores y afiliaciones; envío formal con versiones e historial y reconciliación de reglas.
+2. Archivos con almacenamiento privado, validación, escaneo y permisos.
+3. Comités, conflictos, asignación de revisores y evaluación.
+4. Dictámenes, correcciones, versión final y programa.
 
 Antes de recibir contribuciones se debe definir la conservación de reglas/versiones y validar plazos, identidad del autor, propiedad del trabajo y aislamiento. No se anuncia recepción funcional en este incremento.
 

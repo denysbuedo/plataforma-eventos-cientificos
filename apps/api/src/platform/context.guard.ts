@@ -6,7 +6,7 @@ import { AUTHENTICATOR, type Authenticator } from '../identity/authenticator.js'
 import type { Capability } from '../identity/authorization.service.js';
 
 const ACCESS = 'sep:access';
-export const Access = (access: Capability | 'health' | 'public-event' | 'public-site') => SetMetadata(ACCESS, access);
+export const Access = (access: Capability | 'health' | 'public-event' | 'public-site' | 'author-work') => SetMetadata(ACCESS, access);
 const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 export function normalizeHost(raw: string | undefined): string {
   if (!raw || !/^(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)*[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.?(:[0-9]{1,5})?$/i.test(raw)) throw new ApiException(400, 'INVALID_HOST');
