@@ -53,3 +53,10 @@ export interface OrganizationInvitation {
 }
 export interface PeopleDirectory { people: OrganizationPerson[]; invitations: OrganizationInvitation[] }
 export interface CreatedInvitation { invitation: OrganizationInvitation; token: string }
+
+export interface OrganizationProfile { id: string; name: string; contactEmail: string; website: string; description: string; revision: number }
+export interface ManagedDomain {
+  id: string; eventId: string | null; hostname: string; active: boolean; verified: boolean; tlsReady: boolean;
+  verificationToken: string | null;
+}
+export interface OrganizationSettings { organization: OrganizationProfile; domains: ManagedDomain[] }

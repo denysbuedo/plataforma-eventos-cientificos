@@ -4,7 +4,7 @@ import { DatabaseService, type DbTransaction } from '../database/database.servic
 import { memberships, people, roleAssignments } from '../database/schema.js';
 import { ApiException, type RequestContext } from '../common/http.js';
 
-export type Capability = 'event-read' | 'event-update' | 'event-create' | 'session-read' | 'site-read' | 'site-update' | 'site-publish' | 'organizers-manage' | 'people-manage' | 'invitation-accept' | 'identity-read';
+export type Capability = 'event-read' | 'event-update' | 'event-create' | 'session-read' | 'site-read' | 'site-update' | 'site-publish' | 'organizers-manage' | 'people-manage' | 'organization-manage' | 'invitation-accept' | 'identity-read';
 export interface ContextPermissions {
   organizer: boolean; organizationAdmin: boolean; personName: string; roles: string[];
 }
@@ -31,7 +31,7 @@ export class AuthorizationService {
           context.eventId ? or(isNull(memberships.eventId), eq(memberships.eventId, context.eventId)) : isNull(memberships.eventId))).limit(1);
         if (capability !== 'session-read' || !membership) throw new ApiException(404, 'NOT_FOUND');
       }
-      const permitted = capability === 'people-manage' ? organizationAdmin && context.hostEventId === null && context.eventId === null
+      const permitted = ['people-manage', 'organization-manage'].includes(capability) ? organizationAdmin && context.hostEventId === null && context.eventId === null
         : capability === 'organizers-manage' ? organizationAdmin
         : capability === 'event-create' ? organizationAdmin && context.hostEventId === null && context.eventId === null
         : ['event-update', 'site-update', 'site-publish'].includes(capability) ? organizer

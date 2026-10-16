@@ -6,11 +6,12 @@ import { DatabaseModule } from './database/database.module.js';
 import { IdentityModule } from './identity/identity.module.js';
 import { EventsModule } from './events/events.module.js';
 import { ContextGuard } from './platform/context.guard.js';
+import { PlatformModule } from './platform/platform.module.js';
 import { HealthController } from './health.controller.js';
 @Module({})
 export class AppModule {
   static register(config: AppConfig): DynamicModule {
-    return { module: AppModule, imports: [ConfigurationModule.register(config), DatabaseModule, IdentityModule, EventsModule],
+    return { module: AppModule, imports: [ConfigurationModule.register(config), DatabaseModule, IdentityModule, EventsModule, PlatformModule],
       controllers: [HealthController], providers: [{ provide: APP_GUARD, useClass: ContextGuard }] };
   }
 }

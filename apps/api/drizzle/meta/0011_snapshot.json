@@ -1,0 +1,1392 @@
+{
+  "id": "1583a037-41c8-4d2e-a299-020b6c49151b",
+  "prevId": "d6a019d5-5ad9-44e2-9459-ae1a3fd449af",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.affiliations": {
+      "name": "affiliations",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "person_id": {
+          "name": "person_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "institution": {
+          "name": "institution",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "affiliations_person_id_people_id_fk": {
+          "name": "affiliations_person_id_people_id_fk",
+          "tableFrom": "affiliations",
+          "tableTo": "people",
+          "columnsFrom": [
+            "person_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {
+        "context_scope": {
+          "name": "context_scope",
+          "as": "PERMISSIVE",
+          "for": "ALL",
+          "to": [
+            "sep_runtime"
+          ],
+          "using": "\"affiliations\".\"person_id\" = nullif(current_setting('sep.person_id', true), '')::uuid",
+          "withCheck": "\"affiliations\".\"person_id\" = nullif(current_setting('sep.person_id', true), '')::uuid"
+        }
+      },
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.audit_entries": {
+      "name": "audit_entries",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "organization_id": {
+          "name": "organization_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "event_id": {
+          "name": "event_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "person_id": {
+          "name": "person_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "action": {
+          "name": "action",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "resource_id": {
+          "name": "resource_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "request_id": {
+          "name": "request_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "occurred_at": {
+          "name": "occurred_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "audit_entries_organization_id_organizations_id_fk": {
+          "name": "audit_entries_organization_id_organizations_id_fk",
+          "tableFrom": "audit_entries",
+          "tableTo": "organizations",
+          "columnsFrom": [
+            "organization_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "audit_entries_person_id_people_id_fk": {
+          "name": "audit_entries_person_id_people_id_fk",
+          "tableFrom": "audit_entries",
+          "tableTo": "people",
+          "columnsFrom": [
+            "person_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "audit_entries_organization_id_event_id_events_organization_id_id_fk": {
+          "name": "audit_entries_organization_id_event_id_events_organization_id_id_fk",
+          "tableFrom": "audit_entries",
+          "tableTo": "events",
+          "columnsFrom": [
+            "organization_id",
+            "event_id"
+          ],
+          "columnsTo": [
+            "organization_id",
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {
+        "context_scope": {
+          "name": "context_scope",
+          "as": "PERMISSIVE",
+          "for": "ALL",
+          "to": [
+            "sep_runtime"
+          ],
+          "using": "\"audit_entries\".\"organization_id\" = nullif(current_setting('sep.organization_id', true), '')::uuid AND \"audit_entries\".\"person_id\" = nullif(current_setting('sep.person_id', true), '')::uuid AND\n    ((\"audit_entries\".\"organization_id\" = nullif(current_setting('sep.organization_id', true), '')::uuid AND\n  (\"audit_entries\".\"event_id\" = nullif(current_setting('sep.event_id', true), '')::uuid OR current_setting('sep.organization_admin', true) = 'true')) OR (\"audit_entries\".\"event_id\" IS NULL AND \"audit_entries\".\"action\" = 'invitation.accepted' AND EXISTS\n      (SELECT 1 FROM organization_invitations i WHERE i.id = \"audit_entries\".\"resource_id\" AND i.organization_id = \"audit_entries\".\"organization_id\"\n        AND i.status = 'accepted' AND i.accepted_by = \"audit_entries\".\"person_id\" AND i.token_hash = current_setting('sep.invitation_hash', true))))",
+          "withCheck": "\"audit_entries\".\"organization_id\" = nullif(current_setting('sep.organization_id', true), '')::uuid AND \"audit_entries\".\"person_id\" = nullif(current_setting('sep.person_id', true), '')::uuid AND\n    ((\"audit_entries\".\"organization_id\" = nullif(current_setting('sep.organization_id', true), '')::uuid AND\n  (\"audit_entries\".\"event_id\" = nullif(current_setting('sep.event_id', true), '')::uuid OR current_setting('sep.organization_admin', true) = 'true')) OR (\"audit_entries\".\"event_id\" IS NULL AND \"audit_entries\".\"action\" = 'invitation.accepted' AND EXISTS\n      (SELECT 1 FROM organization_invitations i WHERE i.id = \"audit_entries\".\"resource_id\" AND i.organization_id = \"audit_entries\".\"organization_id\"\n        AND i.status = 'accepted' AND i.accepted_by = \"audit_entries\".\"person_id\" AND i.token_hash = current_setting('sep.invitation_hash', true))))"
+        }
+      },
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.domains": {
+      "name": "domains",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "organization_id": {
+          "name": "organization_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "event_id": {
+          "name": "event_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "hostname": {
+          "name": "hostname",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "active": {
+          "name": "active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "verified": {
+          "name": "verified",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "verification_token": {
+          "name": "verification_token",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "tls_ready": {
+          "name": "tls_ready",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "domains_organization_id_organizations_id_fk": {
+          "name": "domains_organization_id_organizations_id_fk",
+          "tableFrom": "domains",
+          "tableTo": "organizations",
+          "columnsFrom": [
+            "organization_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "domains_organization_id_event_id_events_organization_id_id_fk": {
+          "name": "domains_organization_id_event_id_events_organization_id_id_fk",
+          "tableFrom": "domains",
+          "tableTo": "events",
+          "columnsFrom": [
+            "organization_id",
+            "event_id"
+          ],
+          "columnsTo": [
+            "organization_id",
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "domains_hostname_unique": {
+          "name": "domains_hostname_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "hostname"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.event_editions": {
+      "name": "event_editions",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "organization_id": {
+          "name": "organization_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "series_id": {
+          "name": "series_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "label": {
+          "name": "label",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "event_editions_organization_id_organizations_id_fk": {
+          "name": "event_editions_organization_id_organizations_id_fk",
+          "tableFrom": "event_editions",
+          "tableTo": "organizations",
+          "columnsFrom": [
+            "organization_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "event_editions_organization_id_series_id_event_series_organization_id_id_fk": {
+          "name": "event_editions_organization_id_series_id_event_series_organization_id_id_fk",
+          "tableFrom": "event_editions",
+          "tableTo": "event_series",
+          "columnsFrom": [
+            "organization_id",
+            "series_id"
+          ],
+          "columnsTo": [
+            "organization_id",
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "event_editions_organization_id_id_unique": {
+          "name": "event_editions_organization_id_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "organization_id",
+            "id"
+          ]
+        },
+        "event_editions_series_id_label_unique": {
+          "name": "event_editions_series_id_label_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "series_id",
+            "label"
+          ]
+        }
+      },
+      "policies": {
+        "context_scope": {
+          "name": "context_scope",
+          "as": "PERMISSIVE",
+          "for": "ALL",
+          "to": [
+            "sep_runtime"
+          ],
+          "using": "\"event_editions\".\"organization_id\" = nullif(current_setting('sep.organization_id', true), '')::uuid",
+          "withCheck": "\"event_editions\".\"organization_id\" = nullif(current_setting('sep.organization_id', true), '')::uuid"
+        }
+      },
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.events": {
+      "name": "events",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "organization_id": {
+          "name": "organization_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "edition_id": {
+          "name": "edition_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "name_es": {
+          "name": "name_es",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name_en": {
+          "name": "name_en",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "timezone": {
+          "name": "timezone",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'draft'"
+        }
+      },
+      "indexes": {
+        "events_organization_idx": {
+          "name": "events_organization_idx",
+          "columns": [
+            {
+              "expression": "organization_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "events_organization_id_organizations_id_fk": {
+          "name": "events_organization_id_organizations_id_fk",
+          "tableFrom": "events",
+          "tableTo": "organizations",
+          "columnsFrom": [
+            "organization_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "events_organization_id_edition_id_event_editions_organization_id_id_fk": {
+          "name": "events_organization_id_edition_id_event_editions_organization_id_id_fk",
+          "tableFrom": "events",
+          "tableTo": "event_editions",
+          "columnsFrom": [
+            "organization_id",
+            "edition_id"
+          ],
+          "columnsTo": [
+            "organization_id",
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "events_organization_id_id_unique": {
+          "name": "events_organization_id_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "organization_id",
+            "id"
+          ]
+        }
+      },
+      "policies": {
+        "context_scope": {
+          "name": "context_scope",
+          "as": "PERMISSIVE",
+          "for": "ALL",
+          "to": [
+            "sep_runtime"
+          ],
+          "using": "\"events\".\"organization_id\" = nullif(current_setting('sep.organization_id', true), '')::uuid AND\n  (\"events\".\"id\" = nullif(current_setting('sep.event_id', true), '')::uuid OR current_setting('sep.organization_admin', true) = 'true')",
+          "withCheck": "\"events\".\"organization_id\" = nullif(current_setting('sep.organization_id', true), '')::uuid AND\n  (\"events\".\"id\" = nullif(current_setting('sep.event_id', true), '')::uuid OR current_setting('sep.organization_admin', true) = 'true')"
+        }
+      },
+      "checkConstraints": {
+        "events_status_check": {
+          "name": "events_status_check",
+          "value": "\"events\".\"status\" IN ('draft', 'published', 'archived')"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.identities": {
+      "name": "identities",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "person_id": {
+          "name": "person_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "issuer": {
+          "name": "issuer",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "subject": {
+          "name": "subject",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "active": {
+          "name": "active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "identities_person_id_people_id_fk": {
+          "name": "identities_person_id_people_id_fk",
+          "tableFrom": "identities",
+          "tableTo": "people",
+          "columnsFrom": [
+            "person_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "identities_issuer_subject_unique": {
+          "name": "identities_issuer_subject_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "issuer",
+            "subject"
+          ]
+        }
+      },
+      "policies": {
+        "context_scope": {
+          "name": "context_scope",
+          "as": "PERMISSIVE",
+          "for": "ALL",
+          "to": [
+            "sep_runtime"
+          ],
+          "using": "\"identities\".\"person_id\" = nullif(current_setting('sep.person_id', true), '')::uuid",
+          "withCheck": "\"identities\".\"person_id\" = nullif(current_setting('sep.person_id', true), '')::uuid"
+        },
+        "oidc_identity_lookup": {
+          "name": "oidc_identity_lookup",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "sep_runtime"
+          ],
+          "using": "current_setting('sep.auth_provision', true) = 'true'\n    AND \"identities\".\"issuer\" = current_setting('sep.auth_issuer', true) AND \"identities\".\"subject\" = current_setting('sep.auth_subject', true)"
+        }
+      },
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.memberships": {
+      "name": "memberships",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "person_id": {
+          "name": "person_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "organization_id": {
+          "name": "organization_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "event_id": {
+          "name": "event_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "active": {
+          "name": "active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        }
+      },
+      "indexes": {
+        "membership_organization_unique": {
+          "name": "membership_organization_unique",
+          "columns": [
+            {
+              "expression": "person_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "organization_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "where": "\"memberships\".\"event_id\" IS NULL",
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "membership_event_unique": {
+          "name": "membership_event_unique",
+          "columns": [
+            {
+              "expression": "person_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "organization_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "event_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "where": "\"memberships\".\"event_id\" IS NOT NULL",
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "membership_person_organization_idx": {
+          "name": "membership_person_organization_idx",
+          "columns": [
+            {
+              "expression": "person_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "organization_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "memberships_person_id_people_id_fk": {
+          "name": "memberships_person_id_people_id_fk",
+          "tableFrom": "memberships",
+          "tableTo": "people",
+          "columnsFrom": [
+            "person_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "memberships_organization_id_organizations_id_fk": {
+          "name": "memberships_organization_id_organizations_id_fk",
+          "tableFrom": "memberships",
+          "tableTo": "organizations",
+          "columnsFrom": [
+            "organization_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "memberships_organization_id_event_id_events_organization_id_id_fk": {
+          "name": "memberships_organization_id_event_id_events_organization_id_id_fk",
+          "tableFrom": "memberships",
+          "tableTo": "events",
+          "columnsFrom": [
+            "organization_id",
+            "event_id"
+          ],
+          "columnsTo": [
+            "organization_id",
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {
+        "context_scope": {
+          "name": "context_scope",
+          "as": "PERMISSIVE",
+          "for": "ALL",
+          "to": [
+            "sep_runtime"
+          ],
+          "using": "\"memberships\".\"organization_id\" = nullif(current_setting('sep.organization_id', true), '')::uuid AND (\"memberships\".\"person_id\" = nullif(current_setting('sep.person_id', true), '')::uuid OR current_setting('sep.organization_admin', true) = 'true')",
+          "withCheck": "\"memberships\".\"organization_id\" = nullif(current_setting('sep.organization_id', true), '')::uuid AND (\"memberships\".\"person_id\" = nullif(current_setting('sep.person_id', true), '')::uuid OR current_setting('sep.organization_admin', true) = 'true')"
+        }
+      },
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.organization_invitations": {
+      "name": "organization_invitations",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "organization_id": {
+          "name": "organization_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "token_hash": {
+          "name": "token_hash",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'pending'"
+        },
+        "created_by": {
+          "name": "created_by",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "expires_at": {
+          "name": "expires_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "accepted_by": {
+          "name": "accepted_by",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "accepted_at": {
+          "name": "accepted_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "invitation_pending_email_unique": {
+          "name": "invitation_pending_email_unique",
+          "columns": [
+            {
+              "expression": "organization_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "email",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "where": "\"organization_invitations\".\"status\" = 'pending'",
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "organization_invitations_organization_id_organizations_id_fk": {
+          "name": "organization_invitations_organization_id_organizations_id_fk",
+          "tableFrom": "organization_invitations",
+          "tableTo": "organizations",
+          "columnsFrom": [
+            "organization_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "organization_invitations_created_by_people_id_fk": {
+          "name": "organization_invitations_created_by_people_id_fk",
+          "tableFrom": "organization_invitations",
+          "tableTo": "people",
+          "columnsFrom": [
+            "created_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "organization_invitations_accepted_by_people_id_fk": {
+          "name": "organization_invitations_accepted_by_people_id_fk",
+          "tableFrom": "organization_invitations",
+          "tableTo": "people",
+          "columnsFrom": [
+            "accepted_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "organization_invitations_token_hash_unique": {
+          "name": "organization_invitations_token_hash_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "token_hash"
+          ]
+        }
+      },
+      "policies": {
+        "invitation_read": {
+          "name": "invitation_read",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "sep_runtime"
+          ],
+          "using": "\"organization_invitations\".\"organization_id\" = nullif(current_setting('sep.organization_id', true), '')::uuid AND\n    (current_setting('sep.organization_admin', true) = 'true' OR \"organization_invitations\".\"token_hash\" = current_setting('sep.invitation_hash', true))"
+        },
+        "invitation_create": {
+          "name": "invitation_create",
+          "as": "PERMISSIVE",
+          "for": "INSERT",
+          "to": [
+            "sep_runtime"
+          ],
+          "withCheck": "\"organization_invitations\".\"organization_id\" = nullif(current_setting('sep.organization_id', true), '')::uuid AND current_setting('sep.organization_admin', true) = 'true' AND \"organization_invitations\".\"created_by\" = nullif(current_setting('sep.person_id', true), '')::uuid"
+        },
+        "invitation_update": {
+          "name": "invitation_update",
+          "as": "PERMISSIVE",
+          "for": "UPDATE",
+          "to": [
+            "sep_runtime"
+          ],
+          "using": "\"organization_invitations\".\"organization_id\" = nullif(current_setting('sep.organization_id', true), '')::uuid AND (current_setting('sep.organization_admin', true) = 'true' OR \"organization_invitations\".\"token_hash\" = current_setting('sep.invitation_hash', true))",
+          "withCheck": "\"organization_invitations\".\"organization_id\" = nullif(current_setting('sep.organization_id', true), '')::uuid AND (current_setting('sep.organization_admin', true) = 'true' OR (\"organization_invitations\".\"token_hash\" = current_setting('sep.invitation_hash', true) AND \"organization_invitations\".\"accepted_by\" = nullif(current_setting('sep.person_id', true), '')::uuid))"
+        }
+      },
+      "checkConstraints": {
+        "invitation_status_check": {
+          "name": "invitation_status_check",
+          "value": "\"organization_invitations\".\"status\" IN ('pending','accepted','revoked')"
+        },
+        "invitation_dates_check": {
+          "name": "invitation_dates_check",
+          "value": "\"organization_invitations\".\"expires_at\" > \"organization_invitations\".\"created_at\""
+        },
+        "invitation_acceptance_check": {
+          "name": "invitation_acceptance_check",
+          "value": "(\"organization_invitations\".\"status\" = 'accepted') = (\"organization_invitations\".\"accepted_by\" IS NOT NULL AND \"organization_invitations\".\"accepted_at\" IS NOT NULL)"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.organizations": {
+      "name": "organizations",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "active": {
+          "name": "active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "contact_email": {
+          "name": "contact_email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "''"
+        },
+        "website": {
+          "name": "website",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "''"
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "''"
+        },
+        "revision": {
+          "name": "revision",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 1
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.people": {
+      "name": "people",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "active": {
+          "name": "active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {
+        "context_scope": {
+          "name": "context_scope",
+          "as": "PERMISSIVE",
+          "for": "ALL",
+          "to": [
+            "sep_runtime"
+          ],
+          "using": "\"people\".\"id\" = nullif(current_setting('sep.person_id', true), '')::uuid OR (current_setting('sep.organization_admin', true) = 'true' AND EXISTS\n  (SELECT 1 FROM memberships m WHERE m.person_id = \"people\".\"id\" AND m.organization_id = nullif(current_setting('sep.organization_id', true), '')::uuid AND m.active))",
+          "withCheck": "\"people\".\"id\" = nullif(current_setting('sep.person_id', true), '')::uuid OR (current_setting('sep.organization_admin', true) = 'true' AND EXISTS\n  (SELECT 1 FROM memberships m WHERE m.person_id = \"people\".\"id\" AND m.organization_id = nullif(current_setting('sep.organization_id', true), '')::uuid AND m.active))"
+        }
+      },
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.role_assignments": {
+      "name": "role_assignments",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "membership_id": {
+          "name": "membership_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "role": {
+          "name": "role",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "active": {
+          "name": "active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "valid_from": {
+          "name": "valid_from",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "valid_until": {
+          "name": "valid_until",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "role_assignments_membership_id_memberships_id_fk": {
+          "name": "role_assignments_membership_id_memberships_id_fk",
+          "tableFrom": "role_assignments",
+          "tableTo": "memberships",
+          "columnsFrom": [
+            "membership_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "role_assignments_membership_id_role_unique": {
+          "name": "role_assignments_membership_id_role_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "membership_id",
+            "role"
+          ]
+        }
+      },
+      "policies": {
+        "context_scope": {
+          "name": "context_scope",
+          "as": "PERMISSIVE",
+          "for": "ALL",
+          "to": [
+            "sep_runtime"
+          ],
+          "using": "EXISTS (SELECT 1 FROM memberships m WHERE m.id = \"role_assignments\".\"membership_id\")",
+          "withCheck": "EXISTS (SELECT 1 FROM memberships m WHERE m.id = \"role_assignments\".\"membership_id\")"
+        }
+      },
+      "checkConstraints": {
+        "role_code_check": {
+          "name": "role_code_check",
+          "value": "\"role_assignments\".\"role\" IN ('organization_admin', 'organizer', 'participant')"
+        },
+        "role_period_check": {
+          "name": "role_period_check",
+          "value": "\"role_assignments\".\"valid_until\" IS NULL OR \"role_assignments\".\"valid_until\" > \"role_assignments\".\"valid_from\""
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.event_series": {
+      "name": "event_series",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "organization_id": {
+          "name": "organization_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "event_series_organization_id_organizations_id_fk": {
+          "name": "event_series_organization_id_organizations_id_fk",
+          "tableFrom": "event_series",
+          "tableTo": "organizations",
+          "columnsFrom": [
+            "organization_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "event_series_organization_id_id_unique": {
+          "name": "event_series_organization_id_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "organization_id",
+            "id"
+          ]
+        }
+      },
+      "policies": {
+        "context_scope": {
+          "name": "context_scope",
+          "as": "PERMISSIVE",
+          "for": "ALL",
+          "to": [
+            "sep_runtime"
+          ],
+          "using": "\"event_series\".\"organization_id\" = nullif(current_setting('sep.organization_id', true), '')::uuid",
+          "withCheck": "\"event_series\".\"organization_id\" = nullif(current_setting('sep.organization_id', true), '')::uuid"
+        }
+      },
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.site_drafts": {
+      "name": "site_drafts",
+      "schema": "",
+      "columns": {
+        "organization_id": {
+          "name": "organization_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "event_id": {
+          "name": "event_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "content": {
+          "name": "content",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "revision": {
+          "name": "revision",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 1
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "site_drafts_organization_id_event_id_events_organization_id_id_fk": {
+          "name": "site_drafts_organization_id_event_id_events_organization_id_id_fk",
+          "tableFrom": "site_drafts",
+          "tableTo": "events",
+          "columnsFrom": [
+            "organization_id",
+            "event_id"
+          ],
+          "columnsTo": [
+            "organization_id",
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "site_drafts_organization_id_event_id_pk": {
+          "name": "site_drafts_organization_id_event_id_pk",
+          "columns": [
+            "organization_id",
+            "event_id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {
+        "context_scope": {
+          "name": "context_scope",
+          "as": "PERMISSIVE",
+          "for": "ALL",
+          "to": [
+            "sep_runtime"
+          ],
+          "using": "\"site_drafts\".\"organization_id\" = nullif(current_setting('sep.organization_id', true), '')::uuid AND\n  (\"site_drafts\".\"event_id\" = nullif(current_setting('sep.event_id', true), '')::uuid OR current_setting('sep.organization_admin', true) = 'true')",
+          "withCheck": "\"site_drafts\".\"organization_id\" = nullif(current_setting('sep.organization_id', true), '')::uuid AND\n  (\"site_drafts\".\"event_id\" = nullif(current_setting('sep.event_id', true), '')::uuid OR current_setting('sep.organization_admin', true) = 'true')"
+        }
+      },
+      "checkConstraints": {
+        "site_draft_revision_positive": {
+          "name": "site_draft_revision_positive",
+          "value": "\"site_drafts\".\"revision\" > 0"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.site_publications": {
+      "name": "site_publications",
+      "schema": "",
+      "columns": {
+        "organization_id": {
+          "name": "organization_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "event_id": {
+          "name": "event_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "snapshot": {
+          "name": "snapshot",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "revision": {
+          "name": "revision",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "published_at": {
+          "name": "published_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "site_publications_organization_id_event_id_events_organization_id_id_fk": {
+          "name": "site_publications_organization_id_event_id_events_organization_id_id_fk",
+          "tableFrom": "site_publications",
+          "tableTo": "events",
+          "columnsFrom": [
+            "organization_id",
+            "event_id"
+          ],
+          "columnsTo": [
+            "organization_id",
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "site_publications_organization_id_event_id_pk": {
+          "name": "site_publications_organization_id_event_id_pk",
+          "columns": [
+            "organization_id",
+            "event_id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {
+        "context_scope": {
+          "name": "context_scope",
+          "as": "PERMISSIVE",
+          "for": "ALL",
+          "to": [
+            "sep_runtime"
+          ],
+          "using": "\"site_publications\".\"organization_id\" = nullif(current_setting('sep.organization_id', true), '')::uuid AND\n  (\"site_publications\".\"event_id\" = nullif(current_setting('sep.event_id', true), '')::uuid OR current_setting('sep.organization_admin', true) = 'true')",
+          "withCheck": "\"site_publications\".\"organization_id\" = nullif(current_setting('sep.organization_id', true), '')::uuid AND\n  (\"site_publications\".\"event_id\" = nullif(current_setting('sep.event_id', true), '')::uuid OR current_setting('sep.organization_admin', true) = 'true')"
+        }
+      },
+      "checkConstraints": {
+        "site_publication_revision_positive": {
+          "name": "site_publication_revision_positive",
+          "value": "\"site_publications\".\"revision\" > 0"
+        }
+      },
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

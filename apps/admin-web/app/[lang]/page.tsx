@@ -1,7 +1,7 @@
 import { cookies, headers } from 'next/headers';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
-import type { EventPage, EventTeam, PeopleDirectory, SessionView, SiteDraft } from '@sep/contracts';
+import type { EventPage, EventTeam, OrganizationSettings, PeopleDirectory, SessionView, SiteDraft } from '@sep/contracts';
 import { webCopy, type Locale } from '@sep/i18n';
 import { apiRequest, bindingFor, demoConfiguration, googleLoginEnabled, redunivLoginEnabled, oidcEnabled, removeOidcValue, SESSION_COOKIE, tokenForCookie, ApiTransportError } from '@sep/web-server';
 import Login from './login';
@@ -26,16 +26,18 @@ export default async function AdminPage({ params, searchParams }: { params: Prom
   let binding;
   let team: EventTeam | null = null;
   let directory: PeopleDirectory | null = null;
+  let organization: OrganizationSettings | null = null;
   try {
     binding = bindingFor((await headers()).get('host') ?? '', query.event);
     if (institutional) profile = (await apiRequest<{ person: { id: string; name: string } }>(binding, 'me', { token, locale })).person;
     session = await apiRequest<SessionView>(binding, binding.eventId ? `events/${binding.eventId}/session` : 'session', { token, locale });
     if (!session.canRead) denied = true;
     else {
-      events = await apiRequest<EventPage>(binding, 'events', { token, locale });
+      events = await apiRequest<EventPage>(binding, query.tab === 'organization' ? 'events?limit=100' : 'events', { token, locale });
       if (session.eventId) site = await apiRequest<SiteDraft>(binding, `events/${session.eventId}/site`, { token, locale });
       if (session.eventId && session.organizationAdmin) team = await apiRequest<EventTeam>(binding, `events/${session.eventId}/organizers`, { token, locale });
       if (!session.eventId && session.organizationAdmin && query.tab === 'people') directory = await apiRequest<PeopleDirectory>(binding, 'people', { token, locale });
+      if (!session.eventId && session.organizationAdmin && query.tab === 'organization') organization = await apiRequest<OrganizationSettings>(binding, 'organization', { token, locale });
     }
   } catch (error) {
     if (error instanceof ApiTransportError && error.status === 401) { if (institutional) removeOidcValue(cookie); return login; }
@@ -43,5 +45,5 @@ export default async function AdminPage({ params, searchParams }: { params: Prom
     else return <main className="public-empty"><div className="empty-state"><h1>{text.serviceTitle}</h1><p>{text.serviceHelp}</p><a href={`/${locale}`} className="button button-primary">{text.retry}</a></div></main>;
   }
   return <Dashboard key={contextKey} locale={locale} contextKey={contextKey} tab={query.tab ?? 'overview'} session={session} profile={profile}
-    events={events} site={site} team={team} directory={directory} denied={denied} publicUrl={publicUrl} demo={!!config} contextHosts={config?.hosts ?? {}} contextEvents={config?.events ?? {}} />;
+    events={events} site={site} team={team} directory={directory} organization={organization} denied={denied} publicUrl={publicUrl} demo={!!config} contextHosts={config?.hosts ?? {}} contextEvents={config?.events ?? {}} />;
 }

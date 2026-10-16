@@ -12,6 +12,8 @@ const policy = (scope: SQL) => pgPolicy('context_scope', { for: 'all', to: runti
 // Control-plane registry: no direct runtime grants; access only through the narrow domain resolver.
 export const organizations = pgTable('organizations', {
   id: uuid('id').primaryKey(), name: text('name').notNull(), active: boolean('active').notNull().default(true),
+  contactEmail: text('contact_email').notNull().default(''), website: text('website').notNull().default(''),
+  description: text('description').notNull().default(''), revision: integer('revision').notNull().default(1),
 });
 export const series = pgTable('event_series', {
   id: uuid('id').primaryKey(), organizationId: uuid('organization_id').notNull().references(() => organizations.id), name: text('name').notNull(),
@@ -38,6 +40,7 @@ export const domains = pgTable('domains', {
   id: uuid('id').primaryKey(), organizationId: uuid('organization_id').notNull().references(() => organizations.id),
   eventId: uuid('event_id'), hostname: text('hostname').notNull().unique(),
   active: boolean('active').notNull().default(false), verified: boolean('verified').notNull().default(false),
+  verificationToken: text('verification_token'), tlsReady: boolean('tls_ready').notNull().default(false),
 }, (t) => [foreignKey({ columns: [t.organizationId, t.eventId], foreignColumns: [events.organizationId, events.id] })]);
 export const people = pgTable('people', {
   id: uuid('id').primaryKey(), name: text('name').notNull(), active: boolean('active').notNull().default(true),
