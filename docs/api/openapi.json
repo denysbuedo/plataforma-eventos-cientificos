@@ -793,6 +793,314 @@
         ]
       }
     },
+    "/api/v1/me/orcid": {
+      "get": {
+        "operationId": "OrcidController_status",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrcidStatusDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "identity"
+        ]
+      }
+    },
+    "/api/v1/me/orcid/start": {
+      "post": {
+        "operationId": "OrcidController_begin",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BeginOrcidDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BeginResultDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "identity"
+        ]
+      }
+    },
+    "/api/v1/me/orcid/finish": {
+      "post": {
+        "operationId": "OrcidController_finish",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FinishOrcidDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FinishResultDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "identity"
+        ]
+      }
+    },
     "/api/v1/events": {
       "get": {
         "operationId": "EventsController_list",
@@ -5740,13 +6048,22 @@
             "items": {
               "type": "string"
             }
+          },
+          "orcid": {
+            "type": "object",
+            "nullable": true
+          },
+          "orcidAvailable": {
+            "type": "boolean"
           }
         },
         "required": [
           "id",
           "name",
           "email",
-          "institutions"
+          "institutions",
+          "orcid",
+          "orcidAvailable"
         ]
       },
       "ProfileDto": {
@@ -5956,6 +6273,66 @@
         },
         "required": [
           "accepted"
+        ]
+      },
+      "OrcidStatusDto": {
+        "type": "object",
+        "properties": {
+          "available": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "available"
+        ]
+      },
+      "BeginOrcidDto": {
+        "type": "object",
+        "properties": {
+          "returnTo": {
+            "type": "string",
+            "example": "/es?event=a1&tab=profile"
+          }
+        },
+        "required": [
+          "returnTo"
+        ]
+      },
+      "BeginResultDto": {
+        "type": "object",
+        "properties": {
+          "authorizationUrl": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "authorizationUrl"
+        ]
+      },
+      "FinishOrcidDto": {
+        "type": "object",
+        "properties": {
+          "state": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "state",
+          "code"
+        ]
+      },
+      "FinishResultDto": {
+        "type": "object",
+        "properties": {
+          "returnTo": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "returnTo"
         ]
       },
       "EventDto": {
@@ -6316,6 +6693,9 @@
       "ConfigurationDto": {
         "type": "object",
         "properties": {
+          "requireSubmittingAuthorOrcid": {
+            "type": "boolean"
+          },
           "timezone": {
             "type": "string"
           },
@@ -6386,6 +6766,9 @@
       "SaveConfigurationDto": {
         "type": "object",
         "properties": {
+          "requireSubmittingAuthorOrcid": {
+            "type": "boolean"
+          },
           "timezone": {
             "type": "string"
           },
@@ -6905,6 +7288,9 @@
       "AuthorWorkspaceDto": {
         "type": "object",
         "properties": {
+          "requireSubmittingAuthorOrcid": {
+            "type": "boolean"
+          },
           "languages": {
             "type": "array",
             "items": {
@@ -6947,6 +7333,7 @@
           }
         },
         "required": [
+          "requireSubmittingAuthorOrcid",
           "languages",
           "event",
           "works",
@@ -7075,6 +7462,17 @@
       "WorkAuthorDto": {
         "type": "object",
         "properties": {
+          "orcid": {
+            "type": "string"
+          },
+          "personId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "orcidVerified": {
+            "type": "boolean",
+            "description": "Estado informativo. El servidor recalcula la verificación; no confía en este valor."
+          },
           "id": {
             "type": "string",
             "format": "uuid"

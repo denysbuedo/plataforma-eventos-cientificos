@@ -204,6 +204,27 @@
       "when": 1792163808801,
       "tag": "0028_own_affiliation_read",
       "breakpoints": true
+    },
+    {
+      "idx": 29,
+      "version": "7",
+      "when": 1792171556964,
+      "tag": "0029_amusing_the_renegades",
+      "breakpoints": true
+    },
+    {
+      "idx": 30,
+      "version": "7",
+      "when": 1792171556965,
+      "tag": "0030_orcid_privileges",
+      "breakpoints": true
+    },
+    {
+      "idx": 31,
+      "version": "7",
+      "when": 1792171940133,
+      "tag": "0031_huge_nicolaos",
+      "breakpoints": true
     }
   ]
 }

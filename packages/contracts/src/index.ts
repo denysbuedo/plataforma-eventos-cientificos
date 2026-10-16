@@ -82,7 +82,9 @@ export interface AuthorWorkSummary {
   editable: boolean; status: WorkStatus; submittedAt: string | null; responseDeadline: string | null;
 }
 export interface WorkAffiliation { institution: string; countryCode: string }
-export interface WorkAuthor { id: string; fullName: string; email: string; affiliations: WorkAffiliation[]; corresponding: boolean }
+export interface WorkAuthor { id: string; fullName: string; email: string; affiliations: WorkAffiliation[]; corresponding: boolean; orcid?: string; personId?: string; orcidVerified?: boolean }
+export interface OrcidConnection { id: string; environment: 'production' | 'sandbox'; connectedAt: string }
+export interface AuthorAccount { id: string; name: string; email: string; institutions: string[]; orcid: OrcidConnection | null; orcidAvailable: boolean }
 export const WORK_STATUSES = ['draft','submitted','in_review','changes_requested','accepted','rejected','withdrawn','final_requested','final_submitted'] as const;
 export type WorkStatus = typeof WORK_STATUSES[number];
 export interface Manuscript { id: string; name: string; bytes: number; pages: number; sha256: string; scan: 'clean' | 'demo_unscanned' }
@@ -99,11 +101,14 @@ export interface AuthorWorkspace {
   event: PublicEventView; works: AuthorWorkSummary[]; call: PublishedScientificCall | null;
   languages: ('es' | 'en')[];
   editable: boolean; reason: 'available' | 'no_call' | 'closed' | 'inactive';
+  requireSubmittingAuthorOrcid?: boolean;
 }
 export interface EventConfiguration {
   timezone: string; startDate: string | null; endDate: string | null;
   modality: 'in_person' | 'virtual' | 'hybrid'; languages: ('es' | 'en')[]; defaultLanguage: 'es' | 'en';
   lifecycle: EventLifecycle; revision: number;
+  requireSubmittingAuthorOrcid?: boolean;
 }
 
 export { COUNTRY_CODES } from './countries.js';
+export { validOrcid } from './orcid.js';

@@ -1,7 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
 import { ArrayMaxSize, ArrayMinSize, ArrayUnique, IsArray, IsBoolean, IsIn, IsInt, IsString, IsUUID, Max, MaxLength, Min, MinLength, ValidateBy, ValidateIf, ValidateNested, isEmail } from 'class-validator';
-import { COUNTRY_CODES, WORK_STATUSES, type WorkStatus, type Manuscript, type WorkVersionSummary, type WorkHistory, type AuthorWork, type AuthorWorkSummary, type AuthorWorkspace, type PublishedScientificCall, type WorkAffiliation, type WorkAuthor } from '@sep/contracts';
+import { validOrcid, COUNTRY_CODES, WORK_STATUSES, type WorkStatus, type Manuscript, type WorkVersionSummary, type WorkHistory, type AuthorWork, type AuthorWorkSummary, type AuthorWorkspace, type PublishedScientificCall, type WorkAffiliation, type WorkAuthor } from '@sep/contracts';
 import { PublicEventDto } from '../events/event.dto.js';
 import { PublishedCallDto } from '../science/call.dto.js';
 export class WorkAffiliationDto implements WorkAffiliation {
@@ -11,6 +11,9 @@ export class WorkAffiliationDto implements WorkAffiliation {
   @Transform(({ value }) => typeof value === 'string' ? value.trim().toUpperCase() : value) @IsIn(COUNTRY_CODES) countryCode!: string;
 }
 export class WorkAuthorDto implements WorkAuthor {
+  @ApiPropertyOptional() @ValidateIf((_,value)=>value!==undefined) @IsString() @ValidateBy({name:'orcid',validator:{validate:(value:unknown)=>value===''||validOrcid(value)}}) orcid?:string;
+  @ApiPropertyOptional({format:'uuid'}) @ValidateIf((_,value)=>value!==undefined) @IsUUID() personId?:string;
+  @ApiPropertyOptional({description:'Estado informativo. El servidor recalcula la verificación; no confía en este valor.'}) @ValidateIf((_,value)=>value!==undefined) @IsBoolean() orcidVerified?:boolean;
   @ApiProperty({ format: 'uuid' }) @Transform(({ value }) => typeof value === 'string' ? value.toLowerCase() : value) @IsUUID() id!: string;
   @ApiProperty({ minLength: 2, maxLength: 150 }) @Transform(({ value }) => typeof value === 'string' ? value.trim() : value)
   @IsString() @MinLength(2) @MaxLength(150) fullName!: string;
@@ -83,6 +86,7 @@ export class VersionDto extends VersionSummaryDto { @ApiProperty({type:VersionCo
 export class StaffWorkDto extends WorkDto { @ApiProperty() canDecide!:boolean }
 export class SubmissionPageDto { @ApiProperty({type:[WorkSummaryDto]}) data!:WorkSummaryDto[]; @ApiProperty() limit!:number; @ApiProperty() offset!:number }
 export class AuthorWorkspaceDto implements AuthorWorkspace {
+  @ApiProperty() requireSubmittingAuthorOrcid!:boolean;
   @ApiProperty({ type: [String], enum: ['es','en'] }) languages!: ('es' | 'en')[];
   @ApiProperty({ type: PublicEventDto }) event!: PublicEventDto;
   @ApiProperty({ type: [WorkSummaryDto] }) works!: AuthorWorkSummary[];

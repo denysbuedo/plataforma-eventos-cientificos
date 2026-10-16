@@ -75,6 +75,8 @@ El modo demo exige `NODE_ENV=development` o `test`, `AUTH_MODE=development-token
 
 El módulo de trabajos requiere migraciones hasta 0027. Sus manuscritos se guardan en PostgreSQL privado. En acceso real configurar `CLAMAV_HOST` y opcionalmente `CLAMAV_PORT`; la demo permite PDF marcados como no escaneados solo en development/test. Véase [operación de trabajos](trabajos-envios.md).
 
+La versión actual requiere además 0028 para afiliaciones y 0029–0031 para perfil y conexión ORCID. El lanzador nuevo aplica todas las migraciones. En una demo existente deben aplicarse antes de reiniciar la API. ORCID queda deshabilitado sin cliente registrado; véase [configuración](orcid.md).
+
 ```powershell
 npm run db:generate
 npm run openapi

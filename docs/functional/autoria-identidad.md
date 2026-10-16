@@ -1,6 +1,6 @@
 # Autoría y cuentas: propuesta de vinculación
 
-Estado: propuesta para el siguiente incremento. La búsqueda de personas, reclamaciones y aprobaciones todavía no están implementadas.
+Estado: búsqueda de personas, reclamaciones y aprobaciones propuestas para el siguiente incremento. La conexión autenticada con ORCID y la selección explícita de la propia cuenta ya están implementadas; véase [activación de ORCID](../development/orcid.md).
 
 ## Modelo
 
@@ -22,4 +22,4 @@ Contemplar homónimos, alias, cambio de correo, varias declaraciones de la misma
 
 El detalle comparte presentación con la bandeja y las versiones: metadatos en una cuadrícula, resumen legible, palabras clave en línea separadas por punto y coma, y tarjetas de autores con afiliación y correspondencia.
 
-La edición explica su bloqueo según estado. Los borradores recién creados devuelven correctamente su disponibilidad de edición. Al editar un trabajo sin autores se precargan los datos disponibles de la cuenta; también existe Añadirme con mis datos. Se usan nombre, correo verificado de la sesión si existe e instituciones propias. País y datos ausentes deben completarse. Esto es precarga de una declaración, no vinculación persistente ni búsqueda de otros usuarios.
+La edición explica su bloqueo según estado. Los borradores recién creados y guardados devuelven correctamente su disponibilidad de edición. Al editar un trabajo sin autores se precargan los datos disponibles de la cuenta; también existe Añadirme con mis datos. Se usan nombre, correo verificado de la sesión si existe e instituciones propias. País y datos ausentes deben completarse. La selección propia guarda personId y carga el ORCID conectado; no habilita búsqueda de otros usuarios ni reclamaciones sobre declaraciones previas.

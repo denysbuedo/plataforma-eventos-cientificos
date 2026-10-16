@@ -6,7 +6,8 @@ import { AuthorizationService } from './authorization.service.js';
 import { SessionController } from './session.controller.js';
 import { InvitationsController, InvitationsService } from './invitations.controller.js';
 import { AuditService } from '../common/audit.service.js';
-@Module({ controllers: [SessionController, InvitationsController], providers: [AuthorizationService, InvitationsService, AuditService,
+import { OrcidController, OrcidService } from './orcid.controller.js';
+@Module({ controllers: [SessionController, InvitationsController, OrcidController], providers: [AuthorizationService, InvitationsService, OrcidService, AuditService,
   { provide: AUTHENTICATOR, inject: [APP_CONFIG, DatabaseService], useFactory: (config: AppConfig, database: DatabaseService) =>
     config.authMode === 'oidc' ? new OidcAuthenticator(config, database) : new DevelopmentTokenAuthenticator(config) }], exports: [AuthorizationService, AUTHENTICATOR] })
 export class IdentityModule {}

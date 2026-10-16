@@ -7,11 +7,12 @@ import { apiRequest, bindingFor, demoConfiguration, googleLoginEnabled, redunivL
 import Login from './login';
 import Dashboard from './workspace';
 import AuthorWorks from './author-works';
-import type { AuthorAccount } from './work-authors';
+import Profile from './profile';
+import type { AuthorAccount } from '@sep/contracts';
 
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = { title: 'SEP · Workspace', robots: { index: false, follow: false } };
-export default async function AdminPage({ params, searchParams }: { params: Promise<{ lang: string }>; searchParams: Promise<{ event?: string; tab?: string; authError?: string; logoutError?: string }> }) {
+export default async function AdminPage({ params, searchParams }: { params: Promise<{ lang: string }>; searchParams: Promise<{ event?: string; tab?: string; authError?: string; logoutError?: string; orcidError?: string }> }) {
   const { lang } = await params;
   if (lang !== 'es' && lang !== 'en') notFound();
   const locale: Locale = lang; const text = webCopy[locale];
@@ -32,6 +33,10 @@ export default async function AdminPage({ params, searchParams }: { params: Prom
   let configuration: EventConfiguration | null = null; let scientificCall: ScientificCallDraft | null = null; let inbox: SubmissionPage | null = null;
   try {
     binding = bindingFor((await headers()).get('host') ?? '', query.event);
+    if (query.tab === 'profile') {
+      const person=(await apiRequest<{person:AuthorAccount}>(binding,'me',{token,locale})).person;
+      return <Profile person={person} locale={locale} contextKey={contextKey} error={!!query.orcidError}/>;
+    }
     if (query.tab === 'works' && binding.eventId) {
       const authorWorkspace = await apiRequest<AuthorWorkspace>(binding, `events/${binding.eventId}/my-works`, { token, locale });
       const author = (await apiRequest<{ person: AuthorAccount }>(binding, 'me', { token, locale })).person;

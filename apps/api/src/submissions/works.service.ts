@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { and, desc, eq, sql } from 'drizzle-orm';
 import { randomUUID } from 'node:crypto';
-import type { AuthorWork, AuthorWorkspace, PublishedScientificCall, WorkContent, WorkStatus } from '@sep/contracts';
+import type { AuthorWork, AuthorWorkspace, PublishedScientificCall, WorkContent, WorkStatus, WorkAuthor } from '@sep/contracts';
 import { DatabaseService, type DbTransaction } from '../database/database.service.js';
-import { authorWorks as works, eventConfigurations, events, people, scientificCallPublications, workFiles, workVersions, workHistory } from '../database/schema.js';
+import { authorWorks as works, eventConfigurations, events, people, orcidConnections, scientificCallPublications, workFiles, workVersions, workHistory } from '../database/schema.js';
 import { ApiException, type RequestContext } from '../common/http.js';
 import { AuditService } from '../common/audit.service.js';
 import { ManuscriptsService } from './manuscripts.service.js';
@@ -27,6 +27,15 @@ export class AuthorWorksService {
   }
   content(row: typeof works.$inferSelect): WorkContent {
     return {title:row.title,abstract:row.abstract,keywords:row.keywords,language:row.language,trackId:row.trackId,contributionTypeId:row.contributionTypeId,call:row.call,authors:row.authors,manuscript:row.manuscript};
+  }
+  private async authors(tx:DbTransaction,context:RequestContext,authors:WorkAuthor[]) {
+    const [connection]=await tx.select().from(orcidConnections).where(eq(orcidConnections.personId,context.personId!));
+    if(authors.filter(author=>author.personId===context.personId).length>1)throw new ApiException(400,'VALIDATION_FAILED');
+    return authors.map(author=>{
+      if(author.personId&&author.personId!==context.personId)throw new ApiException(400,'VALIDATION_FAILED');
+      const verified=!!author.personId&&!!connection?.orcid&&!!connection.connectedAt&&connection.environment==='production';
+      return {...author,orcid:author.personId?connection?.orcid??'':author.orcid??'',orcidVerified:verified};
+    });
   }
   async finalRound(tx:DbTransaction,row:typeof works.$inferSelect) {
     if(row.status==='final_requested')return true;
@@ -66,6 +75,10 @@ export class AuthorWorksService {
       if(initial) {
         if(!state.call || !state.call.content.opensOn || this.today(state.call.timezone)<state.call.content.opensOn)throw new ApiException(409,'SUBMISSION_NOT_OPEN');
         if(row.call.revision!==state.call.revision||row.call.publishedAt!==state.call.publishedAt)throw new ApiException(409,'CALL_CHANGED');
+        if(state.requireSubmittingAuthorOrcid) {
+          const authors=await this.authors(tx,context,row.authors);
+          if(!authors.some(author=>author.personId===context.personId&&author.orcidVerified))throw new ApiException(409,'ORCID_REQUIRED');
+        }
       }
       const finalRound=await this.finalRound(tx,row);
       if(!finalRound&&!state.languages.includes(row.language))throw new ApiException(400,'VALIDATION_FAILED');
@@ -83,9 +96,9 @@ export class AuthorWorksService {
       }
       const [{count}]=await tx.select({count:sql<number>`count(*)::int`}).from(workVersions).where(eq(workVersions.workId,id));
       if(count>=10)throw new ApiException(409,'VERSION_LIMIT');
-      const content=this.content(row),kind=finalRound?'final' as const:'submission' as const;
+      const content={...this.content(row),authors:await this.authors(tx,context,row.authors)},kind=finalRound?'final' as const:'submission' as const;
       await tx.insert(workVersions).values({id:randomUUID(),organizationId:context.organizationId,eventId:context.eventId!,workId:id,ownerId:context.personId!,number:count+1,kind,content,fileId:row.manuscript?.id??null});
-      const [next]=await tx.update(works).set({status:kind==='final'?'final_submitted':'submitted',submittedAt:row.submittedAt??new Date(),submittedContent:content,responseDeadline:null,revision:revision+1,updatedAt:new Date()}).where(and(this.scope(context),eq(works.id,id))).returning();
+      const [next]=await tx.update(works).set({authors:content.authors,status:kind==='final'?'final_submitted':'submitted',submittedAt:row.submittedAt??new Date(),submittedContent:content,responseDeadline:null,revision:revision+1,updatedAt:new Date()}).where(and(this.scope(context),eq(works.id,id))).returning();
       await this.record(tx,context,id,kind==='final'?'final_submitted':'submitted');await this.audit.record(tx,context,'work.submitted',context.eventId!,id);return this.detail(tx,next,state);
     });
   }
@@ -159,7 +172,7 @@ export class AuthorWorksService {
       const part = (type: string) => parts.find((p) => p.type === type)?.value;
       if (!call.content.closesOn || `${part('year')}-${part('month')}-${part('day')}` > call.content.closesOn) reason = 'closed';
     }
-    return { event, call: inactive ? null : call, reason, active: !inactive, editable: reason === 'available', languages: config?.languages ?? ['es','en'] as ('es' | 'en')[] };
+    return { event, call: inactive ? null : call, reason, active: !inactive, editable: reason === 'available', languages: config?.languages ?? ['es','en'] as ('es' | 'en')[],requireSubmittingAuthorOrcid:config?.requireSubmittingAuthorOrcid??false };
   }
   private validateSelection(call: PublishedScientificCall, dto: CreateWorkDto) {
     const track = call.content.tracks.find((t) => t.id.toLowerCase() === dto.trackId.toLowerCase());
@@ -173,7 +186,7 @@ export class AuthorWorksService {
       const rows = await tx.select(summaryFields).from(works).where(this.scope(context)).orderBy(desc(works.updatedAt), works.id).limit(50);
       if (state.event.status !== 'published' && !rows.length) throw new ApiException(404, 'NOT_FOUND');
       return { event: { id: state.event.id, nameEs: state.event.nameEs, nameEn: state.event.nameEn, timezone: state.event.timezone },
-        works: rows.map(({callTimezone,...row}) => ({ ...row, editable: this.editable(row,state,callTimezone), submittedAt: row.submittedAt?.toISOString() ?? null, createdAt: row.createdAt.toISOString(), updatedAt: row.updatedAt.toISOString() })), call: state.call, editable: state.editable, reason: state.reason, languages: state.languages };
+        works: rows.map(({callTimezone,...row}) => ({ ...row, editable: this.editable(row,state,callTimezone), submittedAt: row.submittedAt?.toISOString() ?? null, createdAt: row.createdAt.toISOString(), updatedAt: row.updatedAt.toISOString() })), call: state.call, editable: state.editable, reason: state.reason, languages: state.languages,requireSubmittingAuthorOrcid:state.requireSubmittingAuthorOrcid };
     });
   }
   read(context: RequestContext, id: string): Promise<AuthorWork> {
@@ -217,9 +230,9 @@ export class AuthorWorksService {
       const selection = this.validateSelection(before.call, dto);
       const words = dto.abstract.trim() ? dto.abstract.trim().split(/\s+/u).length : 0;
       if (words > selection.type.abstractMaxWords || dto.keywords.length > selection.type.keywordsMax) throw new ApiException(400, 'WORK_REQUIREMENTS');
-      const [row] = await tx.update(works).set({ ...dto, authors: dto.authors ?? before.authors, trackId: selection.track.id, contributionTypeId: selection.type.id, revision: dto.revision + 1, updatedAt: new Date() })
+      const [row] = await tx.update(works).set({ ...dto, authors: await this.authors(tx,context,dto.authors ?? before.authors), trackId: selection.track.id, contributionTypeId: selection.type.id, revision: dto.revision + 1, updatedAt: new Date() })
         .where(and(this.scope(context), eq(works.id, id))).returning();
-      await this.audit.record(tx, context, 'work.draft.saved', state.event.id, id); return view(row);
+      await this.audit.record(tx, context, 'work.draft.saved', state.event.id, id); return this.detail(tx,row,state);
     });
   }
 }

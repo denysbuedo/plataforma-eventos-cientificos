@@ -57,6 +57,7 @@ export const eventConfigurations = pgTable('event_configurations', {
   modality: text('modality').$type<EventConfiguration['modality']>().notNull().default('in_person'),
   languages: text('languages').array().$type<EventConfiguration['languages']>().notNull().default(sql`ARRAY['es','en']::text[]`),
   defaultLanguage: text('default_language').$type<'es' | 'en'>().notNull().default('es'),
+  requireSubmittingAuthorOrcid: boolean('require_submitting_author_orcid').notNull().default(false),
   lifecycle: text('lifecycle').$type<EventConfiguration['lifecycle']>().notNull().default('planning'),
   revision: integer('revision').notNull().default(1),
 }, (t) => [
@@ -84,6 +85,11 @@ export const identities = pgTable('identities', {
 export const affiliations = pgTable('affiliations', {
   id: uuid('id').primaryKey(), personId: uuid('person_id').notNull().references(() => people.id), institution: text('institution').notNull(),
 }, (t) => [policy(actorScope(sql`${t.personId}`))]);
+export const orcidConnections = pgTable('orcid_connections', {
+  personId: uuid('person_id').primaryKey().references(()=>people.id),
+  orcid: text('orcid'), environment: text('environment').notNull().default('production'), connectedAt: timestamp('connected_at',{withTimezone:true}),
+  stateHash: text('state_hash'), expiresAt: timestamp('expires_at',{withTimezone:true}), returnTo: text('return_to'),
+}, t=>[unique().on(t.environment,t.orcid), check('orcid_environment',sql`${t.environment} IN ('production','sandbox')`),policy(actorScope(sql`${t.personId}`))]);
 export const memberships = pgTable('memberships', {
   id: uuid('id').primaryKey(), personId: uuid('person_id').notNull().references(() => people.id),
   organizationId: uuid('organization_id').notNull().references(() => organizations.id),
@@ -119,7 +125,9 @@ export const auditEntries = pgTable('audit_entries', {
   policy(sql`${organizationScope(sql`${t.organizationId}`)} AND ${actorScope(sql`${t.personId}`)} AND
     ((${eventScope(sql`${t.organizationId}`, sql`${t.eventId}`)}) OR (${t.eventId} IS NULL AND ${t.action} = 'invitation.accepted' AND EXISTS
       (SELECT 1 FROM organization_invitations i WHERE i.id = ${t.resourceId} AND i.organization_id = ${t.organizationId}
-        AND i.status = 'accepted' AND i.accepted_by = ${t.personId} AND i.token_hash = current_setting('sep.invitation_hash', true))))`),
+        AND i.status = 'accepted' AND i.accepted_by = ${t.personId} AND i.token_hash = current_setting('sep.invitation_hash', true)))
+      OR (${t.eventId} IS NULL AND ${t.action} = 'identity.orcid.connected' AND ${t.resourceId} = ${t.personId}
+        AND EXISTS (SELECT 1 FROM orcid_connections o WHERE o.person_id=${t.personId} AND o.orcid IS NOT NULL AND o.connected_at IS NOT NULL)))`),
 ]);
 
 export const siteDrafts = pgTable('site_drafts', {

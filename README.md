@@ -134,6 +134,8 @@ La demo imprime enlaces al portal público y al administrador, con perfiles para
 
 **Mis trabajos** permite preparar borradores privados, declarar autores y afiliaciones, adjuntar PDF y enviar versiones inmutables. Incluye historial, retiro, correcciones y versión final. **Trabajos recibidos** permite al organizador consultar los envíos y comunicar dictámenes con plazos. No equivale a revisión por pares. Ver [guía del módulo](docs/development/trabajos-envios.md).
 
+**Mi perfil** incorpora conexión autenticada con ORCID; cada evento puede exigirlo a la persona que realiza el envío inicial. El cliente externo sigue pendiente de activación. Ver [configuración y alcance](docs/development/orcid.md).
+
 **Convocatoria científica** permite preparar áreas temáticas, tipos de contribución, requisitos y plazos, con borrador, publicación independiente y retirada. El portal muestra solo la versión publicada. Ver [Fase 2](docs/functional/fase-2.md); validación funcional completa aplazada. El acceso real con RedUniv/Google y el antivirus operativo siguen pendientes de configuración externa.
 
 En **Datos del evento** se administran fechas, zona horaria, modalidad, idiomas y ciclo operativo, separados de la publicación del CMS. Las fechas configuradas se aplican al volver a publicar. Véase [configuración del evento](docs/development/configuracion-eventos.md); validación funcional completa pendiente.

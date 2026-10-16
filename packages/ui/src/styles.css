@@ -142,6 +142,7 @@ svg { flex-shrink:0; }
 .invitation-page h1 { font-family: Georgia, serif; font-size: clamp(2rem, 5vw, 3.4rem); line-height: 1.1; }
 .sso-buttons { display: grid; gap: 12px; }
 .sso-buttons .button { width: 100%; }
+.orcid-link { display:inline-flex; align-items:center; gap:7px; color:var(--green); font-size:13px; padding:8px 0; }
 
 /* Scientific work detail: shared by the author and organizer views. */
 .work-detail-header { display:flex; justify-content:space-between; align-items:center; gap:24px; padding-bottom:22px; margin-bottom:22px; border-bottom:1px solid var(--line); }

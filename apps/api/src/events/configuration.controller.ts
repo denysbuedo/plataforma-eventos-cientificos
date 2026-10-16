@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Injectable, Param, Post, Put, Req } from '@nestjs/common';
-import { ApiBearerAuth, ApiOkResponse, ApiProperty, ApiTags } from '@nestjs/swagger';
-import { ArrayMaxSize, ArrayMinSize, ArrayUnique, IsArray, IsIn, IsInt, IsString, Matches, Max, MaxLength, Min, ValidateBy } from 'class-validator';
+import { ApiBearerAuth, ApiOkResponse, ApiProperty, ApiPropertyOptional, ApiTags } from '@nestjs/swagger';
+import { ArrayMaxSize, ArrayMinSize, ArrayUnique, IsArray, IsBoolean, IsIn, IsInt, IsString, Matches, Max, MaxLength, Min, ValidateBy, ValidateIf } from 'class-validator';
 import { and, eq } from 'drizzle-orm';
 import type { EventConfiguration, EventLifecycle } from '@sep/contracts';
 import { eventConfigurations, events } from '../database/schema.js';
@@ -18,6 +18,7 @@ export const lifecycleTransitions: Record<EventLifecycle, EventLifecycle[]> = {
 const validDate = (value: unknown) => value === null || typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value)
   && value >= '1900-01-01' && value <= '9999-12-31' && Number.isFinite(Date.parse(value)) && new Date(value).toISOString().slice(0, 10) === value;
 class SaveConfigurationDto {
+  @ApiPropertyOptional() @ValidateIf((_,value)=>value!==undefined) @IsBoolean() requireSubmittingAuthorOrcid?:boolean;
   @ApiProperty() @IsString() @MaxLength(100)
   @ValidateBy({ name: 'timezone', validator: { validate: (value: unknown) => {
     if (typeof value !== 'string') return false; try { new Intl.DateTimeFormat('en', { timeZone: value }); return true; } catch { return false; }
@@ -44,8 +45,8 @@ class ConfigurationDto extends SaveConfigurationDto implements EventConfiguratio
 export async function readEventConfiguration(tx: DbTransaction, organizationId: string, eventId: string, timezone: string): Promise<EventConfiguration> {
   const [row] = await tx.select().from(eventConfigurations).where(and(eq(eventConfigurations.organizationId, organizationId), eq(eventConfigurations.eventId, eventId)));
   return row ? { timezone, startDate: row.startDate, endDate: row.endDate, modality: row.modality, languages: row.languages,
-    defaultLanguage: row.defaultLanguage, lifecycle: row.lifecycle, revision: row.revision }
-    : { timezone, startDate: null, endDate: null, modality: 'in_person', languages: ['es', 'en'], defaultLanguage: 'es', lifecycle: 'planning', revision: 0 };
+    defaultLanguage: row.defaultLanguage, lifecycle: row.lifecycle, revision: row.revision,requireSubmittingAuthorOrcid:row.requireSubmittingAuthorOrcid }
+    : { timezone, startDate: null, endDate: null, modality: 'in_person', languages: ['es', 'en'], defaultLanguage: 'es', lifecycle: 'planning', revision: 0,requireSubmittingAuthorOrcid:false };
 }
 @Injectable()
 export class EventConfigurationService {
@@ -71,7 +72,7 @@ export class EventConfigurationService {
       if (before.revision !== dto.revision) throw new ApiException(409, 'REVISION_CONFLICT');
       if (['scheduled', 'ongoing'].includes(before.lifecycle) && !dto.startDate) throw new ApiException(409, 'EVENT_DATES_REQUIRED');
       const { timezone, ...configuration } = dto;
-      const values = { ...configuration, revision: dto.revision + 1, lifecycle: before.lifecycle };
+      const values = { ...configuration, revision: dto.revision + 1, lifecycle: before.lifecycle,requireSubmittingAuthorOrcid:dto.requireSubmittingAuthorOrcid??before.requireSubmittingAuthorOrcid??false };
       await tx.insert(eventConfigurations).values({ organizationId: context.organizationId, eventId: id, ...values })
         .onConflictDoUpdate({ target: [eventConfigurations.organizationId, eventConfigurations.eventId], set: values });
       await tx.update(events).set({ timezone }).where(and(eq(events.organizationId, context.organizationId), eq(events.id, id)));
@@ -87,7 +88,7 @@ export class EventConfigurationService {
       if (before.revision !== dto.revision) throw new ApiException(409, 'REVISION_CONFLICT');
       if (['scheduled', 'ongoing', 'completed'].includes(dto.lifecycle) && !before.startDate) throw new ApiException(409, 'EVENT_DATES_REQUIRED');
       const values = { startDate: before.startDate, endDate: before.endDate, modality: before.modality,
-        languages: before.languages, defaultLanguage: before.defaultLanguage, lifecycle: dto.lifecycle, revision: before.revision + 1 };
+        languages: before.languages, defaultLanguage: before.defaultLanguage, lifecycle: dto.lifecycle, revision: before.revision + 1,requireSubmittingAuthorOrcid:before.requireSubmittingAuthorOrcid??false };
       await tx.insert(eventConfigurations).values({ organizationId: context.organizationId, eventId: id, ...values })
         .onConflictDoUpdate({ target: [eventConfigurations.organizationId, eventConfigurations.eventId], set: values });
       await this.audit.record(tx, context, 'event.lifecycle.changed', id);

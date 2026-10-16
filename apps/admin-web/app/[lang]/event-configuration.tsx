@@ -39,7 +39,7 @@ export default function Configuration({ initial, locale, eventId, contextKey, ca
   return <section style={{ marginTop: '2rem' }}>
     <h2>{text.configurationTitle}</h2><p className="muted small">{text.configurationHelp}</p>
     {notice && <div className={`notice ${notice.error ? 'notice-error' : ''}`} role={notice.error ? 'alert' : 'status'}>{notice.message}</div>}
-    <form className="form-fields" onSubmit={(event) => { event.preventDefault(); void apply('configuration', { timezone: form.timezone, startDate: form.startDate, endDate: form.endDate, modality: form.modality, languages: form.languages, defaultLanguage: form.defaultLanguage, revision: saved.revision }, text.configurationSaved); }}>
+    <form className="form-fields" onSubmit={(event) => { event.preventDefault(); void apply('configuration', { requireSubmittingAuthorOrcid: form.requireSubmittingAuthorOrcid ?? false, timezone: form.timezone, startDate: form.startDate, endDate: form.endDate, modality: form.modality, languages: form.languages, defaultLanguage: form.defaultLanguage, revision: saved.revision }, text.configurationSaved); }}>
       <div className="field-row"><label className="field"><span>{text.startDate}</span><input type="date" min="1900-01-01" max="9999-12-31" value={form.startDate ?? ''} disabled={!editable || busy} onChange={(event) => setForm({ ...form, startDate: event.target.value || null })} /></label>
         <label className="field"><span>{text.endDate}</span><input type="date" min={form.startDate ?? '1900-01-01'} max="9999-12-31" value={form.endDate ?? ''} disabled={!editable || busy} onChange={(event) => setForm({ ...form, endDate: event.target.value || null })} /></label></div>
       <label className="field"><span>{text.timezone}</span><input required maxLength={100} value={form.timezone} disabled={!editable || busy} onChange={(event) => setForm({ ...form, timezone: event.target.value })} /></label>
@@ -50,6 +50,7 @@ export default function Configuration({ initial, locale, eventId, contextKey, ca
       }} /> {language === 'es' ? text.languageSpanish : text.languageEnglish}</label>)}</fieldset>
       <label className="field"><span>{text.defaultEventLanguage}</span><select value={form.defaultLanguage} disabled={!editable || busy || !form.languages.length} onChange={(event) => setForm({ ...form, defaultLanguage: event.target.value as 'es' | 'en' })}>{form.languages.map((language) => <option value={language} key={language}>{language === 'es' ? text.languageSpanish : text.languageEnglish}</option>)}</select></label>
       <p className="muted small">{text.eventLanguagesHelp}</p>
+      <label><input type="checkbox" checked={form.requireSubmittingAuthorOrcid??false} disabled={!editable||busy} onChange={event=>setForm({...form,requireSubmittingAuthorOrcid:event.target.checked})}/> {text.requireAuthorOrcid}</label><p className="muted small">{text.requireAuthorOrcidHelp}</p>
       <button type="submit" className="button button-primary" disabled={!editable || busy || !dirty || !form.languages.length || (form.startDate === null) !== (form.endDate === null)}>{busy ? text.saving : text.saveConfiguration}</button>
     </form>
     <h2 style={{ marginTop: '2rem' }}>{text.lifecycleTitle}</h2><p><strong>{stateLabels[saved.lifecycle]}</strong></p><p className="muted small">{text.lifecycleHelp}</p>

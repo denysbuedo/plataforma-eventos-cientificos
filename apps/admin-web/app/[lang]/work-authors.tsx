@@ -1,11 +1,12 @@
 'use client';
 import { useMemo } from 'react';
-import { COUNTRY_CODES, type WorkAuthor } from '@sep/contracts';
+import Image from 'next/image';
+import { COUNTRY_CODES, validOrcid, type WorkAuthor, type OrcidConnection } from '@sep/contracts';
 import { webCopy, type Locale } from '@sep/i18n';
 
-export interface AuthorAccount { id: string; name: string; email?: string; institutions?: string[] }
+export interface AuthorAccount { id: string; name: string; email?: string; institutions?: string[]; orcid?:OrcidConnection|null; orcidAvailable?:boolean }
 export function accountAuthor(account: AuthorAccount, corresponding = true): WorkAuthor {
-  return {id:crypto.randomUUID(),fullName:account.name,email:account.email??'',corresponding,affiliations:(account.institutions?.length?account.institutions.slice(0,5):['']).map(institution=>({institution,countryCode:''}))};
+  return {id:crypto.randomUUID(),personId:account.id,orcid:account.orcid?.id??'',fullName:account.name,email:account.email??'',corresponding,affiliations:(account.institutions?.length?account.institutions.slice(0,5):['']).map(institution=>({institution,countryCode:''}))};
 }
 export default function WorkAuthors({ value, onChange, locale, editing, disabled = false, account }: {
   value: WorkAuthor[]; onChange: (authors: WorkAuthor[]) => void; locale: Locale; editing: boolean; disabled?: boolean; account?: AuthorAccount;
@@ -24,6 +25,7 @@ export default function WorkAuthors({ value, onChange, locale, editing, disabled
   if (!editing) return <section className="work-section"><h3>{text.workAuthors}</h3>{!value.length ? <p className="muted">{text.noDeclaredAuthors}</p> : <ol className="work-author-list">{value.map((author,index) => <li key={author.id} className="work-author-card">
     <span className="work-author-number" aria-hidden="true">{index+1}</span><div className="work-author-info"><div className="work-author-heading"><strong>{author.fullName}</strong>{author.corresponding && <span className="work-corresponding">{text.correspondingAuthor}</span>}</div>
     {author.email && <a className="work-author-email" href={`mailto:${author.email}`}>{author.email}</a>}
+    {author.orcid&&<p><a className="orcid-link" href={`https://orcid.org/${author.orcid}`} target="_blank" rel="noopener noreferrer"><Image src="/orcid-id.png" alt="ORCID iD" width={16} height={16}/>{author.orcid}</a> <span className="muted small">({author.orcidVerified?text.orcidVerified:text.orcidDeclared})</span></p>}
     <ul className="work-affiliations">{author.affiliations.map((affiliation, index) => <li key={index}>{affiliation.institution}<span> · {country(affiliation.countryCode)}</span></li>)}</ul></div>
   </li>)}</ol>}</section>;
   return <section>
@@ -37,6 +39,8 @@ export default function WorkAuthors({ value, onChange, locale, editing, disabled
         <button className="button button-outline" type="button" disabled={disabled} onClick={() => onChange(value.filter((item) => item.id !== author.id))}>{text.removeWorkAuthor}</button>
       </div></div>
       <div className="form-fields"><label className="field"><span>{text.authorFullName}</span><input required minLength={2} maxLength={150} value={author.fullName} disabled={disabled} onChange={(e) => change(author.id, { fullName: e.target.value })} /></label>
+        {account&&!author.personId&&!value.some(item=>item.personId===account.id)&&<button className="button button-outline" type="button" disabled={disabled} onClick={()=>change(author.id,{personId:account.id,fullName:account.name,email:account.email||author.email,orcid:account.orcid?.id??'',orcidVerified:account.orcid?.environment==='production'})}>{text.useMyAuthorData}</button>}
+        <label className="field"><span>ORCID</span><input placeholder="0000-0000-0000-000X" maxLength={19} value={author.orcid??''} disabled={disabled||!!author.personId} onChange={event=>{const orcid=event.target.value.trim().toUpperCase();event.target.setCustomValidity(orcid&&!validOrcid(orcid)?text.orcidInvalidFormat:'');change(author.id,{orcid,orcidVerified:false});}}/><small>{author.personId?text.orcidFromProfile:text.orcidDeclaredHelp}</small></label>
         <label><input type="radio" name="corresponding-author" required checked={author.corresponding} disabled={disabled} onChange={() => onChange(value.map((item) => ({ ...item, corresponding: item.id === author.id })))} /> {text.correspondingAuthor}</label>
         <label className="field"><span>{author.corresponding ? text.correspondingEmail : text.optionalAuthorEmail}</span><input type="email" required={author.corresponding} maxLength={254} value={author.email} disabled={disabled} onChange={(e) => change(author.id, { email: e.target.value })} /></label>
         <h4>{text.authorAffiliations}</h4>

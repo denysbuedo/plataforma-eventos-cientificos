@@ -4,6 +4,7 @@ export interface AppConfig {
   authMode: 'development-token' | 'oidc';
   oidc?: { issuer: string; audience: string; jwksUrl: string; authorizedParty?: string; roleClientId: string; allowedClientRoles: string[] };
   google?: { clientId: string; signingKey: string; audience: string };
+  orcid?: { clientId:string; clientSecret:string; redirectUri:string; environment:'production'|'sandbox' };
   tokens: ReadonlyMap<string, string>;
   port: number;
 }
@@ -45,5 +46,14 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
     google = { clientId: env.GOOGLE_CLIENT_ID, signingKey: env.GOOGLE_SESSION_SIGNING_KEY!, audience: env.GOOGLE_API_AUDIENCE ?? 'sep-api' };
   }
   if (!Number.isInteger(port) || port < 1 || port > 65535) throw new Error('Invalid PORT');
-  return { databaseUrl: env.DATABASE_URL, authMode: env.AUTH_MODE as AppConfig['authMode'], oidc, google, tokens, port };
+  let orcid:AppConfig['orcid'];
+  if(env.SEP_ORCID_ENABLED==='1') {
+    const environment=env.ORCID_ENVIRONMENT??'production';
+    if(!['production','sandbox'].includes(environment)||!/^APP-[A-Za-z0-9]+$/.test(env.ORCID_CLIENT_ID??'')||!env.ORCID_CLIENT_SECRET||!env.ORCID_REDIRECT_URI||!env.SEP_ADMIN_ORIGIN)throw new Error('Incomplete ORCID configuration');
+    const redirect=new URL(env.ORCID_REDIRECT_URI);
+    const loopback=environment==='sandbox'&&env.OIDC_ALLOW_LOOPBACK_HTTP==='1'&&['localhost','127.0.0.1','[::1]'].includes(redirect.hostname);
+    if(redirect.href!==new URL('/api/auth/orcid/callback',env.SEP_ADMIN_ORIGIN).href||redirect.username||redirect.password||redirect.protocol!=='https:'&&!(loopback&&redirect.protocol==='http:'))throw new Error('Invalid ORCID callback');
+    orcid={clientId:env.ORCID_CLIENT_ID!,clientSecret:env.ORCID_CLIENT_SECRET,redirectUri:redirect.href,environment:environment as 'production'|'sandbox'};
+  }
+  return { databaseUrl: env.DATABASE_URL, authMode: env.AUTH_MODE as AppConfig['authMode'], oidc, google, orcid, tokens, port };
 }
