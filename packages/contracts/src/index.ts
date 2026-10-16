@@ -62,6 +62,20 @@ export interface ManagedDomain {
 export interface OrganizationSettings { organization: OrganizationProfile; domains: ManagedDomain[] }
 
 export type EventLifecycle = 'planning' | 'scheduled' | 'ongoing' | 'completed' | 'cancelled';
+export interface ScientificTrack { id: string; nameEs: string; nameEn: string }
+export interface ContributionType extends ScientificTrack {
+  abstractMinWords: number; abstractMaxWords: number; keywordsMin: number; keywordsMax: number;
+  manuscriptRequired: boolean; maxPages: number | null;
+}
+export interface ScientificCallContent {
+  titleEs: string; titleEn: string; instructionsEs: string; instructionsEn: string;
+  opensOn: string | null; closesOn: string | null; tracks: ScientificTrack[]; contributionTypes: ContributionType[];
+}
+export interface PublishedScientificCall { content: ScientificCallContent; timezone: string; revision: number; publishedAt: string }
+export interface ScientificCallDraft {
+  content: ScientificCallContent; revision: number; publishedRevision: number | null; publishedAt: string | null;
+  timezone: string; publication: PublishedScientificCall | null;
+}
 export interface EventConfiguration {
   timezone: string; startDate: string | null; endDate: string | null;
   modality: 'in_person' | 'virtual' | 'hybrid'; languages: ('es' | 'en')[]; defaultLanguage: 'es' | 'en';

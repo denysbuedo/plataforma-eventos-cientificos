@@ -1,14 +1,15 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import type { EventConfiguration, EventPage, EventTeam, EventView, OrganizationSettings, PeopleDirectory, PublishedSite, SessionView, SiteContent, SiteDraft } from '@sep/contracts';
+import type { ScientificCallDraft, EventConfiguration, EventPage, EventTeam, EventView, OrganizationSettings, PeopleDirectory, PublishedSite, SessionView, SiteContent, SiteDraft } from '@sep/contracts';
 import { webCopy, type Locale } from '@sep/i18n';
 import { Brand, Icon, StatusBadge, type IconName } from '@sep/ui';
 import People from './people';
 import Organization from './organization';
 import Configuration from './event-configuration';
+import ScientificCall from './scientific-call';
 
-type Props = { locale: Locale; contextKey: string; tab: string; session: SessionView | null; events: EventPage; site: SiteDraft | null; team: EventTeam | null; directory: PeopleDirectory | null; organization: OrganizationSettings | null; configuration: EventConfiguration | null;
+type Props = { locale: Locale; contextKey: string; tab: string; session: SessionView | null; events: EventPage; site: SiteDraft | null; team: EventTeam | null; directory: PeopleDirectory | null; organization: OrganizationSettings | null; configuration: EventConfiguration | null; scientificCall: ScientificCallDraft | null;
   profile: { id: string; name: string } | null;
   denied: boolean; publicUrl: string; demo: boolean; contextHosts: Record<string, string>; contextEvents: Record<string, string> };
 type LocalizedField = 'kicker' | 'heroTitle' | 'summary' | 'about' | 'call' | 'venue';
@@ -99,7 +100,7 @@ export default function Workspace(props: Props) {
     finally { setBusy(null); }
   }
   const navigation: { id: string; label: string; icon: IconName }[] = [
-    { id: 'overview', label: text.overview, icon: 'grid' }, { id: 'content', label: text.content, icon: 'edit' },
+    { id: 'overview', label: text.overview, icon: 'grid' }, { id: 'call', label: text.scientificCall, icon: 'book' }, { id: 'content', label: text.content, icon: 'edit' },
     { id: 'appearance', label: text.appearance, icon: 'palette' }, { id: 'data', label: text.eventData, icon: 'settings' },
     ...(session?.organizationAdmin && site ? [{ id: 'team', label: text.team, icon: 'grid' as const }] : []),
     ...(session?.organizationAdmin ? [{ id: 'people', label: text.people, icon: 'book' as const }] : []),
@@ -109,7 +110,7 @@ export default function Workspace(props: Props) {
   if (site && !Object.hasOwn(contextNames, contextKey)) contextNames[contextKey] = locale === 'es' ? site.event.nameEs : site.event.nameEn;
   function change(field: keyof SiteContent, value: string | string[]) { setContent((current) => current ? { ...current, [field]: value } : current); }
   const localizedKey = (field: LocalizedField) => `${field}${editLanguage === 'es' ? 'Es' : 'En'}` as keyof SiteContent;
-  const heading = currentTab === 'organization' ? [text.organizationTitle, text.organizationHelp] : currentTab === 'people' ? [text.peopleTitle, text.peopleHelp] : currentTab === 'team' ? [text.teamTitle, text.teamHelp] : currentTab === 'content' ? [text.editorialTitle, text.editorialHelp] : currentTab === 'appearance' ? [text.paletteTitle, text.paletteHelp] : currentTab === 'data' ? [text.dataTitle, text.dataHelp] : [text.hello, text.overviewHelp];
+  const heading = currentTab === 'call' ? [text.scientificCallTitle, text.scientificCallHelp] : currentTab === 'organization' ? [text.organizationTitle, text.organizationHelp] : currentTab === 'people' ? [text.peopleTitle, text.peopleHelp] : currentTab === 'team' ? [text.teamTitle, text.teamHelp] : currentTab === 'content' ? [text.editorialTitle, text.editorialHelp] : currentTab === 'appearance' ? [text.paletteTitle, text.paletteHelp] : currentTab === 'data' ? [text.dataTitle, text.dataHelp] : [text.hello, text.overviewHelp];
   const field = (kind: LocalizedField, label: string, multiline = false) => content && <Field key={kind} label={label} value={content[localizedKey(kind)] as string} onChange={(value) => change(localizedKey(kind), value)} disabled={!canEdit} multiline={multiline} />;
   return <div className="admin-shell"><a href="#main" className="skip-link">{text.skip}</a><aside className="sidebar"><Brand compact /><p className="workspace-label">{text.workspace}</p>
     <nav aria-label={text.workspace}>{navigation.filter((item) => ['overview', 'people', 'organization'].includes(item.id) || !!site).map((item) => <a key={item.id} href={`/${locale}?event=${['people', 'organization'].includes(item.id) ? demo ? 'orgA' : 'org' : contextKey}&tab=${item.id}`} className={currentTab === item.id ? 'active' : ''} aria-label={item.label}><Icon name={item.icon} size={18} /><span>{item.label}</span></a>)}</nav>
@@ -121,6 +122,7 @@ export default function Workspace(props: Props) {
       {notice && <div className={`notice ${notice.error ? 'notice-error' : ''}`} role={notice.error ? 'alert' : 'status'}>{notice.message}</div>}
       {currentTab === 'people' && props.directory && <People initial={props.directory} locale={locale} contextKey={contextKey} />}
       {currentTab === 'organization' && props.organization && <Organization initial={props.organization} events={events.data} locale={locale} contextKey={contextKey} />}
+      {currentTab === 'call' && site && props.scientificCall && <ScientificCall initial={props.scientificCall} locale={locale} contextKey={contextKey} eventId={site.event.id} editable={canEdit && site.event.status !== 'archived' && !['completed', 'cancelled'].includes(props.configuration?.lifecycle ?? '')} canWithdraw={canEdit} publicUrl={siteUrl} />}
       {creating && <section className="panel create-form"><h2 className="form-section-title">{text.createTitle}</h2><p className="muted small">{text.createHelp}</p><div className="form-fields"><Field label={text.nameEs} value={newEvent.nameEs} onChange={(value) => setNewEvent({ ...newEvent, nameEs: value })} /><Field label={text.nameEn} value={newEvent.nameEn} onChange={(value) => setNewEvent({ ...newEvent, nameEn: value })} /><Field label={text.timezone} value={newEvent.timezone} onChange={(value) => setNewEvent({ ...newEvent, timezone: value })} /></div><div className="editor-actions"><button onClick={createEvent} disabled={!!busy} className="button button-primary">{busy === 'create' ? text.creating : text.create}</button><button onClick={() => setCreating(false)} className="button button-outline">{text.cancel}</button></div></section>}
       {currentTab === 'overview' && <><div className="metric-grid">{[
         { label: text.availableEvents, value: events.data.length, icon: 'calendar' as const, note: text.yourEvents },
@@ -141,7 +143,7 @@ export default function Workspace(props: Props) {
         <div className="form-fields"><label className="field"><span>{text.selectPerson}</span><select value={selectedPerson} onChange={(e) => setSelectedPerson(e.target.value)}><option value="">{text.selectPerson}</option>{team.candidates.filter((person) => !team.organizers.some((organizer) => organizer.personId === person.personId)).map((person) => <option key={person.personId} value={person.personId}>{person.name}</option>)}</select></label>
         <button className="button button-primary" disabled={!selectedPerson || !!busy} onClick={() => assignOrganizer(selectedPerson)}>{busy === 'team' ? text.saving : text.assignOrganizer}</button></div>
       </section>}
-      {site && content && !['overview', 'team', 'people', 'organization'].includes(currentTab) && <>
+      {site && content && !['overview', 'team', 'people', 'organization', 'call'].includes(currentTab) && <>
         {!canEdit && <div className="notice notice-muted"><p>{text.readOnly}</p>{session?.organizationAdmin && <><p>{text.assignSelfHelp}</p><button className="button button-primary" disabled={!!busy} onClick={() => assignOrganizer(session.person.id)}>{busy === 'team' ? text.saving : text.assignSelf}</button><a className="button button-outline" href={`/${locale}?event=${contextKey}&tab=team`}>{text.team}</a></>}</div>}
         {<div className="editor-toolbar"><div className={`draft-state ${dirty ? 'dirty' : ''}`}><Icon name="check" size={14} />{currentTab === 'data' ? text.configurationPublicationHelp : dirty ? text.unsaved : text.upToDate}</div><div className="editor-actions">{currentTab !== 'data' && <button className="button button-outline" onClick={save} disabled={!canEdit || !!busy || !dirty}>{busy === 'save' ? text.saving : text.saveDraft}</button>}<button className="button button-primary" onClick={publish} disabled={!canEdit || !!busy || dirty || metadataUnsaved || configurationStatus.busy || site.revision === 0} title={metadataUnsaved ? text.saveConfigurationFirst : dirty ? text.saveFirst : undefined}><Icon name="globe" size={15} />{busy === 'publish' ? text.publishing : text.publish}</button></div></div>}
         <div className="editor-grid"><section className="panel form-panel">

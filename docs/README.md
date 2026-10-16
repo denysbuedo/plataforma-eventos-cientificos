@@ -29,6 +29,7 @@
 - [RedUniv y Google directo: solicitudes y configuración](development/reduniv-y-google.md) y [ADR-009](adr/ADR-009-google-directo.md).
 - [Administración de organizaciones y dominios](development/organizaciones-y-dominios.md) y [ADR-010](adr/ADR-010-administracion-registro.md).
 - [Configuración del evento y ciclo de vida](development/configuracion-eventos.md) y [ADR-011](adr/ADR-011-configuracion-evento.md).
+- [Fase 2: convocatoria científica y próximos incrementos](functional/fase-2.md) y [ADR-012](adr/ADR-012-convocatoria-cientifica.md).
 - [Desarrollo local, variables y demo](development/desarrollo-local.md).
 - [Contrato mínimo de API](api/fase-0.md) y [OpenAPI generado](api/openapi.json).
 - [Evidencia del incremento API](architecture/evidencia-api-fase-0.md).

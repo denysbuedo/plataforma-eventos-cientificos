@@ -5,6 +5,7 @@ import { webCopy, type Locale } from '@sep/i18n';
 import { Brand, Icon, ScienceArt } from '@sep/ui';
 import { loadPublicSite, ApiTransportError } from '@sep/web-server';
 import EventSwitch from './event-switch';
+import ScientificCall from './scientific-call';
 
 export const dynamic = 'force-dynamic';
 type Props = { params: Promise<{ lang: string }>; searchParams: Promise<{ event?: string }> };
@@ -34,7 +35,7 @@ export default async function PublicPage(props: Props) {
     const lang = (await props.params).lang === 'en' ? 'en' : 'es'; const text = webCopy[lang];
     return <main className="public-empty"><div className="empty-state"><Brand /><h1>{text.serviceTitle}</h1><p>{text.serviceHelp}</p><a className="button button-primary" href={`/${lang}`}>{text.retry}</a></div></main>;
   }
-  const { site, binding, locale } = loaded;
+  const { site, binding, locale, scientificCall } = loaded;
   const text = webCopy[locale]; const c = site.content; const spanish = locale === 'es';
   const hero = spanish ? c.heroTitleEs : c.heroTitleEn; const lines = hero.split('\n');
   const query = binding.config ? `?event=${binding.key}` : '';
@@ -64,7 +65,7 @@ export default async function PublicPage(props: Props) {
       <section id="encuentro" className="public-section"><div className="section-two-column"><div><span className="eyebrow">01 &nbsp; / &nbsp; {text.aboutLabel}</span><h2 className="section-title">{text.aboutTitle}</h2></div><p className="body-copy">{spanish ? c.aboutEs : c.aboutEn}</p></div>
         <div className="topic-strip" aria-label={text.topics}>{(spanish ? c.topicsEs : c.topicsEn).map((topic, index) => <div className="topic" key={topic}><Icon name={(['leaf', 'globe', 'book', 'arrow'] as const)[index % 4]} size={21} /><span>{topic}</span></div>)}</div>
       </section>
-      <section id="convocatoria" className="call-section"><div><span className="eyebrow">02 &nbsp; / &nbsp; {text.callLabel}</span><h2 className="section-title">{text.callTitle}</h2><Icon name="book" size={47} /></div><div><p className="body-copy">{spanish ? c.callEs : c.callEn}</p><a href={`mailto:${c.contactEmail}?subject=${encodeURIComponent(c.acronym)}`} className="button button-primary">{text.contact}<Icon name="arrow" size={15} /></a></div></section>
+      <section id="convocatoria" className="call-section"><div><span className="eyebrow">02 &nbsp; / &nbsp; {text.callLabel}</span><h2 className="section-title">{text.callTitle}</h2><Icon name="book" size={47} /></div><div>{scientificCall ? <ScientificCall call={scientificCall} locale={locale} /> : <p className="body-copy">{spanish ? c.callEs : c.callEn}</p>}<a href={`mailto:${c.contactEmail}?subject=${encodeURIComponent(c.acronym)}`} className="button button-primary">{text.contact}<Icon name="arrow" size={15} /></a></div></section>
       <section id="sede" className="public-section venue-section"><div><span className="eyebrow">03 &nbsp; / &nbsp; {text.venue}</span><h2 className="section-title">{text.venueTitle}</h2></div><div className="venue-note"><Icon name="pin" size={32} /><p>{spanish ? c.venueEs : c.venueEn}<br /><span className="muted">{dates}</span></p></div></section>
     </main>
     <footer className="public-footer"><div className="footer-main"><Brand /><p>{text.rights}</p></div><div className="footer-bottom"><span>{binding.config ? text.demo : text.platform}</span>{adminUrl && <a href={adminUrl}>{text.administration} ↗</a>}</div></footer>

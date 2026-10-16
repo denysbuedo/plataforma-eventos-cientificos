@@ -1,6 +1,6 @@
 import { sql, type SQL } from 'drizzle-orm';
 import { boolean, check, date, foreignKey, index, integer, jsonb, pgPolicy, pgRole, pgTable, primaryKey, text, timestamp, unique, uniqueIndex, uuid } from 'drizzle-orm/pg-core';
-import type { EventConfiguration, PublishedSite, SiteContent } from '@sep/contracts';
+import type { EventConfiguration, PublishedScientificCall, PublishedSite, ScientificCallContent, SiteContent } from '@sep/contracts';
 
 const runtime = pgRole('sep_runtime').existing();
 const registryOwner = pgRole('sep_migrator').existing();
@@ -141,6 +141,20 @@ export const sitePublications = pgTable('site_publications', {
   check('site_publication_revision_positive', sql`${t.revision} > 0`),
   policy(eventScope(sql`${t.organizationId}`, sql`${t.eventId}`)),
 ]);
+
+export const scientificCallDrafts = pgTable('scientific_call_drafts', {
+  organizationId: uuid('organization_id').notNull(), eventId: uuid('event_id').notNull(),
+  content: jsonb('content').$type<ScientificCallContent>().notNull(), revision: integer('revision').notNull(),
+}, (t) => [primaryKey({ columns: [t.organizationId, t.eventId] }),
+  foreignKey({ columns: [t.organizationId, t.eventId], foreignColumns: [events.organizationId, events.id] }),
+  check('scientific_call_draft_revision', sql`${t.revision} > 0`), policy(eventScope(sql`${t.organizationId}`, sql`${t.eventId}`))]);
+export const scientificCallPublications = pgTable('scientific_call_publications', {
+  organizationId: uuid('organization_id').notNull(), eventId: uuid('event_id').notNull(),
+  snapshot: jsonb('snapshot').$type<PublishedScientificCall>().notNull(), revision: integer('revision').notNull(),
+  publishedAt: timestamp('published_at', { withTimezone: true }).notNull().defaultNow(),
+}, (t) => [primaryKey({ columns: [t.organizationId, t.eventId] }),
+  foreignKey({ columns: [t.organizationId, t.eventId], foreignColumns: [events.organizationId, events.id] }),
+  check('scientific_call_publication_revision', sql`${t.revision} > 0`), policy(eventScope(sql`${t.organizationId}`, sql`${t.eventId}`))]);
 
 export const organizationInvitations = pgTable('organization_invitations', {
   id: uuid('id').primaryKey(), organizationId: uuid('organization_id').notNull().references(() => organizations.id),

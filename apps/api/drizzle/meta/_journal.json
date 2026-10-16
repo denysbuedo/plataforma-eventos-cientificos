@@ -120,6 +120,20 @@
       "when": 1792112227841,
       "tag": "0016_configuration_privileges",
       "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1792118306003,
+      "tag": "0017_sleepy_invisible_woman",
+      "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1792118306004,
+      "tag": "0018_scientific_call_privileges",
+      "breakpoints": true
     }
   ]
 }

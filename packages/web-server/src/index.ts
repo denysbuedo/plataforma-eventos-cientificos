@@ -3,7 +3,7 @@ import { createHmac, randomUUID, timingSafeEqual } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import http from 'node:http';
 import https from 'node:https';
-import type { ApiError, PublishedSite } from '@sep/contracts';
+import type { ApiError, PublishedScientificCall, PublishedSite } from '@sep/contracts';
 import { errorMessage, type ErrorCode, type Locale } from '@sep/i18n';
 import { oidcAccessToken, oidcEnabled, removeOidcValue } from './oidc.js';
 export { adminOrigin, beginOidc, beginGoogle, finishOidc, finishGoogle, createOidcSession, createGoogleSession, googleLoginEnabled, redunivLoginEnabled, localReturnTo, oidcCookieSecure, oidcEnabled, oidcLogoutDestination, GOOGLE_FLOW_COOKIE, OIDC_FLOW_COOKIE, removeOidcValue } from './oidc.js';
@@ -103,7 +103,7 @@ export async function backendProxy(request: Request, parts: string[], cookie: st
   try {
     if (!['GET', 'POST', 'PUT', 'PATCH', 'DELETE'].includes(request.method)) throw new ApiTransportError(405, failure('FORBIDDEN'));
     const path = parts.join('/');
-    if (!/^(?:me|session|people|organization(?:\/domains(?:\/[0-9a-f-]{36}(?:\/(?:verify|activate|deactivate))?)?)?|invitations(?:\/accept|\/[0-9a-f-]{36}\/revoke)?|events(?:\/[0-9a-f-]{36}(?:\/site(?:\/publish)?|\/session|\/configuration|\/lifecycle|\/organizers(?:\/[0-9a-f-]{36})?)?)?)$/.test(path)) throw new ApiTransportError(404, failure('NOT_FOUND'));
+    if (!/^(?:me|session|people|organization(?:\/domains(?:\/[0-9a-f-]{36}(?:\/(?:verify|activate|deactivate))?)?)?|invitations(?:\/accept|\/[0-9a-f-]{36}\/revoke)?|events(?:\/[0-9a-f-]{36}(?:\/site(?:\/publish)?|\/session|\/configuration|\/call(?:\/(?:publish|withdraw))?|\/lifecycle|\/organizers(?:\/[0-9a-f-]{36})?)?)?)$/.test(path)) throw new ApiTransportError(404, failure('NOT_FOUND'));
     if (request.method !== 'GET') checkOrigin(request);
     const url = new URL(request.url);
     const binding = bindingFor(request.headers.get('host') ?? '', url.searchParams.get('event') ?? undefined);
@@ -130,7 +130,11 @@ export async function backendProxy(request: Request, parts: string[], cookie: st
     return response;
   }
 }
-export async function loadPublicSite(host: string, key: string | undefined, locale: Locale): Promise<{ binding: Binding; site: PublishedSite }> {
+export async function loadPublicSite(host: string, key: string | undefined, locale: Locale): Promise<{ binding: Binding; site: PublishedSite; scientificCall: PublishedScientificCall | null }> {
   const binding = bindingFor(host, key);
-  return { binding, site: await apiRequest<PublishedSite>(binding, 'public/site', { locale }) };
+  const site = await apiRequest<PublishedSite>(binding, 'public/site', { locale });
+  let scientificCall: PublishedScientificCall | null = null;
+  try { scientificCall = await apiRequest<PublishedScientificCall>(binding, 'public/call', { locale }); }
+  catch (error) { if (!(error instanceof ApiTransportError && error.status === 404)) throw error; }
+  return { binding, site, scientificCall };
 }
