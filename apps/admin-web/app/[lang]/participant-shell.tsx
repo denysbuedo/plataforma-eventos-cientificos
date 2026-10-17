@@ -3,6 +3,7 @@ import { createContext, useCallback, useContext, useEffect, useRef, useState, ty
 import { Brand, Icon } from '@sep/ui';
 import { webCopy, type Locale } from '@sep/i18n';
 import AuthorshipNav from './authorship-nav';
+import WorkNoticesNav from './work-notices-nav';
 import ReviewNav from './peer-review-nav';
 import {reviewCopy} from './peer-review-copy';
 import { authorshipCopy } from './authorship-copy';
@@ -46,7 +47,7 @@ export default function ParticipantShell({children,person,locale,contextKey,even
   return <NavigationGuard.Provider value={register}><div className="admin-shell participant-shell"><a className="skip-link" href="#main">{text.skip}</a>
     <aside className="sidebar"><a className="participant-brand" href={home} aria-label={copy.home} onClick={event=>{event.preventDefault();if(tab==='works'&&onCurrentWorks)onCurrentWorks();else navigate(home);}}><Brand compact/></a><p className="workspace-label">{copy.space}</p>
       <nav aria-label={copy.navigation}>{eventId?<>
-        <a href={prefix+'works'} className={tab==='works'?'active':undefined} aria-current={tab==='works'?'page':undefined} onClick={event=>{event.preventDefault();if(tab==='works'&&onCurrentWorks)onCurrentWorks();else navigate(prefix+'works');}}><Icon name="book" size={18}/><span>{text.myWorks}</span></a>
+        <a href={prefix+'works'} className={tab==='works'?'active':undefined} aria-current={tab==='works'?'page':undefined} onClick={event=>{event.preventDefault();if(tab==='works'&&onCurrentWorks)onCurrentWorks();else navigate(prefix+'works');}}><Icon name="book" size={18}/><span><WorkNoticesNav eventId={eventId} contextKey={contextKey} locale={locale}/></span></a>
         <a href={prefix+'authorship'} className={tab==='authorship'?'active':undefined} aria-current={tab==='authorship'?'page':undefined} onClick={event=>{event.preventDefault();navigate(prefix+'authorship');}}><Icon name="check" size={18}/><span><AuthorshipNav eventId={eventId} contextKey={contextKey} locale={locale}/></span></a>
         <a href={prefix+'reviews'} className={tab==='reviews'?'active':undefined} aria-current={tab==='reviews'?'page':undefined} onClick={event=>{event.preventDefault();navigate(prefix+'reviews');}}><Icon name="edit" size={18}/><span><ReviewNav eventId={eventId} contextKey={contextKey} locale={locale}/></span></a>
       </>:<p className="participant-no-event">{copy.noEvent}</p>}</nav>

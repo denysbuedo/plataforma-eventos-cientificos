@@ -81,3 +81,11 @@ En navegador: comité, apertura de ronda y criterios, asignación, aceptación d
 ## Ampliaciones fuera de este incremento
 
 Doble ciego con manuscritos anonimizados y reglas específicas de acceso, asignación automática por especialidad/carga, rúbricas ponderadas y plantillas reutilizables por evento, debate entre revisores, réplicas/apelaciones, notificaciones por correo y exportaciones editoriales. No se simulan estas capacidades ni se presentan como implementadas.
+
+## Consulta por los autores y avisos de novedades
+
+Al emitir el dictamen, los comentarios para autores se publican en un bloque propio visible al consultar y al editar el trabajo, junto al mensaje del equipo y al plazo de respuesta. Las notas confidenciales permanecen reservadas al organizador; no se publican identidades, puntuaciones ni recomendaciones internas. La publicación conserva una copia de los comentarios con ronda y versión. Los dictámenes anteriores a la migración 0048 se muestran íntegramente desde su copia pública histórica, sin acceder a informes privados ni exigir repetir la revisión.
+
+Mis trabajos muestra un aviso destacado y un contador lateral de trabajos con novedades. Se consideran el último dictamen y la última publicación de comentarios de cada trabajo. La lectura se guarda por persona y trabajo cuando el bloque aparece en pantalla, mediante los identificadores concretos mostrados; una petición de lectura antigua no marca mensajes nuevos. Las lecturas parciales se acumulan y no reaparecen al cambiar de pestaña. Los colaboradores con gestión aceptada tienen sus propias lecturas. No se envían correos en este incremento.
+
+La migración 0048 incorpora `work_history.author_feedback` y `work_notice_reads`, con RLS forzada por organización, evento, trabajo accesible y persona. Rutas nuevas: GET `/events/:eventId/my-works/notices` y POST `/events/:eventId/my-works/:workId/notices/read` con `noticeIds`. OpenAPI y el proxy web incluyen ambos contratos.

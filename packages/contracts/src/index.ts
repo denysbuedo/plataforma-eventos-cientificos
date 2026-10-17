@@ -77,6 +77,7 @@ export interface ScientificCallDraft {
   timezone: string; publication: PublishedScientificCall | null;
 }
 export interface AuthorWorkSummary {
+  unreadNotices?:number;
   canManage?: boolean;
   id: string; title: string; language: 'es' | 'en'; trackId: string; contributionTypeId: string; revision: number;
   createdAt: string; updatedAt: string;
@@ -117,7 +118,11 @@ export interface AuthorshipClaim extends AuthorshipCandidate {
 export interface AuthorshipResponsibility { workId:string; title:string; revision:number; responsibility:'submitter'|'corresponding'; canAccept:boolean; canRelease:boolean }
 export interface AuthorshipWorkspace { candidates:AuthorshipCandidate[]; contributions:AuthorshipContribution[]; claims:AuthorshipClaim[]; responsibilities:AuthorshipResponsibility[] }
 export interface WorkVersion extends WorkVersionSummary { content: WorkContent }
-export interface AuthorWork extends AuthorWorkSummary, WorkContent { versions: WorkVersionSummary[]; history: WorkHistory[]; editable: boolean }
+export interface AuthorFeedbackBody { roundNumber:number;versionNumber:number;comments:{number:number;text:string}[] }
+export interface AuthorReviewFeedback { id:string;publishedAt:string;message:string;roundNumber?:number;versionNumber?:number;comments?:{number:number;text:string}[] }
+export interface WorkNoticeSummary { workId:string;title:string;status:WorkStatus;unreadNotices:number;latestAt:string }
+export interface WorkNoticeBoard { count:number;items:WorkNoticeSummary[] }
+export interface AuthorWork extends AuthorWorkSummary, WorkContent { authorFeedback?:AuthorReviewFeedback[];noticeIds?:string[]; versions: WorkVersionSummary[]; history: WorkHistory[]; editable: boolean }
 export interface StaffWork extends AuthorWork { canDecide: boolean }
 export interface SubmissionPage { data: AuthorWorkSummary[]; limit: number; offset: number }
 export const MAX_WORK_BODY_BYTES = 384 * 1024;

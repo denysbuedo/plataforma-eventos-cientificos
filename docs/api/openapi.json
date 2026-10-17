@@ -4415,6 +4415,217 @@
         ]
       }
     },
+    "/api/v1/events/{eventId}/my-works/notices": {
+      "get": {
+        "operationId": "AuthorWorksController_notices",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkNoticeBoardDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "author-works"
+        ]
+      }
+    },
+    "/api/v1/events/{eventId}/my-works/{workId}/notices/read": {
+      "post": {
+        "operationId": "AuthorWorksController_readNotices",
+        "parameters": [
+          {
+            "name": "workId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReadWorkNoticesDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkNoticeBoardDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "author-works"
+        ]
+      }
+    },
     "/api/v1/events/{eventId}/my-works/{workId}": {
       "get": {
         "operationId": "AuthorWorksController_read",
@@ -10866,6 +11077,10 @@
       "WorkSummaryDto": {
         "type": "object",
         "properties": {
+          "unreadNotices": {
+            "type": "number",
+            "minimum": 0
+          },
           "canManage": {
             "type": "boolean"
           },
@@ -11001,6 +11216,130 @@
           "call",
           "editable",
           "reason"
+        ]
+      },
+      "WorkNoticeSummaryDto": {
+        "type": "object",
+        "properties": {
+          "workId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "submitted",
+              "in_review",
+              "changes_requested",
+              "accepted",
+              "rejected",
+              "withdrawn",
+              "final_requested",
+              "final_submitted"
+            ]
+          },
+          "unreadNotices": {
+            "type": "number"
+          },
+          "latestAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "workId",
+          "title",
+          "status",
+          "unreadNotices",
+          "latestAt"
+        ]
+      },
+      "WorkNoticeBoardDto": {
+        "type": "object",
+        "properties": {
+          "count": {
+            "type": "number",
+            "minimum": 0
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WorkNoticeSummaryDto"
+            }
+          }
+        },
+        "required": [
+          "count",
+          "items"
+        ]
+      },
+      "ReadWorkNoticesDto": {
+        "type": "object",
+        "properties": {
+          "noticeIds": {
+            "minItems": 1,
+            "maxItems": 200,
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "noticeIds"
+        ]
+      },
+      "ReviewCommentDto": {
+        "type": "object",
+        "properties": {
+          "number": {
+            "type": "number"
+          },
+          "text": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "number",
+          "text"
+        ]
+      },
+      "AuthorReviewFeedbackDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "publishedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "message": {
+            "type": "string",
+            "description": "Copia pública histórica, sin notas privadas ni identidad de revisores."
+          },
+          "roundNumber": {
+            "type": "number"
+          },
+          "versionNumber": {
+            "type": "number"
+          },
+          "comments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ReviewCommentDto"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "publishedAt",
+          "message"
         ]
       },
       "ManuscriptDto": {
@@ -11165,6 +11504,10 @@
       "WorkDto": {
         "type": "object",
         "properties": {
+          "unreadNotices": {
+            "type": "number",
+            "minimum": 0
+          },
           "canManage": {
             "type": "boolean"
           },
@@ -11227,6 +11570,18 @@
           "updatedAt": {
             "type": "string",
             "format": "date-time"
+          },
+          "authorFeedback": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AuthorReviewFeedbackDto"
+            }
+          },
+          "noticeIds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           },
           "manuscript": {
             "nullable": true,
@@ -11549,6 +11904,10 @@
       "StaffWorkDto": {
         "type": "object",
         "properties": {
+          "unreadNotices": {
+            "type": "number",
+            "minimum": 0
+          },
           "canManage": {
             "type": "boolean"
           },
@@ -11611,6 +11970,18 @@
           "updatedAt": {
             "type": "string",
             "format": "date-time"
+          },
+          "authorFeedback": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AuthorReviewFeedbackDto"
+            }
+          },
+          "noticeIds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           },
           "manuscript": {
             "nullable": true,

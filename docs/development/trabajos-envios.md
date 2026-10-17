@@ -82,3 +82,11 @@ Un resumen muestra la última versión oficial enviada y la fecha límite de res
 El último mensaje de decisión del equipo se destaca con su fecha y remitente. El PDF actual, las versiones oficiales y el historial se muestran en bloques independientes. Las versiones se ordenan por número descendente; cada una conserva la consulta de su copia inmutable. El historial muestra inicialmente las seis acciones más recientes y permite desplegarlo completo; no elimina ni filtra acciones de autoría o gestión compartida.
 
 El retiro se encuentra en un apartado desplegable independiente. Conserva los permisos existentes, motivo obligatorio y confirmación. La presentación no modifica estados, plazos, permisos o la lógica del envío y no introduce fases de revisión que no estén registradas.
+
+## Dictamen visible durante las correcciones
+
+El detalle y el editor mantienen a la vista el mensaje del equipo y los comentarios publicados de los revisores. Mis trabajos identifica las novedades pendientes por persona, con contador en el menú y acceso directo al dictamen. La lectura persiste en servidor y no altera la revisión del borrador ni produce cambios sin guardar.
+
+El editor agrupa datos del trabajo, resumen/palabras clave, autores/afiliaciones y documento PDF. Cada autor dispone de una tarjeta con orden de firma, nombre/ORCID, correspondencia/contacto y afiliaciones. Las acciones de vinculación de cuenta se encuentran en un desplegable independiente; los campos requeridos permanecen visibles. Se conservan búsqueda de personas, validaciones, permisos y guardado explícito. Los controles compartidos igualan altura y alineación de campos de texto y selectores de país, también en el perfil.
+
+Se comprobó en navegador el trabajo real con dos comentarios publicados, consulta y edición, avisos, cancelación con cambios, español/inglés y ausencia de desbordamiento a 390/320 píxeles. Las escrituras y lecturas de avisos de la comprobación visual se interceptaron; los trabajos, informes y avisos reales quedaron intactos. La persistencia, lecturas parciales, aislamiento y protección frente a mensajes nuevos se verificaron con servicios reales en una transacción revertida.

@@ -1,10 +1,10 @@
 import { authorshipRpc } from './authorship.js';
 import { Injectable } from '@nestjs/common';
-import { and, desc, eq, sql } from 'drizzle-orm';
+import { and, desc, eq, inArray, sql } from 'drizzle-orm';
 import { randomUUID } from 'node:crypto';
-import type { AuthorWork, AuthorWorkspace, PublishedScientificCall, WorkContent, WorkStatus, WorkAuthor } from '@sep/contracts';
+import type { AuthorWork, AuthorWorkspace, PublishedScientificCall, WorkContent, WorkStatus, WorkAuthor, AuthorFeedbackBody, WorkNoticeBoard } from '@sep/contracts';
 import { DatabaseService, type DbTransaction } from '../database/database.service.js';
-import { authorWorks as works, eventConfigurations, events, people, orcidConnections, scientificCallPublications, workFiles, workVersions, workHistory, workCollaborations } from '../database/schema.js';
+import { authorWorks as works, eventConfigurations, events, people, orcidConnections, scientificCallPublications, workFiles, workVersions, workHistory, workCollaborations, workNoticeReads } from '../database/schema.js';
 import { ApiException, type RequestContext } from '../common/http.js';
 import { AuditService } from '../common/audit.service.js';
 import { ManuscriptsService } from './manuscripts.service.js';
@@ -56,15 +56,31 @@ export class AuthorWorksService {
     const [last]=await tx.select({kind:workVersions.kind}).from(workVersions).where(eq(workVersions.workId,row.id)).orderBy(desc(workVersions.number)).limit(1);
     return last?.kind==='final';
   }
+  private async noticeRows(tx:DbTransaction,personId:string,workId?:string){
+    const rows=await tx.select({id:workHistory.id,workId:works.id,title:works.title,status:works.status,action:workHistory.action,createdAt:workHistory.createdAt,seen:sql<boolean>`coalesce(${workHistory.id}=ANY(${workNoticeReads.seenIds}),false)`}).from(workHistory).innerJoin(works,eq(works.id,workHistory.workId)).leftJoin(workNoticeReads,and(eq(workNoticeReads.workId,works.id),eq(workNoticeReads.personId,personId))).where(and(eq(works.hidden,false),eq(workHistory.actor,'staff'),inArray(workHistory.action,['changes_requested','final_requested','accepted','rejected','peer_reviews_released']),workId?eq(works.id,workId):undefined)).orderBy(desc(workHistory.createdAt),desc(workHistory.id));
+    const selected=new Map<string,typeof rows[number]>();for(const row of rows){const key=row.workId+':'+(row.action==='peer_reviews_released'?'reviews':'decision');if(!selected.has(key))selected.set(key,row);}return [...selected.values()];
+  }
+  private async noticeBoard(tx:DbTransaction,personId:string):Promise<WorkNoticeBoard>{
+    const rows=await this.noticeRows(tx,personId),items=new Map<string,WorkNoticeBoard['items'][number]>();for(const row of rows){if(row.seen)continue;const item=items.get(row.workId);if(item)item.unreadNotices++;else items.set(row.workId,{workId:row.workId,title:row.title,status:row.status,unreadNotices:1,latestAt:row.createdAt.toISOString()});}return {count:items.size,items:[...items.values()]};
+  }
+  notices(context:RequestContext):Promise<WorkNoticeBoard>{return this.database.scoped({...context,organizationAdmin:false},async tx=>{await this.state(tx,context);return this.noticeBoard(tx,context.personId!);});}
+  readNotices(context:RequestContext,id:string,noticeIds:string[]):Promise<WorkNoticeBoard>{return this.database.scoped({...context,organizationAdmin:false},async tx=>{
+    await this.state(tx,context);const [work]=await tx.select({id:works.id}).from(works).where(and(this.scope(context),eq(works.id,id)));if(!work)throw new ApiException(404,'NOT_FOUND');
+    const valid=await tx.select({id:workHistory.id}).from(workHistory).where(and(eq(workHistory.workId,id),eq(workHistory.actor,'staff'),inArray(workHistory.action,['changes_requested','final_requested','accepted','rejected','peer_reviews_released']),inArray(workHistory.id,noticeIds)));
+    if(valid.length)await tx.insert(workNoticeReads).values({organizationId:context.organizationId,eventId:context.eventId!,workId:id,personId:context.personId!,seenIds:valid.map(item=>item.id)}).onConflictDoUpdate({target:[workNoticeReads.organizationId,workNoticeReads.eventId,workNoticeReads.workId,workNoticeReads.personId],set:{seenIds:sql`ARRAY(SELECT DISTINCT notice_id FROM unnest(${workNoticeReads.seenIds} || excluded.seen_ids) notice_id ORDER BY notice_id)`}});
+    return this.noticeBoard(tx,context.personId!);
+  });}
   async detail(tx:DbTransaction,row:typeof works.$inferSelect,state:{active:boolean;editable:boolean;personId?:string},staff=false):Promise<AuthorWork> {
     const versions=await tx.select({id:workVersions.id,number:workVersions.number,kind:workVersions.kind,createdAt:workVersions.createdAt}).from(workVersions).where(eq(workVersions.workId,row.id)).orderBy(desc(workVersions.number));
     const history=await tx.select({id:workHistory.id,action:workHistory.action,message:workHistory.message,actor:workHistory.actor,actorId:workHistory.actorId,actorName:workHistory.actorName,createdAt:workHistory.createdAt}).from(workHistory).where(and(eq(workHistory.workId,row.id),staff ? sql`(${workHistory.actor}='staff' OR ${workHistory.action} IN ('submitted','final_submitted','withdrawn'))` : undefined)).orderBy(desc(workHistory.createdAt),desc(workHistory.id)).limit(200);
-    return {...view(row),canManage:!staff && row.ownerId===state.personId,...(staff && row.submittedContent ? row.submittedContent : {}),editable:!staff && this.editable(row,state,row.call.timezone),
+    const feedback=await tx.select({id:workHistory.id,publishedAt:workHistory.createdAt,message:workHistory.message,body:workHistory.authorFeedback}).from(workHistory).where(and(eq(workHistory.workId,row.id),eq(workHistory.action,'peer_reviews_released'),eq(workHistory.actor,'staff'))).orderBy(desc(workHistory.createdAt),desc(workHistory.id));
+    const notices=!staff&&state.personId?await this.noticeRows(tx,state.personId,row.id):[];
+    return {...view(row),authorFeedback:feedback.map(item=>({id:item.id,publishedAt:item.publishedAt.toISOString(),message:item.message,...(item.body??{})})),noticeIds:notices.map(item=>item.id),unreadNotices:notices.filter(item=>!item.seen).length,canManage:!staff && row.ownerId===state.personId,...(staff && row.submittedContent ? row.submittedContent : {}),editable:!staff && this.editable(row,state,row.call.timezone),
       versions:versions.map(v=>({...v,createdAt:v.createdAt.toISOString()})),history:history.map(h=>({...h,createdAt:h.createdAt.toISOString()}))};
   }
-  async record(tx:DbTransaction,context:RequestContext,id:string,action:string,message='',actor:'author'|'staff'='author') {
+  async record(tx:DbTransaction,context:RequestContext,id:string,action:string,message='',actor:'author'|'staff'='author',authorFeedback?:AuthorFeedbackBody) {
     const [actorProfile]=await tx.select({name:people.name}).from(people).where(eq(people.id,context.personId!));
-    await tx.insert(workHistory).values({actorName:actorProfile?.name??'',id:randomUUID(),organizationId:context.organizationId,eventId:context.eventId!,workId:id,actorId:context.personId!,actor,action,message});
+    await tx.insert(workHistory).values({authorFeedback,actorName:actorProfile?.name??'',id:randomUUID(),organizationId:context.organizationId,eventId:context.eventId!,workId:id,actorId:context.personId!,actor,action,message});
   }
   private async locked(tx:DbTransaction,context:RequestContext,id:string,revision:number,edit=false) {
     const state=await this.state(tx,context,true);
@@ -203,8 +219,9 @@ export class AuthorWorksService {
       const state = await this.state(tx, context);
       const rows = await tx.select(summaryFields).from(works).where(this.scope(context)).orderBy(desc(works.updatedAt), works.id).limit(50);
       if (state.event.status !== 'published' && !rows.length) throw new ApiException(404, 'NOT_FOUND');
+      const notices=await this.noticeBoard(tx,context.personId!);
       return { event: { id: state.event.id, nameEs: state.event.nameEs, nameEn: state.event.nameEn, timezone: state.event.timezone },
-        works: rows.map(({callTimezone,ownerId,...row}) => ({ ...row, canManage:ownerId===context.personId, editable: this.editable(row,state,callTimezone), submittedAt: row.submittedAt?.toISOString() ?? null, createdAt: row.createdAt.toISOString(), updatedAt: row.updatedAt.toISOString() })), call: state.call, editable: state.editable, reason: state.reason, languages: state.languages,requireSubmittingAuthorOrcid:state.requireSubmittingAuthorOrcid };
+        works: rows.map(({callTimezone,ownerId,...row}) => ({ ...row, unreadNotices:notices.items.find(item=>item.workId===row.id)?.unreadNotices??0, canManage:ownerId===context.personId, editable: this.editable(row,state,callTimezone), submittedAt: row.submittedAt?.toISOString() ?? null, createdAt: row.createdAt.toISOString(), updatedAt: row.updatedAt.toISOString() })), call: state.call, editable: state.editable, reason: state.reason, languages: state.languages,requireSubmittingAuthorOrcid:state.requireSubmittingAuthorOrcid };
     });
   }
   read(context: RequestContext, id: string): Promise<AuthorWork> {

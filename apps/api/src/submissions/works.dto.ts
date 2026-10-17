@@ -1,7 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
 import { ArrayMaxSize, ArrayMinSize, ArrayUnique, IsArray, IsBoolean, IsIn, IsInt, IsString, IsUUID, Max, MaxLength, Min, MinLength, ValidateBy, ValidateIf, ValidateNested, isEmail } from 'class-validator';
-import { validOrcid, COUNTRY_CODES, WORK_STATUSES, type WorkStatus, type Manuscript, type WorkVersionSummary, type WorkHistory, type AuthorWork, type AuthorWorkSummary, type AuthorWorkspace, type PublishedScientificCall, type WorkAffiliation, type WorkAuthor } from '@sep/contracts';
+import { validOrcid, COUNTRY_CODES, WORK_STATUSES, type AuthorReviewFeedback, type WorkNoticeSummary, type WorkNoticeBoard, type WorkStatus, type Manuscript, type WorkVersionSummary, type WorkHistory, type AuthorWork, type AuthorWorkSummary, type AuthorWorkspace, type PublishedScientificCall, type WorkAffiliation, type WorkAuthor } from '@sep/contracts';
 import { PublicEventDto } from '../events/event.dto.js';
 import { PublishedCallDto } from '../science/call.dto.js';
 export class WorkAffiliationDto implements WorkAffiliation {
@@ -43,6 +43,7 @@ export class SaveWorkDto extends CreateWorkDto {
   @ApiProperty({ minimum: 1 }) @IsInt() @Min(1) @Max(2147483646) revision!: number;
 }
 export class WorkSummaryDto implements AuthorWorkSummary {
+  @ApiPropertyOptional({minimum:0}) unreadNotices?:number;
   @ApiProperty() canManage!:boolean;
   @ApiProperty({enum:WORK_STATUSES}) status!:WorkStatus;
   @ApiProperty({type:String,nullable:true,format:'date-time'}) submittedAt!:string|null;
@@ -57,7 +58,17 @@ export class WorkSummaryDto implements AuthorWorkSummary {
   @ApiProperty({ format: 'date-time' }) createdAt!: string;
   @ApiProperty({ format: 'date-time' }) updatedAt!: string;
 }
+class ReviewCommentDto { @ApiProperty() number!:number;@ApiProperty() text!:string }
+export class AuthorReviewFeedbackDto implements AuthorReviewFeedback {
+ @ApiProperty({format:'uuid'}) id!:string;@ApiProperty({format:'date-time'}) publishedAt!:string;@ApiProperty({description:'Copia pública histórica, sin notas privadas ni identidad de revisores.'}) message!:string;
+ @ApiPropertyOptional() roundNumber?:number;@ApiPropertyOptional() versionNumber?:number;@ApiPropertyOptional({type:[ReviewCommentDto]}) comments?:{number:number;text:string}[];
+}
+class WorkNoticeSummaryDto implements WorkNoticeSummary { @ApiProperty({format:'uuid'}) workId!:string;@ApiProperty() title!:string;@ApiProperty({enum:WORK_STATUSES}) status!:WorkStatus;@ApiProperty() unreadNotices!:number;@ApiProperty({format:'date-time'}) latestAt!:string }
+export class WorkNoticeBoardDto implements WorkNoticeBoard { @ApiProperty({minimum:0}) count!:number;@ApiProperty({type:[WorkNoticeSummaryDto]}) items!:WorkNoticeSummary[] }
+export class ReadWorkNoticesDto { @ApiProperty({type:[String],minItems:1,maxItems:200}) @IsArray() @ArrayMinSize(1) @ArrayMaxSize(200) @ArrayUnique() @IsUUID('all',{each:true}) noticeIds!:string[] }
 export class WorkDto extends WorkSummaryDto implements AuthorWork {
+ @ApiPropertyOptional({type:[AuthorReviewFeedbackDto]}) authorFeedback?:AuthorReviewFeedback[];
+ @ApiPropertyOptional({type:[String]}) noticeIds?:string[];
   @ApiProperty({type:()=>ManuscriptDto,nullable:true}) manuscript!:Manuscript|null;
   @ApiProperty({type:()=>[VersionSummaryDto]}) versions!:WorkVersionSummary[];
   @ApiProperty({type:()=>[HistoryDto]}) history!:WorkHistory[];

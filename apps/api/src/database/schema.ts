@@ -1,6 +1,6 @@
 import { sql, type SQL } from 'drizzle-orm';
 import { boolean, check, customType, date, foreignKey, index, integer, jsonb, pgPolicy, pgRole, pgTable, primaryKey, text, timestamp, unique, uniqueIndex, uuid } from 'drizzle-orm/pg-core';
-import type { EventConfiguration, PublishedScientificCall, PublishedSite, ScientificCallContent, SiteContent, WorkAuthor, WorkStatus, WorkContent, Manuscript, WorkAffiliation, ResearcherBackground, ReviewCriterion, ReviewEvaluation, ReviewContent } from '@sep/contracts';
+import type { EventConfiguration, PublishedScientificCall, PublishedSite, ScientificCallContent, SiteContent, WorkAuthor, WorkStatus, WorkContent, Manuscript, WorkAffiliation, ResearcherBackground, ReviewCriterion, ReviewEvaluation, ReviewContent, AuthorFeedbackBody } from '@sep/contracts';
 
 const binary = customType<{ data: Buffer; driverData: Buffer }>({ dataType: () => 'bytea' });
 const runtime = pgRole('sep_runtime').existing();
@@ -263,12 +263,14 @@ export const workVersions = pgTable('work_versions', {
   pgPolicy('version_insert',{for:'insert',to:runtime,withCheck:sql`${workVisible(sql`${t.organizationId}`,sql`${t.eventId}`,sql`${t.workId}`)} AND ${actorScope(sql`${t.ownerId}`)}`}),
 ]);
 export const workHistory = pgTable('work_history', {
+  authorFeedback:jsonb('author_feedback').$type<AuthorFeedbackBody>(),
   actorName:text('actor_name').notNull().default(''),
   id: uuid('id').primaryKey(), organizationId: uuid('organization_id').notNull(), eventId: uuid('event_id').notNull(),workId:uuid('work_id').notNull(),
   actorId:uuid('actor_id').notNull().references(()=>people.id), actor:text('actor').$type<'author'|'staff'>().notNull(),action:text('action').notNull(),message:text('message').notNull().default(''),
   createdAt:timestamp('created_at',{withTimezone:true}).notNull().defaultNow(),
 },(t)=>[foreignKey({columns:[t.organizationId,t.eventId,t.workId],foreignColumns:[authorWorks.organizationId,authorWorks.eventId,authorWorks.id]}),
   pgPolicy('authorship_rpc',{for:'insert',to:registryOwner,withCheck:sql`${authorshipScope(sql`${t.organizationId}`,sql`${t.eventId}`)} AND ${actorScope(sql`${t.actorId}`)}`}),
+  index('work_history_notices_idx').on(t.organizationId,t.eventId,t.workId,t.action,t.createdAt),
   pgPolicy('history_read',{for:'select',to:runtime,using:sql`${workVisible(sql`${t.organizationId}`,sql`${t.eventId}`,sql`${t.workId}`)} AND (current_setting('sep.submissions_staff',true) IS DISTINCT FROM 'true' OR ${t.actor}='staff' OR ${t.action} IN ('submitted','final_submitted','withdrawn'))`}),
   pgPolicy('history_insert',{for:'insert',to:runtime,withCheck:sql`${workVisible(sql`${t.organizationId}`,sql`${t.eventId}`,sql`${t.workId}`)} AND ${actorScope(sql`${t.actorId}`)}`}),
 ]);
@@ -334,3 +336,9 @@ export const reviewAssignments=pgTable('review_assignments',{
 export const reviewConflicts=pgTable('review_conflicts',{
  organizationId:uuid('organization_id').notNull(),eventId:uuid('event_id').notNull(),workId:uuid('work_id').notNull(),personId:uuid('person_id').notNull(),reason:text('reason').notNull(),createdAt:timestamp('created_at',{withTimezone:true}).notNull().defaultNow(),
 },t=>[primaryKey({columns:[t.organizationId,t.eventId,t.workId,t.personId]}),foreignKey({columns:[t.organizationId,t.eventId,t.workId],foreignColumns:[authorWorks.organizationId,authorWorks.eventId,authorWorks.id]}),foreignKey({columns:[t.organizationId,t.eventId,t.personId],foreignColumns:[reviewMembers.organizationId,reviewMembers.eventId,reviewMembers.personId]}),reviewRegistry(sql`${t.organizationId}`,sql`${t.eventId}`),policy(sql`${reviewStaff(sql`${t.organizationId}`,sql`${t.eventId}`)} OR (${reviewScope(sql`${t.organizationId}`,sql`${t.eventId}`)} AND ${actorScope(sql`${t.personId}`)})`)]);
+
+
+export const workNoticeReads=pgTable('work_notice_reads',{
+ organizationId:uuid('organization_id').notNull(),eventId:uuid('event_id').notNull(),workId:uuid('work_id').notNull(),personId:uuid('person_id').notNull().references(()=>people.id),seenIds:uuid('seen_ids').array().notNull().default(sql`ARRAY[]::uuid[]`),
+},t=>[primaryKey({columns:[t.organizationId,t.eventId,t.workId,t.personId]}),foreignKey({columns:[t.organizationId,t.eventId,t.workId],foreignColumns:[authorWorks.organizationId,authorWorks.eventId,authorWorks.id]}),
+ policy(sql`${actorScope(sql`${t.personId}`)} AND ${workVisible(sql`${t.organizationId}`,sql`${t.eventId}`,sql`${t.workId}`)}`)]);

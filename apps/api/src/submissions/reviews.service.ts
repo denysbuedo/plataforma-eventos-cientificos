@@ -124,6 +124,6 @@ export class PeerReviewService {
   if(dto.reviewOverrideReason){await this.authors.record(tx,c,work.id,'review_decision_override',dto.reviewOverrideReason,'staff');await this.audit.record(tx,c,'review.decision.override',c.eventId!,work.id);}
   if(round.status==='open')await tx.update(rounds).set({status:'closed',closedAt:new Date(),revision:round.revision+1}).where(eq(rounds.id,round.id));
   // Only comments explicitly addressed to authors are released, never private notes, scores or reviewer identities.
-  if(round.status==='open'&&latest[0]?.id===round.versionId&&valid.length){const message=valid.map((row,index)=>`Evaluación / Review ${index+1}\n${row.evaluation!.authorComments}`).join('\n\n');await this.authors.record(tx,c,work.id,'peer_reviews_released',message,'staff');await this.audit.record(tx,c,'review.released',c.eventId!,work.id);}
+  if(round.status==='open'&&latest[0]?.id===round.versionId&&valid.length){const message=valid.map((row,index)=>`Evaluación / Review ${index+1}\n${row.evaluation!.authorComments}`).join('\n\n');await this.authors.record(tx,c,work.id,'peer_reviews_released',message,'staff',{roundNumber:round.number,versionNumber:round.versionNumber,comments:valid.map((row,index)=>({number:index+1,text:row.evaluation!.authorComments}))});await this.audit.record(tx,c,'review.released',c.eventId!,work.id);}
  }
 }

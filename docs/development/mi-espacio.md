@@ -37,3 +37,7 @@ La configuración de plantillas y reglas, emisión y revocación será del organ
 Compilación y análisis estático. Revisión dirigida en navegador a 1440, 390 y 320 píxeles: misma identidad, orden y enlaces en las tres secciones; cuenta y portal accesibles; Escape; idiomas ES/EN; salida protegida del perfil y del trabajo; logout antes/después de resolver cambios y cierre de sesión desde las tres pantallas. Se usaron copias de trabajos interceptadas solo en el navegador para simular edición, sin guardar perfiles ni trabajos reales. La batería funcional completa continúa aplazada.
 
 **Mis revisiones** se incorpora después de Autorías como área propia del revisor por evento, con las mismas opciones de cuenta, idioma, cierre de sesión y protección de cambios sin guardar. No implica pertenecer al comité: una persona sin invitaciones ve su bandeja vacía.
+
+## Novedades de los trabajos
+
+Mis trabajos incorpora un contador lateral de trabajos con dictámenes o comentarios de revisión pendientes de leer. Un aviso destacado permite abrir directamente el bloque de dictamen y revisiones; consultar ese bloque registra la lectura para la persona actual. Cambiar a Autorías o Mi perfil y regresar no vuelve a marcarlo como pendiente. Un dictamen posterior genera una novedad nueva. Las notificaciones de Autorías y Mis revisiones conservan sus flujos independientes.

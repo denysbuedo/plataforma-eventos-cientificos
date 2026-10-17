@@ -2,7 +2,7 @@ import {PeerReviewService} from './reviews.service.js';
 import {PeerReviewController} from './reviews.controller.js';
 import { WorkCollaborationsController, WorkCollaborationsService } from './collaborations.js';
 import { AuthorshipController, AuthorshipService } from './authorship.js';
-import { Body, Controller, Delete, Get, Module, Param, Post, Put, Req, Res, Query, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, Module, Param, Post, Put, Req, Res, Query, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { ApiBearerAuth, ApiCreatedResponse, ApiOkResponse, ApiTags, ApiConsumes, ApiBody } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
 import type { Response } from 'express';
@@ -16,13 +16,15 @@ import { AuditService } from '../common/audit.service.js';
 import { ApiException, type SepRequest } from '../common/http.js';
 import { ApiErrors } from '../common/openapi.js';
 import { Access } from '../platform/context.guard.js';
-import { AuthorWorkspaceDto, CreateWorkDto, SaveWorkDto, WorkDto, VersionDto, StaffWorkDto, SubmissionPageDto } from './works.dto.js';
+import { WorkNoticeBoardDto, ReadWorkNoticesDto, AuthorWorkspaceDto, CreateWorkDto, SaveWorkDto, WorkDto, VersionDto, StaffWorkDto, SubmissionPageDto } from './works.dto.js';
 import { AuthorWorksService } from './works.service.js';
 @ApiTags('author-works') @ApiBearerAuth() @ApiErrors() @Controller('events/:eventId/my-works')
 class AuthorWorksController {
   constructor(private readonly service: AuthorWorksService) {}
   @Get() @Access('author-work') @ApiOkResponse({ type: AuthorWorkspaceDto })
   get(@Req() req: SepRequest) { return this.service.get(req.security); }
+  @Get('notices') @Access('author-work') @ApiOkResponse({type:WorkNoticeBoardDto}) notices(@Req()req:SepRequest){return this.service.notices(req.security);}
+  @Post(':workId/notices/read') @HttpCode(200) @Access('author-work') @ApiOkResponse({type:WorkNoticeBoardDto}) readNotices(@Req()req:SepRequest,@Param('workId')id:string,@Body()dto:ReadWorkNoticesDto){uuid(id);return this.service.readNotices(req.security,id,dto.noticeIds);}
   @Get(':workId') @Access('author-work') @ApiOkResponse({ type: WorkDto })
   read(@Req() req: SepRequest, @Param('workId') id: string) {
     if (!isUUID(id)) throw new ApiException(400, 'VALIDATION_FAILED'); return this.service.read(req.security, id);

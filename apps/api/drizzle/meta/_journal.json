@@ -337,6 +337,13 @@
       "when": 1792206798519,
       "tag": "0047_eager_nick_fury",
       "breakpoints": true
+    },
+    {
+      "idx": 48,
+      "version": "7",
+      "when": 1792211412926,
+      "tag": "0048_daily_kronos",
+      "breakpoints": true
     }
   ]
 }
