@@ -62,3 +62,5 @@ Los documentos de planificación describen trabajo futuro. No constituyen eviden
 - [Perfil internacional: formación, grado científico y trayectoria](development/perfil-investigador-internacional.md).
 
 - [Revisión científica: comité, rondas, asignaciones y evaluaciones](development/revision-cientifica.md) y [ADR-020](adr/ADR-020-revision-cientifica.md).
+
+- [Programa científico: sesiones, publicación y Mi participación](development/programa-cientifico.md) y [ADR-022](adr/ADR-022-programa-publicacion-y-participacion.md).

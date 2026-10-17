@@ -9,11 +9,12 @@ import { ContextGuard } from './platform/context.guard.js';
 import { PlatformModule } from './platform/platform.module.js';
 import { HealthController } from './health.controller.js';
 import { ScienceModule } from './science/science.module.js';
+import {ProgramModule} from './program/program.module.js';
 import { SubmissionsModule } from './submissions/submissions.module.js';
 @Module({})
 export class AppModule {
   static register(config: AppConfig): DynamicModule {
-    return { module: AppModule, imports: [ConfigurationModule.register(config), DatabaseModule, IdentityModule, EventsModule, PlatformModule, ScienceModule, SubmissionsModule],
+    return { module: AppModule, imports: [ConfigurationModule.register(config), DatabaseModule, IdentityModule, EventsModule, PlatformModule, ScienceModule, SubmissionsModule, ProgramModule],
       controllers: [HealthController], providers: [{ provide: APP_GUARD, useClass: ContextGuard }] };
   }
 }

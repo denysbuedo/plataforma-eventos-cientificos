@@ -1,7 +1,9 @@
 'use client';
+import ScientificProgram,{type ProgramLeaveGuard} from './scientific-program';
+import {programCopy} from './program-copy';
 import ReviewCommittee from './peer-review-committee';
 import {reviewCopy} from './peer-review-copy';
-import { useState } from 'react';
+import { useCallback,useRef,useState } from 'react';
 import { useRouter } from 'next/navigation';
 import type { SubmissionPage, ScientificCallDraft, EventConfiguration, EventPage, EventTeam, EventView, OrganizationSettings, PeopleDirectory, PublishedSite, SessionView, SiteContent, SiteDraft } from '@sep/contracts';
 import { webCopy, type Locale } from '@sep/i18n';
@@ -23,6 +25,7 @@ function Field({ label, value, onChange, disabled = false, multiline = false, ty
 
 export default function Workspace(props: Props) {
   const { locale, contextKey, tab, session, events, denied, publicUrl, demo, contextHosts, contextEvents } = props;
+  const programGuard=useRef<ProgramLeaveGuard|null>(null);const registerProgramGuard=useCallback((guard:ProgramLeaveGuard|null)=>{programGuard.current=guard;},[]);
   const text = webCopy[locale]; const router = useRouter();
   const person = session?.person ?? props.profile;
   const [site, setSite] = useState(props.site); const [content, setContent] = useState<SiteContent | null>(props.site?.content ?? null);
@@ -81,10 +84,11 @@ export default function Workspace(props: Props) {
     finally { setBusy(null); }
   }
   async function logout() {
-    const response = await fetch(`/api/auth/logout?lang=${locale}`, { method: 'POST' });
-    if (!response.ok) { setNotice({ error: true, message: text.serviceHelp }); return; }
-    const data = await response.json(); window.location.assign(data.redirectTo ?? `/${locale}`);
+    if(currentTab==='program'&&programGuard.current&&!programGuard.current.confirm())return;
+    try{const response=await fetch(`/api/auth/logout?lang=${locale}`,{method:'POST'});if(!response.ok)throw new Error(text.serviceHelp);const data=await response.json();window.location.assign(data.redirectTo??`/${locale}`);}
+    catch{programGuard.current?.reset();setNotice({error:true,message:text.serviceHelp});}
   }
+
   async function assignOrganizer(personId: string) {
     if (!site || !personId) return;
     setBusy('team'); setNotice(null);
@@ -104,7 +108,7 @@ export default function Workspace(props: Props) {
     finally { setBusy(null); }
   }
   const navigation: { id: string; label: string; icon: IconName }[] = [
-    { id: 'profile', label: text.myProfile, icon: 'settings' as const }, ...(session?.eventId ? [{ id: 'works', label: text.myWorks, icon: 'book' as const }, { id:'authorship',label:authorshipCopy[locale].title,icon:'book' as const }] : []), ...(session?.canEdit ? [{ id: 'submissions', label: text.receivedWorks, icon: 'book' as const },{id:'review',label:reviewCopy[locale].committee,icon:'check' as const}] : []), { id: 'overview', label: text.overview, icon: 'grid' }, { id: 'call', label: text.scientificCall, icon: 'book' }, { id: 'content', label: text.content, icon: 'edit' },
+    { id: 'profile', label: text.myProfile, icon: 'settings' as const }, ...(session?.eventId ? [{ id: 'works', label: text.myWorks, icon: 'book' as const }, { id:'authorship',label:authorshipCopy[locale].title,icon:'book' as const },{id:'participation',label:programCopy[locale].participation,icon:'calendar' as const}] : []), ...(session?.canEdit ? [{ id: 'submissions', label: text.receivedWorks, icon: 'book' as const },{id:'review',label:reviewCopy[locale].committee,icon:'check' as const},{id:'program',label:programCopy[locale].title,icon:'calendar' as const}] : []), { id: 'overview', label: text.overview, icon: 'grid' }, { id: 'call', label: text.scientificCall, icon: 'book' }, { id: 'content', label: text.content, icon: 'edit' },
     { id: 'appearance', label: text.appearance, icon: 'palette' }, { id: 'data', label: text.eventData, icon: 'settings' },
     ...(session?.organizationAdmin && site ? [{ id: 'team', label: text.team, icon: 'grid' as const }] : []),
     ...(session?.organizationAdmin ? [{ id: 'people', label: text.people, icon: 'book' as const }] : []),
@@ -114,19 +118,20 @@ export default function Workspace(props: Props) {
   if (site && !Object.hasOwn(contextNames, contextKey)) contextNames[contextKey] = locale === 'es' ? site.event.nameEs : site.event.nameEn;
   function change(field: keyof SiteContent, value: string | string[]) { setContent((current) => current ? { ...current, [field]: value } : current); }
   const localizedKey = (field: LocalizedField) => `${field}${editLanguage === 'es' ? 'Es' : 'En'}` as keyof SiteContent;
-  const heading = currentTab === 'review'?[reviewCopy[locale].committee,reviewCopy[locale].committeeHelp]:currentTab === 'submissions' ? [text.receivedWorks, text.staffScopeHelp] : currentTab === 'call' ? [text.scientificCallTitle, text.scientificCallHelp] : currentTab === 'organization' ? [text.organizationTitle, text.organizationHelp] : currentTab === 'people' ? [text.peopleTitle, text.peopleHelp] : currentTab === 'team' ? [text.teamTitle, text.teamHelp] : currentTab === 'content' ? [text.editorialTitle, text.editorialHelp] : currentTab === 'appearance' ? [text.paletteTitle, text.paletteHelp] : currentTab === 'data' ? [text.dataTitle, text.dataHelp] : [text.hello, text.overviewHelp];
+  const heading = currentTab==='program'?[programCopy[locale].title,programCopy[locale].help]:currentTab === 'review'?[reviewCopy[locale].committee,reviewCopy[locale].committeeHelp]:currentTab === 'submissions' ? [text.receivedWorks, text.staffScopeHelp] : currentTab === 'call' ? [text.scientificCallTitle, text.scientificCallHelp] : currentTab === 'organization' ? [text.organizationTitle, text.organizationHelp] : currentTab === 'people' ? [text.peopleTitle, text.peopleHelp] : currentTab === 'team' ? [text.teamTitle, text.teamHelp] : currentTab === 'content' ? [text.editorialTitle, text.editorialHelp] : currentTab === 'appearance' ? [text.paletteTitle, text.paletteHelp] : currentTab === 'data' ? [text.dataTitle, text.dataHelp] : [text.hello, text.overviewHelp];
   const field = (kind: LocalizedField, label: string, multiline = false) => content && <Field key={kind} label={label} value={content[localizedKey(kind)] as string} onChange={(value) => change(localizedKey(kind), value)} disabled={!canEdit} multiline={multiline} />;
   return <div className="admin-shell"><a href="#main" className="skip-link">{text.skip}</a><aside className="sidebar"><Brand compact /><p className="workspace-label">{text.workspace}</p>
     <nav aria-label={text.workspace}>{navigation.filter((item) => ['overview', 'people', 'organization', 'works', 'profile'].includes(item.id) || !!site).map((item) => <a key={item.id} href={`/${locale}?event=${['people', 'organization'].includes(item.id) ? demo ? 'orgA' : 'org' : contextKey}&tab=${item.id}`} className={currentTab === item.id ? 'active' : ''} aria-label={item.label}><Icon name={item.icon} size={18} /><span>{item.label}</span></a>)}</nav>
     <div className="sidebar-bottom"><a href={siteUrl}><Icon name="external" size={16} /><span>{text.publicPortal}</span></a><button onClick={logout} aria-label={text.logout}><Icon name="logout" size={16} /><span>{text.logout}</span></button>{demo && <small>{text.demo}</small>}</div>
   </aside><div className="admin-area"><header className="admin-topbar"><div className="breadcrumb">{text.workspace} <strong>/ {navigation.find((item) => item.id === currentTab)?.label ?? text.overview}</strong></div><div className="topbar-right"><div className="language-switch"><a href={`/es?event=${contextKey}&tab=${currentTab}`} className={locale === 'es' ? 'active' : ''}>ES</a><a href={`/en?event=${contextKey}&tab=${currentTab}`} className={locale === 'en' ? 'active' : ''}>EN</a></div><div className="user-chip"><span className="avatar">{person?.name.slice(0, 2).toUpperCase() ?? 'SE'}</span><span>{person?.name ?? 'SEP'}</span></div></div></header>
-    <main id="main" className="admin-main"><div className="context-row">{demo && <label className="context-select"><span>{text.search}</span><select value={contextKey} onChange={(e) => router.push(`/${locale}?event=${e.target.value}`)}>{Object.entries(contextNames).map(([key, name]) => <option key={key} value={key}>{name}</option>)}</select></label>}{site && <StatusBadge status={site.event.status} label={text[site.event.status]} />}</div>
+    <main id="main" className="admin-main"><div className="context-row">{demo && <label className="context-select"><span>{text.search}</span><select value={contextKey} onChange={(e) => {if(currentTab==='program'&&programGuard.current&&!programGuard.current.confirm())return;router.push(`/${locale}?event=${e.target.value}`);}}>{Object.entries(contextNames).map(([key, name]) => <option key={key} value={key}>{name}</option>)}</select></label>}{site && <StatusBadge status={site.event.status} label={text[site.event.status]} />}</div>
       {denied ? <div className="empty-state"><Icon name="lock" size={40} /><h1>{!session && person ? text.accountNotLinked : session && !session.roles.length ? text.awaitingAssignment : text.accessTitle}</h1><p>{!session && person ? text.accountNotLinkedHelp : session && !session.roles.length ? text.awaitingAssignmentHelp : text.accessHelp}</p><a href={siteUrl} className="button button-primary">{text.publicPortal}<Icon name="arrow" size={15} /></a></div> : <>
       <div className="admin-heading"><div><span className="eyebrow">{site?.event.nameEs ?? text.platform}</span><h1>{heading[0]}</h1><p>{heading[1]}</p></div>{currentTab === 'overview' && session?.organizationAdmin && !session.eventId && <button onClick={() => setCreating(!creating)} className="button button-primary"><Icon name="plus" size={16} />{text.createEvent}</button>}{currentTab !== 'overview' && site?.publishedAt && <a href={siteUrl} target="_blank" rel="noreferrer" className="button button-outline">{text.viewSite}<Icon name="external" size={14} /></a>}</div>
       {notice && <div className={`notice ${notice.error ? 'notice-error' : ''}`} role={notice.error ? 'alert' : 'status'}>{notice.message}</div>}
       {currentTab === 'people' && props.directory && <People initial={props.directory} locale={locale} contextKey={contextKey} />}
       {currentTab === 'organization' && props.organization && <Organization initial={props.organization} events={events.data} locale={locale} contextKey={contextKey} />}
       {currentTab === 'call' && site && props.scientificCall && <ScientificCall initial={props.scientificCall} locale={locale} contextKey={contextKey} eventId={site.event.id} editable={canEdit && site.event.status !== 'archived' && !['completed', 'cancelled'].includes(props.configuration?.lifecycle ?? '')} canWithdraw={canEdit} publicUrl={siteUrl} />}
+      {currentTab==='program'&&site&&session?.canEdit&&<ScientificProgram onGuardChange={registerProgramGuard} eventId={site.event.id} contextKey={contextKey} locale={locale}/>}
       {currentTab==='review'&&site&&session?.canEdit&&<ReviewCommittee eventId={site.event.id} contextKey={contextKey} locale={locale}/>}
       {currentTab === 'submissions' && site && props.inbox && <SubmissionsInbox initialWorkId={props.initialWorkId} initial={props.inbox} eventId={site.event.id} contextKey={contextKey} locale={locale} />}
       {creating && <section className="panel create-form"><h2 className="form-section-title">{text.createTitle}</h2><p className="muted small">{text.createHelp}</p><div className="form-fields"><Field label={text.nameEs} value={newEvent.nameEs} onChange={(value) => setNewEvent({ ...newEvent, nameEs: value })} /><Field label={text.nameEn} value={newEvent.nameEn} onChange={(value) => setNewEvent({ ...newEvent, nameEn: value })} /><Field label={text.timezone} value={newEvent.timezone} onChange={(value) => setNewEvent({ ...newEvent, timezone: value })} /></div><div className="editor-actions"><button onClick={createEvent} disabled={!!busy} className="button button-primary">{busy === 'create' ? text.creating : text.create}</button><button onClick={() => setCreating(false)} className="button button-outline">{text.cancel}</button></div></section>}

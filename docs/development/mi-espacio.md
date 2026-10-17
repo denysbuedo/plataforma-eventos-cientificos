@@ -8,7 +8,9 @@ Mi espacio utiliza una estructura compartida para **Mis trabajos**, **Autorías*
 |---|---|---|
 | Menú lateral, primero | Mis trabajos | Trabajos propios y gestión compartida del evento |
 | Menú lateral, segundo | Autorías | Reconocimiento, solicitudes y actividad del evento |
-| Menú lateral, futuro tercero | Mis certificados | Certificados emitidos por la participación en el evento, cuando esté implementado el módulo |
+| Menú lateral, tercero | Mis revisiones | Asignaciones científicas y valoración de respuestas |
+| Menú lateral, cuarto | Mi participación | Presentaciones y moderaciones del programa publicado |
+| Menú lateral, futuro | Mis certificados | Certificados emitidos por la participación en el evento, cuando esté implementado el módulo |
 | Menú de cuenta, arriba a la derecha | Mi perfil | Identidad y datos académicos reutilizables entre eventos |
 | Menú de cuenta, arriba a la derecha | Cerrar sesión | Disponible desde las tres pantallas |
 | Acceso secundario al pie del lateral | Portal público | Portal del contexto conservado; en móvil se ofrece dentro del menú superior |
@@ -26,7 +28,7 @@ El menú de cuenta admite navegación por teclado, cierre con Escape y cierre al
 
 ## Certificados: ubicación y alcance futuro
 
-**Mis certificados** se incorporará al menú lateral después de Autorías cuando exista emisión real. No se crea ahora una pestaña vacía ni se anuncian certificados inexistentes. Esta ubicación sirve también para asistentes que no presentan trabajos.
+**Mis certificados** se incorporará al menú lateral junto a Mi participación cuando exista emisión real. No se crea ahora una pestaña vacía ni se anuncian certificados inexistentes. Esta ubicación sirve también para asistentes que no presentan trabajos.
 
 Cada certificado futuro debe identificar la persona, el evento, el concepto de participación (asistencia, ponencia, organización, revisión u otros configurados), el estado de emisión y las acciones reales disponibles: descargar y verificar. Una autoría reconocida no debe producir un certificado automáticamente. La elegibilidad depende de las reglas del evento y de las evidencias correspondientes, como asistencia o presentación; la definición y emisión pertenecen al módulo de certificación, aún pendiente.
 
@@ -49,3 +51,5 @@ No añadir fondos sombreados ni sombras para destacar avisos, novedades o seccio
 En Mis trabajos el fondo es uniforme en consulta y edición: tarjetas, fila seleccionada, metadatos, avisos e historial no llevan rellenos sombreados ni sombras. La selección se identifica con un borde simple y el texto En consulta / En edición. Se retiraron también las sombras CSS que quedaban en el menú de cuenta y los selectores visuales compartidos.
 
 El aviso «Tienes novedades en un trabajo» se presenta como texto y separadores, sin contorno de tarjeta, esquinas redondeadas ni franja lateral destacada. No usar esos recursos como sustitutos de los sombreados retirados.
+
+Mi participación se alimenta del [programa científico publicado](programa-cientifico.md). No muestra borradores y no atribuye asistencia ni certificados por estar programado.

@@ -1,5 +1,10 @@
 const messages = {
   es: {
+    PROGRAM_INVALID: 'Comprueba fechas y horarios: las presentaciones deben quedar dentro de su sesión y de las fechas del evento.',
+    PROGRAM_CONFLICT: 'Hay un solapamiento de sala, presentador o moderador, o un trabajo repetido en el programa.',
+    PROGRAM_WORK_UNAVAILABLE: 'Un trabajo ya no está aceptado, cambió de versión o el presentador no pertenece a su autoría. Actualiza el borrador.',
+    PROGRAM_INCOMPLETE: 'Completa al menos una sesión con título en ambos idiomas y una presentación antes de publicar.',
+    PROGRAM_TIMEZONE_CHANGED: 'La zona horaria del evento cambió. Revisa y guarda el programa antes de publicarlo.',
     REVIEW_DEADLINE_INVALID:'La nueva fecha debe ampliar el plazo actual y no puede estar vencida.',REVIEW_DEADLINE_LIMIT:'Esta ronda alcanzó el máximo de veinte prórrogas registradas.',
     REVIEW_CONFLICT:'Existe un conflicto de interés o de autoría para esta evaluación.',REVIEW_UNAVAILABLE:'La asignación ya no está disponible: revisa la ronda, el plazo y el estado del trabajo.',REVIEW_INCOMPLETE:'Faltan las evaluaciones requeridas de la versión actual. Completa la revisión o justifica expresamente la excepción.',REVIEW_LIMIT:'Se alcanzó el límite de revisores, asignaciones o rondas.',
     AUTHORSHIP_LIMIT:"Este trabajo alcanzó el límite de solicitudes de autoría.", AUTHORSHIP_SELF_APPROVAL:"No puedes aprobar tu propia solicitud. Debe resolverla otro organizador sin conflicto de interés.", AUTHORSHIP_STALE:"La declaración cambió. Cancela esta solicitud y crea otra con los datos vigentes.",
@@ -40,6 +45,11 @@ const messages = {
     INTERNAL_ERROR: 'No se pudo completar la solicitud.',
   },
   en: {
+    PROGRAM_INVALID: 'Check dates and times: presentations must fit within their session and the event dates.',
+    PROGRAM_CONFLICT: 'A room, presenter or moderator overlaps, or a submission appears more than once.',
+    PROGRAM_WORK_UNAVAILABLE: 'A submission is no longer accepted, its version changed, or the presenter is not an author. Refresh the draft.',
+    PROGRAM_INCOMPLETE: 'Complete at least one session with bilingual titles and a presentation before publishing.',
+    PROGRAM_TIMEZONE_CHANGED: 'The event time zone changed. Review and save the program before publishing.',
     REVIEW_DEADLINE_INVALID:'The new date must extend the current deadline and cannot be in the past.',REVIEW_DEADLINE_LIMIT:'This round has reached the limit of twenty recorded extensions.',
     REVIEW_CONFLICT:'A conflict of interest or authorship prevents this review.',REVIEW_UNAVAILABLE:'This assignment is unavailable. Check the round, deadline and work status.',REVIEW_INCOMPLETE:'Required reviews of the current version are missing. Complete peer review or explicitly justify an exception.',REVIEW_LIMIT:'The reviewer, assignment or round limit has been reached.',
     AUTHORSHIP_LIMIT:"This work reached the authorship request limit.", AUTHORSHIP_SELF_APPROVAL:"You cannot approve your own request. An independent organizer must resolve it.", AUTHORSHIP_STALE:"The declaration changed. Cancel this request and create one with the current details.",

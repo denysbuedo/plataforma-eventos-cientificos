@@ -1,3 +1,5 @@
+import Participation from './my-participation';
+import type {MyParticipation} from '@sep/contracts';
 import MyReviews from './peer-review-mine';
 import Authorship from './authorship';
 import { authorshipCopy, authorshipUi } from './authorship-copy';
@@ -40,6 +42,12 @@ export default async function AdminPage({ params, searchParams }: { params: Prom
     if (query.tab === 'profile') {
       const person=(await apiRequest<{person:AuthorAccount}>(binding,'me',{token,locale})).person;
       return <Profile person={person} locale={locale} contextKey={contextKey} eventId={binding.eventId} publicUrl={publicUrl?`${publicUrl}/${locale}?event=${encodeURIComponent(contextKey)}`:''} error={!!query.orcidError}/>;
+    }
+    if(query.tab==='participation'&&binding.eventId){
+      const person=(await apiRequest<{person:AuthorAccount}>(binding,'me',{token,locale})).person;
+      const value=await apiRequest<MyParticipation>(binding,`events/${binding.eventId}/program/mine`,{token,locale});
+      const portal=publicUrl?`${publicUrl}/${locale}?event=${encodeURIComponent(contextKey)}`:'';
+      return <ParticipantShell person={person} locale={locale} contextKey={contextKey} eventId={binding.eventId} tab="participation" publicUrl={portal}><Participation value={value} locale={locale} publicUrl={portal}/></ParticipantShell>;
     }
     if(query.tab==='reviews'&&binding.eventId){
       const person=(await apiRequest<{person:AuthorAccount}>(binding,'me',{token,locale})).person;
