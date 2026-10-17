@@ -3,7 +3,7 @@ import { createHmac, randomUUID, timingSafeEqual } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import http from 'node:http';
 import https from 'node:https';
-import { MAX_WORK_BODY_BYTES, type ApiError, type PublicProgram, type PublishedScientificCall, type PublishedSite } from '@sep/contracts';
+import { MAX_WORK_BODY_BYTES, type ApiError, type PublicRegistration, type PublicProgram, type PublishedScientificCall, type PublishedSite } from '@sep/contracts';
 import { errorMessage, type ErrorCode, type Locale } from '@sep/i18n';
 import { fileTransport } from './files.js';
 import { oidcAccessToken, oidcEnabled, removeOidcValue } from './oidc.js';
@@ -104,7 +104,7 @@ export async function backendProxy(request: Request, parts: string[], cookie: st
   try {
     if (!['GET', 'POST', 'PUT', 'PATCH', 'DELETE'].includes(request.method)) throw new ApiTransportError(405, failure('FORBIDDEN'));
     const path = parts.join('/');
-    if (!/^(?:me(?:\/researcher-profile|\/orcid(?:\/(?:start|finish))?)?|session|researchers|people|organization(?:\/domains(?:\/[0-9a-f-]{36}(?:\/(?:verify|activate|deactivate))?)?)?|invitations(?:\/accept|\/[0-9a-f-]{36}\/revoke)?|events(?:\/[0-9a-f-]{36}(?:\/site(?:\/publish)?|\/session|\/my-works\/notices|\/(?:my-works|submissions)(?:\/[0-9a-f-]{36}(?:\/(?:submit|withdraw|synchronize-call|decision|notices\/read|manuscript|collaborations(?:\/[0-9a-f-]{36}\/revoke)?|versions\/[0-9a-f-]{36}|files\/[0-9a-f-]{36}))?)?|\/authorship(?:-review)?(?:\/read|\/claims\/[0-9a-f-]{36}|\/works\/[0-9a-f-]{36}\/responsibility)?|\/peer-review\/(?:tracking|response-checks(?:\/[0-9a-f-]{36}\/assess)?|committee(?:\/[0-9a-f-]{36}\/revoke)?|mine(?:\/(?:membership|status)|\/[0-9a-f-]{36}(?:\/(?:respond|submit|files\/[0-9a-f-]{36}))?)?|works\/[0-9a-f-]{36}(?:\/rounds(?:\/[0-9a-f-]{36}\/(?:close|assign|extend))?|\/assignments\/[0-9a-f-]{36}\/revoke)?)|\/work-collaborations\/accept|\/program(?:\/(?:mine|candidates|publish|withdraw|spaces(?:\/[0-9a-f-]{36})?))?|\/configuration|\/call(?:\/(?:publish|withdraw))?|\/lifecycle|\/organizers(?:\/[0-9a-f-]{36})?)?)?)$/.test(path)) throw new ApiTransportError(404, failure('NOT_FOUND'));
+    if (!/^(?:me(?:\/researcher-profile|\/orcid(?:\/(?:start|finish))?)?|session|researchers|people|organization(?:\/domains(?:\/[0-9a-f-]{36}(?:\/(?:verify|activate|deactivate))?)?)?|invitations(?:\/accept|\/[0-9a-f-]{36}\/revoke)?|events(?:\/[0-9a-f-]{36}(?:\/site(?:\/publish)?|\/session|\/my-works\/notices|\/(?:my-works|submissions)(?:\/[0-9a-f-]{36}(?:\/(?:submit|withdraw|synchronize-call|decision|notices\/read|manuscript|collaborations(?:\/[0-9a-f-]{36}\/revoke)?|versions\/[0-9a-f-]{36}|files\/[0-9a-f-]{36}))?)?|\/authorship(?:-review)?(?:\/read|\/claims\/[0-9a-f-]{36}|\/works\/[0-9a-f-]{36}\/responsibility)?|\/peer-review\/(?:tracking|response-checks(?:\/[0-9a-f-]{36}\/assess)?|committee(?:\/[0-9a-f-]{36}\/revoke)?|mine(?:\/(?:membership|status)|\/[0-9a-f-]{36}(?:\/(?:respond|submit|files\/[0-9a-f-]{36}))?)?|works\/[0-9a-f-]{36}(?:\/rounds(?:\/[0-9a-f-]{36}\/(?:close|assign|extend))?|\/assignments\/[0-9a-f-]{36}\/revoke)?)|\/work-collaborations\/accept|\/registration\/(?:settings(?:\/(?:publish|withdraw))?|mine(?:\/cancel)?|entries(?:\/[0-9a-f-]{36}(?:\/decision)?)?)|\/program(?:\/(?:mine|candidates|publish|withdraw|spaces(?:\/[0-9a-f-]{36})?))?|\/configuration|\/call(?:\/(?:publish|withdraw))?|\/lifecycle|\/organizers(?:\/[0-9a-f-]{36})?)?)?)$/.test(path)) throw new ApiTransportError(404, failure('NOT_FOUND'));
     if (request.method !== 'GET') checkOrigin(request);
     const url = new URL(request.url);
     const binding = bindingFor(request.headers.get('host') ?? '', url.searchParams.get('event') ?? undefined);
@@ -132,7 +132,7 @@ export async function backendProxy(request: Request, parts: string[], cookie: st
     return response;
   }
 }
-export async function loadPublicSite(host: string, key: string | undefined, locale: Locale): Promise<{ binding: Binding; site: PublishedSite; scientificCall: PublishedScientificCall | null; program:PublicProgram|null }> {
+export async function loadPublicSite(host: string, key: string | undefined, locale: Locale): Promise<{ binding: Binding; site: PublishedSite; scientificCall: PublishedScientificCall | null; program:PublicProgram|null; registration:PublicRegistration|null }> {
   const binding = bindingFor(host, key);
   const site = await apiRequest<PublishedSite>(binding, 'public/site', { locale });
   let scientificCall: PublishedScientificCall | null = null;
@@ -140,5 +140,6 @@ export async function loadPublicSite(host: string, key: string | undefined, loca
   catch (error) { if (!(error instanceof ApiTransportError && error.status === 404)) throw error; }
   let program:PublicProgram|null=null;
   try{program=await apiRequest<PublicProgram>(binding,'public/program',{locale});}catch(error){if(!(error instanceof ApiTransportError&&error.status===404))throw error;}
-  return { binding, site, scientificCall,program };
+  let registration:PublicRegistration|null=null;try{registration=await apiRequest<PublicRegistration>(binding,'public/registration',{locale});}catch(error){if(!(error instanceof ApiTransportError&&error.status===404))throw error;}
+  return { binding, site, scientificCall,program,registration };
 }

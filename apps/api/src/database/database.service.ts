@@ -29,8 +29,8 @@ export class DatabaseService implements OnModuleDestroy {
       pg_get_userbyid(c.relowner) = current_user AS owns_table, c.relrowsecurity, c.relforcerowsecurity
       FROM pg_roles r CROSS JOIN pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace
       WHERE r.rolname = current_user AND n.nspname = 'public'
-      AND c.relname IN ('events','event_series','event_editions','people','identities','affiliations','memberships','role_assignments','audit_entries','site_drafts','site_publications','organization_invitations','event_configurations','scientific_call_drafts','scientific_call_publications','author_works','work_files','work_versions','work_history','orcid_connections','work_collaborations','researcher_profiles','authorship_claims','review_members','review_rounds','review_assignments','review_conflicts','work_notice_reads','review_response_checks','program_drafts','program_publications','program_spaces')`);
-    if (result.rows.length !== 32 || result.rows.some((role) => role.rolsuper || role.rolbypassrls || role.owns_table || !role.relrowsecurity || !role.relforcerowsecurity)) {
+      AND c.relname IN ('events','event_series','event_editions','people','identities','affiliations','memberships','role_assignments','audit_entries','site_drafts','site_publications','organization_invitations','event_configurations','scientific_call_drafts','scientific_call_publications','author_works','work_files','work_versions','work_history','orcid_connections','work_collaborations','researcher_profiles','authorship_claims','review_members','review_rounds','review_assignments','review_conflicts','work_notice_reads','review_response_checks','program_drafts','program_publications','program_spaces','registration_drafts','registration_publications','registration_entries','registration_history')`);
+    if (result.rows.length !== 36 || result.rows.some((role) => role.rolsuper || role.rolbypassrls || role.owns_table || !role.relrowsecurity || !role.relforcerowsecurity)) {
       throw new Error('Runtime database role or RLS configuration is unsafe');
     }
   }
@@ -38,7 +38,7 @@ export class DatabaseService implements OnModuleDestroy {
   oidcPerson(issuer: string, subject: string, name: string): Promise<string> {
     return this.db.transaction(async (tx) => {
       await tx.execute(sql`SELECT set_config('sep.organization_id', '', true), set_config('sep.event_id', '', true),
-        set_config('sep.review_rpc','',true),set_config('sep.review_target','',true),set_config('sep.review_email','',true),set_config('sep.submissions_staff', 'false', true), set_config('sep.organization_admin', 'false', true), set_config('sep.person_id', '', true), set_config('sep.authorship_rpc', '', true), set_config('sep.authorship_email', '', true), set_config('sep.directory_read', '', true), set_config('sep.work_invitation_hash', '', true), set_config('sep.invitation_hash', '', true),
+        set_config('sep.registration_staff','false',true),set_config('sep.registration_rpc','',true),set_config('sep.review_rpc','',true),set_config('sep.review_target','',true),set_config('sep.review_email','',true),set_config('sep.submissions_staff', 'false', true), set_config('sep.organization_admin', 'false', true), set_config('sep.person_id', '', true), set_config('sep.authorship_rpc', '', true), set_config('sep.authorship_email', '', true), set_config('sep.directory_read', '', true), set_config('sep.work_invitation_hash', '', true), set_config('sep.invitation_hash', '', true),
         set_config('sep.auth_provision', 'true', true), set_config('sep.auth_issuer', ${issuer}, true), set_config('sep.auth_subject', ${subject}, true)`);
       await tx.execute(sql`SELECT pg_advisory_xact_lock(hashtextextended(${'identity:' + issuer + ':' + subject}, 0))`);
       const [identity] = await tx.select({ personId: identities.personId, active: identities.active }).from(identities).where(and(eq(identities.issuer, issuer), eq(identities.subject, subject)));
@@ -64,7 +64,7 @@ export class DatabaseService implements OnModuleDestroy {
       await tx.execute(sql`SELECT set_config('sep.organization_id', ${scope.organizationId}, true),
         set_config('sep.event_id', ${scope.eventId ?? ''}, true),
         set_config('sep.person_id', ${scope.personId ?? ''}, true),
-        set_config('sep.review_rpc','',true),set_config('sep.review_target','',true),set_config('sep.review_email','',true),set_config('sep.submissions_staff', 'false', true), set_config('sep.organization_admin', ${scope.organizationAdmin ? 'true' : 'false'}, true), set_config('sep.authorship_rpc', '', true), set_config('sep.authorship_email', '', true), set_config('sep.directory_read', '', true), set_config('sep.work_invitation_hash', '', true), set_config('sep.invitation_hash', '', true),
+        set_config('sep.registration_staff','false',true),set_config('sep.registration_rpc','',true),set_config('sep.review_rpc','',true),set_config('sep.review_target','',true),set_config('sep.review_email','',true),set_config('sep.submissions_staff', 'false', true), set_config('sep.organization_admin', ${scope.organizationAdmin ? 'true' : 'false'}, true), set_config('sep.authorship_rpc', '', true), set_config('sep.authorship_email', '', true), set_config('sep.directory_read', '', true), set_config('sep.work_invitation_hash', '', true), set_config('sep.invitation_hash', '', true),
         set_config('sep.auth_provision', 'false', true), set_config('sep.auth_issuer', '', true), set_config('sep.auth_subject', '', true)`);
       return action(tx);
     });

@@ -1,5 +1,11 @@
 const messages = {
   es: {
+    REGISTRATION_CLOSED:'La recepción de inscripciones no está abierta. Puedes consultar tu solicitud o contactar al organizador.',
+    REGISTRATION_STALE:'La configuración de inscripción cambió. Actualiza y revisa las condiciones antes de continuar.',
+    REGISTRATION_FULL:'No hay plazas disponibles para confirmar esta modalidad. Revisa el cupo o mantén la solicitud en espera.',
+    REGISTRATION_STATE:'Esta operación no está disponible para el estado actual de la inscripción.',
+    REGISTRATION_INCOMPLETE:'Revisa las fechas y define al menos una categoría activa con nombre en ambos idiomas y una modalidad.',
+    REGISTRATION_CAPACITY:'El cupo no puede quedar por debajo de las plazas ya reservadas en esa modalidad.',
     PROGRAM_SPACE_INVALID: 'Selecciona salas activas del evento: una sala física para lo presencial y un canal virtual para lo virtual; una sesión híbrida necesita ambos.',
     PROGRAM_SPACE_DUPLICATE: 'Ya existe un espacio con ese código o con el mismo nombre y ubicación.',
     PROGRAM_SPACE_IN_USE: 'El espacio está asignado en el borrador. Cambia primero las sesiones antes de desactivarlo o cambiar su tipo.',
@@ -50,6 +56,12 @@ const messages = {
     INTERNAL_ERROR: 'No se pudo completar la solicitud.',
   },
   en: {
+    REGISTRATION_CLOSED:'Registration is not open. You can view your application or contact the organizer.',
+    REGISTRATION_STALE:'Registration settings changed. Refresh and review the conditions before continuing.',
+    REGISTRATION_FULL:'There are no seats available to confirm this attendance mode. Review capacity or keep the application waitlisted.',
+    REGISTRATION_STATE:'This operation is not available for the current registration state.',
+    REGISTRATION_INCOMPLETE:'Review the dates and define at least one active category with names in both languages and an attendance mode.',
+    REGISTRATION_CAPACITY:'Capacity cannot be lower than the seats already reserved for that attendance mode.',
     PROGRAM_SPACE_INVALID: 'Choose active event spaces: a physical room for in-person sessions, a virtual channel for online sessions, and both for hybrid sessions.',
     PROGRAM_SPACE_DUPLICATE: 'A space with that code or the same name and location already exists.',
     PROGRAM_SPACE_IN_USE: 'This space is assigned in the draft. Reassign its sessions before deactivating it or changing its type.',

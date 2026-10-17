@@ -10866,6 +10866,3918 @@
           "public"
         ]
       }
+    },
+    "/api/v1/events/{eventId}/registration/settings": {
+      "get": {
+        "operationId": "RegistrationController_settings",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "content": {
+                      "type": "object",
+                      "properties": {
+                        "opensOn": {
+                          "type": "string",
+                          "format": "date",
+                          "nullable": true
+                        },
+                        "closesOn": {
+                          "type": "string",
+                          "format": "date",
+                          "nullable": true
+                        },
+                        "instructionsEs": {
+                          "type": "string"
+                        },
+                        "instructionsEn": {
+                          "type": "string"
+                        },
+                        "approvalRequired": {
+                          "type": "boolean"
+                        },
+                        "capacityInPerson": {
+                          "type": "integer",
+                          "nullable": true
+                        },
+                        "capacityVirtual": {
+                          "type": "integer",
+                          "nullable": true
+                        },
+                        "modalities": {
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "enum": [
+                              "in_person",
+                              "virtual"
+                            ]
+                          }
+                        },
+                        "categories": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "format": "uuid"
+                              },
+                              "nameEs": {
+                                "type": "string"
+                              },
+                              "nameEn": {
+                                "type": "string"
+                              },
+                              "active": {
+                                "type": "boolean"
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "nameEs",
+                              "nameEn",
+                              "active"
+                            ]
+                          }
+                        }
+                      },
+                      "required": [
+                        "opensOn",
+                        "closesOn",
+                        "instructionsEs",
+                        "instructionsEn",
+                        "approvalRequired",
+                        "capacityInPerson",
+                        "capacityVirtual",
+                        "modalities",
+                        "categories"
+                      ]
+                    },
+                    "revision": {
+                      "type": "integer"
+                    },
+                    "publication": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "content": {
+                          "type": "object",
+                          "properties": {
+                            "opensOn": {
+                              "type": "string",
+                              "format": "date",
+                              "nullable": true
+                            },
+                            "closesOn": {
+                              "type": "string",
+                              "format": "date",
+                              "nullable": true
+                            },
+                            "instructionsEs": {
+                              "type": "string"
+                            },
+                            "instructionsEn": {
+                              "type": "string"
+                            },
+                            "approvalRequired": {
+                              "type": "boolean"
+                            },
+                            "capacityInPerson": {
+                              "type": "integer",
+                              "nullable": true
+                            },
+                            "capacityVirtual": {
+                              "type": "integer",
+                              "nullable": true
+                            },
+                            "modalities": {
+                              "type": "array",
+                              "items": {
+                                "type": "string",
+                                "enum": [
+                                  "in_person",
+                                  "virtual"
+                                ]
+                              }
+                            },
+                            "categories": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "id": {
+                                    "type": "string",
+                                    "format": "uuid"
+                                  },
+                                  "nameEs": {
+                                    "type": "string"
+                                  },
+                                  "nameEn": {
+                                    "type": "string"
+                                  },
+                                  "active": {
+                                    "type": "boolean"
+                                  }
+                                },
+                                "required": [
+                                  "id",
+                                  "nameEs",
+                                  "nameEn",
+                                  "active"
+                                ]
+                              }
+                            }
+                          },
+                          "required": [
+                            "opensOn",
+                            "closesOn",
+                            "instructionsEs",
+                            "instructionsEn",
+                            "approvalRequired",
+                            "capacityInPerson",
+                            "capacityVirtual",
+                            "modalities",
+                            "categories"
+                          ]
+                        },
+                        "timezone": {
+                          "type": "string"
+                        },
+                        "revision": {
+                          "type": "integer"
+                        },
+                        "publishedAt": {
+                          "type": "string",
+                          "format": "date-time"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "content",
+                        "timezone",
+                        "revision",
+                        "publishedAt"
+                      ],
+                      "nullable": true
+                    },
+                    "publishedActive": {
+                      "type": "boolean"
+                    },
+                    "timezone": {
+                      "type": "string"
+                    },
+                    "counts": {
+                      "type": "object",
+                      "properties": {
+                        "pending": {
+                          "type": "integer"
+                        },
+                        "confirmed": {
+                          "type": "integer"
+                        },
+                        "waitlisted": {
+                          "type": "integer"
+                        },
+                        "inPerson": {
+                          "type": "integer"
+                        },
+                        "virtual": {
+                          "type": "integer"
+                        },
+                        "ownPosition": {
+                          "type": "integer",
+                          "nullable": true
+                        }
+                      },
+                      "required": [
+                        "pending",
+                        "confirmed",
+                        "waitlisted",
+                        "inPerson",
+                        "virtual",
+                        "ownPosition"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "content",
+                    "revision",
+                    "publication",
+                    "publishedActive",
+                    "timezone",
+                    "counts"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "registrations"
+        ]
+      },
+      "put": {
+        "operationId": "RegistrationController_save",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveRegistrationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "content": {
+                      "type": "object",
+                      "properties": {
+                        "opensOn": {
+                          "type": "string",
+                          "format": "date",
+                          "nullable": true
+                        },
+                        "closesOn": {
+                          "type": "string",
+                          "format": "date",
+                          "nullable": true
+                        },
+                        "instructionsEs": {
+                          "type": "string"
+                        },
+                        "instructionsEn": {
+                          "type": "string"
+                        },
+                        "approvalRequired": {
+                          "type": "boolean"
+                        },
+                        "capacityInPerson": {
+                          "type": "integer",
+                          "nullable": true
+                        },
+                        "capacityVirtual": {
+                          "type": "integer",
+                          "nullable": true
+                        },
+                        "modalities": {
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "enum": [
+                              "in_person",
+                              "virtual"
+                            ]
+                          }
+                        },
+                        "categories": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "format": "uuid"
+                              },
+                              "nameEs": {
+                                "type": "string"
+                              },
+                              "nameEn": {
+                                "type": "string"
+                              },
+                              "active": {
+                                "type": "boolean"
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "nameEs",
+                              "nameEn",
+                              "active"
+                            ]
+                          }
+                        }
+                      },
+                      "required": [
+                        "opensOn",
+                        "closesOn",
+                        "instructionsEs",
+                        "instructionsEn",
+                        "approvalRequired",
+                        "capacityInPerson",
+                        "capacityVirtual",
+                        "modalities",
+                        "categories"
+                      ]
+                    },
+                    "revision": {
+                      "type": "integer"
+                    },
+                    "publication": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "content": {
+                          "type": "object",
+                          "properties": {
+                            "opensOn": {
+                              "type": "string",
+                              "format": "date",
+                              "nullable": true
+                            },
+                            "closesOn": {
+                              "type": "string",
+                              "format": "date",
+                              "nullable": true
+                            },
+                            "instructionsEs": {
+                              "type": "string"
+                            },
+                            "instructionsEn": {
+                              "type": "string"
+                            },
+                            "approvalRequired": {
+                              "type": "boolean"
+                            },
+                            "capacityInPerson": {
+                              "type": "integer",
+                              "nullable": true
+                            },
+                            "capacityVirtual": {
+                              "type": "integer",
+                              "nullable": true
+                            },
+                            "modalities": {
+                              "type": "array",
+                              "items": {
+                                "type": "string",
+                                "enum": [
+                                  "in_person",
+                                  "virtual"
+                                ]
+                              }
+                            },
+                            "categories": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "id": {
+                                    "type": "string",
+                                    "format": "uuid"
+                                  },
+                                  "nameEs": {
+                                    "type": "string"
+                                  },
+                                  "nameEn": {
+                                    "type": "string"
+                                  },
+                                  "active": {
+                                    "type": "boolean"
+                                  }
+                                },
+                                "required": [
+                                  "id",
+                                  "nameEs",
+                                  "nameEn",
+                                  "active"
+                                ]
+                              }
+                            }
+                          },
+                          "required": [
+                            "opensOn",
+                            "closesOn",
+                            "instructionsEs",
+                            "instructionsEn",
+                            "approvalRequired",
+                            "capacityInPerson",
+                            "capacityVirtual",
+                            "modalities",
+                            "categories"
+                          ]
+                        },
+                        "timezone": {
+                          "type": "string"
+                        },
+                        "revision": {
+                          "type": "integer"
+                        },
+                        "publishedAt": {
+                          "type": "string",
+                          "format": "date-time"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "content",
+                        "timezone",
+                        "revision",
+                        "publishedAt"
+                      ],
+                      "nullable": true
+                    },
+                    "publishedActive": {
+                      "type": "boolean"
+                    },
+                    "timezone": {
+                      "type": "string"
+                    },
+                    "counts": {
+                      "type": "object",
+                      "properties": {
+                        "pending": {
+                          "type": "integer"
+                        },
+                        "confirmed": {
+                          "type": "integer"
+                        },
+                        "waitlisted": {
+                          "type": "integer"
+                        },
+                        "inPerson": {
+                          "type": "integer"
+                        },
+                        "virtual": {
+                          "type": "integer"
+                        },
+                        "ownPosition": {
+                          "type": "integer",
+                          "nullable": true
+                        }
+                      },
+                      "required": [
+                        "pending",
+                        "confirmed",
+                        "waitlisted",
+                        "inPerson",
+                        "virtual",
+                        "ownPosition"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "content",
+                    "revision",
+                    "publication",
+                    "publishedActive",
+                    "timezone",
+                    "counts"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "registrations"
+        ]
+      }
+    },
+    "/api/v1/events/{eventId}/registration/settings/publish": {
+      "post": {
+        "operationId": "RegistrationController_publish",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RevisionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "content": {
+                      "type": "object",
+                      "properties": {
+                        "opensOn": {
+                          "type": "string",
+                          "format": "date",
+                          "nullable": true
+                        },
+                        "closesOn": {
+                          "type": "string",
+                          "format": "date",
+                          "nullable": true
+                        },
+                        "instructionsEs": {
+                          "type": "string"
+                        },
+                        "instructionsEn": {
+                          "type": "string"
+                        },
+                        "approvalRequired": {
+                          "type": "boolean"
+                        },
+                        "capacityInPerson": {
+                          "type": "integer",
+                          "nullable": true
+                        },
+                        "capacityVirtual": {
+                          "type": "integer",
+                          "nullable": true
+                        },
+                        "modalities": {
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "enum": [
+                              "in_person",
+                              "virtual"
+                            ]
+                          }
+                        },
+                        "categories": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "format": "uuid"
+                              },
+                              "nameEs": {
+                                "type": "string"
+                              },
+                              "nameEn": {
+                                "type": "string"
+                              },
+                              "active": {
+                                "type": "boolean"
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "nameEs",
+                              "nameEn",
+                              "active"
+                            ]
+                          }
+                        }
+                      },
+                      "required": [
+                        "opensOn",
+                        "closesOn",
+                        "instructionsEs",
+                        "instructionsEn",
+                        "approvalRequired",
+                        "capacityInPerson",
+                        "capacityVirtual",
+                        "modalities",
+                        "categories"
+                      ]
+                    },
+                    "revision": {
+                      "type": "integer"
+                    },
+                    "publication": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "content": {
+                          "type": "object",
+                          "properties": {
+                            "opensOn": {
+                              "type": "string",
+                              "format": "date",
+                              "nullable": true
+                            },
+                            "closesOn": {
+                              "type": "string",
+                              "format": "date",
+                              "nullable": true
+                            },
+                            "instructionsEs": {
+                              "type": "string"
+                            },
+                            "instructionsEn": {
+                              "type": "string"
+                            },
+                            "approvalRequired": {
+                              "type": "boolean"
+                            },
+                            "capacityInPerson": {
+                              "type": "integer",
+                              "nullable": true
+                            },
+                            "capacityVirtual": {
+                              "type": "integer",
+                              "nullable": true
+                            },
+                            "modalities": {
+                              "type": "array",
+                              "items": {
+                                "type": "string",
+                                "enum": [
+                                  "in_person",
+                                  "virtual"
+                                ]
+                              }
+                            },
+                            "categories": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "id": {
+                                    "type": "string",
+                                    "format": "uuid"
+                                  },
+                                  "nameEs": {
+                                    "type": "string"
+                                  },
+                                  "nameEn": {
+                                    "type": "string"
+                                  },
+                                  "active": {
+                                    "type": "boolean"
+                                  }
+                                },
+                                "required": [
+                                  "id",
+                                  "nameEs",
+                                  "nameEn",
+                                  "active"
+                                ]
+                              }
+                            }
+                          },
+                          "required": [
+                            "opensOn",
+                            "closesOn",
+                            "instructionsEs",
+                            "instructionsEn",
+                            "approvalRequired",
+                            "capacityInPerson",
+                            "capacityVirtual",
+                            "modalities",
+                            "categories"
+                          ]
+                        },
+                        "timezone": {
+                          "type": "string"
+                        },
+                        "revision": {
+                          "type": "integer"
+                        },
+                        "publishedAt": {
+                          "type": "string",
+                          "format": "date-time"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "content",
+                        "timezone",
+                        "revision",
+                        "publishedAt"
+                      ],
+                      "nullable": true
+                    },
+                    "publishedActive": {
+                      "type": "boolean"
+                    },
+                    "timezone": {
+                      "type": "string"
+                    },
+                    "counts": {
+                      "type": "object",
+                      "properties": {
+                        "pending": {
+                          "type": "integer"
+                        },
+                        "confirmed": {
+                          "type": "integer"
+                        },
+                        "waitlisted": {
+                          "type": "integer"
+                        },
+                        "inPerson": {
+                          "type": "integer"
+                        },
+                        "virtual": {
+                          "type": "integer"
+                        },
+                        "ownPosition": {
+                          "type": "integer",
+                          "nullable": true
+                        }
+                      },
+                      "required": [
+                        "pending",
+                        "confirmed",
+                        "waitlisted",
+                        "inPerson",
+                        "virtual",
+                        "ownPosition"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "content",
+                    "revision",
+                    "publication",
+                    "publishedActive",
+                    "timezone",
+                    "counts"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "registrations"
+        ]
+      }
+    },
+    "/api/v1/events/{eventId}/registration/settings/withdraw": {
+      "post": {
+        "operationId": "RegistrationController_withdraw",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RevisionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "content": {
+                      "type": "object",
+                      "properties": {
+                        "opensOn": {
+                          "type": "string",
+                          "format": "date",
+                          "nullable": true
+                        },
+                        "closesOn": {
+                          "type": "string",
+                          "format": "date",
+                          "nullable": true
+                        },
+                        "instructionsEs": {
+                          "type": "string"
+                        },
+                        "instructionsEn": {
+                          "type": "string"
+                        },
+                        "approvalRequired": {
+                          "type": "boolean"
+                        },
+                        "capacityInPerson": {
+                          "type": "integer",
+                          "nullable": true
+                        },
+                        "capacityVirtual": {
+                          "type": "integer",
+                          "nullable": true
+                        },
+                        "modalities": {
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "enum": [
+                              "in_person",
+                              "virtual"
+                            ]
+                          }
+                        },
+                        "categories": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "format": "uuid"
+                              },
+                              "nameEs": {
+                                "type": "string"
+                              },
+                              "nameEn": {
+                                "type": "string"
+                              },
+                              "active": {
+                                "type": "boolean"
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "nameEs",
+                              "nameEn",
+                              "active"
+                            ]
+                          }
+                        }
+                      },
+                      "required": [
+                        "opensOn",
+                        "closesOn",
+                        "instructionsEs",
+                        "instructionsEn",
+                        "approvalRequired",
+                        "capacityInPerson",
+                        "capacityVirtual",
+                        "modalities",
+                        "categories"
+                      ]
+                    },
+                    "revision": {
+                      "type": "integer"
+                    },
+                    "publication": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "content": {
+                          "type": "object",
+                          "properties": {
+                            "opensOn": {
+                              "type": "string",
+                              "format": "date",
+                              "nullable": true
+                            },
+                            "closesOn": {
+                              "type": "string",
+                              "format": "date",
+                              "nullable": true
+                            },
+                            "instructionsEs": {
+                              "type": "string"
+                            },
+                            "instructionsEn": {
+                              "type": "string"
+                            },
+                            "approvalRequired": {
+                              "type": "boolean"
+                            },
+                            "capacityInPerson": {
+                              "type": "integer",
+                              "nullable": true
+                            },
+                            "capacityVirtual": {
+                              "type": "integer",
+                              "nullable": true
+                            },
+                            "modalities": {
+                              "type": "array",
+                              "items": {
+                                "type": "string",
+                                "enum": [
+                                  "in_person",
+                                  "virtual"
+                                ]
+                              }
+                            },
+                            "categories": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "id": {
+                                    "type": "string",
+                                    "format": "uuid"
+                                  },
+                                  "nameEs": {
+                                    "type": "string"
+                                  },
+                                  "nameEn": {
+                                    "type": "string"
+                                  },
+                                  "active": {
+                                    "type": "boolean"
+                                  }
+                                },
+                                "required": [
+                                  "id",
+                                  "nameEs",
+                                  "nameEn",
+                                  "active"
+                                ]
+                              }
+                            }
+                          },
+                          "required": [
+                            "opensOn",
+                            "closesOn",
+                            "instructionsEs",
+                            "instructionsEn",
+                            "approvalRequired",
+                            "capacityInPerson",
+                            "capacityVirtual",
+                            "modalities",
+                            "categories"
+                          ]
+                        },
+                        "timezone": {
+                          "type": "string"
+                        },
+                        "revision": {
+                          "type": "integer"
+                        },
+                        "publishedAt": {
+                          "type": "string",
+                          "format": "date-time"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "content",
+                        "timezone",
+                        "revision",
+                        "publishedAt"
+                      ],
+                      "nullable": true
+                    },
+                    "publishedActive": {
+                      "type": "boolean"
+                    },
+                    "timezone": {
+                      "type": "string"
+                    },
+                    "counts": {
+                      "type": "object",
+                      "properties": {
+                        "pending": {
+                          "type": "integer"
+                        },
+                        "confirmed": {
+                          "type": "integer"
+                        },
+                        "waitlisted": {
+                          "type": "integer"
+                        },
+                        "inPerson": {
+                          "type": "integer"
+                        },
+                        "virtual": {
+                          "type": "integer"
+                        },
+                        "ownPosition": {
+                          "type": "integer",
+                          "nullable": true
+                        }
+                      },
+                      "required": [
+                        "pending",
+                        "confirmed",
+                        "waitlisted",
+                        "inPerson",
+                        "virtual",
+                        "ownPosition"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "content",
+                    "revision",
+                    "publication",
+                    "publishedActive",
+                    "timezone",
+                    "counts"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "registrations"
+        ]
+      }
+    },
+    "/api/v1/events/{eventId}/registration/mine": {
+      "get": {
+        "operationId": "RegistrationController_mine",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "registration": {
+                      "type": "object",
+                      "properties": {
+                        "entry": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "format": "uuid"
+                            },
+                            "personId": {
+                              "type": "string",
+                              "format": "uuid"
+                            },
+                            "name": {
+                              "type": "string"
+                            },
+                            "email": {
+                              "type": "string",
+                              "nullable": true
+                            },
+                            "affiliations": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "institution": {
+                                    "type": "string"
+                                  },
+                                  "countryCode": {
+                                    "type": "string"
+                                  }
+                                },
+                                "required": [
+                                  "institution",
+                                  "countryCode"
+                                ]
+                              }
+                            },
+                            "category": {
+                              "type": "object",
+                              "properties": {
+                                "id": {
+                                  "type": "string",
+                                  "format": "uuid"
+                                },
+                                "nameEs": {
+                                  "type": "string"
+                                },
+                                "nameEn": {
+                                  "type": "string"
+                                },
+                                "active": {
+                                  "type": "boolean"
+                                }
+                              },
+                              "required": [
+                                "id",
+                                "nameEs",
+                                "nameEn",
+                                "active"
+                              ]
+                            },
+                            "modality": {
+                              "type": "string",
+                              "enum": [
+                                "in_person",
+                                "virtual"
+                              ]
+                            },
+                            "status": {
+                              "type": "string",
+                              "enum": [
+                                "pending",
+                                "confirmed",
+                                "waitlisted",
+                                "rejected",
+                                "cancelled"
+                              ]
+                            },
+                            "revision": {
+                              "type": "integer"
+                            },
+                            "requestedAt": {
+                              "type": "string",
+                              "format": "date-time"
+                            },
+                            "updatedAt": {
+                              "type": "string",
+                              "format": "date-time"
+                            },
+                            "policy": {
+                              "type": "object",
+                              "properties": {
+                                "id": {
+                                  "type": "string",
+                                  "format": "uuid"
+                                },
+                                "content": {
+                                  "type": "object",
+                                  "properties": {
+                                    "opensOn": {
+                                      "type": "string",
+                                      "format": "date",
+                                      "nullable": true
+                                    },
+                                    "closesOn": {
+                                      "type": "string",
+                                      "format": "date",
+                                      "nullable": true
+                                    },
+                                    "instructionsEs": {
+                                      "type": "string"
+                                    },
+                                    "instructionsEn": {
+                                      "type": "string"
+                                    },
+                                    "approvalRequired": {
+                                      "type": "boolean"
+                                    },
+                                    "capacityInPerson": {
+                                      "type": "integer",
+                                      "nullable": true
+                                    },
+                                    "capacityVirtual": {
+                                      "type": "integer",
+                                      "nullable": true
+                                    },
+                                    "modalities": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string",
+                                        "enum": [
+                                          "in_person",
+                                          "virtual"
+                                        ]
+                                      }
+                                    },
+                                    "categories": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "object",
+                                        "properties": {
+                                          "id": {
+                                            "type": "string",
+                                            "format": "uuid"
+                                          },
+                                          "nameEs": {
+                                            "type": "string"
+                                          },
+                                          "nameEn": {
+                                            "type": "string"
+                                          },
+                                          "active": {
+                                            "type": "boolean"
+                                          }
+                                        },
+                                        "required": [
+                                          "id",
+                                          "nameEs",
+                                          "nameEn",
+                                          "active"
+                                        ]
+                                      }
+                                    }
+                                  },
+                                  "required": [
+                                    "opensOn",
+                                    "closesOn",
+                                    "instructionsEs",
+                                    "instructionsEn",
+                                    "approvalRequired",
+                                    "capacityInPerson",
+                                    "capacityVirtual",
+                                    "modalities",
+                                    "categories"
+                                  ]
+                                },
+                                "timezone": {
+                                  "type": "string"
+                                },
+                                "revision": {
+                                  "type": "integer"
+                                },
+                                "publishedAt": {
+                                  "type": "string",
+                                  "format": "date-time"
+                                }
+                              },
+                              "required": [
+                                "id",
+                                "content",
+                                "timezone",
+                                "revision",
+                                "publishedAt"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "personId",
+                            "name",
+                            "email",
+                            "affiliations",
+                            "category",
+                            "modality",
+                            "status",
+                            "revision",
+                            "requestedAt",
+                            "updatedAt",
+                            "policy"
+                          ]
+                        },
+                        "history": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "format": "uuid"
+                              },
+                              "action": {
+                                "type": "string"
+                              },
+                              "status": {
+                                "type": "string",
+                                "enum": [
+                                  "pending",
+                                  "confirmed",
+                                  "waitlisted",
+                                  "rejected",
+                                  "cancelled"
+                                ]
+                              },
+                              "actorName": {
+                                "type": "string"
+                              },
+                              "message": {
+                                "type": "string"
+                              },
+                              "createdAt": {
+                                "type": "string",
+                                "format": "date-time"
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "action",
+                              "status",
+                              "actorName",
+                              "message",
+                              "createdAt"
+                            ]
+                          }
+                        }
+                      },
+                      "required": [
+                        "entry",
+                        "history"
+                      ],
+                      "nullable": true
+                    },
+                    "reception": {
+                      "type": "object",
+                      "properties": {
+                        "publication": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "format": "uuid"
+                            },
+                            "content": {
+                              "type": "object",
+                              "properties": {
+                                "opensOn": {
+                                  "type": "string",
+                                  "format": "date",
+                                  "nullable": true
+                                },
+                                "closesOn": {
+                                  "type": "string",
+                                  "format": "date",
+                                  "nullable": true
+                                },
+                                "instructionsEs": {
+                                  "type": "string"
+                                },
+                                "instructionsEn": {
+                                  "type": "string"
+                                },
+                                "approvalRequired": {
+                                  "type": "boolean"
+                                },
+                                "capacityInPerson": {
+                                  "type": "integer",
+                                  "nullable": true
+                                },
+                                "capacityVirtual": {
+                                  "type": "integer",
+                                  "nullable": true
+                                },
+                                "modalities": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string",
+                                    "enum": [
+                                      "in_person",
+                                      "virtual"
+                                    ]
+                                  }
+                                },
+                                "categories": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "object",
+                                    "properties": {
+                                      "id": {
+                                        "type": "string",
+                                        "format": "uuid"
+                                      },
+                                      "nameEs": {
+                                        "type": "string"
+                                      },
+                                      "nameEn": {
+                                        "type": "string"
+                                      },
+                                      "active": {
+                                        "type": "boolean"
+                                      }
+                                    },
+                                    "required": [
+                                      "id",
+                                      "nameEs",
+                                      "nameEn",
+                                      "active"
+                                    ]
+                                  }
+                                }
+                              },
+                              "required": [
+                                "opensOn",
+                                "closesOn",
+                                "instructionsEs",
+                                "instructionsEn",
+                                "approvalRequired",
+                                "capacityInPerson",
+                                "capacityVirtual",
+                                "modalities",
+                                "categories"
+                              ]
+                            },
+                            "timezone": {
+                              "type": "string"
+                            },
+                            "revision": {
+                              "type": "integer"
+                            },
+                            "publishedAt": {
+                              "type": "string",
+                              "format": "date-time"
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "content",
+                            "timezone",
+                            "revision",
+                            "publishedAt"
+                          ]
+                        },
+                        "available": {
+                          "type": "boolean"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "enum": [
+                            "open",
+                            "upcoming",
+                            "closed",
+                            "inactive",
+                            "timezone_changed"
+                          ]
+                        },
+                        "counts": {
+                          "type": "object",
+                          "properties": {
+                            "pending": {
+                              "type": "integer"
+                            },
+                            "confirmed": {
+                              "type": "integer"
+                            },
+                            "waitlisted": {
+                              "type": "integer"
+                            },
+                            "inPerson": {
+                              "type": "integer"
+                            },
+                            "virtual": {
+                              "type": "integer"
+                            },
+                            "ownPosition": {
+                              "type": "integer",
+                              "nullable": true
+                            }
+                          },
+                          "required": [
+                            "pending",
+                            "confirmed",
+                            "waitlisted",
+                            "inPerson",
+                            "virtual",
+                            "ownPosition"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "publication",
+                        "available",
+                        "reason",
+                        "counts"
+                      ],
+                      "nullable": true
+                    },
+                    "profile": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string"
+                        },
+                        "affiliations": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "institution": {
+                                "type": "string"
+                              },
+                              "countryCode": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "institution",
+                              "countryCode"
+                            ]
+                          }
+                        },
+                        "email": {
+                          "type": "string",
+                          "nullable": true
+                        }
+                      },
+                      "required": [
+                        "name",
+                        "affiliations",
+                        "email"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "registration",
+                    "reception",
+                    "profile"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "registrations"
+        ]
+      },
+      "post": {
+        "operationId": "RegistrationController_apply",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApplyRegistrationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "entry": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "personId": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "email": {
+                          "type": "string",
+                          "nullable": true
+                        },
+                        "affiliations": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "institution": {
+                                "type": "string"
+                              },
+                              "countryCode": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "institution",
+                              "countryCode"
+                            ]
+                          }
+                        },
+                        "category": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "format": "uuid"
+                            },
+                            "nameEs": {
+                              "type": "string"
+                            },
+                            "nameEn": {
+                              "type": "string"
+                            },
+                            "active": {
+                              "type": "boolean"
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "nameEs",
+                            "nameEn",
+                            "active"
+                          ]
+                        },
+                        "modality": {
+                          "type": "string",
+                          "enum": [
+                            "in_person",
+                            "virtual"
+                          ]
+                        },
+                        "status": {
+                          "type": "string",
+                          "enum": [
+                            "pending",
+                            "confirmed",
+                            "waitlisted",
+                            "rejected",
+                            "cancelled"
+                          ]
+                        },
+                        "revision": {
+                          "type": "integer"
+                        },
+                        "requestedAt": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "updatedAt": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "policy": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "format": "uuid"
+                            },
+                            "content": {
+                              "type": "object",
+                              "properties": {
+                                "opensOn": {
+                                  "type": "string",
+                                  "format": "date",
+                                  "nullable": true
+                                },
+                                "closesOn": {
+                                  "type": "string",
+                                  "format": "date",
+                                  "nullable": true
+                                },
+                                "instructionsEs": {
+                                  "type": "string"
+                                },
+                                "instructionsEn": {
+                                  "type": "string"
+                                },
+                                "approvalRequired": {
+                                  "type": "boolean"
+                                },
+                                "capacityInPerson": {
+                                  "type": "integer",
+                                  "nullable": true
+                                },
+                                "capacityVirtual": {
+                                  "type": "integer",
+                                  "nullable": true
+                                },
+                                "modalities": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string",
+                                    "enum": [
+                                      "in_person",
+                                      "virtual"
+                                    ]
+                                  }
+                                },
+                                "categories": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "object",
+                                    "properties": {
+                                      "id": {
+                                        "type": "string",
+                                        "format": "uuid"
+                                      },
+                                      "nameEs": {
+                                        "type": "string"
+                                      },
+                                      "nameEn": {
+                                        "type": "string"
+                                      },
+                                      "active": {
+                                        "type": "boolean"
+                                      }
+                                    },
+                                    "required": [
+                                      "id",
+                                      "nameEs",
+                                      "nameEn",
+                                      "active"
+                                    ]
+                                  }
+                                }
+                              },
+                              "required": [
+                                "opensOn",
+                                "closesOn",
+                                "instructionsEs",
+                                "instructionsEn",
+                                "approvalRequired",
+                                "capacityInPerson",
+                                "capacityVirtual",
+                                "modalities",
+                                "categories"
+                              ]
+                            },
+                            "timezone": {
+                              "type": "string"
+                            },
+                            "revision": {
+                              "type": "integer"
+                            },
+                            "publishedAt": {
+                              "type": "string",
+                              "format": "date-time"
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "content",
+                            "timezone",
+                            "revision",
+                            "publishedAt"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "personId",
+                        "name",
+                        "email",
+                        "affiliations",
+                        "category",
+                        "modality",
+                        "status",
+                        "revision",
+                        "requestedAt",
+                        "updatedAt",
+                        "policy"
+                      ]
+                    },
+                    "history": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "action": {
+                            "type": "string"
+                          },
+                          "status": {
+                            "type": "string",
+                            "enum": [
+                              "pending",
+                              "confirmed",
+                              "waitlisted",
+                              "rejected",
+                              "cancelled"
+                            ]
+                          },
+                          "actorName": {
+                            "type": "string"
+                          },
+                          "message": {
+                            "type": "string"
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "format": "date-time"
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "action",
+                          "status",
+                          "actorName",
+                          "message",
+                          "createdAt"
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "entry",
+                    "history"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "registrations"
+        ]
+      }
+    },
+    "/api/v1/events/{eventId}/registration/mine/cancel": {
+      "post": {
+        "operationId": "RegistrationController_cancel",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RevisionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "entry": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "personId": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "email": {
+                          "type": "string",
+                          "nullable": true
+                        },
+                        "affiliations": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "institution": {
+                                "type": "string"
+                              },
+                              "countryCode": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "institution",
+                              "countryCode"
+                            ]
+                          }
+                        },
+                        "category": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "format": "uuid"
+                            },
+                            "nameEs": {
+                              "type": "string"
+                            },
+                            "nameEn": {
+                              "type": "string"
+                            },
+                            "active": {
+                              "type": "boolean"
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "nameEs",
+                            "nameEn",
+                            "active"
+                          ]
+                        },
+                        "modality": {
+                          "type": "string",
+                          "enum": [
+                            "in_person",
+                            "virtual"
+                          ]
+                        },
+                        "status": {
+                          "type": "string",
+                          "enum": [
+                            "pending",
+                            "confirmed",
+                            "waitlisted",
+                            "rejected",
+                            "cancelled"
+                          ]
+                        },
+                        "revision": {
+                          "type": "integer"
+                        },
+                        "requestedAt": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "updatedAt": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "policy": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "format": "uuid"
+                            },
+                            "content": {
+                              "type": "object",
+                              "properties": {
+                                "opensOn": {
+                                  "type": "string",
+                                  "format": "date",
+                                  "nullable": true
+                                },
+                                "closesOn": {
+                                  "type": "string",
+                                  "format": "date",
+                                  "nullable": true
+                                },
+                                "instructionsEs": {
+                                  "type": "string"
+                                },
+                                "instructionsEn": {
+                                  "type": "string"
+                                },
+                                "approvalRequired": {
+                                  "type": "boolean"
+                                },
+                                "capacityInPerson": {
+                                  "type": "integer",
+                                  "nullable": true
+                                },
+                                "capacityVirtual": {
+                                  "type": "integer",
+                                  "nullable": true
+                                },
+                                "modalities": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string",
+                                    "enum": [
+                                      "in_person",
+                                      "virtual"
+                                    ]
+                                  }
+                                },
+                                "categories": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "object",
+                                    "properties": {
+                                      "id": {
+                                        "type": "string",
+                                        "format": "uuid"
+                                      },
+                                      "nameEs": {
+                                        "type": "string"
+                                      },
+                                      "nameEn": {
+                                        "type": "string"
+                                      },
+                                      "active": {
+                                        "type": "boolean"
+                                      }
+                                    },
+                                    "required": [
+                                      "id",
+                                      "nameEs",
+                                      "nameEn",
+                                      "active"
+                                    ]
+                                  }
+                                }
+                              },
+                              "required": [
+                                "opensOn",
+                                "closesOn",
+                                "instructionsEs",
+                                "instructionsEn",
+                                "approvalRequired",
+                                "capacityInPerson",
+                                "capacityVirtual",
+                                "modalities",
+                                "categories"
+                              ]
+                            },
+                            "timezone": {
+                              "type": "string"
+                            },
+                            "revision": {
+                              "type": "integer"
+                            },
+                            "publishedAt": {
+                              "type": "string",
+                              "format": "date-time"
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "content",
+                            "timezone",
+                            "revision",
+                            "publishedAt"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "personId",
+                        "name",
+                        "email",
+                        "affiliations",
+                        "category",
+                        "modality",
+                        "status",
+                        "revision",
+                        "requestedAt",
+                        "updatedAt",
+                        "policy"
+                      ]
+                    },
+                    "history": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "action": {
+                            "type": "string"
+                          },
+                          "status": {
+                            "type": "string",
+                            "enum": [
+                              "pending",
+                              "confirmed",
+                              "waitlisted",
+                              "rejected",
+                              "cancelled"
+                            ]
+                          },
+                          "actorName": {
+                            "type": "string"
+                          },
+                          "message": {
+                            "type": "string"
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "format": "date-time"
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "action",
+                          "status",
+                          "actorName",
+                          "message",
+                          "createdAt"
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "entry",
+                    "history"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "registrations"
+        ]
+      }
+    },
+    "/api/v1/events/{eventId}/registration/entries": {
+      "get": {
+        "operationId": "RegistrationController_list",
+        "parameters": [
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "pending",
+                "confirmed",
+                "waitlisted",
+                "rejected",
+                "cancelled"
+              ]
+            }
+          },
+          {
+            "name": "q",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/Object"
+            }
+          },
+          {
+            "name": "limit",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/Object"
+            }
+          },
+          {
+            "name": "offset",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/Object"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "personId": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "category": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "format": "uuid"
+                              },
+                              "nameEs": {
+                                "type": "string"
+                              },
+                              "nameEn": {
+                                "type": "string"
+                              },
+                              "active": {
+                                "type": "boolean"
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "nameEs",
+                              "nameEn",
+                              "active"
+                            ]
+                          },
+                          "modality": {
+                            "type": "string",
+                            "enum": [
+                              "in_person",
+                              "virtual"
+                            ]
+                          },
+                          "status": {
+                            "type": "string",
+                            "enum": [
+                              "pending",
+                              "confirmed",
+                              "waitlisted",
+                              "rejected",
+                              "cancelled"
+                            ]
+                          },
+                          "revision": {
+                            "type": "integer"
+                          },
+                          "requestedAt": {
+                            "type": "string",
+                            "format": "date-time"
+                          },
+                          "updatedAt": {
+                            "type": "string",
+                            "format": "date-time"
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "personId",
+                          "name",
+                          "category",
+                          "modality",
+                          "status",
+                          "revision",
+                          "requestedAt",
+                          "updatedAt"
+                        ]
+                      }
+                    },
+                    "total": {
+                      "type": "integer"
+                    },
+                    "limit": {
+                      "type": "integer"
+                    },
+                    "offset": {
+                      "type": "integer"
+                    },
+                    "counts": {
+                      "type": "object",
+                      "properties": {
+                        "pending": {
+                          "type": "integer"
+                        },
+                        "confirmed": {
+                          "type": "integer"
+                        },
+                        "waitlisted": {
+                          "type": "integer"
+                        },
+                        "inPerson": {
+                          "type": "integer"
+                        },
+                        "virtual": {
+                          "type": "integer"
+                        },
+                        "ownPosition": {
+                          "type": "integer",
+                          "nullable": true
+                        }
+                      },
+                      "required": [
+                        "pending",
+                        "confirmed",
+                        "waitlisted",
+                        "inPerson",
+                        "virtual",
+                        "ownPosition"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "data",
+                    "total",
+                    "limit",
+                    "offset",
+                    "counts"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "registrations"
+        ]
+      }
+    },
+    "/api/v1/events/{eventId}/registration/entries/{id}": {
+      "get": {
+        "operationId": "RegistrationController_detail",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "entry": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "personId": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "email": {
+                          "type": "string",
+                          "nullable": true
+                        },
+                        "affiliations": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "institution": {
+                                "type": "string"
+                              },
+                              "countryCode": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "institution",
+                              "countryCode"
+                            ]
+                          }
+                        },
+                        "category": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "format": "uuid"
+                            },
+                            "nameEs": {
+                              "type": "string"
+                            },
+                            "nameEn": {
+                              "type": "string"
+                            },
+                            "active": {
+                              "type": "boolean"
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "nameEs",
+                            "nameEn",
+                            "active"
+                          ]
+                        },
+                        "modality": {
+                          "type": "string",
+                          "enum": [
+                            "in_person",
+                            "virtual"
+                          ]
+                        },
+                        "status": {
+                          "type": "string",
+                          "enum": [
+                            "pending",
+                            "confirmed",
+                            "waitlisted",
+                            "rejected",
+                            "cancelled"
+                          ]
+                        },
+                        "revision": {
+                          "type": "integer"
+                        },
+                        "requestedAt": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "updatedAt": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "policy": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "format": "uuid"
+                            },
+                            "content": {
+                              "type": "object",
+                              "properties": {
+                                "opensOn": {
+                                  "type": "string",
+                                  "format": "date",
+                                  "nullable": true
+                                },
+                                "closesOn": {
+                                  "type": "string",
+                                  "format": "date",
+                                  "nullable": true
+                                },
+                                "instructionsEs": {
+                                  "type": "string"
+                                },
+                                "instructionsEn": {
+                                  "type": "string"
+                                },
+                                "approvalRequired": {
+                                  "type": "boolean"
+                                },
+                                "capacityInPerson": {
+                                  "type": "integer",
+                                  "nullable": true
+                                },
+                                "capacityVirtual": {
+                                  "type": "integer",
+                                  "nullable": true
+                                },
+                                "modalities": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string",
+                                    "enum": [
+                                      "in_person",
+                                      "virtual"
+                                    ]
+                                  }
+                                },
+                                "categories": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "object",
+                                    "properties": {
+                                      "id": {
+                                        "type": "string",
+                                        "format": "uuid"
+                                      },
+                                      "nameEs": {
+                                        "type": "string"
+                                      },
+                                      "nameEn": {
+                                        "type": "string"
+                                      },
+                                      "active": {
+                                        "type": "boolean"
+                                      }
+                                    },
+                                    "required": [
+                                      "id",
+                                      "nameEs",
+                                      "nameEn",
+                                      "active"
+                                    ]
+                                  }
+                                }
+                              },
+                              "required": [
+                                "opensOn",
+                                "closesOn",
+                                "instructionsEs",
+                                "instructionsEn",
+                                "approvalRequired",
+                                "capacityInPerson",
+                                "capacityVirtual",
+                                "modalities",
+                                "categories"
+                              ]
+                            },
+                            "timezone": {
+                              "type": "string"
+                            },
+                            "revision": {
+                              "type": "integer"
+                            },
+                            "publishedAt": {
+                              "type": "string",
+                              "format": "date-time"
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "content",
+                            "timezone",
+                            "revision",
+                            "publishedAt"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "personId",
+                        "name",
+                        "email",
+                        "affiliations",
+                        "category",
+                        "modality",
+                        "status",
+                        "revision",
+                        "requestedAt",
+                        "updatedAt",
+                        "policy"
+                      ]
+                    },
+                    "history": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "action": {
+                            "type": "string"
+                          },
+                          "status": {
+                            "type": "string",
+                            "enum": [
+                              "pending",
+                              "confirmed",
+                              "waitlisted",
+                              "rejected",
+                              "cancelled"
+                            ]
+                          },
+                          "actorName": {
+                            "type": "string"
+                          },
+                          "message": {
+                            "type": "string"
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "format": "date-time"
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "action",
+                          "status",
+                          "actorName",
+                          "message",
+                          "createdAt"
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "entry",
+                    "history"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "registrations"
+        ]
+      }
+    },
+    "/api/v1/events/{eventId}/registration/entries/{id}/decision": {
+      "post": {
+        "operationId": "RegistrationController_decide",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegistrationDecisionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "entry": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "personId": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "email": {
+                          "type": "string",
+                          "nullable": true
+                        },
+                        "affiliations": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "institution": {
+                                "type": "string"
+                              },
+                              "countryCode": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "institution",
+                              "countryCode"
+                            ]
+                          }
+                        },
+                        "category": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "format": "uuid"
+                            },
+                            "nameEs": {
+                              "type": "string"
+                            },
+                            "nameEn": {
+                              "type": "string"
+                            },
+                            "active": {
+                              "type": "boolean"
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "nameEs",
+                            "nameEn",
+                            "active"
+                          ]
+                        },
+                        "modality": {
+                          "type": "string",
+                          "enum": [
+                            "in_person",
+                            "virtual"
+                          ]
+                        },
+                        "status": {
+                          "type": "string",
+                          "enum": [
+                            "pending",
+                            "confirmed",
+                            "waitlisted",
+                            "rejected",
+                            "cancelled"
+                          ]
+                        },
+                        "revision": {
+                          "type": "integer"
+                        },
+                        "requestedAt": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "updatedAt": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "policy": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "format": "uuid"
+                            },
+                            "content": {
+                              "type": "object",
+                              "properties": {
+                                "opensOn": {
+                                  "type": "string",
+                                  "format": "date",
+                                  "nullable": true
+                                },
+                                "closesOn": {
+                                  "type": "string",
+                                  "format": "date",
+                                  "nullable": true
+                                },
+                                "instructionsEs": {
+                                  "type": "string"
+                                },
+                                "instructionsEn": {
+                                  "type": "string"
+                                },
+                                "approvalRequired": {
+                                  "type": "boolean"
+                                },
+                                "capacityInPerson": {
+                                  "type": "integer",
+                                  "nullable": true
+                                },
+                                "capacityVirtual": {
+                                  "type": "integer",
+                                  "nullable": true
+                                },
+                                "modalities": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string",
+                                    "enum": [
+                                      "in_person",
+                                      "virtual"
+                                    ]
+                                  }
+                                },
+                                "categories": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "object",
+                                    "properties": {
+                                      "id": {
+                                        "type": "string",
+                                        "format": "uuid"
+                                      },
+                                      "nameEs": {
+                                        "type": "string"
+                                      },
+                                      "nameEn": {
+                                        "type": "string"
+                                      },
+                                      "active": {
+                                        "type": "boolean"
+                                      }
+                                    },
+                                    "required": [
+                                      "id",
+                                      "nameEs",
+                                      "nameEn",
+                                      "active"
+                                    ]
+                                  }
+                                }
+                              },
+                              "required": [
+                                "opensOn",
+                                "closesOn",
+                                "instructionsEs",
+                                "instructionsEn",
+                                "approvalRequired",
+                                "capacityInPerson",
+                                "capacityVirtual",
+                                "modalities",
+                                "categories"
+                              ]
+                            },
+                            "timezone": {
+                              "type": "string"
+                            },
+                            "revision": {
+                              "type": "integer"
+                            },
+                            "publishedAt": {
+                              "type": "string",
+                              "format": "date-time"
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "content",
+                            "timezone",
+                            "revision",
+                            "publishedAt"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "personId",
+                        "name",
+                        "email",
+                        "affiliations",
+                        "category",
+                        "modality",
+                        "status",
+                        "revision",
+                        "requestedAt",
+                        "updatedAt",
+                        "policy"
+                      ]
+                    },
+                    "history": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "action": {
+                            "type": "string"
+                          },
+                          "status": {
+                            "type": "string",
+                            "enum": [
+                              "pending",
+                              "confirmed",
+                              "waitlisted",
+                              "rejected",
+                              "cancelled"
+                            ]
+                          },
+                          "actorName": {
+                            "type": "string"
+                          },
+                          "message": {
+                            "type": "string"
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "format": "date-time"
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "action",
+                          "status",
+                          "actorName",
+                          "message",
+                          "createdAt"
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "entry",
+                    "history"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "registrations"
+        ]
+      }
+    },
+    "/api/v1/public/registration": {
+      "get": {
+        "operationId": "PublicRegistrationController_get",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "publication": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "content": {
+                          "type": "object",
+                          "properties": {
+                            "opensOn": {
+                              "type": "string",
+                              "format": "date",
+                              "nullable": true
+                            },
+                            "closesOn": {
+                              "type": "string",
+                              "format": "date",
+                              "nullable": true
+                            },
+                            "instructionsEs": {
+                              "type": "string"
+                            },
+                            "instructionsEn": {
+                              "type": "string"
+                            },
+                            "approvalRequired": {
+                              "type": "boolean"
+                            },
+                            "capacityInPerson": {
+                              "type": "integer",
+                              "nullable": true
+                            },
+                            "capacityVirtual": {
+                              "type": "integer",
+                              "nullable": true
+                            },
+                            "modalities": {
+                              "type": "array",
+                              "items": {
+                                "type": "string",
+                                "enum": [
+                                  "in_person",
+                                  "virtual"
+                                ]
+                              }
+                            },
+                            "categories": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "id": {
+                                    "type": "string",
+                                    "format": "uuid"
+                                  },
+                                  "nameEs": {
+                                    "type": "string"
+                                  },
+                                  "nameEn": {
+                                    "type": "string"
+                                  },
+                                  "active": {
+                                    "type": "boolean"
+                                  }
+                                },
+                                "required": [
+                                  "id",
+                                  "nameEs",
+                                  "nameEn",
+                                  "active"
+                                ]
+                              }
+                            }
+                          },
+                          "required": [
+                            "opensOn",
+                            "closesOn",
+                            "instructionsEs",
+                            "instructionsEn",
+                            "approvalRequired",
+                            "capacityInPerson",
+                            "capacityVirtual",
+                            "modalities",
+                            "categories"
+                          ]
+                        },
+                        "timezone": {
+                          "type": "string"
+                        },
+                        "revision": {
+                          "type": "integer"
+                        },
+                        "publishedAt": {
+                          "type": "string",
+                          "format": "date-time"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "content",
+                        "timezone",
+                        "revision",
+                        "publishedAt"
+                      ]
+                    },
+                    "available": {
+                      "type": "boolean"
+                    },
+                    "reason": {
+                      "type": "string",
+                      "enum": [
+                        "open",
+                        "upcoming",
+                        "closed",
+                        "inactive",
+                        "timezone_changed"
+                      ]
+                    },
+                    "counts": {
+                      "type": "object",
+                      "properties": {
+                        "pending": {
+                          "type": "integer"
+                        },
+                        "confirmed": {
+                          "type": "integer"
+                        },
+                        "waitlisted": {
+                          "type": "integer"
+                        },
+                        "inPerson": {
+                          "type": "integer"
+                        },
+                        "virtual": {
+                          "type": "integer"
+                        },
+                        "ownPosition": {
+                          "type": "integer",
+                          "nullable": true
+                        }
+                      },
+                      "required": [
+                        "pending",
+                        "confirmed",
+                        "waitlisted",
+                        "inPerson",
+                        "virtual",
+                        "ownPosition"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "publication",
+                    "available",
+                    "reason",
+                    "counts"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "public"
+        ]
+      }
     }
   },
   "info": {
@@ -16358,6 +20270,168 @@
           "timezone",
           "revision",
           "publishedAt"
+        ]
+      },
+      "CategoryDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "nameEs": {
+            "type": "string"
+          },
+          "nameEn": {
+            "type": "string"
+          },
+          "active": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "nameEs",
+          "nameEn",
+          "active"
+        ]
+      },
+      "ContentDto": {
+        "type": "object",
+        "properties": {
+          "opensOn": {
+            "type": "string",
+            "nullable": true,
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+          },
+          "closesOn": {
+            "type": "string",
+            "nullable": true,
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+          },
+          "instructionsEs": {
+            "type": "string"
+          },
+          "instructionsEn": {
+            "type": "string"
+          },
+          "approvalRequired": {
+            "type": "boolean"
+          },
+          "capacityInPerson": {
+            "type": "number",
+            "nullable": true,
+            "minimum": 0,
+            "maximum": 1000000
+          },
+          "capacityVirtual": {
+            "type": "number",
+            "nullable": true,
+            "minimum": 0,
+            "maximum": 1000000
+          },
+          "modalities": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "in_person",
+                "virtual"
+              ]
+            }
+          },
+          "categories": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CategoryDto"
+            }
+          }
+        },
+        "required": [
+          "opensOn",
+          "closesOn",
+          "instructionsEs",
+          "instructionsEn",
+          "approvalRequired",
+          "capacityInPerson",
+          "capacityVirtual",
+          "modalities",
+          "categories"
+        ]
+      },
+      "SaveRegistrationDto": {
+        "type": "object",
+        "properties": {
+          "revision": {
+            "type": "number",
+            "minimum": 0
+          },
+          "content": {
+            "$ref": "#/components/schemas/ContentDto"
+          }
+        },
+        "required": [
+          "revision",
+          "content"
+        ]
+      },
+      "RevisionDto": {
+        "type": "object",
+        "properties": {
+          "revision": {
+            "type": "number",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "revision"
+        ]
+      },
+      "ApplyRegistrationDto": {
+        "type": "object",
+        "properties": {
+          "revision": {
+            "type": "number",
+            "minimum": 0
+          },
+          "publicationId": {
+            "type": "string"
+          },
+          "categoryId": {
+            "type": "string"
+          },
+          "modality": {
+            "type": "string"
+          },
+          "confirmed": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "revision",
+          "publicationId",
+          "categoryId",
+          "modality",
+          "confirmed"
+        ]
+      },
+      "RegistrationDecisionDto": {
+        "type": "object",
+        "properties": {
+          "revision": {
+            "type": "number",
+            "minimum": 0
+          },
+          "action": {
+            "type": "string"
+          },
+          "reason": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "revision",
+          "action",
+          "reason"
         ]
       }
     }

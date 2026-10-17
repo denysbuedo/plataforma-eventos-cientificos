@@ -190,3 +190,20 @@ export interface ProgramCandidate {workId:string;title:string;versionNumber:numb
 export interface ProgramCandidates {data:ProgramCandidate[];total:number;limit:number;offset:number}
 export interface PublicProgram extends Omit<ProgramSnapshot,'sessions'|'activities'> {activities?: (Omit<ProgramActivity,'coordinatorIds'|'coordinators'>&{coordinators:string[]})[];sessions:(Omit<ProgramSession,'moderatorIds'|'moderators'|'slots'|'participants'>&{moderators:string[];participants?:{name:string;role:ProgramParticipantRole}[];slots:Omit<ProgramSlot,'presenterPersonId'|'presenterOptions'>[]})[]}
 export interface MyParticipation {timezone:string|null;publishedAt:string|null;activities?:{id:string;titleEs:string;titleEn:string;type:ProgramActivityType}[];items:{sessionId:string;slotId:string|null;title:string;sessionTitleEs:string;sessionTitleEn:string;date:string;startsAt:string;endsAt:string;room:string;modality:ProgramSessionInput['modality']|'in_person'|'virtual';role:'presenter'|'moderator'|ProgramParticipantRole;activityTitleEs?:string;activityTitleEn?:string;sessionType?:ProgramSessionType;format?:ProgramPresentationFormat}[]}
+
+
+export const REGISTRATION_STATES=['pending','confirmed','waitlisted','rejected','cancelled'] as const;
+export type RegistrationState=typeof REGISTRATION_STATES[number];
+export type RegistrationModality='in_person'|'virtual';
+export interface RegistrationCategory {id:string;nameEs:string;nameEn:string;active:boolean}
+export interface RegistrationContent {opensOn:string|null;closesOn:string|null;instructionsEs:string;instructionsEn:string;approvalRequired:boolean;capacityInPerson:number|null;capacityVirtual:number|null;modalities:RegistrationModality[];categories:RegistrationCategory[]}
+export interface PublishedRegistration {id:string;content:RegistrationContent;timezone:string;revision:number;publishedAt:string}
+export interface RegistrationCounts {pending:number;confirmed:number;waitlisted:number;inPerson:number;virtual:number;ownPosition:number|null}
+export interface RegistrationSettings {content:RegistrationContent;revision:number;publication:PublishedRegistration|null;publishedActive:boolean;timezone:string;counts:RegistrationCounts}
+export interface PublicRegistration {publication:PublishedRegistration;available:boolean;reason:'open'|'upcoming'|'closed'|'inactive'|'timezone_changed';counts:RegistrationCounts}
+export interface RegistrationEntry {id:string;personId:string;name:string;email:string|null;affiliations:WorkAffiliation[];category:RegistrationCategory;modality:RegistrationModality;status:RegistrationState;revision:number;requestedAt:string;updatedAt:string;policy:PublishedRegistration}
+export interface RegistrationHistory {id:string;action:string;status:RegistrationState;actorName:string;message:string;createdAt:string}
+export interface RegistrationDetail {entry:RegistrationEntry;history:RegistrationHistory[]}
+export interface MyRegistration {registration:RegistrationDetail|null;reception:PublicRegistration|null;profile:{name:string;affiliations:WorkAffiliation[];email:string|null}}
+export type RegistrationSummary=Omit<RegistrationEntry,'policy'|'affiliations'|'email'>;
+export interface RegistrationPage {data:RegistrationSummary[];total:number;limit:number;offset:number;counts:RegistrationCounts}

@@ -501,3 +501,39 @@ dialog::backdrop { background:rgb(18 36 28 / 45%); }
 @media(max-width:640px){.program-steps{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.program-editor-heading{gap:12px}.program-editor-heading h3{font-size:18px}.program-step-actions{align-items:flex-start;flex-wrap:wrap}.program-step-actions>.editor-actions{margin-left:auto}.program-people-search{grid-template-columns:1fr}.program-people-search>.field:only-of-type{grid-column:auto}.program-people-search>.button{justify-self:start}.program-activity-filter{min-width:0;max-width:none;width:100%}.program-spaces-dialog{padding:18px}.program-step-content .field-row,.program-space-form .field-row{grid-template-columns:1fr}.program-step-content .field-row{gap:18px}.program-tabs{gap:8px}.program-tabs .button{padding:10px 12px;font-size:12px}.program-activity-heading h4{font-size:19px}}
 
 .program-manager .notice,.program-spaces-dialog .notice{background:transparent;box-shadow:none;border:0;border-left:0;border-radius:0;padding:12px 0;color:var(--ink)}.program-manager .notice-error,.program-spaces-dialog .notice-error{color:#9a3024}.program-session-editor,.program-editor-anchor{scroll-margin-top:88px}
+
+/* Registration uses the same plain surfaces as the participant profile. */
+.registration-module .notice{background:transparent!important;box-shadow:none!important;border:0!important;border-radius:0;padding:12px 0}
+.registration-module,.registration-module .registration-detail{box-shadow:none}
+.registration-module h2,.registration-module h3{font-family:inherit;font-size:1rem;margin:0 0 10px}
+.registration-module h3{margin-top:24px}
+.registration-module fieldset{border:0;padding:0;margin:0;min-width:0}
+.registration-line{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin:16px 0}
+.registration-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;align-items:start;margin:16px 0}
+.registration-module .field{display:flex;flex-direction:column;gap:8px;margin:0;min-width:0}
+.registration-module .field input,.registration-module .field select{height:42px;box-sizing:border-box;width:100%}
+.registration-module .field textarea{width:100%;box-sizing:border-box}
+.registration-check{display:flex;align-items:center;gap:10px;margin:16px 0;font-size:.9rem}
+.registration-check input{flex:0 0 auto;width:17px;height:17px;margin:0}
+.registration-summary{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;margin:24px 0}
+.registration-summary dt{font-size:.8rem;color:var(--muted);margin-bottom:6px}
+.registration-summary dd{margin:0;overflow-wrap:anywhere}
+.registration-history{border-top:1px solid var(--line,#e3e7e5);margin-top:24px;padding-top:8px}
+.registration-history article{padding:12px 0;border-bottom:1px solid var(--line,#e3e7e5)}
+.registration-history .registration-line{margin:0;font-size:.9rem}
+.registration-history time{font-size:.8rem;color:var(--muted)}
+.registration-message{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.6}
+.registration-tabs{display:flex;gap:10px;flex-wrap:wrap;padding-bottom:20px;border-bottom:1px solid var(--line,#e3e7e5);margin-bottom:22px}
+.registration-tabs button[aria-pressed=true]{border-color:currentColor;font-weight:600}
+.registration-metrics{display:flex;gap:40px;flex-wrap:wrap;margin:16px 0}
+.registration-metrics div{display:flex;flex-direction:column;gap:8px;font-size:.8rem}
+.registration-metrics strong{font-size:1.6rem;font-weight:600}
+.registration-filters{display:grid;grid-template-columns:1fr 1fr auto;align-items:end;gap:16px;margin:24px 0}
+.registration-category{display:grid;grid-template-columns:1fr 1fr auto auto;align-items:end;gap:12px;padding:14px 0;border-bottom:1px solid var(--line,#e3e7e5)}
+.registration-table{overflow-x:auto}
+.registration-table table{width:100%;border-collapse:collapse;font-size:.9rem}
+.registration-table th,.registration-table td{text-align:left;padding:12px 10px;border-bottom:1px solid var(--line,#e3e7e5);background:transparent}
+.registration-table tr[aria-selected=true] td{font-weight:600}
+.registration-detail{margin-top:28px;border-top:1px solid var(--line,#e3e7e5);padding-top:16px;scroll-margin-top:24px}
+.registration-detail .field{margin:18px 0}
+@media(max-width:700px){.registration-fields,.registration-summary,.registration-filters,.registration-category{grid-template-columns:1fr}.registration-metrics{gap:22px}.registration-line{align-items:flex-start}.registration-category .registration-check{margin:6px 0}}

@@ -53,3 +53,5 @@ En Mis trabajos el fondo es uniforme en consulta y edición: tarjetas, fila sele
 El aviso «Tienes novedades en un trabajo» se presenta como texto y separadores, sin contorno de tarjeta, esquinas redondeadas ni franja lateral destacada. No usar esos recursos como sustitutos de los sombreados retirados.
 
 Mi participación se alimenta del [programa científico publicado](programa-cientifico.md). No muestra borradores y no atribuye asistencia ni certificados por estar programado.
+
+Mi inscripción se incorpora como área del participante, con la misma cabecera y cuenta. Muestra la solicitud y su historial, separada de la agenda de Mi participación. Véase [Inscripciones](inscripciones.md).

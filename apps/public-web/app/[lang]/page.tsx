@@ -36,7 +36,7 @@ export default async function PublicPage(props: Props) {
     const lang = (await props.params).lang === 'en' ? 'en' : 'es'; const text = webCopy[lang];
     return <main className="public-empty"><div className="empty-state"><Brand /><h1>{text.serviceTitle}</h1><p>{text.serviceHelp}</p><a className="button button-primary" href={`/${lang}`}>{text.retry}</a></div></main>;
   }
-  const { site, binding, locale, scientificCall,program } = loaded;
+  const { site, binding, locale, scientificCall,program,registration } = loaded;
   const text = webCopy[locale]; const c = site.content; const spanish = locale === 'es';
   const hero = spanish ? c.heroTitleEs : c.heroTitleEn; const lines = hero.split('\n');
   const query = binding.config ? `?event=${binding.key}` : '';
@@ -51,7 +51,7 @@ export default async function PublicPage(props: Props) {
     <a href="#main" className="skip-link">{text.skip}</a>
     <header className="public-nav">
       <a href={`/${locale}${query}`} className="event-wordmark"><span className="event-symbol"><Icon name={c.theme === 'forest' ? 'leaf' : 'globe'} size={19} /></span>{c.acronym}</a>
-      <nav aria-label={text.encounter}><a href="#encuentro">{text.encounter}</a><a href="#convocatoria">{text.call}</a>{program&&<a href="#programa">{spanish?'Programa':'Program'}</a>}<a href="#sede">{text.venue}</a></nav>
+      <nav aria-label={text.encounter}><a href="#encuentro">{text.encounter}</a><a href="#convocatoria">{text.call}</a>{registration&&<a href="#inscripcion">{spanish?'Inscripción':'Registration'}</a>}{program&&<a href="#programa">{spanish?'Programa':'Program'}</a>}<a href="#sede">{text.venue}</a></nav>
       <div className="nav-end">{binding.config && <EventSwitch current={binding.key} locale={locale} label={text.search} />}<div className="language-switch"><a href={`/es${query}`} className={spanish ? 'active' : ''} lang="es">ES</a><a href={`/en${query}`} className={!spanish ? 'active' : ''} lang="en">EN</a></div></div>
     </header>
     <main id="main">
@@ -70,6 +70,7 @@ export default async function PublicPage(props: Props) {
       <section id="convocatoria" className="call-section"><div><span className="eyebrow">02 &nbsp; / &nbsp; {text.callLabel}</span><h2 className="section-title">{text.callTitle}</h2><Icon name="book" size={47} /></div><div>{scientificCall ? <ScientificCall call={scientificCall} locale={locale} /> : <p className="body-copy">{spanish ? c.callEs : c.callEn}</p>}{adminUrl && <a href={authorUrl} className="button button-outline">{text.myWorks}</a>}<a href={`mailto:${c.contactEmail}?subject=${encodeURIComponent(c.acronym)}`} className="button button-primary">{text.contact}<Icon name="arrow" size={15} /></a></div></section>
       {program&&<Program program={program} locale={locale}/>}
       <section id="sede" className="public-section venue-section"><div><span className="eyebrow">03 &nbsp; / &nbsp; {text.venue}</span><h2 className="section-title">{text.venueTitle}</h2></div><div className="venue-note"><Icon name="pin" size={32} /><p>{spanish ? c.venueEs : c.venueEn}<br /><span className="muted">{dates}</span></p></div></section>
+      {registration&&<section id="inscripcion" className="public-section registration-public"><div><h2 className="section-title">{spanish?'Inscripción al evento':'Event registration'}</h2></div><p>{registration.available?(spanish?'Recepción abierta':'Registration open'):(spanish?'La recepción no está abierta en este momento.':'Registration is currently closed.')}</p><p>{registration.publication.content.opensOn?date(registration.publication.content.opensOn,{dateStyle:'medium'}):'—'} — {registration.publication.content.closesOn?date(registration.publication.content.closesOn,{dateStyle:'medium'}):'—'} · {registration.publication.timezone}</p><p>{registration.publication.content.modalities.map(m=>m==='virtual'?'Virtual':spanish?'Presencial':'In person').join(' · ')}</p><p style={{whiteSpace:'pre-wrap'}}>{spanish?registration.publication.content.instructionsEs:registration.publication.content.instructionsEn}</p><p>{registration.publication.content.categories.filter(x=>x.active).map(x=>spanish?x.nameEs:x.nameEn).join(' · ')}</p><a className="button button-primary" href={authorUrl.replace('tab=works','tab=registration')}>{spanish?'Mi inscripción':'My registration'}</a></section>}
     </main>
     <footer className="public-footer"><div className="footer-main"><Brand /><p>{text.rights}</p></div><div className="footer-bottom"><span>{binding.config ? text.demo : text.platform}</span>{adminUrl && <a href={adminUrl}>{text.administration} ↗</a>}</div></footer>
     <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }} />

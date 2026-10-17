@@ -66,3 +66,5 @@ Los documentos de planificación describen trabajo futuro. No constituyen eviden
 - [Programa científico: sesiones, publicación y Mi participación](development/programa-cientifico.md) y [ADR-022](adr/ADR-022-programa-publicacion-y-participacion.md).
 
 - [Estudio comparativo internacional de actividades, sesiones y presentaciones](architecture/estudio-organizacion-cientifica-eventos.md) y [ADR-023](adr/ADR-023-estructura-cientifica-espacios-y-formatos.md).
+
+- [Fase 3: participantes, asistencia y certificados](functional/fase-3.md), [inscripciones](development/inscripciones.md) y [ADR-024](adr/ADR-024-inscripciones-y-participantes.md).

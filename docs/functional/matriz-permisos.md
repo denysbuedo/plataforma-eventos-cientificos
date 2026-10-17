@@ -69,3 +69,14 @@ Los nombres autor y participante no sustituyen relaciones de autoría e inscripc
 Los casos científicos corresponden a fases posteriores. Cada operación implementada necesitará DTO, respuesta de error y pruebas positivas y negativas; esta tabla no acredita ejecución.
 
 Referencias: [modelo de dominio](../architecture/modelo-dominio.md), [ADR-002](../adr/ADR-002-tenancy.md), [Fase 0](fase-0.md).
+
+## Inscripciones
+
+| Operación | Permiso |
+|---|---|
+| Consultar recepción publicada | Público; sin lista de participantes |
+| Solicitar, consultar y cancelar inscripción propia | Persona activa autenticada |
+| Configurar/publicar/retirar recepción | Organizador del evento; capacidad `registrations-manage` |
+| Listar participantes y decidir solicitudes | Organizador del evento; motivo e historial obligatorio |
+
+Ser autor, revisor, participante o administrador de organización sin asignación de organizador no concede gestión de inscripciones. La inscripción no crea roles ni concede acceso científico.

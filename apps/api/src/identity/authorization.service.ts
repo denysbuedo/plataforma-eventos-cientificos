@@ -4,7 +4,7 @@ import { DatabaseService, type DbTransaction } from '../database/database.servic
 import { memberships, people, roleAssignments } from '../database/schema.js';
 import { ApiException, type RequestContext } from '../common/http.js';
 
-export type Capability = 'event-read' | 'event-update' | 'event-create' | 'session-read' | 'site-read' | 'site-update' | 'site-publish' | 'organizers-manage' | 'people-manage' | 'organization-manage' | 'invitation-accept' | 'identity-read' | 'submissions-manage';
+export type Capability = 'event-read' | 'event-update' | 'event-create' | 'session-read' | 'site-read' | 'site-update' | 'site-publish' | 'organizers-manage' | 'people-manage' | 'organization-manage' | 'invitation-accept' | 'identity-read' | 'submissions-manage' | 'registrations-manage';
 export interface ContextPermissions {
   organizer: boolean; organizationAdmin: boolean; personName: string; roles: string[];
 }
@@ -34,10 +34,10 @@ export class AuthorizationService {
       const permitted = ['people-manage', 'organization-manage'].includes(capability) ? organizationAdmin && context.hostEventId === null && context.eventId === null
         : capability === 'organizers-manage' ? organizationAdmin
         : capability === 'event-create' ? organizationAdmin && context.hostEventId === null && context.eventId === null
-        : ['event-update', 'site-update', 'site-publish', 'submissions-manage'].includes(capability) ? organizer
+        : ['event-update', 'site-update', 'site-publish', 'submissions-manage', 'registrations-manage'].includes(capability) ? organizer
         : capability === 'session-read' ? true : organizationAdmin || organizer;
       if (!permitted) throw new ApiException(403, 'FORBIDDEN');
-      await tx.execute(sql`SELECT set_config('sep.submissions_staff', ${capability === 'submissions-manage' ? 'true' : 'false'}, true), set_config('sep.organization_admin', ${organizationAdmin ? 'true' : 'false'}, true)`);
+      await tx.execute(sql`SELECT set_config('sep.registration_staff',${capability==='registrations-manage'?'true':'false'},true),set_config('sep.submissions_staff', ${capability === 'submissions-manage' ? 'true' : 'false'}, true), set_config('sep.organization_admin', ${organizationAdmin ? 'true' : 'false'}, true)`);
       return action(tx, { organizer, organizationAdmin, personName: principal[0].name, roles: grants.map((grant) => grant.role) });
     });
   }
