@@ -41,3 +41,7 @@ Compilación y análisis estático. Revisión dirigida en navegador a 1440, 390 
 ## Novedades de los trabajos
 
 Mis trabajos incorpora un contador lateral de trabajos con dictámenes o comentarios de revisión pendientes de leer. Un aviso destacado permite abrir directamente el bloque de dictamen y revisiones; consultar ese bloque registra la lectura para la persona actual. Cambiar a Autorías o Mi perfil y regresar no vuelve a marcarlo como pendiente. Un dictamen posterior genera una novedad nueva. Las notificaciones de Autorías y Mis revisiones conservan sus flujos independientes.
+
+## Criterio visual acordado
+
+No añadir fondos sombreados ni sombras para destacar avisos, novedades o secciones de la interfaz. Usar tipografía, espaciado, bordes y separadores, manteniendo el fondo uniforme. Este criterio se aplica también a los próximos cambios de diseño.
