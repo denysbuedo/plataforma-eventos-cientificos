@@ -1,5 +1,6 @@
 const messages = {
   es: {
+    REVIEW_DEADLINE_INVALID:'La nueva fecha debe ampliar el plazo actual y no puede estar vencida.',REVIEW_DEADLINE_LIMIT:'Esta ronda alcanzó el máximo de veinte prórrogas registradas.',
     REVIEW_CONFLICT:'Existe un conflicto de interés o de autoría para esta evaluación.',REVIEW_UNAVAILABLE:'La asignación ya no está disponible: revisa la ronda, el plazo y el estado del trabajo.',REVIEW_INCOMPLETE:'Faltan las evaluaciones requeridas de la versión actual. Completa la revisión o justifica expresamente la excepción.',REVIEW_LIMIT:'Se alcanzó el límite de revisores, asignaciones o rondas.',
     AUTHORSHIP_LIMIT:"Este trabajo alcanzó el límite de solicitudes de autoría.", AUTHORSHIP_SELF_APPROVAL:"No puedes aprobar tu propia solicitud. Debe resolverla otro organizador sin conflicto de interés.", AUTHORSHIP_STALE:"La declaración cambió. Cancela esta solicitud y crea otra con los datos vigentes.",
     DIRECTORY_RATE_LIMIT:'Has realizado muchas búsquedas. Espera un minuto e inténtalo de nuevo.',RESEARCHER_AFFILIATION_REQUIRED:'Para aparecer en la búsqueda, añade al menos una afiliación con institución y país.',RESEARCHER_UNAVAILABLE:'La persona ya no está disponible en la búsqueda. Actualiza los resultados o declárala manualmente.',
@@ -39,6 +40,7 @@ const messages = {
     INTERNAL_ERROR: 'No se pudo completar la solicitud.',
   },
   en: {
+    REVIEW_DEADLINE_INVALID:'The new date must extend the current deadline and cannot be in the past.',REVIEW_DEADLINE_LIMIT:'This round has reached the limit of twenty recorded extensions.',
     REVIEW_CONFLICT:'A conflict of interest or authorship prevents this review.',REVIEW_UNAVAILABLE:'This assignment is unavailable. Check the round, deadline and work status.',REVIEW_INCOMPLETE:'Required reviews of the current version are missing. Complete peer review or explicitly justify an exception.',REVIEW_LIMIT:'The reviewer, assignment or round limit has been reached.',
     AUTHORSHIP_LIMIT:"This work reached the authorship request limit.", AUTHORSHIP_SELF_APPROVAL:"You cannot approve your own request. An independent organizer must resolve it.", AUTHORSHIP_STALE:"The declaration changed. Cancel this request and create one with the current details.",
     DIRECTORY_RATE_LIMIT:'You have made too many searches. Wait a minute and try again.',RESEARCHER_AFFILIATION_REQUIRED:'Add at least one affiliation with institution and country to appear in search.',RESEARCHER_UNAVAILABLE:'This person is no longer available in search. Refresh the results or add a manual declaration.',

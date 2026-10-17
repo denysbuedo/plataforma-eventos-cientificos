@@ -21,3 +21,5 @@ Las nuevas versiones pueden requerir nuevas rondas y no modifican informes anter
 Ver [implementación, API y recorrido](../development/revision-cientifica.md).
 
 La respuesta del autor y su valoración por los revisores originales se amplían en [ADR-021](ADR-021-valoracion-respuestas-y-dictamen-editorial.md), conservando la decisión final del organizador.
+
+Las ampliaciones de plazo conservan inmutable la fecha original de la ronda y añaden un historial de prórrogas con motivo, fechas y auditoría. No reabren rondas cerradas ni trasladan revisiones entre versiones. Los vencimientos permanecen como tareas pendientes, aunque bloqueen la evaluación y los archivos hasta una ampliación válida. Véase [plazos y prórrogas](../development/revision-cientifica.md#plazos-y-prórrogas-de-revisión).

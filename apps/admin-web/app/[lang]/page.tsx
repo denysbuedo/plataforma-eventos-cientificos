@@ -16,7 +16,7 @@ import type { AuthorAccount } from '@sep/contracts';
 
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = { title: 'SEP · Workspace', robots: { index: false, follow: false } };
-export default async function AdminPage({ params, searchParams }: { params: Promise<{ lang: string }>; searchParams: Promise<{ event?: string; tab?: string; authError?: string; logoutError?: string; orcidError?: string }> }) {
+export default async function AdminPage({ params, searchParams }: { params: Promise<{ lang: string }>; searchParams: Promise<{ event?: string; work?:string; tab?: string; authError?: string; logoutError?: string; orcidError?: string }> }) {
   const { lang } = await params;
   if (lang !== 'es' && lang !== 'en') notFound();
   const locale: Locale = lang; const text = webCopy[locale];
@@ -73,6 +73,6 @@ export default async function AdminPage({ params, searchParams }: { params: Prom
     if (error instanceof ApiTransportError && [403, 404].includes(error.status)) denied = true;
     else return <main className="public-empty"><div className="empty-state"><h1>{text.serviceTitle}</h1><p>{text.serviceHelp}</p><a href={`/${locale}`} className="button button-primary">{text.retry}</a></div></main>;
   }
-  return <Dashboard key={contextKey} locale={locale} contextKey={contextKey} tab={query.tab ?? 'overview'} session={session} profile={profile}
+  return <Dashboard key={contextKey} locale={locale} contextKey={contextKey} tab={query.tab ?? 'overview'} initialWorkId={query.work} session={session} profile={profile}
     events={events} site={site} team={team} directory={directory} organization={organization} configuration={configuration} scientificCall={scientificCall} inbox={inbox} denied={denied} publicUrl={publicUrl} demo={!!config} contextHosts={config?.hosts ?? {}} contextEvents={config?.events ?? {}} />;
 }

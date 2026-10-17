@@ -151,12 +151,17 @@ export { validOrcid } from './orcid.js';
 export const REVIEW_RECOMMENDATIONS=['accept','minor_changes','major_changes','reject'] as const;
 export interface ReviewCriterion { id:string; labelEs:string; labelEn:string }
 export interface ReviewEvaluation { scores:{criterionId:string;score:number}[]; recommendation:typeof REVIEW_RECOMMENDATIONS[number]|''; authorComments:string; confidentialComments:string }
-export interface ReviewMember { pendingReviews?:number; personId:string; name:string; status:'invited'|'accepted'|'declined'|'revoked'; expertise:string; revision:number; createdAt:string }
+export interface ReviewMember { overdueReviews?:number;dueSoonReviews?:number;pendingReviews?:number; personId:string; name:string; status:'invited'|'accepted'|'declined'|'revoked'; expertise:string; revision:number; createdAt:string }
 export interface ReviewContent { reviewResponse?:WorkReviewResponse;title:string; abstract:string; keywords:string[]; language:'es'|'en'; authors:{fullName:string;affiliations:WorkAffiliation[]}[]; manuscript:Manuscript|null }
-export interface ReviewRound { id:string;workId:string;versionId:string;versionNumber:number;number:number;status:'open'|'closed';deadline:string;timezone:string;minimumReviews:number;criteria:ReviewCriterion[];revision:number;createdAt:string;closedAt:string|null }
-export interface ReviewAssignment { eligible?:boolean; id:string;roundId:string;workId:string;reviewerId:string;reviewerName:string;status:'invited'|'accepted'|'declined'|'conflict'|'revoked'|'submitted';title:string;versionNumber:number;deadline:string;timezone:string;revision:number;submittedAt:string|null;message:string;evaluation:ReviewEvaluation|null;content?:ReviewContent;criteria:ReviewCriterion[];available:boolean }
+export interface ReviewDeadlineExtension { previousDeadline:string;deadline:string;message:string;createdAt:string }
+export type ReviewTiming='on_time'|'due_soon'|'overdue'|'completed'|'inactive';
+export interface ReviewRound { originalDeadline?:string;deadlineExtensions?:ReviewDeadlineExtension[]; id:string;workId:string;versionId:string;versionNumber:number;number:number;status:'open'|'closed';deadline:string;timezone:string;minimumReviews:number;criteria:ReviewCriterion[];revision:number;createdAt:string;closedAt:string|null }
+export interface ReviewAssignment { timing?:ReviewTiming;originalDeadline?:string;deadlineExtensions?:ReviewDeadlineExtension[];eligible?:boolean; id:string;roundId:string;workId:string;reviewerId:string;reviewerName:string;status:'invited'|'accepted'|'declined'|'conflict'|'revoked'|'submitted';title:string;versionNumber:number;deadline:string;timezone:string;revision:number;submittedAt:string|null;message:string;evaluation:ReviewEvaluation|null;content?:ReviewContent;criteria:ReviewCriterion[];available:boolean }
 export interface ReviewWorkspace { members:ReviewMember[];assignments:ReviewAssignment[] }
 export interface WorkReviewFile { responseChecks?:ResponseCheck[];rounds:ReviewRound[];assignments:ReviewAssignment[] }
 
 export interface ResponseCheckContent { summary:string;observation:string;reply:string;decisionMessage:string }
 export interface ResponseCheck { id:string;workId:string;versionId:string;versionNumber:number;sourceVersionNumber:number;title:string;number:number;revision:number;verdict:'accepted'|'rejected'|null;message:string;createdAt:string;assessedAt:string|null;assessable:boolean;eligible?:boolean;reviewerName?:string;content?:ResponseCheckContent }
+
+export interface ReviewTrackingItem { assignmentId:string;workId:string;title:string;reviewerName:string;roundNumber:number;versionNumber:number;deadline:string;timezone:string;status:'invited'|'accepted';timing:'on_time'|'due_soon'|'overdue' }
+export interface ReviewTracking { pending:number;dueSoon:number;overdue:number;awaitingAcceptance:number;inProgress:number;items:ReviewTrackingItem[];total:number;limit:number;offset:number }

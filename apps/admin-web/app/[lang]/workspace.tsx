@@ -13,7 +13,7 @@ import ScientificCall from './scientific-call';
 import { authorshipCopy } from './authorship-copy';
 import SubmissionsInbox from './submissions-inbox';
 
-type Props = { locale: Locale; contextKey: string; tab: string; session: SessionView | null; events: EventPage; site: SiteDraft | null; team: EventTeam | null; directory: PeopleDirectory | null; organization: OrganizationSettings | null; configuration: EventConfiguration | null; scientificCall: ScientificCallDraft | null; inbox: SubmissionPage | null;
+type Props = { initialWorkId?:string; locale: Locale; contextKey: string; tab: string; session: SessionView | null; events: EventPage; site: SiteDraft | null; team: EventTeam | null; directory: PeopleDirectory | null; organization: OrganizationSettings | null; configuration: EventConfiguration | null; scientificCall: ScientificCallDraft | null; inbox: SubmissionPage | null;
   profile: { id: string; name: string } | null;
   denied: boolean; publicUrl: string; demo: boolean; contextHosts: Record<string, string>; contextEvents: Record<string, string> };
 type LocalizedField = 'kicker' | 'heroTitle' | 'summary' | 'about' | 'call' | 'venue';
@@ -128,7 +128,7 @@ export default function Workspace(props: Props) {
       {currentTab === 'organization' && props.organization && <Organization initial={props.organization} events={events.data} locale={locale} contextKey={contextKey} />}
       {currentTab === 'call' && site && props.scientificCall && <ScientificCall initial={props.scientificCall} locale={locale} contextKey={contextKey} eventId={site.event.id} editable={canEdit && site.event.status !== 'archived' && !['completed', 'cancelled'].includes(props.configuration?.lifecycle ?? '')} canWithdraw={canEdit} publicUrl={siteUrl} />}
       {currentTab==='review'&&site&&session?.canEdit&&<ReviewCommittee eventId={site.event.id} contextKey={contextKey} locale={locale}/>}
-      {currentTab === 'submissions' && site && props.inbox && <SubmissionsInbox initial={props.inbox} eventId={site.event.id} contextKey={contextKey} locale={locale} />}
+      {currentTab === 'submissions' && site && props.inbox && <SubmissionsInbox initialWorkId={props.initialWorkId} initial={props.inbox} eventId={site.event.id} contextKey={contextKey} locale={locale} />}
       {creating && <section className="panel create-form"><h2 className="form-section-title">{text.createTitle}</h2><p className="muted small">{text.createHelp}</p><div className="form-fields"><Field label={text.nameEs} value={newEvent.nameEs} onChange={(value) => setNewEvent({ ...newEvent, nameEs: value })} /><Field label={text.nameEn} value={newEvent.nameEn} onChange={(value) => setNewEvent({ ...newEvent, nameEn: value })} /><Field label={text.timezone} value={newEvent.timezone} onChange={(value) => setNewEvent({ ...newEvent, timezone: value })} /></div><div className="editor-actions"><button onClick={createEvent} disabled={!!busy} className="button button-primary">{busy === 'create' ? text.creating : text.create}</button><button onClick={() => setCreating(false)} className="button button-outline">{text.cancel}</button></div></section>}
       {currentTab === 'overview' && <><div className="metric-grid">{[
         { label: text.availableEvents, value: events.data.length, icon: 'calendar' as const, note: text.yourEvents },

@@ -1,13 +1,13 @@
 'use client';
 import WorkReviewPanel from './peer-review-work';
 import {reviewCopy} from './peer-review-copy';
-import { useState } from 'react';
+import { useEffect,useState } from 'react';
 import { WORK_STATUSES } from '@sep/contracts';
 import type { StaffWork,SubmissionPage,WorkStatus } from '@sep/contracts';
 import { webCopy,type Locale } from '@sep/i18n';
 import Authorship from './authorship';
 import WorkFlow,{WorkContentView} from './work-flow';
-export default function SubmissionsInbox({initial,eventId,contextKey,locale}:{initial:SubmissionPage;eventId:string;contextKey:string;locale:Locale}) {
+export default function SubmissionsInbox({initial,eventId,contextKey,locale,initialWorkId}:{initialWorkId?:string;initial:SubmissionPage;eventId:string;contextKey:string;locale:Locale}) {
   const text=webCopy[locale],reviewText=reviewCopy[locale];const [override,setOverride]=useState(false),[overrideReason,setOverrideReason]=useState('');const [page,setPage]=useState(initial);const [work,setWork]=useState<StaffWork|null>(null);const [busy,setBusy]=useState(false);const [error,setError]=useState('');
   const [filter,setFilter]=useState('');const [search,setSearch]=useState('');
   const [deciding,setDeciding]=useState(false);const [decision,setDecision]=useState('in_review');const [message,setMessage]=useState('');const [deadline,setDeadline]=useState('');
@@ -15,6 +15,7 @@ export default function SubmissionsInbox({initial,eventId,contextKey,locale}:{in
   async function run(action:()=>Promise<void>){setBusy(true);setError('');try{await action();}catch(e){setError(e instanceof Error?e.message:text.serviceHelp);}finally{setBusy(false);}}
   function select(next:StaffWork){setOverride(false);setOverrideReason('');setWork(next);setDeciding(false);setMessage('');setDeadline('');setDecision(next.status==='accepted'?'final_requested':'in_review');}
   async function refresh(offset=page.offset){await run(async()=>{setPage(await request<SubmissionPage>(`?limit=${page.limit}&offset=${offset}${filter?`&status=${filter}`:''}${search.trim()?`&q=${encodeURIComponent(search.trim())}`:''}`));setWork(null);setDeciding(false);});}
+  useEffect(()=>{if(initialWorkId&&/^[0-9a-f-]{36}$/i.test(initialWorkId))void run(async()=>{select(await request<StaffWork>(`/${initialWorkId}`));document.getElementById('received-work-detail')?.scrollIntoView({block:'start'});});},[initialWorkId,eventId,contextKey,locale]);
   const actions:WorkStatus[]=work?.status==='accepted'?['final_requested']:work&&['submitted','in_review','final_submitted'].includes(work.status)?['in_review','changes_requested','accepted','rejected'].filter(s=>s!==work.status) as WorkStatus[]:[];
   return <>
     <Authorship eventId={eventId} contextKey={contextKey} locale={locale} staff/>
@@ -25,7 +26,7 @@ export default function SubmissionsInbox({initial,eventId,contextKey,locale}:{in
       {page.data.map(row=><div className="panel-heading" key={row.id}><div><strong>{row.title}</strong><p>{text.workStatuses[row.status]}</p></div><button className="button button-outline" disabled={busy} onClick={()=>run(async()=>select(await request<StaffWork>(`/${row.id}`)))}>{text.viewWork}</button></div>)}
       <div className="editor-actions"><button className="button button-outline" disabled={busy||page.offset===0} onClick={()=>refresh(Math.max(0,page.offset-page.limit))}>{text.previousPage}</button><button className="button button-outline" disabled={busy||page.data.length<page.limit} onClick={()=>refresh(page.offset+page.limit)}>{text.nextPage}</button></div>
     </section>
-    {work&&<section className="panel form-panel"><div className="panel-heading"><h2>{work.title}</h2><button className="button button-outline" disabled={busy} onClick={()=>{setWork(null);setDeciding(false);}}>{text.backToWorks}</button></div><WorkContentView content={work} locale={locale}/>
+    {work&&<section id="received-work-detail" className="panel form-panel"><div className="panel-heading"><h2>{work.title}</h2><button className="button button-outline" disabled={busy} onClick={()=>{setWork(null);setDeciding(false);}}>{text.backToWorks}</button></div><WorkContentView content={work} locale={locale}/>
       <WorkFlow key={`${work.id}:${work.revision}`} work={work} eventId={eventId} contextKey={contextKey} locale={locale} busy={busy} onBusyChange={setBusy} onUpdate={()=>{}} staff/>
       {work.canDecide&&<WorkReviewPanel key={`${work.id}:${work.revision}`} work={work} eventId={eventId} contextKey={contextKey} locale={locale} busy={busy} onBusyChange={setBusy}/>}
       {!work.canDecide&&<p className="muted">{text.noSelfDecision}</p>}
