@@ -62,6 +62,6 @@ export default function ParticipantShell({children,person,locale,contextKey,even
           </div>
         </details>
       </div>
-    </header><main id="main" className="admin-main participant-main">{error&&<p className="notice notice-error" role="alert">{error}</p>}{children}</main></div>
+    </header><main id="main" className={`admin-main participant-main participant-${tab}`}>{error&&<p className="notice notice-error" role="alert">{error}</p>}{children}</main></div>
   </div></NavigationGuard.Provider>;
 }

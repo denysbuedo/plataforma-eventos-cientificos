@@ -45,3 +45,5 @@ Mis trabajos incorpora un contador lateral de trabajos con dictámenes o comenta
 ## Criterio visual acordado
 
 No añadir fondos sombreados ni sombras para destacar avisos, novedades o secciones de la interfaz. Usar tipografía, espaciado, bordes y separadores, manteniendo el fondo uniforme. Este criterio se aplica también a los próximos cambios de diseño.
+
+En Mis trabajos el fondo es uniforme en consulta y edición: tarjetas, fila seleccionada, metadatos, avisos e historial no llevan rellenos sombreados ni sombras. La selección se identifica con un borde simple y el texto En consulta / En edición. Se retiraron también las sombras CSS que quedaban en el menú de cuenta y los selectores visuales compartidos.
