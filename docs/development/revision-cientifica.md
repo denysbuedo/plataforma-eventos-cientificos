@@ -13,7 +13,7 @@ Estado: circuito de revisión de simple ciego implementado. No implica cierre de
 7. Emitir el dictamen desde la gestión de estado existente. Si hay rondas, aceptar, rechazar o solicitar correcciones requiere una ronda abierta de la versión oficial actual y el mínimo de informes enviados que sigan libres de conflictos. El dictamen cierra la ronda y publica solamente los comentarios dirigidos al autor.
 8. Tras un reenvío, abrir otra ronda sobre la nueva versión si necesita evaluación. Las rondas anteriores, sus informes y sus criterios se conservan. Se permite cerrar una ronda sin dictamen, con motivo, para preparar otra; eso no publica comentarios.
 
-Para probar con perfiles de demo, la persona que actuará como revisor debe completar su institución/país y activar su visibilidad en Mi perfil; luego cambiar al organizador para invitarla. Se necesitan cuentas distintas para autor y revisor. No se ha cambiado la visibilidad de perfiles existentes ni creado asignaciones ficticias en los trabajos reales de la demo.
+La demo incorpora accesos **Revisor de prueba 1** y **Revisor de prueba 2**, cuentas independientes de autor, administrador y organizador. Sus perfiles ficticios se preparan con institución/país y visibilidad para poder encontrarlas. El organizador debe invitarlas desde Comité y revisores; cada una acepta desde Mis revisiones antes de poder recibir asignaciones. No se conceden permisos de organizador ni se evitan conflictos. Se conservan los perfiles y trabajos anteriores; no se crean invitaciones o asignaciones automáticamente. Para personas reales sigue siendo necesario completar Mi perfil y activar «Permitir que me encuentren como autor o revisor».
 
 ## Recorrido del revisor
 
