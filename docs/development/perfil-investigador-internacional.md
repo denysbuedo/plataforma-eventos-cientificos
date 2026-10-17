@@ -11,11 +11,11 @@ Ahora se pueden añadir hasta diez credenciales, distribuidas en dos apartados:
 | Apartado | Opciones |
 |---|---|
 | Títulos universitarios y de posgrado | Título universitario de pregrado, especialidad de posgrado, maestría/máster, otro título |
-| Doctorados y grados científicos | Doctorado de investigación, doctorado superior, otro grado científico |
+| Doctorados y grados científicos | Cuba: Doctor en determinada área del conocimiento (Dr. C.) y Doctor en Ciencias (Dr. Cs.). Otros países: denominación oficial, sin selector de categorías equivalentes |
 
 Cada entrada registra su **tipo**, **denominación oficial** (2–150 caracteres) y **país que la otorga**. No se infiere el país del usuario ni de su afiliación actual. Una persona puede registrar simultáneamente licenciatura/ingeniería, maestría y doctorado; las entradas no se sustituyen por un supuesto nivel máximo.
 
-Para Cuba, las opciones científicas muestran **Doctor en determinada área del conocimiento (Dr. C.)** y **Doctor en Ciencias (Dr. Cs.)**. Son grados distintos. La denominación exacta del diploma, por ejemplo «Doctor en Ciencias Técnicas», se conserva en texto. Para otros países se mantienen las opciones generales y el nombre oficial, sin convertir PhD, DSc o cualquier otro título a una credencial cubana. Los agrupamientos ayudan a organizar lo declarado y no acreditan reconocimiento legal.
+Para Cuba, las opciones científicas muestran **Doctor en determinada área del conocimiento (Dr. C.)** y **Doctor en Ciencias (Dr. Cs.)**. Son grados distintos. La denominación exacta del diploma, por ejemplo «Doctor en Ciencias Técnicas», se conserva en texto. Primero se selecciona el país otorgante. Para otros países se solicita únicamente el nombre oficial del grado, sin convertir PhD, DSc o cualquier otro título a una credencial cubana. No se muestran las etiquetas genéricas «doctorado de investigación» ni «doctorado superior» como categorías universales. Los códigos internos anteriores se conservan por compatibilidad con los datos guardados, sin mostrarlos como equivalencias. Cambiar el país de una entrada científica exige elegir nuevamente el grado cubano cuando corresponde, conservando su denominación en texto. Los datos declarados no acreditan reconocimiento legal.
 
 Una titulación profesional médica no se clasifica automáticamente como doctorado de investigación. El posdoctorado, los cargos, y las categorías docentes o científicas no se ofrecen como títulos obtenidos. El cargo o función actual tiene un campo independiente. No se añaden prefijos Dr./Dra. al nombre ni se presentan estas declaraciones como verificadas.
 
