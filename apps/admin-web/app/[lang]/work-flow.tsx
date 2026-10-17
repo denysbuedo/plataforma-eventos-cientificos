@@ -3,6 +3,8 @@ import { useState } from 'react';
 import { type AuthorWork, type WorkVersion, type WorkContent } from '@sep/contracts';
 import { webCopy, type Locale } from '@sep/i18n';
 import WorkAuthors from './work-authors';
+import { Icon } from '@sep/ui';
+import { trackingCopy } from './work-flow-copy';
 export function WorkContentView({content,locale}:{content:WorkContent;locale:Locale}) {
   const text=webCopy[locale];return <div className="work-content">
     <h3 className="work-title">{content.title}</h3>
@@ -16,10 +18,10 @@ export function WorkContentView({content,locale}:{content:WorkContent;locale:Loc
     <WorkAuthors value={content.authors} onChange={()=>{}} locale={locale} editing={false}/>
   </div>;
 }
-export default function WorkFlow({work,eventId,locale,contextKey,busy,onBusyChange,onUpdate,callChanged=false,staff=false}:{
-  work:AuthorWork;eventId:string;locale:Locale;contextKey:string;busy:boolean;onBusyChange:(busy:boolean)=>void;onUpdate:(work:AuthorWork)=>void;callChanged?:boolean;staff?:boolean;
+export default function WorkFlow({work,eventId,locale,contextKey,busy,onBusyChange,onUpdate,onEdit,callChanged=false,staff=false}:{
+  work:AuthorWork;eventId:string;locale:Locale;contextKey:string;busy:boolean;onBusyChange:(busy:boolean)=>void;onUpdate:(work:AuthorWork)=>void;onEdit?:()=>void;callChanged?:boolean;staff?:boolean;
 }) {
-  const text=webCopy[locale];const [error,setError]=useState('');const [confirmed,setConfirmed]=useState(false);const [reason,setReason]=useState('');const [version,setVersion]=useState<WorkVersion|null>(null);
+  const text=webCopy[locale],copy=trackingCopy[locale];const [expandedHistory,setExpandedHistory]=useState(false);const [error,setError]=useState('');const [confirmed,setConfirmed]=useState(false);const [reason,setReason]=useState('');const [version,setVersion]=useState<WorkVersion|null>(null);
   const base=`/api/backend/events/${eventId}/${staff?'submissions':'my-works'}/${work.id}`;
   const url=(action:string)=>`${base}/${action}?event=${encodeURIComponent(contextKey)}&lang=${locale}`;
   async function request<T>(action:string,method='POST',body?:unknown):Promise<T> {
@@ -31,24 +33,35 @@ export default function WorkFlow({work,eventId,locale,contextKey,busy,onBusyChan
   function update(action:string,body:unknown,method='POST'){void run(async()=>onUpdate(await request<AuthorWork>(action,method,body)));}
   const canSubmit=work.editable&&['draft','withdrawn','changes_requested','final_requested'].includes(work.status);
   const canWithdraw=['submitted','in_review','changes_requested','accepted','final_requested','final_submitted'].includes(work.status);
-  return <section style={{marginTop:'1.5rem'}}>
-    <h3>{text.workTracking}</h3><p><strong>{text.status}: {text.workStatuses[work.status]}</strong></p>
-    {work.responseDeadline&&<p>{text.workResponseBy}: {work.responseDeadline} · {work.call.timezone}</p>}
+  const dateTime=(value:string)=>new Intl.DateTimeFormat(locale,{dateStyle:'medium',timeStyle:'short',timeZone:work.call.timezone}).format(new Date(value));
+  // Deadlines are calendar dates in the event timezone, not UTC instants.
+  const deadline=work.responseDeadline?new Intl.DateTimeFormat(locale,{dateStyle:'long',timeZone:'UTC'}).format(new Date(`${work.responseDeadline}T12:00:00Z`)):null;
+  const versions=[...work.versions].sort((a,b)=>b.number-a.number);
+  const history=[...work.history].sort((a,b)=>Date.parse(b.createdAt)-Date.parse(a.createdAt));
+  const latestDecision=history.find(item=>item.actor==='staff'&&['in_review','changes_requested','accepted','rejected','final_requested'].includes(item.action)&&item.message);
+  const visibleHistory=expandedHistory?history:history.slice(0,6);
+  const actionNeeded=['draft','withdrawn','changes_requested','final_requested'].includes(work.status);
+  return <section className="work-tracking" aria-labelledby={`tracking-${work.id}`}>
+    <div className="tracking-heading"><div><h3 id={`tracking-${work.id}`}>{text.workTracking}</h3><p className="profile-help">{copy.intro}</p></div><span className={`participant-work-status participant-work-status-${work.status}`}>{text.workStatuses[work.status]}</span></div>
     {error&&<div className="notice notice-error" role="alert">{error}</div>}
-    <h4>{text.workManuscript}</h4>
-    {work.manuscript?<div><p>{work.manuscript.name} · {work.manuscript.pages} {text.workPages} · {Math.ceil(work.manuscript.bytes/1024)} KiB</p>
-      {work.manuscript.scan==='demo_unscanned'&&<p className="notice notice-muted">{text.workUnscanned}</p>}
-      <a className="button button-outline" href={url(`files/${work.manuscript.id}`)}>{text.downloadManuscript}</a>
-    </div>:<p className="muted">{text.noManuscript}</p>}
-    {!staff&&callChanged&&work.editable&&['draft','withdrawn'].includes(work.status)&&<button type="button" className="button button-outline" disabled={busy} onClick={()=>{if(window.confirm(text.syncCallConfirm))update('synchronize-call',{revision:work.revision});}}>{text.syncCall}</button>}
-    {!staff&&canSubmit&&<div className="form-fields"><p className="muted small">{text.workSubmitHelp}</p><label><input type="checkbox" checked={confirmed} disabled={busy} onChange={(e)=>setConfirmed(e.target.checked)}/> {text.confirmSubmission}</label>
-      <button type="button" className="button button-primary" disabled={busy||!confirmed||callChanged&&['draft','withdrawn'].includes(work.status)} onClick={()=>{if(window.confirm(text.submitWorkConfirm))update('submit',{revision:work.revision,confirmed:true});}}>{work.status==='final_requested'?text.submitFinal:work.versions.length?text.resubmitWork:text.submitWork}</button>
-    </div>}
-    {!staff&&work.canManage!==false&&canWithdraw&&<div className="form-fields" style={{marginTop:'1rem'}}><label className="field"><span>{text.withdrawReason}</span><textarea minLength={10} maxLength={2000} rows={3} value={reason} disabled={busy} onChange={(e)=>setReason(e.target.value)}/></label><button type="button" className="button button-outline" disabled={busy||reason.trim().length<10} onClick={()=>{if(window.confirm(text.withdrawWorkConfirm))update('withdraw',{revision:work.revision,message:reason.trim()});}}>{text.withdrawWork}</button></div>}
-    <h4>{text.workVersions}</h4>{!work.versions.length&&<p className="muted">{text.noWorkVersions}</p>}
-    {work.versions.map(item=><div className="panel-heading" key={item.id}><span>{text.revision} {item.number} · {item.kind==='final'?text.finalVersion:text.submissionVersion}</span><button type="button" className="button button-outline" disabled={busy} onClick={()=>run(async()=>setVersion(await request<WorkVersion>(`versions/${item.id}`,'GET')))}>{text.viewWork}</button></div>)}
-    {version&&<section className="panel form-panel"><div className="panel-heading"><h4>{text.revision} {version.number} · {text.immutableVersion}</h4><button type="button" className="button button-outline" onClick={()=>setVersion(null)}>{text.closeVersion}</button></div><WorkContentView content={version.content} locale={locale}/>{version.content.manuscript&&<a className="button button-outline" href={url(`files/${version.content.manuscript.id}`)}>{text.downloadManuscript}</a>}</section>}
-    <h4>{text.workHistory}</h4>{!work.history.length&&<p className="muted">{text.noWorkHistory}</p>}
-    <ol>{work.history.map(item=><li key={item.id} style={{marginBottom:'1rem'}}><strong>{(text.workActions as Record<string,string>)[item.action]??item.action}</strong><p className="muted small">{new Intl.DateTimeFormat(locale,{dateStyle:'medium',timeStyle:'short',timeZone:work.call.timezone}).format(new Date(item.createdAt))} · {item.actorName || (item.actor==='staff'?text.eventTeam:text.author)}</p>{item.message&&<p style={{whiteSpace:'pre-wrap'}}>{item.message}</p>}</li>)}</ol>
+    <div className={`tracking-overview ${actionNeeded?'tracking-overview-action':''}`}>
+      <div className="tracking-next"><span className="profile-note-icon"><Icon name={actionNeeded?'edit':work.status==='accepted'||work.status==='final_submitted'?'check':'book'} size={22}/></span><div><h4>{copy.next}</h4><p>{staff?copy.staffNext:actionNeeded&&!work.editable?copy.notEditable:copy.steps[work.status]}</p>{!staff&&actionNeeded&&work.editable&&onEdit&&<button type="button" className="button button-outline tracking-edit" disabled={busy} onClick={onEdit}><Icon name="edit" size={16}/>{text.editWork}</button>}</div></div>
+      <dl className="tracking-facts"><div><dt><Icon name="book" size={15}/>{copy.lastSubmission}</dt><dd>{versions[0]?<><strong>{copy.version} {versions[0].number} · {versions[0].kind==='final'?text.finalVersion:text.submissionVersion}</strong><time dateTime={versions[0].createdAt}>{dateTime(versions[0].createdAt)}</time></>:<strong>{copy.notSubmitted}</strong>}</dd></div><div><dt><Icon name="calendar" size={15}/>{copy.deadline}</dt><dd>{deadline?<strong><time dateTime={work.responseDeadline!}>{deadline}</time></strong>:<span>{copy.noDeadline}</span>}<small>{copy.timezone}: {work.call.timezone}</small></dd></div></dl>
+    </div>
+    {latestDecision&&<section className="tracking-message"><div className="tracking-section-heading"><h4>{copy.latestMessage}</h4><span className="profile-count">{(text.workActions as Record<string,string>)[latestDecision.action]??copy.activity}</span></div><blockquote>{latestDecision.message}</blockquote><p className="tracking-meta">{latestDecision.actorName||text.eventTeam} · <time dateTime={latestDecision.createdAt}>{dateTime(latestDecision.createdAt)}</time></p></section>}
+    <section className="tracking-section"><div className="tracking-section-heading"><h4>{text.workManuscript}</h4></div>
+      {work.manuscript?<><div className="tracking-file"><span className="profile-affiliation-icon"><Icon name="book" size={21}/></span><div><strong>{work.manuscript.name}</strong><p className="tracking-meta">PDF · {work.manuscript.pages} {text.workPages} · {Math.ceil(work.manuscript.bytes/1024)} KiB</p></div><a className="button button-outline" href={url(`files/${work.manuscript.id}`)}>{text.downloadManuscript}</a></div>{work.manuscript.scan==='demo_unscanned'&&<p className="tracking-meta">{text.workUnscanned}</p>}</>:<p className="profile-help">{text.noManuscript}</p>}
+    </section>
+    {!staff&&callChanged&&work.editable&&['draft','withdrawn'].includes(work.status)&&<div className="tracking-call-update"><button type="button" className="button button-outline" disabled={busy} onClick={()=>{if(window.confirm(text.syncCallConfirm))update('synchronize-call',{revision:work.revision});}}>{text.syncCall}</button></div>}
+    {!staff&&canSubmit&&<section className="tracking-submit"><h4>{copy.submitHeading}</h4><p className="profile-help">{text.workSubmitHelp}</p><label className="profile-checkbox"><input type="checkbox" checked={confirmed} disabled={busy} onChange={(e)=>setConfirmed(e.target.checked)}/><span>{text.confirmSubmission}</span></label><div className="editor-actions"><button type="button" className="button button-primary" disabled={busy||!confirmed||callChanged&&['draft','withdrawn'].includes(work.status)} onClick={()=>{if(window.confirm(text.submitWorkConfirm))update('submit',{revision:work.revision,confirmed:true});}}>{work.status==='final_requested'?text.submitFinal:work.versions.length?text.resubmitWork:text.submitWork}<Icon name="arrow" size={16}/></button></div></section>}
+    <section className="tracking-section"><div className="tracking-section-heading"><h4>{text.workVersions}</h4><span className="profile-count">{versions.length}</span></div><p className="profile-help">{copy.versionsHelp}</p>
+      {!versions.length?<p className="tracking-empty">{text.noWorkVersions}</p>:<ul className="tracking-versions">{versions.map((item,index)=><li key={item.id}><span className="tracking-version-number" aria-hidden="true">V{item.number}</span><div><strong>{copy.version} {item.number} · {item.kind==='final'?text.finalVersion:text.submissionVersion}</strong><p className="tracking-meta"><time dateTime={item.createdAt}>{dateTime(item.createdAt)}</time>{index===0&&<span className="tracking-latest">{copy.currentVersion}</span>}</p></div><button type="button" className="button button-outline" aria-label={`${copy.viewVersion} ${item.number}`} aria-expanded={version?.id===item.id} disabled={busy} onClick={()=>{void run(async()=>setVersion(await request<WorkVersion>(`versions/${item.id}`,'GET')));}}>{text.viewWork}</button></li>)}</ul>}
+      {version&&<section className="tracking-version-detail"><div className="tracking-section-heading"><div><h4>{copy.version} {version.number}</h4><p className="tracking-meta">{text.immutableVersion} · {dateTime(version.createdAt)}</p></div><button type="button" className="button button-outline" onClick={()=>setVersion(null)}>{text.closeVersion}</button></div><WorkContentView content={version.content} locale={locale}/>{version.content.manuscript&&<a className="button button-outline" href={url(`files/${version.content.manuscript.id}`)}>{text.downloadManuscript}</a>}</section>}
+    </section>
+    <section className="tracking-section"><div className="tracking-section-heading"><h4>{text.workHistory}</h4><span className="profile-count">{history.length}</span></div><p className="profile-help">{copy.historyHelp}</p>
+      {!history.length?<p className="tracking-empty">{text.noWorkHistory}</p>:<ol className="tracking-timeline">{visibleHistory.map(item=><li key={item.id} className={item.actor==='staff'?'tracking-event-staff':''}><span className="tracking-event-dot" aria-hidden="true"/><div><div className="tracking-event-heading"><strong>{(text.workActions as Record<string,string>)[item.action]??copy.activity}</strong><time dateTime={item.createdAt}>{dateTime(item.createdAt)}</time></div><p className="tracking-meta">{item.actorName||(item.actor==='staff'?text.eventTeam:text.author)}</p>{item.message&&<p className="tracking-event-message">{item.message}</p>}</div></li>)}</ol>}
+      {history.length>6&&<button type="button" className="button button-outline" aria-expanded={expandedHistory} onClick={()=>setExpandedHistory(!expandedHistory)}>{expandedHistory?copy.showLess:`${copy.showAll} (${history.length})`}</button>}
+    </section>
+    {!staff&&work.canManage!==false&&canWithdraw&&<details className="tracking-withdraw"><summary>{copy.withdrawHeading}</summary><div><p className="profile-help">{copy.withdrawHelp}</p><label className="field"><span>{text.withdrawReason}</span><textarea minLength={10} maxLength={2000} rows={3} value={reason} disabled={busy} onChange={(e)=>setReason(e.target.value)}/></label><button type="button" className="button button-outline" disabled={busy||reason.trim().length<10} onClick={()=>{if(window.confirm(text.withdrawWorkConfirm))update('withdraw',{revision:work.revision,message:reason.trim()});}}>{text.withdrawWork}</button></div></details>}
   </section>;
 }

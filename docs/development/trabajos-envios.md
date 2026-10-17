@@ -71,3 +71,14 @@ Pasaron compilación completa y análisis estático. Una comprobación dirigida 
 La comprobación HTTP verificó bandeja autorizada, rechazo de una cuenta sin permisos, pantallas de autor/organizador en ambos idiomas, portal público y transporte multipart hasta la comprobación de propiedad sin modificar trabajos. También se rechazó un PDF con acción activa anidada y se verificó el protocolo INSTREAM con respuestas limpia/infectada de un servidor simulado; no equivale a probar un antivirus real.
 
 Los siguientes bloques científicos son comités y revisión por pares, programa y publicación/memorias. El envío de trabajos y su seguimiento ya están implementados.
+
+
+## Presentación del seguimiento
+
+El seguimiento destaca el estado actual y un próximo paso según el estado y la edición autorizada por la API. En los estados editables, el autor tiene un acceso directo a Editar trabajo; el envío mantiene su confirmación explícita. El organizador recibe instrucciones propias y no controles de envío del autor.
+
+Un resumen muestra la última versión oficial enviada y la fecha límite de respuesta. Las fechas límite se presentan como fechas de calendario del evento, evitando desplazarlas al día anterior por conversión UTC. Las horas de actividad y envío usan la zona horaria de la convocatoria.
+
+El último mensaje de decisión del equipo se destaca con su fecha y remitente. El PDF actual, las versiones oficiales y el historial se muestran en bloques independientes. Las versiones se ordenan por número descendente; cada una conserva la consulta de su copia inmutable. El historial muestra inicialmente las seis acciones más recientes y permite desplegarlo completo; no elimina ni filtra acciones de autoría o gestión compartida.
+
+El retiro se encuentra en un apartado desplegable independiente. Conserva los permisos existentes, motivo obligatorio y confirmación. La presentación no modifica estados, plazos, permisos o la lógica del envío y no introduce fases de revisión que no estén registradas.
