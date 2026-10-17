@@ -19,3 +19,5 @@ La presentación se asigna a un autor declarado de una versión oficial, y la mo
 Se permite revisar y publicar la agenda independientemente del CMS. Los cambios de perfil, autoría, versión o dictamen posteriores requieren una intervención explícita para actualizar la publicación. El programa es evidencia de planificación, nunca de asistencia. Inventario de salas, actividades sin trabajo, confirmaciones, exportaciones y asistencia quedan como ampliaciones. Antes de superar los límites del agregado deberá evaluarse su normalización y publicación por conjuntos.
 
 Ver [recorrido, contratos y límites](../development/programa-cientifico.md).
+
+El catálogo de espacios y la representación de actividades sin trabajos se incorporan posteriormente en [ADR-023](ADR-023-estructura-cientifica-espacios-y-formatos.md), que amplía esta decisión y conserva la separación entre programación, asistencia y certificación.

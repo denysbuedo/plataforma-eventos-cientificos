@@ -167,13 +167,26 @@ export interface ReviewTrackingItem { assignmentId:string;workId:string;title:st
 export interface ReviewTracking { pending:number;dueSoon:number;overdue:number;awaitingAcceptance:number;inProgress:number;items:ReviewTrackingItem[];total:number;limit:number;offset:number }
 
 
-export interface ProgramSlotInput { id:string;workId:string;presenterAuthorId:string;startsAt:string;endsAt:string }
-export interface ProgramSessionInput { id:string;titleEs:string;titleEn:string;topicEs:string;topicEn:string;date:string;startsAt:string;endsAt:string;room:string;modality:'in_person'|'virtual'|'hybrid';moderatorIds:string[];slots:ProgramSlotInput[] }
-export interface ProgramSlot extends ProgramSlotInput { title:string;authors:string[];presenterOptions:{id:string;name:string}[];presenterName:string;presenterPersonId:string|null;versionId:string;versionNumber:number }
-export interface ProgramSession extends Omit<ProgramSessionInput,'slots'> { moderators:{personId:string;name:string}[];slots:ProgramSlot[] }
-export interface ProgramSnapshot { timezone:string;sessions:ProgramSession[];revision:number;publishedAt:string }
-export interface ProgramDraft { sessions:ProgramSession[];timezone:string;startDate:string|null;endDate:string|null;revision:number;publishedRevision:number|null;publishedAt:string|null }
-export interface ProgramCandidate { workId:string;title:string;versionNumber:number;authors:{id:string;name:string}[] }
-export interface ProgramCandidates { data:ProgramCandidate[];total:number;limit:number;offset:number }
-export interface PublicProgram extends Omit<ProgramSnapshot,'sessions'> { sessions:(Omit<ProgramSession,'moderatorIds'|'moderators'|'slots'>&{moderators:string[];slots:Omit<ProgramSlot,'presenterPersonId'|'presenterOptions'>[]})[] }
-export interface MyParticipation { timezone:string|null;publishedAt:string|null;items:{sessionId:string;slotId:string|null;title:string;sessionTitleEs:string;sessionTitleEn:string;date:string;startsAt:string;endsAt:string;room:string;modality:ProgramSessionInput['modality'];role:'presenter'|'moderator'}[] }
+export const PROGRAM_ACTIVITY_TYPES=['symposium','workshop','roundtable','panel','debate','forum','seminar','colloquium','course','thematic_track','other'] as const;
+export const PROGRAM_SESSION_TYPES=['oral','poster','panel','roundtable','debate','practical','tutorial','keynote','plenary','seminar','forum','other'] as const;
+export const PROGRAM_PRESENTATION_FORMATS=['oral','short_oral','poster','e_poster','demonstration','video','pecha_kucha','discussion','other'] as const;
+export const PROGRAM_PARTICIPANT_ROLES=['speaker','panelist','discussant','facilitator'] as const;
+export type ProgramActivityType=typeof PROGRAM_ACTIVITY_TYPES[number];
+export type ProgramSessionType=typeof PROGRAM_SESSION_TYPES[number];
+export type ProgramPresentationFormat=typeof PROGRAM_PRESENTATION_FORMATS[number];
+export type ProgramParticipantRole=typeof PROGRAM_PARTICIPANT_ROLES[number];
+export interface ProgramSpace {id:string;code:string;name:string;kind:'physical'|'virtual';location:string;capacity:number|null;active:boolean;revision:number}
+export interface ProgramSpaces {spaces:ProgramSpace[]}
+export interface ProgramActivityInput {id:string;type:ProgramActivityType;titleEs:string;titleEn:string;descriptionEs:string;descriptionEn:string;coordinatorIds:string[]}
+export interface ProgramActivity extends ProgramActivityInput {coordinators:{personId:string;name:string}[]}
+export interface ProgramParticipantInput {personId:string;role:ProgramParticipantRole}
+export interface ProgramSlotInput {id:string;workId:string;presenterAuthorId:string;startsAt:string;endsAt:string;format?:ProgramPresentationFormat;modality?:'in_person'|'virtual';displayCode?:string}
+export interface ProgramSessionInput {id:string;titleEs:string;titleEn:string;topicEs:string;topicEn:string;date:string;startsAt:string;endsAt:string;modality:'in_person'|'virtual'|'hybrid';moderatorIds:string[];slots:ProgramSlotInput[];type?:ProgramSessionType;activityId?:string|null;roomId?:string|null;virtualRoomId?:string|null;descriptionEs?:string;descriptionEn?:string;participants?:ProgramParticipantInput[]}
+export interface ProgramSlot extends ProgramSlotInput {title:string;authors:string[];presenterOptions:{id:string;name:string}[];presenterName:string;presenterPersonId:string|null;versionId:string;versionNumber:number}
+export interface ProgramSession extends Omit<ProgramSessionInput,'slots'|'participants'> {room:string;virtualRoom?:string|null;roomLocation?:string;moderators:{personId:string;name:string}[];participants?:(ProgramParticipantInput&{name:string})[];slots:ProgramSlot[]}
+export interface ProgramSnapshot {timezone:string;sessions:ProgramSession[];activities?:ProgramActivity[];revision:number;publishedAt:string}
+export interface ProgramDraft {sessions:ProgramSession[];activities:ProgramActivity[];timezone:string;startDate:string|null;endDate:string|null;revision:number;publishedRevision:number|null;publishedAt:string|null}
+export interface ProgramCandidate {workId:string;title:string;versionNumber:number;authors:{id:string;name:string}[]}
+export interface ProgramCandidates {data:ProgramCandidate[];total:number;limit:number;offset:number}
+export interface PublicProgram extends Omit<ProgramSnapshot,'sessions'|'activities'> {activities?: (Omit<ProgramActivity,'coordinatorIds'|'coordinators'>&{coordinators:string[]})[];sessions:(Omit<ProgramSession,'moderatorIds'|'moderators'|'slots'|'participants'>&{moderators:string[];participants?:{name:string;role:ProgramParticipantRole}[];slots:Omit<ProgramSlot,'presenterPersonId'|'presenterOptions'>[]})[]}
+export interface MyParticipation {timezone:string|null;publishedAt:string|null;activities?:{id:string;titleEs:string;titleEn:string;type:ProgramActivityType}[];items:{sessionId:string;slotId:string|null;title:string;sessionTitleEs:string;sessionTitleEn:string;date:string;startsAt:string;endsAt:string;room:string;modality:ProgramSessionInput['modality']|'in_person'|'virtual';role:'presenter'|'moderator'|ProgramParticipantRole;activityTitleEs?:string;activityTitleEn?:string;sessionType?:ProgramSessionType;format?:ProgramPresentationFormat}[]}

@@ -64,3 +64,5 @@ Los documentos de planificación describen trabajo futuro. No constituyen eviden
 - [Revisión científica: comité, rondas, asignaciones y evaluaciones](development/revision-cientifica.md) y [ADR-020](adr/ADR-020-revision-cientifica.md).
 
 - [Programa científico: sesiones, publicación y Mi participación](development/programa-cientifico.md) y [ADR-022](adr/ADR-022-programa-publicacion-y-participacion.md).
+
+- [Estudio comparativo internacional de actividades, sesiones y presentaciones](architecture/estudio-organizacion-cientifica-eventos.md) y [ADR-023](adr/ADR-023-estructura-cientifica-espacios-y-formatos.md).

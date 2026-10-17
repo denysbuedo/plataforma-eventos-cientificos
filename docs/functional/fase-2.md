@@ -47,7 +47,7 @@ La conservación de reglas, versiones y archivos está implementada y se comprob
 
 ## Próximos incrementos
 
-1. Ampliaciones del programa: actividades sin trabajo, salas reutilizables, confirmaciones y exportaciones.
+1. Ampliaciones del programa: convocatorias de actividades, confirmaciones, inscripción por taller y exportaciones.
 2. Publicación de trabajos aceptados y memorias.
 3. Ampliaciones de revisión: doble ciego, debate, réplica y asignación automática.
 
@@ -64,3 +64,5 @@ Comité y revisores, aceptación independiente de asignaciones, conflictos autom
 ## Programa científico implementado
 
 Sesiones bilingües, horarios locales, espacios, moderadores registrados, trabajos aceptados con presentador elegido entre sus autores, comprobación de conflictos, borrador/publicación separados, agenda pública y Mi participación. La programación no acredita asistencia ni genera certificados. Ver [recorrido y límites](../development/programa-cientifico.md) y [ADR-022](../adr/ADR-022-programa-publicacion-y-participacion.md).
+
+El segundo bloque diferencia actividades científicas, sesiones y presentaciones; incorpora catálogo de salas/canales, formatos, participación individual, funciones científicas y creación de sesiones en cuatro pasos. Ver [estudio internacional](../architecture/estudio-organizacion-cientifica-eventos.md) y [ADR-023](../adr/ADR-023-estructura-cientifica-espacios-y-formatos.md).

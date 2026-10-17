@@ -9817,6 +9817,321 @@
         ]
       }
     },
+    "/api/v1/events/{eventId}/program/spaces": {
+      "get": {
+        "operationId": "ProgramController_spaces",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProgramSpacesDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "scientific-program"
+        ]
+      },
+      "post": {
+        "operationId": "ProgramController_createSpace",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveProgramSpaceDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProgramSpaceDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "scientific-program"
+        ]
+      }
+    },
+    "/api/v1/events/{eventId}/program/spaces/{spaceId}": {
+      "put": {
+        "operationId": "ProgramController_updateSpace",
+        "parameters": [
+          {
+            "name": "spaceId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveProgramSpaceDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProgramSpaceDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "scientific-program"
+        ]
+      }
+    },
     "/api/v1/events/{eventId}/program/mine": {
       "get": {
         "operationId": "ProgramController_mine",
@@ -14787,9 +15102,180 @@
           "reviewerId"
         ]
       },
+      "ProgramSpaceDto": {
+        "type": "object",
+        "properties": {
+          "revision": {
+            "type": "number"
+          },
+          "code": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "physical",
+              "virtual"
+            ]
+          },
+          "location": {
+            "type": "object"
+          },
+          "capacity": {
+            "type": "number",
+            "nullable": true
+          },
+          "active": {
+            "type": "object"
+          },
+          "id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "revision",
+          "code",
+          "name",
+          "kind",
+          "location",
+          "capacity",
+          "active",
+          "id"
+        ]
+      },
+      "ProgramSpacesDto": {
+        "type": "object",
+        "properties": {
+          "spaces": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProgramSpaceDto"
+            }
+          }
+        },
+        "required": [
+          "spaces"
+        ]
+      },
+      "SaveProgramSpaceDto": {
+        "type": "object",
+        "properties": {
+          "revision": {
+            "type": "number"
+          },
+          "code": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "physical",
+              "virtual"
+            ]
+          },
+          "location": {
+            "type": "object"
+          },
+          "capacity": {
+            "type": "number",
+            "nullable": true
+          },
+          "active": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "revision",
+          "code",
+          "name",
+          "kind",
+          "location",
+          "capacity",
+          "active"
+        ]
+      },
+      "ParticipationActivityDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "titleEs": {
+            "type": "string"
+          },
+          "titleEn": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "symposium",
+              "workshop",
+              "roundtable",
+              "panel",
+              "debate",
+              "forum",
+              "seminar",
+              "colloquium",
+              "course",
+              "thematic_track",
+              "other"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "titleEs",
+          "titleEn",
+          "type"
+        ]
+      },
       "ParticipationItemDto": {
         "type": "object",
         "properties": {
+          "activityTitleEs": {
+            "type": "string"
+          },
+          "activityTitleEn": {
+            "type": "string"
+          },
+          "sessionType": {
+            "type": "string",
+            "enum": [
+              "oral",
+              "poster",
+              "panel",
+              "roundtable",
+              "debate",
+              "practical",
+              "tutorial",
+              "keynote",
+              "plenary",
+              "seminar",
+              "forum",
+              "other"
+            ]
+          },
+          "format": {
+            "type": "string",
+            "enum": [
+              "oral",
+              "short_oral",
+              "poster",
+              "e_poster",
+              "demonstration",
+              "video",
+              "pecha_kucha",
+              "discussion",
+              "other"
+            ]
+          },
           "sessionId": {
             "type": "string"
           },
@@ -14830,7 +15316,11 @@
             "type": "string",
             "enum": [
               "presenter",
-              "moderator"
+              "moderator",
+              "speaker",
+              "panelist",
+              "discussant",
+              "facilitator"
             ]
           }
         },
@@ -14851,6 +15341,12 @@
       "MyParticipationDto": {
         "type": "object",
         "properties": {
+          "activities": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ParticipationActivityDto"
+            }
+          },
           "items": {
             "type": "array",
             "items": {
@@ -14939,6 +15435,104 @@
           "offset"
         ]
       },
+      "ProgramModeratorDto": {
+        "type": "object",
+        "properties": {
+          "personId": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "personId",
+          "name"
+        ]
+      },
+      "ProgramActivityViewDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "symposium",
+              "workshop",
+              "roundtable",
+              "panel",
+              "debate",
+              "forum",
+              "seminar",
+              "colloquium",
+              "course",
+              "thematic_track",
+              "other"
+            ]
+          },
+          "titleEs": {
+            "type": "string"
+          },
+          "titleEn": {
+            "type": "string"
+          },
+          "descriptionEs": {
+            "type": "string"
+          },
+          "descriptionEn": {
+            "type": "string"
+          },
+          "coordinatorIds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "coordinators": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProgramModeratorDto"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "type",
+          "titleEs",
+          "titleEn",
+          "descriptionEs",
+          "descriptionEn",
+          "coordinatorIds",
+          "coordinators"
+        ]
+      },
+      "ProgramParticipantViewDto": {
+        "type": "object",
+        "properties": {
+          "personId": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "speaker",
+              "panelist",
+              "discussant",
+              "facilitator"
+            ]
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "personId",
+          "role",
+          "name"
+        ]
+      },
       "ProgramSlotViewDto": {
         "type": "object",
         "properties": {
@@ -14950,6 +15544,33 @@
           },
           "presenterAuthorId": {
             "type": "string"
+          },
+          "format": {
+            "type": "string",
+            "enum": [
+              "oral",
+              "short_oral",
+              "poster",
+              "e_poster",
+              "demonstration",
+              "video",
+              "pecha_kucha",
+              "discussion",
+              "other"
+            ],
+            "default": "oral"
+          },
+          "modality": {
+            "type": "string",
+            "enum": [
+              "in_person",
+              "virtual"
+            ],
+            "default": "in_person"
+          },
+          "displayCode": {
+            "type": "object",
+            "default": ""
           },
           "startsAt": {
             "type": "string",
@@ -15003,21 +15624,6 @@
           "presenterPersonId"
         ]
       },
-      "ProgramModeratorDto": {
-        "type": "object",
-        "properties": {
-          "personId": {
-            "type": "string"
-          },
-          "name": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "personId",
-          "name"
-        ]
-      },
       "ProgramSessionViewDto": {
         "type": "object",
         "properties": {
@@ -15046,8 +15652,49 @@
           "endsAt": {
             "type": "string"
           },
-          "room": {
-            "type": "string"
+          "type": {
+            "type": "string",
+            "enum": [
+              "oral",
+              "poster",
+              "panel",
+              "roundtable",
+              "debate",
+              "practical",
+              "tutorial",
+              "keynote",
+              "plenary",
+              "seminar",
+              "forum",
+              "other"
+            ],
+            "default": "oral"
+          },
+          "activityId": {
+            "type": "string",
+            "nullable": true
+          },
+          "roomId": {
+            "type": "string",
+            "nullable": true
+          },
+          "virtualRoomId": {
+            "type": "string",
+            "nullable": true
+          },
+          "descriptionEs": {
+            "type": "object",
+            "default": ""
+          },
+          "descriptionEn": {
+            "type": "object",
+            "default": ""
+          },
+          "participants": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProgramParticipantViewDto"
+            }
           },
           "modality": {
             "type": "string",
@@ -15069,6 +15716,16 @@
               "$ref": "#/components/schemas/ProgramSlotViewDto"
             }
           },
+          "room": {
+            "type": "string"
+          },
+          "virtualRoom": {
+            "type": "string",
+            "nullable": true
+          },
+          "roomLocation": {
+            "type": "string"
+          },
           "moderators": {
             "type": "array",
             "items": {
@@ -15085,16 +15742,24 @@
           "date",
           "startsAt",
           "endsAt",
-          "room",
           "modality",
           "moderatorIds",
           "slots",
+          "room",
+          "virtualRoom",
+          "roomLocation",
           "moderators"
         ]
       },
       "ProgramDraftDto": {
         "type": "object",
         "properties": {
+          "activities": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProgramActivityViewDto"
+            }
+          },
           "sessions": {
             "type": "array",
             "items": {
@@ -15125,6 +15790,7 @@
           }
         },
         "required": [
+          "activities",
           "sessions",
           "timezone",
           "startDate",
@@ -15132,6 +15798,78 @@
           "revision",
           "publishedRevision",
           "publishedAt"
+        ]
+      },
+      "ProgramActivityDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "symposium",
+              "workshop",
+              "roundtable",
+              "panel",
+              "debate",
+              "forum",
+              "seminar",
+              "colloquium",
+              "course",
+              "thematic_track",
+              "other"
+            ]
+          },
+          "titleEs": {
+            "type": "string"
+          },
+          "titleEn": {
+            "type": "string"
+          },
+          "descriptionEs": {
+            "type": "string"
+          },
+          "descriptionEn": {
+            "type": "string"
+          },
+          "coordinatorIds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "type",
+          "titleEs",
+          "titleEn",
+          "descriptionEs",
+          "descriptionEn",
+          "coordinatorIds"
+        ]
+      },
+      "ProgramParticipantDto": {
+        "type": "object",
+        "properties": {
+          "personId": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "speaker",
+              "panelist",
+              "discussant",
+              "facilitator"
+            ]
+          }
+        },
+        "required": [
+          "personId",
+          "role"
         ]
       },
       "ProgramSlotDto": {
@@ -15145,6 +15883,33 @@
           },
           "presenterAuthorId": {
             "type": "string"
+          },
+          "format": {
+            "type": "string",
+            "enum": [
+              "oral",
+              "short_oral",
+              "poster",
+              "e_poster",
+              "demonstration",
+              "video",
+              "pecha_kucha",
+              "discussion",
+              "other"
+            ],
+            "default": "oral"
+          },
+          "modality": {
+            "type": "string",
+            "enum": [
+              "in_person",
+              "virtual"
+            ],
+            "default": "in_person"
+          },
+          "displayCode": {
+            "type": "object",
+            "default": ""
           },
           "startsAt": {
             "type": "string",
@@ -15191,8 +15956,49 @@
           "endsAt": {
             "type": "string"
           },
-          "room": {
-            "type": "string"
+          "type": {
+            "type": "string",
+            "enum": [
+              "oral",
+              "poster",
+              "panel",
+              "roundtable",
+              "debate",
+              "practical",
+              "tutorial",
+              "keynote",
+              "plenary",
+              "seminar",
+              "forum",
+              "other"
+            ],
+            "default": "oral"
+          },
+          "activityId": {
+            "type": "string",
+            "nullable": true
+          },
+          "roomId": {
+            "type": "string",
+            "nullable": true
+          },
+          "virtualRoomId": {
+            "type": "string",
+            "nullable": true
+          },
+          "descriptionEs": {
+            "type": "object",
+            "default": ""
+          },
+          "descriptionEn": {
+            "type": "object",
+            "default": ""
+          },
+          "participants": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProgramParticipantDto"
+            }
           },
           "modality": {
             "type": "string",
@@ -15224,7 +16030,6 @@
           "date",
           "startsAt",
           "endsAt",
-          "room",
           "modality",
           "moderatorIds",
           "slots"
@@ -15235,6 +16040,12 @@
         "properties": {
           "revision": {
             "type": "number"
+          },
+          "activities": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProgramActivityDto"
+            }
           },
           "sessions": {
             "type": "array",
@@ -15259,6 +16070,78 @@
           "revision"
         ]
       },
+      "PublicProgramActivityDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "symposium",
+              "workshop",
+              "roundtable",
+              "panel",
+              "debate",
+              "forum",
+              "seminar",
+              "colloquium",
+              "course",
+              "thematic_track",
+              "other"
+            ]
+          },
+          "titleEs": {
+            "type": "string"
+          },
+          "titleEn": {
+            "type": "string"
+          },
+          "descriptionEs": {
+            "type": "string"
+          },
+          "descriptionEn": {
+            "type": "string"
+          },
+          "coordinators": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "type",
+          "titleEs",
+          "titleEn",
+          "descriptionEs",
+          "descriptionEn",
+          "coordinators"
+        ]
+      },
+      "PublicProgramParticipantDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "speaker",
+              "panelist",
+              "discussant",
+              "facilitator"
+            ]
+          }
+        },
+        "required": [
+          "name",
+          "role"
+        ]
+      },
       "PublicProgramSlotDto": {
         "type": "object",
         "properties": {
@@ -15270,6 +16153,33 @@
           },
           "presenterAuthorId": {
             "type": "string"
+          },
+          "format": {
+            "type": "string",
+            "enum": [
+              "oral",
+              "short_oral",
+              "poster",
+              "e_poster",
+              "demonstration",
+              "video",
+              "pecha_kucha",
+              "discussion",
+              "other"
+            ],
+            "default": "oral"
+          },
+          "modality": {
+            "type": "string",
+            "enum": [
+              "in_person",
+              "virtual"
+            ],
+            "default": "in_person"
+          },
+          "displayCode": {
+            "type": "object",
+            "default": ""
           },
           "startsAt": {
             "type": "string",
@@ -15341,6 +16251,46 @@
           "room": {
             "type": "string"
           },
+          "virtualRoom": {
+            "type": "string",
+            "nullable": true
+          },
+          "roomLocation": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "oral",
+              "poster",
+              "panel",
+              "roundtable",
+              "debate",
+              "practical",
+              "tutorial",
+              "keynote",
+              "plenary",
+              "seminar",
+              "forum",
+              "other"
+            ]
+          },
+          "activityId": {
+            "type": "string",
+            "nullable": true
+          },
+          "descriptionEs": {
+            "type": "string"
+          },
+          "descriptionEn": {
+            "type": "string"
+          },
+          "participants": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PublicProgramParticipantDto"
+            }
+          },
           "modality": {
             "type": "string",
             "enum": [
@@ -15380,6 +16330,12 @@
       "PublicProgramDto": {
         "type": "object",
         "properties": {
+          "activities": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PublicProgramActivityDto"
+            }
+          },
           "sessions": {
             "type": "array",
             "items": {
@@ -15397,6 +16353,7 @@
           }
         },
         "required": [
+          "activities",
           "sessions",
           "timezone",
           "revision",

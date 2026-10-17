@@ -1,9 +1,14 @@
 const messages = {
   es: {
+    PROGRAM_SPACE_INVALID: 'Selecciona salas activas del evento: una sala física para lo presencial y un canal virtual para lo virtual; una sesión híbrida necesita ambos.',
+    PROGRAM_SPACE_DUPLICATE: 'Ya existe un espacio con ese código o con el mismo nombre y ubicación.',
+    PROGRAM_SPACE_IN_USE: 'El espacio está asignado en el borrador. Cambia primero las sesiones antes de desactivarlo o cambiar su tipo.',
+    PROGRAM_ACTIVITY_INVALID: 'Comprueba las actividades científicas: deben existir, tener identificadores únicos y conservar sus sesiones vinculadas.',
+    PROGRAM_FORMAT_INVALID: 'Revisa el formato y la modalidad de las presentaciones. Deben ser compatibles con el tipo y la modalidad de la sesión.',
     PROGRAM_INVALID: 'Comprueba fechas y horarios: las presentaciones deben quedar dentro de su sesión y de las fechas del evento.',
     PROGRAM_CONFLICT: 'Hay un solapamiento de sala, presentador o moderador, o un trabajo repetido en el programa.',
     PROGRAM_WORK_UNAVAILABLE: 'Un trabajo ya no está aceptado, cambió de versión o el presentador no pertenece a su autoría. Actualiza el borrador.',
-    PROGRAM_INCOMPLETE: 'Completa al menos una sesión con título en ambos idiomas y una presentación antes de publicar.',
+    PROGRAM_INCOMPLETE: 'Completa los títulos bilingües y el contenido: una sesión de trabajos requiere presentaciones; las demás necesitan una descripción y participantes.',
     PROGRAM_TIMEZONE_CHANGED: 'La zona horaria del evento cambió. Revisa y guarda el programa antes de publicarlo.',
     REVIEW_DEADLINE_INVALID:'La nueva fecha debe ampliar el plazo actual y no puede estar vencida.',REVIEW_DEADLINE_LIMIT:'Esta ronda alcanzó el máximo de veinte prórrogas registradas.',
     REVIEW_CONFLICT:'Existe un conflicto de interés o de autoría para esta evaluación.',REVIEW_UNAVAILABLE:'La asignación ya no está disponible: revisa la ronda, el plazo y el estado del trabajo.',REVIEW_INCOMPLETE:'Faltan las evaluaciones requeridas de la versión actual. Completa la revisión o justifica expresamente la excepción.',REVIEW_LIMIT:'Se alcanzó el límite de revisores, asignaciones o rondas.',
@@ -45,10 +50,15 @@ const messages = {
     INTERNAL_ERROR: 'No se pudo completar la solicitud.',
   },
   en: {
+    PROGRAM_SPACE_INVALID: 'Choose active event spaces: a physical room for in-person sessions, a virtual channel for online sessions, and both for hybrid sessions.',
+    PROGRAM_SPACE_DUPLICATE: 'A space with that code or the same name and location already exists.',
+    PROGRAM_SPACE_IN_USE: 'This space is assigned in the draft. Reassign its sessions before deactivating it or changing its type.',
+    PROGRAM_ACTIVITY_INVALID: 'Check scientific activities: they must exist, have unique IDs and retain their linked sessions.',
+    PROGRAM_FORMAT_INVALID: 'Check presentation formats and attendance modes. They must be compatible with the session type and mode.',
     PROGRAM_INVALID: 'Check dates and times: presentations must fit within their session and the event dates.',
     PROGRAM_CONFLICT: 'A room, presenter or moderator overlaps, or a submission appears more than once.',
     PROGRAM_WORK_UNAVAILABLE: 'A submission is no longer accepted, its version changed, or the presenter is not an author. Refresh the draft.',
-    PROGRAM_INCOMPLETE: 'Complete at least one session with bilingual titles and a presentation before publishing.',
+    PROGRAM_INCOMPLETE: 'Complete bilingual titles and content: paper sessions need presentations; other sessions need a description and participants.',
     PROGRAM_TIMEZONE_CHANGED: 'The event time zone changed. Review and save the program before publishing.',
     REVIEW_DEADLINE_INVALID:'The new date must extend the current deadline and cannot be in the past.',REVIEW_DEADLINE_LIMIT:'This round has reached the limit of twenty recorded extensions.',
     REVIEW_CONFLICT:'A conflict of interest or authorship prevents this review.',REVIEW_UNAVAILABLE:'This assignment is unavailable. Check the round, deadline and work status.',REVIEW_INCOMPLETE:'Required reviews of the current version are missing. Complete peer review or explicitly justify an exception.',REVIEW_LIMIT:'The reviewer, assignment or round limit has been reached.',
@@ -104,3 +114,5 @@ export function localeFromHeader(header: string | undefined): Locale {
 }
 export const errorMessage = (code: ErrorCode, locale: Locale) => messages[locale][code];
 export { webCopy, type WebCopy } from './web.js';
+
+export {programTypes} from './program.js';
