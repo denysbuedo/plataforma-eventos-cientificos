@@ -104,7 +104,7 @@ export type WorkStatus = typeof WORK_STATUSES[number];
 export interface Manuscript { id: string; name: string; bytes: number; pages: number; sha256: string; scan: 'clean' | 'demo_unscanned' }
 export interface WorkReviewReply { number:number;text:string }
 export interface WorkReviewResponseDraft { decisionId:string;summary:string;replies:WorkReviewReply[] }
-export interface WorkReviewResponse extends WorkReviewResponseDraft { versionNumber:number;decisionMessage:string;feedbackMessage:string;roundNumber?:number;comments?:WorkReviewReply[] }
+export interface WorkReviewResponse extends WorkReviewResponseDraft { feedbackId?:string;feedbackVersionNumber?:number; versionNumber:number;decisionMessage:string;feedbackMessage:string;roundNumber?:number;comments?:WorkReviewReply[] }
 export interface WorkResponseTarget { decisionId:string;message:string;versionNumber:number;feedback?:AuthorReviewFeedback }
 export interface WorkContent { reviewResponse?:WorkReviewResponse;title: string; abstract: string; keywords: string[]; language: 'es' | 'en'; trackId: string; contributionTypeId: string; call: PublishedScientificCall; authors: WorkAuthor[]; manuscript: Manuscript | null }
 export interface WorkVersionSummary { id: string; number: number; kind: 'submission' | 'final'; createdAt: string }
@@ -156,4 +156,7 @@ export interface ReviewContent { reviewResponse?:WorkReviewResponse;title:string
 export interface ReviewRound { id:string;workId:string;versionId:string;versionNumber:number;number:number;status:'open'|'closed';deadline:string;timezone:string;minimumReviews:number;criteria:ReviewCriterion[];revision:number;createdAt:string;closedAt:string|null }
 export interface ReviewAssignment { eligible?:boolean; id:string;roundId:string;workId:string;reviewerId:string;reviewerName:string;status:'invited'|'accepted'|'declined'|'conflict'|'revoked'|'submitted';title:string;versionNumber:number;deadline:string;timezone:string;revision:number;submittedAt:string|null;message:string;evaluation:ReviewEvaluation|null;content?:ReviewContent;criteria:ReviewCriterion[];available:boolean }
 export interface ReviewWorkspace { members:ReviewMember[];assignments:ReviewAssignment[] }
-export interface WorkReviewFile { rounds:ReviewRound[];assignments:ReviewAssignment[] }
+export interface WorkReviewFile { responseChecks?:ResponseCheck[];rounds:ReviewRound[];assignments:ReviewAssignment[] }
+
+export interface ResponseCheckContent { summary:string;observation:string;reply:string;decisionMessage:string }
+export interface ResponseCheck { id:string;workId:string;versionId:string;versionNumber:number;sourceVersionNumber:number;title:string;number:number;revision:number;verdict:'accepted'|'rejected'|null;message:string;createdAt:string;assessedAt:string|null;assessable:boolean;eligible?:boolean;reviewerName?:string;content?:ResponseCheckContent }

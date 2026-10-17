@@ -264,6 +264,7 @@ export const workVersions = pgTable('work_versions', {
   pgPolicy('version_insert',{for:'insert',to:runtime,withCheck:sql`${workVisible(sql`${t.organizationId}`,sql`${t.eventId}`,sql`${t.workId}`)} AND ${actorScope(sql`${t.ownerId}`)}`}),
 ]);
 export const workHistory = pgTable('work_history', {
+  reviewRecipients:jsonb('review_recipients').$type<{assignmentId:string;reviewerId:string;number:number}[]>(),
   authorFeedback:jsonb('author_feedback').$type<AuthorFeedbackBody>(),
   actorName:text('actor_name').notNull().default(''),
   id: uuid('id').primaryKey(), organizationId: uuid('organization_id').notNull(), eventId: uuid('event_id').notNull(),workId:uuid('work_id').notNull(),
@@ -271,6 +272,7 @@ export const workHistory = pgTable('work_history', {
   createdAt:timestamp('created_at',{withTimezone:true}).notNull().defaultNow(),
 },(t)=>[foreignKey({columns:[t.organizationId,t.eventId,t.workId],foreignColumns:[authorWorks.organizationId,authorWorks.eventId,authorWorks.id]}),
   pgPolicy('authorship_rpc',{for:'insert',to:registryOwner,withCheck:sql`${authorshipScope(sql`${t.organizationId}`,sql`${t.eventId}`)} AND ${actorScope(sql`${t.actorId}`)}`}),
+  pgPolicy('review_registry',{for:'select',to:registryOwner,using:sql`current_setting('sep.review_rpc',true)='true' AND ${organizationScope(sql`${t.organizationId}`)} AND ${t.eventId}=nullif(current_setting('sep.event_id',true),'')::uuid`}),
   index('work_history_notices_idx').on(t.organizationId,t.eventId,t.workId,t.action,t.createdAt),
   pgPolicy('history_read',{for:'select',to:runtime,using:sql`${workVisible(sql`${t.organizationId}`,sql`${t.eventId}`,sql`${t.workId}`)} AND (current_setting('sep.submissions_staff',true) IS DISTINCT FROM 'true' OR ${t.actor}='staff' OR ${t.action} IN ('submitted','final_submitted','withdrawn'))`}),
   pgPolicy('history_insert',{for:'insert',to:runtime,withCheck:sql`${workVisible(sql`${t.organizationId}`,sql`${t.eventId}`,sql`${t.workId}`)} AND ${actorScope(sql`${t.actorId}`)}`}),
@@ -343,3 +345,9 @@ export const workNoticeReads=pgTable('work_notice_reads',{
  organizationId:uuid('organization_id').notNull(),eventId:uuid('event_id').notNull(),workId:uuid('work_id').notNull(),personId:uuid('person_id').notNull().references(()=>people.id),seenIds:uuid('seen_ids').array().notNull().default(sql`ARRAY[]::uuid[]`),
 },t=>[primaryKey({columns:[t.organizationId,t.eventId,t.workId,t.personId]}),foreignKey({columns:[t.organizationId,t.eventId,t.workId],foreignColumns:[authorWorks.organizationId,authorWorks.eventId,authorWorks.id]}),
  policy(sql`${actorScope(sql`${t.personId}`)} AND ${workVisible(sql`${t.organizationId}`,sql`${t.eventId}`,sql`${t.workId}`)}`)]);
+
+export const reviewResponseChecks=pgTable('review_response_checks',{
+ id:uuid('id').primaryKey(),organizationId:uuid('organization_id').notNull(),eventId:uuid('event_id').notNull(),workId:uuid('work_id').notNull(),versionId:uuid('version_id').notNull(),assignmentId:uuid('assignment_id').notNull().references(()=>reviewAssignments.id),reviewerId:uuid('reviewer_id').notNull(),title:text('title').notNull(),versionNumber:integer('version_number').notNull(),sourceVersionNumber:integer('source_version_number').notNull(),number:integer('number').notNull(),content:jsonb('content').$type<import('@sep/contracts').ResponseCheckContent>().notNull(),revision:integer('revision').notNull().default(1),verdict:text('verdict').$type<'accepted'|'rejected'>(),message:text('message').notNull().default(''),createdAt:timestamp('created_at',{withTimezone:true}).notNull().defaultNow(),assessedAt:timestamp('assessed_at',{withTimezone:true}),
+},t=>[unique().on(t.versionId,t.assignmentId),index('response_checks_reviewer_event_idx').on(t.organizationId,t.eventId,t.reviewerId),foreignKey({columns:[t.organizationId,t.eventId,t.workId,t.versionId],foreignColumns:[workVersions.organizationId,workVersions.eventId,workVersions.workId,workVersions.id]}),foreignKey({columns:[t.organizationId,t.eventId,t.reviewerId],foreignColumns:[reviewMembers.organizationId,reviewMembers.eventId,reviewMembers.personId]}),check('response_check_verdict',sql`(${t.verdict} IS NULL AND ${t.assessedAt} IS NULL) OR (${t.verdict} IN ('accepted','rejected') AND ${t.assessedAt} IS NOT NULL AND length(${t.message})>=10)`),
+ pgPolicy('review_registry',{for:'all',to:registryOwner,using:sql`${reviewScope(sql`${t.organizationId}`,sql`${t.eventId}`)} AND current_setting('sep.review_rpc',true)='true'`,withCheck:sql`${reviewScope(sql`${t.organizationId}`,sql`${t.eventId}`)} AND current_setting('sep.review_rpc',true)='true'`}),
+ policy(sql`${reviewStaff(sql`${t.organizationId}`,sql`${t.eventId}`)} OR (${reviewScope(sql`${t.organizationId}`,sql`${t.eventId}`)} AND ${actorScope(sql`${t.reviewerId}`)} AND EXISTS(SELECT 1 FROM review_members m WHERE m.organization_id=${t.organizationId} AND m.event_id=${t.eventId} AND m.person_id=${t.reviewerId} AND m.status='accepted'))`)]);

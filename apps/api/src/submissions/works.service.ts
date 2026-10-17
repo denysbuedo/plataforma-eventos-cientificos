@@ -75,15 +75,17 @@ export class AuthorWorksService {
     const [decision]=await tx.select().from(workHistory).where(and(eq(workHistory.workId,row.id),eq(workHistory.actor,'staff'),eq(workHistory.action,'changes_requested'))).orderBy(desc(workHistory.createdAt),desc(workHistory.id)).limit(1);
     const [version]=await tx.select({id:workVersions.id,number:workVersions.number}).from(workVersions).where(eq(workVersions.workId,row.id)).orderBy(desc(workVersions.number)).limit(1);
     if(!decision||!version)return undefined;
-    const [feedback]=await tx.select().from(workHistory).where(and(eq(workHistory.workId,row.id),eq(workHistory.actor,'staff'),eq(workHistory.action,'peer_reviews_released'),sql`${workHistory.createdAt}<=(SELECT created_at FROM work_history WHERE id=${decision.id}::uuid) AND ${workHistory.createdAt}>=(SELECT created_at FROM work_versions WHERE id=${version.id}::uuid)`)).orderBy(desc(workHistory.createdAt),desc(workHistory.id)).limit(1);
-    return {decisionId:decision.id,message:decision.message,versionNumber:version.number,...(feedback?{feedback:{id:feedback.id,publishedAt:feedback.createdAt.toISOString(),message:feedback.message,...(feedback.authorFeedback??{})}}:{})};
+    let [feedback]=await tx.select().from(workHistory).where(and(eq(workHistory.workId,row.id),eq(workHistory.actor,'staff'),eq(workHistory.action,'peer_reviews_released'),sql`${workHistory.createdAt}<=(SELECT created_at FROM work_history WHERE id=${decision.id}::uuid) AND ${workHistory.createdAt}>=(SELECT created_at FROM work_versions WHERE id=${version.id}::uuid)`)).orderBy(desc(workHistory.createdAt),desc(workHistory.id)).limit(1);
+    const prior=row.submittedContent?.reviewResponse;
+    if(!feedback&&prior?.feedbackMessage){[feedback]=await tx.select().from(workHistory).where(and(eq(workHistory.workId,row.id),eq(workHistory.actor,'staff'),eq(workHistory.action,'peer_reviews_released'),eq(workHistory.message,prior.feedbackMessage),prior.feedbackId?eq(workHistory.id,prior.feedbackId):undefined)).orderBy(desc(workHistory.createdAt),desc(workHistory.id)).limit(1);}
+    return {decisionId:decision.id,message:decision.message,versionNumber:version.number,...(feedback?{feedback:{id:feedback.id,publishedAt:feedback.createdAt.toISOString(),message:feedback.message,...(feedback.authorFeedback??{versionNumber:prior?.feedbackVersionNumber??prior?.versionNumber})}}:{})};
   }
   private responseValid(draft:WorkReviewResponseDraft|null|undefined,target:WorkResponseTarget|undefined){
     if(!draft||!target||draft.decisionId!==target.decisionId||draft.summary.trim().length<20)return false;
     const numbers=(target.feedback?.comments??[]).map(item=>item.number);
     return draft.replies.length===numbers.length&&numbers.every(number=>draft.replies.some(reply=>reply.number===number&&reply.text.trim().length>=10));
   }
-  private responseSnapshot(draft:WorkReviewResponseDraft,target:WorkResponseTarget):WorkReviewResponse{return {...draft,summary:draft.summary.trim(),replies:draft.replies.map(item=>({...item,text:item.text.trim()})),versionNumber:target.versionNumber,decisionMessage:target.message,feedbackMessage:target.feedback?.message??'',...(target.feedback?.roundNumber?{roundNumber:target.feedback.roundNumber}:{}),...(target.feedback?.comments?{comments:target.feedback.comments}:{} )};}
+  private responseSnapshot(draft:WorkReviewResponseDraft,target:WorkResponseTarget):WorkReviewResponse{return {...draft,...(target.feedback?{feedbackId:target.feedback.id,feedbackVersionNumber:target.feedback.versionNumber??target.versionNumber}:{}),summary:draft.summary.trim(),replies:draft.replies.map(item=>({...item,text:item.text.trim()})),versionNumber:target.versionNumber,decisionMessage:target.message,feedbackMessage:target.feedback?.message??'',...(target.feedback?.roundNumber?{roundNumber:target.feedback.roundNumber}:{}),...(target.feedback?.comments?{comments:target.feedback.comments}:{} )};}
   async detail(tx:DbTransaction,row:typeof works.$inferSelect,state:{active:boolean;editable:boolean;personId?:string},staff=false):Promise<AuthorWork> {
     const versions=await tx.select({id:workVersions.id,number:workVersions.number,kind:workVersions.kind,createdAt:workVersions.createdAt}).from(workVersions).where(eq(workVersions.workId,row.id)).orderBy(desc(workVersions.number));
     const history=await tx.select({id:workHistory.id,action:workHistory.action,message:workHistory.message,actor:workHistory.actor,actorId:workHistory.actorId,actorName:workHistory.actorName,createdAt:workHistory.createdAt}).from(workHistory).where(and(eq(workHistory.workId,row.id),staff ? sql`(${workHistory.actor}='staff' OR ${workHistory.action} IN ('submitted','final_submitted','withdrawn'))` : undefined)).orderBy(desc(workHistory.createdAt),desc(workHistory.id)).limit(200);
@@ -93,9 +95,9 @@ export class AuthorWorksService {
     return {...view(row),...(!staff?{reviewResponseDraft:row.reviewResponseDraft,...(target?{responseTarget:target}:{})}:{}),submissionReady:row.status!=='changes_requested'||this.responseValid(row.reviewResponseDraft,target),authorFeedback:feedback.map(item=>({id:item.id,publishedAt:item.publishedAt.toISOString(),message:item.message,...(item.body??{})})),noticeIds:notices.map(item=>item.id),unreadNotices:notices.filter(item=>!item.seen).length,canManage:!staff && row.ownerId===state.personId,...(staff && row.submittedContent ? row.submittedContent : {}),editable:!staff && this.editable(row,state,row.call.timezone),
       versions:versions.map(v=>({...v,createdAt:v.createdAt.toISOString()})),history:history.map(h=>({...h,createdAt:h.createdAt.toISOString()}))};
   }
-  async record(tx:DbTransaction,context:RequestContext,id:string,action:string,message='',actor:'author'|'staff'='author',authorFeedback?:AuthorFeedbackBody) {
+  async record(tx:DbTransaction,context:RequestContext,id:string,action:string,message='',actor:'author'|'staff'='author',authorFeedback?:AuthorFeedbackBody,reviewRecipients?:{assignmentId:string;reviewerId:string;number:number}[]) {
     const [actorProfile]=await tx.select({name:people.name}).from(people).where(eq(people.id,context.personId!));
-    await tx.insert(workHistory).values({authorFeedback,actorName:actorProfile?.name??'',id:randomUUID(),organizationId:context.organizationId,eventId:context.eventId!,workId:id,actorId:context.personId!,actor,action,message});
+    const historyId=randomUUID();await tx.insert(workHistory).values({reviewRecipients,authorFeedback,actorName:actorProfile?.name??'',id:historyId,organizationId:context.organizationId,eventId:context.eventId!,workId:id,actorId:context.personId!,actor,action,message});return historyId;
   }
   private async locked(tx:DbTransaction,context:RequestContext,id:string,revision:number,edit=false) {
     const state=await this.state(tx,context,true);
@@ -147,7 +149,7 @@ export class AuthorWorksService {
       const content={...this.content(row),...(response?{reviewResponse:response}:{}),authors:await this.authors(tx,context,row.authors,row.authors)},kind=finalRound?'final' as const:'submission' as const;
       await tx.insert(workVersions).values({id:randomUUID(),organizationId:context.organizationId,eventId:context.eventId!,workId:id,ownerId:context.personId!,number:count+1,kind,content,fileId:row.manuscript?.id??null});
       const [next]=await tx.update(works).set({reviewResponseDraft:null,authors:content.authors,status:kind==='final'?'final_submitted':'submitted',submittedAt:row.submittedAt??new Date(),submittedContent:content,responseDeadline:null,revision:revision+1,updatedAt:new Date()}).where(and(this.scope(context),eq(works.id,id))).returning();
-      if(response)await this.record(tx,context,id,'review_response_submitted');
+      if(response){await tx.execute(sql`SELECT sep_review_response_sync(${context.organizationId}::uuid,${context.eventId}::uuid,${id}::uuid)`);await this.record(tx,context,id,'review_response_submitted');}
       await this.record(tx,context,id,kind==='final'?'final_submitted':'submitted');await this.audit.record(tx,context,'work.submitted',context.eventId!,id);return this.detail(tx,next,state);
     });
   }

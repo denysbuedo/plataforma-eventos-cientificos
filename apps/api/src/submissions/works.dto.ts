@@ -41,6 +41,7 @@ export class WorkReviewResponseDraftDto {
  @ApiProperty({type:[WorkReviewReplyDto],maxItems:20}) @IsArray() @ArrayMaxSize(20) @ArrayUnique((item:WorkReviewReplyDto)=>item.number) @ValidateNested({each:true}) @Type(()=>WorkReviewReplyDto) replies!:WorkReviewReplyDto[];
 }
 export class WorkReviewResponseDto extends WorkReviewResponseDraftDto {
+ @ApiPropertyOptional({format:'uuid'}) feedbackId?:string;@ApiPropertyOptional() feedbackVersionNumber?:number;
  @ApiProperty() versionNumber!:number;@ApiProperty() decisionMessage!:string;@ApiProperty() feedbackMessage!:string;@ApiPropertyOptional() roundNumber?:number;@ApiPropertyOptional({type:[WorkReviewReplyDto]}) comments?:WorkReviewReplyDto[];
 }
 export class SaveWorkDto extends CreateWorkDto {

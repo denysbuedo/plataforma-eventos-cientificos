@@ -6,7 +6,7 @@ import {ApiErrors} from '../common/openapi.js';
 import {ApiException,type SepRequest} from '../common/http.js';
 import {Access} from '../platform/context.guard.js';
 import {PeerReviewService} from './reviews.service.js';
-import {AssignReviewerDto,CreateReviewRoundDto,InviteReviewerDto,MemberResponseDto,ReviewResponseDto,SaveReviewDto,SubmitReviewDto,WorkMessageDto,ReviewWorkspaceDto,ReviewMemberDto,ReviewAssignmentDto,WorkReviewFileDto} from './reviews.dto.js';
+import {AssignReviewerDto,CreateReviewRoundDto,InviteReviewerDto,MemberResponseDto,ReviewResponseDto,SaveReviewDto,SubmitReviewDto,WorkMessageDto,ReviewWorkspaceDto,ReviewMemberDto,ReviewAssignmentDto,WorkReviewFileDto,AssessResponseDto,ResponseCheckDto} from './reviews.dto.js';
 const uuid=(...ids:string[])=>{if(ids.some(id=>!isUUID(id)))throw new ApiException(400,'VALIDATION_FAILED');};
 @ApiTags('peer-review') @ApiBearerAuth() @ApiErrors() @Controller('events/:eventId/peer-review')
 export class PeerReviewController {
@@ -17,6 +17,8 @@ export class PeerReviewController {
  @Get('mine') @Access('author-work') @ApiOkResponse({type:ReviewWorkspaceDto}) mine(@Req()req:SepRequest){return this.service.mine(req.security);}
  @Post('mine/membership') @HttpCode(200) @Access('author-work') @ApiOkResponse({type:ReviewMemberDto}) membership(@Req()req:SepRequest,@Body()dto:MemberResponseDto){return this.service.memberResponse(req.security,dto);}
  @Get('mine/status') @Access('author-work') @ApiOkResponse({schema:{type:'object',required:['count'],properties:{count:{type:'integer',minimum:0}}}}) status(@Req()req:SepRequest){return this.service.mineStatus(req.security);}
+ @Get('response-checks') @Access('author-work') @ApiOkResponse({type:[ResponseCheckDto]}) responseChecks(@Req()req:SepRequest){return this.service.responseChecks(req.security);}
+ @Post('response-checks/:checkId/assess') @HttpCode(200) @Access('author-work') @ApiOkResponse({type:ResponseCheckDto}) assessResponse(@Req()req:SepRequest,@Param('checkId')id:string,@Body()dto:AssessResponseDto){uuid(id);return this.service.assessResponse(req.security,id,dto);}
  @Get('mine/:assignmentId') @Access('author-work') @ApiOkResponse({type:ReviewAssignmentDto}) read(@Req()req:SepRequest,@Param('assignmentId')id:string){uuid(id);return this.service.read(req.security,id);}
  @Post('mine/:assignmentId/respond') @HttpCode(200) @Access('author-work') @ApiOkResponse({type:ReviewAssignmentDto}) respond(@Req()req:SepRequest,@Param('assignmentId')id:string,@Body()dto:ReviewResponseDto){uuid(id);return this.service.respond(req.security,id,dto);}
  @Put('mine/:assignmentId') @Access('author-work') @ApiOkResponse({type:ReviewAssignmentDto}) save(@Req()req:SepRequest,@Param('assignmentId')id:string,@Body()dto:SaveReviewDto){uuid(id);return this.service.save(req.security,id,dto);}

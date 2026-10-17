@@ -1,6 +1,7 @@
 'use client';
+import ReviewerResponses from './reviewer-responses';
 import {WorkResponseView} from './work-response';
-import {useEffect,useRef,useState} from 'react';
+import {useCallback,useEffect,useRef,useState} from 'react';
 import {REVIEW_RECOMMENDATIONS,type ReviewWorkspace,type ReviewAssignment,type ReviewEvaluation} from '@sep/contracts';
 import type {Locale} from '@sep/i18n';
 import {Icon} from '@sep/ui';
@@ -10,10 +11,10 @@ import {useParticipantNavigationGuard} from './participant-shell';
 const emptyEvaluation=():ReviewEvaluation=>({scores:[],recommendation:'',authorComments:'',confidentialComments:''});
 export default function MyReviews({initial,eventId,contextKey,locale}:{initial:ReviewWorkspace;eventId:string;contextKey:string;locale:Locale}){
  const copy=reviewCopy[locale],api=reviewApi(eventId,contextKey,locale);const [workspace,setWorkspace]=useState(initial),[selected,setSelected]=useState<ReviewAssignment|null>(null),[evaluation,setEvaluation]=useState<ReviewEvaluation>(emptyEvaluation),[busy,setBusy]=useState(false),[error,setError]=useState(''),[notice,setNotice]=useState(''),[consent,setConsent]=useState(false),[confirmed,setConfirmed]=useState(false),[response,setResponse]=useState<'decline'|'conflict'|null>(null),[reason,setReason]=useState('');
- const warnOnUnload=useRef(false);
+ const warnOnUnload=useRef(false),responseGuard=useRef<((next:()=>void)=>void)|null>(null);const registerResponseGuard=useCallback((guard:((next:()=>void)=>void)|null)=>{responseGuard.current=guard;},[]);
  const dirty=!!selected&&selected.status==='accepted'&&JSON.stringify(evaluation)!==JSON.stringify(selected.evaluation??emptyEvaluation());
  const [closing,setClosing]=useState(false),pending=useRef<(()=>void)|null>(null),dialog=useRef<HTMLDialogElement>(null);
- function guard(next:()=>void){if(busy)return;if(dirty){pending.current=next;setClosing(true);}else next();}
+ function guard(next:()=>void){if(busy)return;const afterResponses=()=>{if(dirty){pending.current=next;setClosing(true);}else next();};if(responseGuard.current)responseGuard.current(afterResponses);else afterResponses();}
  useParticipantNavigationGuard(guard);
  useEffect(()=>{if(closing)dialog.current?.showModal();else dialog.current?.close();},[closing]);
  useEffect(()=>{warnOnUnload.current=dirty;if(!dirty)return;const warn=(event:BeforeUnloadEvent)=>{if(warnOnUnload.current){event.preventDefault();event.returnValue='';}};window.addEventListener('beforeunload',warn);return()=>window.removeEventListener('beforeunload',warn);},[dirty]);
@@ -29,6 +30,7 @@ export default function MyReviews({initial,eventId,contextKey,locale}:{initial:R
  {error&&<p className="notice notice-error" role="alert">{error}</p>}{notice&&<p className="notice" role="status">{notice}</p>}
  {member?.status==='invited'&&<section className="panel profile-card review-member-invitation"><h2>{copy.inviteBanner}</h2><p className="profile-help">{copy.modeHelp}</p><div className="editor-actions"><button className="button button-primary" disabled={busy} onClick={()=>{if(window.confirm(copy.confirmCommittee))void run(async()=>{await api.request('mine/membership','POST',{revision:member.revision,action:'accept',confirmed:true});await refresh();setNotice(copy.saved);});}}>{copy.acceptCommittee}</button><button className="button button-outline" disabled={busy} onClick={()=>{if(window.confirm(copy.confirmDeclineCommittee))void run(async()=>{await api.request('mine/membership','POST',{revision:member.revision,action:'decline',confirmed:true});await refresh();});}}>{copy.declineCommittee}</button></div></section>}
  {member&&member.status!=='invited'&&<p className="profile-help">{member.status==='accepted'?copy.membershipAccepted:member.status==='declined'?copy.membershipDeclined:copy.membershipRevoked}</p>}
+ <ReviewerResponses eventId={eventId} contextKey={contextKey} locale={locale} busy={busy} onBusyChange={setBusy} onNavigate={guard} registerGuard={registerResponseGuard}/>
  <section className="panel profile-card"><div className="profile-card-heading"><h2>{copy.mine}</h2><span className="profile-count">{workspace.assignments.length}</span></div>{!workspace.assignments.length&&<p className="tracking-empty">{copy.emptyMine}</p>}{workspace.assignments.map(item=><div className="review-member-row" key={item.id}><span className="profile-affiliation-icon"><Icon name="book" size={20}/></span><div><strong>{item.title}</strong><p className="tracking-meta">{copy.version} {item.versionNumber} · {copy.deadline}: {reviewDate(item.deadline,locale)}</p><span className={`review-status review-status-${item.status}`}>{item.status==='revoked'&&item.submittedAt?copy.invalidated:copy.states[item.status]}</span></div><button className="button button-outline" disabled={busy} onClick={()=>{void open(item.id);}}>{copy.view}</button></div>)}</section>
  {selected&&<section className="panel profile-card review-detail"><div className="profile-card-heading"><div><span className="eyebrow">{copy.official} · {copy.version} {selected.versionNumber}</span><h2>{selected.title}</h2><p className="tracking-meta">{copy.deadline}: {reviewDate(selected.deadline,locale)} · {selected.timezone}</p></div><button className="button button-outline" disabled={busy} onClick={()=>guard(()=>select(null))}>{copy.close}</button></div><span className={`review-status review-status-${selected.status}`}>{selected.status==='revoked'&&selected.submittedAt?copy.invalidated:copy.states[selected.status]}</span>
  {!selected.available&&<p className="notice notice-muted">{copy.unavailable}</p>}

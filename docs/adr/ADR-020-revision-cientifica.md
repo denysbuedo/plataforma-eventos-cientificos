@@ -19,3 +19,5 @@ El organizador sin conflicto emite el dictamen. Cuando hay rondas, las decisione
 Las nuevas versiones pueden requerir nuevas rondas y no modifican informes anteriores. Cambios de autoría y declaraciones de conflicto pueden invalidar elegibilidad. Una declaración tardía conserva el informe y requiere intervención editorial si ya hubo dictamen. No se afirma doble ciego sin un flujo real de manuscritos anonimizados. Correo, debate, réplicas y asignación automática siguen como ampliaciones independientes.
 
 Ver [implementación, API y recorrido](../development/revision-cientifica.md).
+
+La respuesta del autor y su valoración por los revisores originales se amplían en [ADR-021](ADR-021-valoracion-respuestas-y-dictamen-editorial.md), conservando la decisión final del organizador.
