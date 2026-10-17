@@ -11293,6 +11293,49 @@
           "noticeIds"
         ]
       },
+      "WorkReviewReplyDto": {
+        "type": "object",
+        "properties": {
+          "number": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 20
+          },
+          "text": {
+            "type": "string",
+            "maxLength": 8000
+          }
+        },
+        "required": [
+          "number",
+          "text"
+        ]
+      },
+      "WorkReviewResponseDraftDto": {
+        "type": "object",
+        "properties": {
+          "decisionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "summary": {
+            "type": "string",
+            "maxLength": 12000
+          },
+          "replies": {
+            "maxItems": 20,
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WorkReviewReplyDto"
+            }
+          }
+        },
+        "required": [
+          "decisionId",
+          "summary",
+          "replies"
+        ]
+      },
       "ReviewCommentDto": {
         "type": "object",
         "properties": {
@@ -11340,6 +11383,75 @@
           "id",
           "publishedAt",
           "message"
+        ]
+      },
+      "WorkResponseTargetDto": {
+        "type": "object",
+        "properties": {
+          "decisionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "message": {
+            "type": "string"
+          },
+          "versionNumber": {
+            "type": "number"
+          },
+          "feedback": {
+            "$ref": "#/components/schemas/AuthorReviewFeedbackDto"
+          }
+        },
+        "required": [
+          "decisionId",
+          "message",
+          "versionNumber"
+        ]
+      },
+      "WorkReviewResponseDto": {
+        "type": "object",
+        "properties": {
+          "decisionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "summary": {
+            "type": "string",
+            "maxLength": 12000
+          },
+          "replies": {
+            "maxItems": 20,
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WorkReviewReplyDto"
+            }
+          },
+          "versionNumber": {
+            "type": "number"
+          },
+          "decisionMessage": {
+            "type": "string"
+          },
+          "feedbackMessage": {
+            "type": "string"
+          },
+          "roundNumber": {
+            "type": "number"
+          },
+          "comments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WorkReviewReplyDto"
+            }
+          }
+        },
+        "required": [
+          "decisionId",
+          "summary",
+          "replies",
+          "versionNumber",
+          "decisionMessage",
+          "feedbackMessage"
         ]
       },
       "ManuscriptDto": {
@@ -11571,6 +11683,21 @@
             "type": "string",
             "format": "date-time"
           },
+          "reviewResponseDraft": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/WorkReviewResponseDraftDto"
+              }
+            ]
+          },
+          "responseTarget": {
+            "$ref": "#/components/schemas/WorkResponseTargetDto"
+          },
+          "reviewResponse": {
+            "$ref": "#/components/schemas/WorkReviewResponseDto"
+          },
           "submissionReady": {
             "type": "boolean",
             "description": "False when requested corrections have not changed saved content."
@@ -11722,6 +11849,9 @@
             "type": "string",
             "format": "uuid"
           },
+          "reviewResponse": {
+            "$ref": "#/components/schemas/WorkReviewResponseDto"
+          },
           "abstract": {
             "type": "string"
           },
@@ -11849,6 +11979,15 @@
             "type": "string",
             "format": "uuid"
           },
+          "reviewResponseDraft": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/WorkReviewResponseDraftDto"
+              }
+            ]
+          },
           "authors": {
             "maxItems": 20,
             "description": "Omitir conserva la autoría actual; [] deja el borrador sin autores declarados.",
@@ -11974,6 +12113,21 @@
           "updatedAt": {
             "type": "string",
             "format": "date-time"
+          },
+          "reviewResponseDraft": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/WorkReviewResponseDraftDto"
+              }
+            ]
+          },
+          "responseTarget": {
+            "$ref": "#/components/schemas/WorkResponseTargetDto"
+          },
+          "reviewResponse": {
+            "$ref": "#/components/schemas/WorkReviewResponseDto"
           },
           "submissionReady": {
             "type": "boolean",
@@ -12633,6 +12787,74 @@
           "confidentialComments"
         ]
       },
+      "ReviewAuthorContentDto": {
+        "type": "object",
+        "properties": {
+          "fullName": {
+            "type": "string"
+          },
+          "affiliations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WorkAffiliationDto"
+            }
+          }
+        },
+        "required": [
+          "fullName",
+          "affiliations"
+        ]
+      },
+      "ReviewContentDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "abstract": {
+            "type": "string"
+          },
+          "keywords": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "language": {
+            "type": "string",
+            "enum": [
+              "es",
+              "en"
+            ]
+          },
+          "authors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ReviewAuthorContentDto"
+            }
+          },
+          "manuscript": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ManuscriptDto"
+              }
+            ]
+          },
+          "reviewResponse": {
+            "$ref": "#/components/schemas/WorkReviewResponseDto"
+          }
+        },
+        "required": [
+          "title",
+          "abstract",
+          "keywords",
+          "language",
+          "authors",
+          "manuscript"
+        ]
+      },
       "CriterionDto": {
         "type": "object",
         "properties": {
@@ -12728,8 +12950,12 @@
             ]
           },
           "content": {
-            "type": "object",
-            "description": "Versión oficial asignada sin correos, ORCID ni IDs de autores. El PDF solo se habilita tras aceptar y mientras siga vigente."
+            "description": "Versión oficial asignada sin correos, ORCID ni IDs de autores. El PDF solo se habilita tras aceptar y mientras siga vigente.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ReviewContentDto"
+              }
+            ]
           },
           "criteria": {
             "type": "array",

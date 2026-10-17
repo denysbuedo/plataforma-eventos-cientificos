@@ -206,6 +206,7 @@ export const authorWorks = pgTable('author_works', {
   authors: jsonb('authors').$type<WorkAuthor[]>().notNull().default(sql`'[]'::jsonb`),
   status: text('status').$type<WorkStatus>().notNull().default('draft'), submittedAt: timestamp('submitted_at', { withTimezone: true }),
   responseDeadline: date('response_deadline'), manuscript: jsonb('manuscript').$type<Manuscript>(),
+  reviewResponseDraft:jsonb('review_response_draft').$type<import('@sep/contracts').WorkReviewResponseDraft>(),
   submittedContent: jsonb('submitted_content').$type<WorkContent>(), hidden: boolean('hidden').notNull().default(false),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(), updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
 }, (t) => [unique().on(t.organizationId,t.eventId,t.id), foreignKey({ columns: [t.organizationId, t.eventId], foreignColumns: [events.organizationId, events.id] }),

@@ -344,6 +344,20 @@
       "when": 1792211412926,
       "tag": "0048_daily_kronos",
       "breakpoints": true
+    },
+    {
+      "idx": 49,
+      "version": "7",
+      "when": 1792242495586,
+      "tag": "0049_careful_blockbuster",
+      "breakpoints": true
+    },
+    {
+      "idx": 50,
+      "version": "7",
+      "when": 1792242744581,
+      "tag": "0050_work_review_response_privileges",
+      "breakpoints": true
     }
   ]
 }

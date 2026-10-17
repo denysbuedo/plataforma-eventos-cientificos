@@ -31,7 +31,20 @@ export class CreateWorkDto {
   @ApiProperty({ format: 'uuid' }) @IsUUID() trackId!: string;
   @ApiProperty({ format: 'uuid' }) @IsUUID() contributionTypeId!: string;
 }
+export class WorkReviewReplyDto {
+ @ApiProperty({minimum:1,maximum:20}) @IsInt() @Min(1) @Max(20) number!:number;
+ @ApiProperty({maxLength:8000}) @IsString() @MaxLength(8000) text!:string;
+}
+export class WorkReviewResponseDraftDto {
+ @ApiProperty({format:'uuid'}) @IsUUID() decisionId!:string;
+ @ApiProperty({maxLength:12000}) @IsString() @MaxLength(12000) summary!:string;
+ @ApiProperty({type:[WorkReviewReplyDto],maxItems:20}) @IsArray() @ArrayMaxSize(20) @ArrayUnique((item:WorkReviewReplyDto)=>item.number) @ValidateNested({each:true}) @Type(()=>WorkReviewReplyDto) replies!:WorkReviewReplyDto[];
+}
+export class WorkReviewResponseDto extends WorkReviewResponseDraftDto {
+ @ApiProperty() versionNumber!:number;@ApiProperty() decisionMessage!:string;@ApiProperty() feedbackMessage!:string;@ApiPropertyOptional() roundNumber?:number;@ApiPropertyOptional({type:[WorkReviewReplyDto]}) comments?:WorkReviewReplyDto[];
+}
 export class SaveWorkDto extends CreateWorkDto {
+ @ApiPropertyOptional({type:WorkReviewResponseDraftDto,nullable:true}) @ValidateIf((_,value)=>value!==undefined&&value!==null) @ValidateNested() @Type(()=>WorkReviewResponseDraftDto) reviewResponseDraft?:WorkReviewResponseDraftDto|null;
   @ApiPropertyOptional({ type: [WorkAuthorDto], maxItems: 20, description: 'Omitir conserva la autoría actual; [] deja el borrador sin autores declarados.' })
   @ValidateIf((_, value) => value !== undefined) @IsArray() @ArrayMaxSize(20)
   @ArrayUnique((author: WorkAuthor) => typeof author?.id === 'string' ? author.id.toLowerCase() : undefined)
@@ -66,7 +79,13 @@ export class AuthorReviewFeedbackDto implements AuthorReviewFeedback {
 class WorkNoticeSummaryDto implements WorkNoticeSummary { @ApiProperty({format:'uuid'}) workId!:string;@ApiProperty() title!:string;@ApiProperty({enum:WORK_STATUSES}) status!:WorkStatus;@ApiProperty() unreadNotices!:number;@ApiProperty({format:'date-time'}) latestAt!:string }
 export class WorkNoticeBoardDto implements WorkNoticeBoard { @ApiProperty({minimum:0}) count!:number;@ApiProperty({type:[WorkNoticeSummaryDto]}) items!:WorkNoticeSummary[] }
 export class ReadWorkNoticesDto { @ApiProperty({type:[String],minItems:1,maxItems:200}) @IsArray() @ArrayMinSize(1) @ArrayMaxSize(200) @ArrayUnique() @IsUUID('all',{each:true}) noticeIds!:string[] }
+export class WorkResponseTargetDto {
+ @ApiProperty({format:'uuid'}) decisionId!:string;@ApiProperty() message!:string;@ApiProperty() versionNumber!:number;@ApiPropertyOptional({type:AuthorReviewFeedbackDto}) feedback?:AuthorReviewFeedbackDto;
+}
 export class WorkDto extends WorkSummaryDto implements AuthorWork {
+ @ApiPropertyOptional({type:WorkReviewResponseDraftDto,nullable:true}) reviewResponseDraft?:WorkReviewResponseDraftDto|null;
+ @ApiPropertyOptional({type:WorkResponseTargetDto}) responseTarget?:WorkResponseTargetDto;
+ @ApiPropertyOptional({type:WorkReviewResponseDto}) reviewResponse?:WorkReviewResponseDto;
  @ApiPropertyOptional({description:'False when requested corrections have not changed saved content.'}) submissionReady?:boolean;
  @ApiPropertyOptional({type:[AuthorReviewFeedbackDto]}) authorFeedback?:AuthorReviewFeedback[];
  @ApiPropertyOptional({type:[String]}) noticeIds?:string[];
@@ -92,6 +111,7 @@ export class HistoryDto implements WorkHistory {
   @ApiProperty({enum:['author','staff']}) actor!:'author'|'staff'; @ApiProperty({format:'date-time'}) createdAt!:string;
 }
 export class VersionContentDto extends CreateWorkDto {
+ @ApiPropertyOptional({type:WorkReviewResponseDto}) reviewResponse?:WorkReviewResponseDto;
   @ApiProperty() abstract!:string; @ApiProperty({type:[String]}) keywords!:string[];
   @ApiProperty({type:PublishedCallDto}) call!:PublishedScientificCall;
   @ApiProperty({type:[WorkAuthorDto]}) authors!:WorkAuthor[];

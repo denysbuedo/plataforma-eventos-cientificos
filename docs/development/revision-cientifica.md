@@ -80,7 +80,7 @@ En navegador: comité, apertura de ronda y criterios, asignación, aceptación d
 
 ## Ampliaciones fuera de este incremento
 
-Doble ciego con manuscritos anonimizados y reglas específicas de acceso, asignación automática por especialidad/carga, rúbricas ponderadas y plantillas reutilizables por evento, debate entre revisores, réplicas/apelaciones, notificaciones por correo y exportaciones editoriales. No se simulan estas capacidades ni se presentan como implementadas.
+Doble ciego con manuscritos anonimizados y reglas específicas de acceso, asignación automática por especialidad/carga, rúbricas ponderadas y plantillas reutilizables por evento, debate entre revisores, apelaciones, notificaciones por correo y exportaciones editoriales. No se simulan estas capacidades ni se presentan como implementadas.
 
 ## Consulta por los autores y avisos de novedades
 
@@ -91,3 +91,11 @@ Mis trabajos muestra un aviso destacado y un contador lateral de trabajos con no
 La migración 0048 incorpora `work_history.author_feedback` y `work_notice_reads`, con RLS forzada por organización, evento, trabajo accesible y persona. Rutas nuevas: GET `/events/:eventId/my-works/notices` y POST `/events/:eventId/my-works/:workId/notices/read` con `noticeIds`. OpenAPI y el proxy web incluyen ambos contratos.
 
 El bloque público de dictamen y revisiones está integrado en Seguimiento del trabajo, tanto en consulta como debajo del editor. No antecede al título ni al contenido. El envío de correcciones se prepara desde el editor sobre datos guardados, con una confirmación independiente que identifica la siguiente versión y su documento.
+
+## Respuesta del autor y siguiente ronda
+
+El autor puede preparar una respuesta general y contestar cada evaluación publicada desde Editar. Guardarla conserva un borrador privado; enviarla junto con la nueva versión genera una copia oficial que no se reescribe. Es válido justificar la no aplicación de una observación. Los comentarios históricos sin estructura se responden conjuntamente, conservando íntegro el texto público.
+
+El organizador consulta la respuesta enviada en el detalle y en las versiones oficiales. Al asignar la siguiente ronda se copia únicamente esa respuesta oficial y sus observaciones públicas; no se copia el borrador del autor ni informes privados. El revisor recibe la respuesta después de aceptar la asignación y mientras tenga acceso a la versión. Una invitación pendiente mantiene los metadatos limitados existentes. Los comentarios publicados de rondas anteriores se distinguen de las evaluaciones privadas de otros revisores: no se incluyen recomendaciones, puntuaciones, notas confidenciales ni identidad del revisor.
+
+El autor puede consultar la respuesta enviada en Seguimiento y en la versión correspondiente. Una solicitud de correcciones posterior requiere una respuesta nueva al nuevo dictamen; no reutiliza automáticamente el borrador anterior. Este bloque no incorpora debate entre revisores ni un procedimiento de apelación. Véase el detalle de contratos, migraciones 0049/0050 y verificaciones en [Trabajos y envíos](trabajos-envios.md#respuesta-del-autor-al-dictamen).

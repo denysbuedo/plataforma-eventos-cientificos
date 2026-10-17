@@ -1,0 +1,1 @@
+ALTER TABLE "author_works" ADD COLUMN "review_response_draft" jsonb;

@@ -102,7 +102,11 @@ export interface AuthorAccount { id: string; name: string; email: string; instit
 export const WORK_STATUSES = ['draft','submitted','in_review','changes_requested','accepted','rejected','withdrawn','final_requested','final_submitted'] as const;
 export type WorkStatus = typeof WORK_STATUSES[number];
 export interface Manuscript { id: string; name: string; bytes: number; pages: number; sha256: string; scan: 'clean' | 'demo_unscanned' }
-export interface WorkContent { title: string; abstract: string; keywords: string[]; language: 'es' | 'en'; trackId: string; contributionTypeId: string; call: PublishedScientificCall; authors: WorkAuthor[]; manuscript: Manuscript | null }
+export interface WorkReviewReply { number:number;text:string }
+export interface WorkReviewResponseDraft { decisionId:string;summary:string;replies:WorkReviewReply[] }
+export interface WorkReviewResponse extends WorkReviewResponseDraft { versionNumber:number;decisionMessage:string;feedbackMessage:string;roundNumber?:number;comments?:WorkReviewReply[] }
+export interface WorkResponseTarget { decisionId:string;message:string;versionNumber:number;feedback?:AuthorReviewFeedback }
+export interface WorkContent { reviewResponse?:WorkReviewResponse;title: string; abstract: string; keywords: string[]; language: 'es' | 'en'; trackId: string; contributionTypeId: string; call: PublishedScientificCall; authors: WorkAuthor[]; manuscript: Manuscript | null }
 export interface WorkVersionSummary { id: string; number: number; kind: 'submission' | 'final'; createdAt: string }
 export interface WorkHistory { id: string; action: string; message: string; actor: 'author' | 'staff'; actorId?:string; actorName?:string; createdAt: string }
 export interface WorkCollaboration { id:string; authorId:string; email:string; status:'pending'|'accepted'|'revoked'|'expired'; createdAt:string; expiresAt:string; acceptedAt:string|null }
@@ -122,7 +126,7 @@ export interface AuthorFeedbackBody { roundNumber:number;versionNumber:number;co
 export interface AuthorReviewFeedback { id:string;publishedAt:string;message:string;roundNumber?:number;versionNumber?:number;comments?:{number:number;text:string}[] }
 export interface WorkNoticeSummary { workId:string;title:string;status:WorkStatus;unreadNotices:number;latestAt:string }
 export interface WorkNoticeBoard { count:number;items:WorkNoticeSummary[] }
-export interface AuthorWork extends AuthorWorkSummary, WorkContent { submissionReady?:boolean;authorFeedback?:AuthorReviewFeedback[];noticeIds?:string[]; versions: WorkVersionSummary[]; history: WorkHistory[]; editable: boolean }
+export interface AuthorWork extends AuthorWorkSummary, WorkContent { reviewResponseDraft?:WorkReviewResponseDraft|null;responseTarget?:WorkResponseTarget;submissionReady?:boolean;authorFeedback?:AuthorReviewFeedback[];noticeIds?:string[]; versions: WorkVersionSummary[]; history: WorkHistory[]; editable: boolean }
 export interface StaffWork extends AuthorWork { canDecide: boolean }
 export interface SubmissionPage { data: AuthorWorkSummary[]; limit: number; offset: number }
 export const MAX_WORK_BODY_BYTES = 384 * 1024;
@@ -148,7 +152,7 @@ export const REVIEW_RECOMMENDATIONS=['accept','minor_changes','major_changes','r
 export interface ReviewCriterion { id:string; labelEs:string; labelEn:string }
 export interface ReviewEvaluation { scores:{criterionId:string;score:number}[]; recommendation:typeof REVIEW_RECOMMENDATIONS[number]|''; authorComments:string; confidentialComments:string }
 export interface ReviewMember { pendingReviews?:number; personId:string; name:string; status:'invited'|'accepted'|'declined'|'revoked'; expertise:string; revision:number; createdAt:string }
-export interface ReviewContent { title:string; abstract:string; keywords:string[]; language:'es'|'en'; authors:{fullName:string;affiliations:WorkAffiliation[]}[]; manuscript:Manuscript|null }
+export interface ReviewContent { reviewResponse?:WorkReviewResponse;title:string; abstract:string; keywords:string[]; language:'es'|'en'; authors:{fullName:string;affiliations:WorkAffiliation[]}[]; manuscript:Manuscript|null }
 export interface ReviewRound { id:string;workId:string;versionId:string;versionNumber:number;number:number;status:'open'|'closed';deadline:string;timezone:string;minimumReviews:number;criteria:ReviewCriterion[];revision:number;createdAt:string;closedAt:string|null }
 export interface ReviewAssignment { eligible?:boolean; id:string;roundId:string;workId:string;reviewerId:string;reviewerName:string;status:'invited'|'accepted'|'declined'|'conflict'|'revoked'|'submitted';title:string;versionNumber:number;deadline:string;timezone:string;revision:number;submittedAt:string|null;message:string;evaluation:ReviewEvaluation|null;content?:ReviewContent;criteria:ReviewCriterion[];available:boolean }
 export interface ReviewWorkspace { members:ReviewMember[];assignments:ReviewAssignment[] }

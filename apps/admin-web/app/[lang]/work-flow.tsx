@@ -3,9 +3,10 @@ import { useState, type ReactNode } from 'react';
 import { type AuthorWork, type WorkVersion, type WorkContent } from '@sep/contracts';
 import { webCopy, type Locale } from '@sep/i18n';
 import WorkAuthors from './work-authors';
+import {WorkResponseView} from './work-response';
 import { Icon } from '@sep/ui';
 import { trackingCopy } from './work-flow-copy';
-export function WorkContentView({content,locale,showTitle=true}:{content:WorkContent;locale:Locale;showTitle?:boolean}) {
+export function WorkContentView({content,locale,showTitle=true,showResponse=true}:{content:WorkContent;locale:Locale;showTitle?:boolean;showResponse?:boolean}) {
   const text=webCopy[locale];return <div className="work-content">
     {showTitle&&<h3 className="work-title">{content.title}</h3>}
     <dl className="work-metadata">
@@ -15,6 +16,7 @@ export function WorkContentView({content,locale,showTitle=true}:{content:WorkCon
     </dl>
     <section className="work-section"><h3>{text.workAbstract}</h3><p className="work-abstract">{content.abstract||text.workIncomplete}</p></section>
     <section className="work-section"><h3>{text.callKeywords}</h3><p className="work-keywords">{content.keywords.length?content.keywords.map(k=>k.trim().replace(/[;,]+$/u,'')).join('; '):text.workIncomplete}</p></section>
+    {showResponse&&content.reviewResponse&&<WorkResponseView response={content.reviewResponse} locale={locale}/>}
     <WorkAuthors value={content.authors} onChange={()=>{}} locale={locale} editing={false}/>
   </div>;
 }
@@ -48,6 +50,7 @@ export default function WorkFlow({work,eventId,locale,contextKey,busy,onBusyChan
       <dl className="tracking-facts"><div><dt><Icon name="book" size={15}/>{copy.lastSubmission}</dt><dd>{versions[0]?<><strong>{copy.version} {versions[0].number} · {versions[0].kind==='final'?text.finalVersion:text.submissionVersion}</strong><time dateTime={versions[0].createdAt}>{dateTime(versions[0].createdAt)}</time></>:<strong>{copy.notSubmitted}</strong>}</dd></div><div><dt><Icon name="calendar" size={15}/>{copy.deadline}</dt><dd>{deadline?<strong><time dateTime={work.responseDeadline!}>{deadline}</time></strong>:<span>{copy.noDeadline}</span>}<small>{copy.timezone}: {work.call.timezone}</small></dd></div></dl>
     </div>
     {feedback}
+    {!staff&&work.reviewResponse&&<WorkResponseView response={work.reviewResponse} locale={locale}/>}
     {staff&&latestDecision&&<section className="tracking-message"><div className="tracking-section-heading"><h4>{copy.latestMessage}</h4><span className="profile-count">{(text.workActions as Record<string,string>)[latestDecision.action]??copy.activity}</span></div><blockquote>{latestDecision.message}</blockquote><p className="tracking-meta">{latestDecision.actorName||text.eventTeam} · <time dateTime={latestDecision.createdAt}>{dateTime(latestDecision.createdAt)}</time></p></section>}
     <section className="tracking-section"><div className="tracking-section-heading"><h4>{text.workManuscript}</h4></div>
       {work.manuscript?<><div className="tracking-file"><span className="profile-affiliation-icon"><Icon name="book" size={21}/></span><div><strong>{work.manuscript.name}</strong><p className="tracking-meta">PDF · {work.manuscript.pages} {text.workPages} · {Math.ceil(work.manuscript.bytes/1024)} KiB</p></div><a className="button button-outline" href={url(`files/${work.manuscript.id}`)}>{text.downloadManuscript}</a></div>{work.manuscript.scan==='demo_unscanned'&&<p className="tracking-meta">{text.workUnscanned}</p>}</>:<p className="profile-help">{text.noManuscript}</p>}

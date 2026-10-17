@@ -2,7 +2,7 @@ import { authorshipRpc } from './authorship.js';
 import { Injectable } from '@nestjs/common';
 import { and, desc, eq, inArray, sql } from 'drizzle-orm';
 import { randomUUID } from 'node:crypto';
-import type { AuthorWork, AuthorWorkspace, PublishedScientificCall, WorkContent, WorkStatus, WorkAuthor, AuthorFeedbackBody, WorkNoticeBoard } from '@sep/contracts';
+import type { AuthorWork, AuthorWorkspace, PublishedScientificCall, WorkContent, WorkStatus, WorkAuthor, AuthorFeedbackBody, WorkNoticeBoard, WorkReviewResponseDraft, WorkReviewResponse, WorkResponseTarget } from '@sep/contracts';
 import { DatabaseService, type DbTransaction } from '../database/database.service.js';
 import { authorWorks as works, eventConfigurations, events, people, orcidConnections, scientificCallPublications, workFiles, workVersions, workHistory, workCollaborations, workNoticeReads } from '../database/schema.js';
 import { ApiException, type RequestContext } from '../common/http.js';
@@ -10,15 +10,13 @@ import { AuditService } from '../common/audit.service.js';
 import { ManuscriptsService } from './manuscripts.service.js';
 import { lookupResearcher } from '../identity/researchers.controller.js';
 import type { CreateWorkDto, SaveWorkDto } from './works.dto.js';
-const view = (row: typeof works.$inferSelect): AuthorWork => ({ id: row.id, title: row.title, abstract: row.abstract, keywords: row.keywords,
+const view = (row: typeof works.$inferSelect): AuthorWork => ({ ...(row.submittedContent?.reviewResponse?{reviewResponse:row.submittedContent.reviewResponse}:{}),id: row.id, title: row.title, abstract: row.abstract, keywords: row.keywords,
   authors: row.authors, manuscript: row.manuscript, status: row.status, submittedAt: row.submittedAt?.toISOString() ?? null, responseDeadline: row.responseDeadline, editable: false, versions: [], history: [],
   language: row.language, trackId: row.trackId, contributionTypeId: row.contributionTypeId, call: row.call, revision: row.revision,
   createdAt: row.createdAt.toISOString(), updatedAt: row.updatedAt.toISOString() });
 const summaryFields = { ownerId:works.ownerId, status: works.status, submittedAt: works.submittedAt, responseDeadline: works.responseDeadline, callTimezone: sql<string>`call_snapshot->>'timezone'`, id: works.id, title: works.title, language: works.language, trackId: works.trackId,
   contributionTypeId: works.contributionTypeId, revision: works.revision, createdAt: works.createdAt, updatedAt: works.updatedAt };
 const authorshipKey=(authors:WorkAuthor[])=>JSON.stringify(authors.map(author=>[author.id,author.fullName,author.email,author.corresponding,author.personId??'',author.orcid??'',author.orcidVerified??false,author.authorshipConfirmed??null,author.affiliations.map(affiliation=>[affiliation.institution,affiliation.countryCode])]));
-// Compare scientific content, excluding account verification and authorship acknowledgments.
-const submissionKey=(content:WorkContent)=>JSON.stringify([content.title,content.abstract,content.keywords,content.language,content.trackId,content.contributionTypeId,content.call.revision,content.authors.map(author=>[author.fullName,author.email,author.corresponding,author.affiliations,author.orcid??'']),content.manuscript?[content.manuscript.sha256,content.manuscript.name]:null]);
 @Injectable()
 export class AuthorWorksService {
   today(timezone: string) {
@@ -72,12 +70,27 @@ export class AuthorWorksService {
     if(valid.length)await tx.insert(workNoticeReads).values({organizationId:context.organizationId,eventId:context.eventId!,workId:id,personId:context.personId!,seenIds:valid.map(item=>item.id)}).onConflictDoUpdate({target:[workNoticeReads.organizationId,workNoticeReads.eventId,workNoticeReads.workId,workNoticeReads.personId],set:{seenIds:sql`ARRAY(SELECT DISTINCT notice_id FROM unnest(${workNoticeReads.seenIds} || excluded.seen_ids) notice_id ORDER BY notice_id)`}});
     return this.noticeBoard(tx,context.personId!);
   });}
+  private async responseTarget(tx:DbTransaction,row:typeof works.$inferSelect):Promise<WorkResponseTarget|undefined>{
+    if(row.status!=='changes_requested')return undefined;
+    const [decision]=await tx.select().from(workHistory).where(and(eq(workHistory.workId,row.id),eq(workHistory.actor,'staff'),eq(workHistory.action,'changes_requested'))).orderBy(desc(workHistory.createdAt),desc(workHistory.id)).limit(1);
+    const [version]=await tx.select({id:workVersions.id,number:workVersions.number}).from(workVersions).where(eq(workVersions.workId,row.id)).orderBy(desc(workVersions.number)).limit(1);
+    if(!decision||!version)return undefined;
+    const [feedback]=await tx.select().from(workHistory).where(and(eq(workHistory.workId,row.id),eq(workHistory.actor,'staff'),eq(workHistory.action,'peer_reviews_released'),sql`${workHistory.createdAt}<=(SELECT created_at FROM work_history WHERE id=${decision.id}::uuid) AND ${workHistory.createdAt}>=(SELECT created_at FROM work_versions WHERE id=${version.id}::uuid)`)).orderBy(desc(workHistory.createdAt),desc(workHistory.id)).limit(1);
+    return {decisionId:decision.id,message:decision.message,versionNumber:version.number,...(feedback?{feedback:{id:feedback.id,publishedAt:feedback.createdAt.toISOString(),message:feedback.message,...(feedback.authorFeedback??{})}}:{})};
+  }
+  private responseValid(draft:WorkReviewResponseDraft|null|undefined,target:WorkResponseTarget|undefined){
+    if(!draft||!target||draft.decisionId!==target.decisionId||draft.summary.trim().length<20)return false;
+    const numbers=(target.feedback?.comments??[]).map(item=>item.number);
+    return draft.replies.length===numbers.length&&numbers.every(number=>draft.replies.some(reply=>reply.number===number&&reply.text.trim().length>=10));
+  }
+  private responseSnapshot(draft:WorkReviewResponseDraft,target:WorkResponseTarget):WorkReviewResponse{return {...draft,summary:draft.summary.trim(),replies:draft.replies.map(item=>({...item,text:item.text.trim()})),versionNumber:target.versionNumber,decisionMessage:target.message,feedbackMessage:target.feedback?.message??'',...(target.feedback?.roundNumber?{roundNumber:target.feedback.roundNumber}:{}),...(target.feedback?.comments?{comments:target.feedback.comments}:{} )};}
   async detail(tx:DbTransaction,row:typeof works.$inferSelect,state:{active:boolean;editable:boolean;personId?:string},staff=false):Promise<AuthorWork> {
     const versions=await tx.select({id:workVersions.id,number:workVersions.number,kind:workVersions.kind,createdAt:workVersions.createdAt}).from(workVersions).where(eq(workVersions.workId,row.id)).orderBy(desc(workVersions.number));
     const history=await tx.select({id:workHistory.id,action:workHistory.action,message:workHistory.message,actor:workHistory.actor,actorId:workHistory.actorId,actorName:workHistory.actorName,createdAt:workHistory.createdAt}).from(workHistory).where(and(eq(workHistory.workId,row.id),staff ? sql`(${workHistory.actor}='staff' OR ${workHistory.action} IN ('submitted','final_submitted','withdrawn'))` : undefined)).orderBy(desc(workHistory.createdAt),desc(workHistory.id)).limit(200);
     const feedback=await tx.select({id:workHistory.id,publishedAt:workHistory.createdAt,message:workHistory.message,body:workHistory.authorFeedback}).from(workHistory).where(and(eq(workHistory.workId,row.id),eq(workHistory.action,'peer_reviews_released'),eq(workHistory.actor,'staff'))).orderBy(desc(workHistory.createdAt),desc(workHistory.id));
+    const target=await this.responseTarget(tx,row);
     const notices=!staff&&state.personId?await this.noticeRows(tx,state.personId,row.id):[];
-    return {...view(row),submissionReady:row.status!=='changes_requested'||!row.submittedContent||submissionKey(this.content(row))!==submissionKey(row.submittedContent),authorFeedback:feedback.map(item=>({id:item.id,publishedAt:item.publishedAt.toISOString(),message:item.message,...(item.body??{})})),noticeIds:notices.map(item=>item.id),unreadNotices:notices.filter(item=>!item.seen).length,canManage:!staff && row.ownerId===state.personId,...(staff && row.submittedContent ? row.submittedContent : {}),editable:!staff && this.editable(row,state,row.call.timezone),
+    return {...view(row),...(!staff?{reviewResponseDraft:row.reviewResponseDraft,...(target?{responseTarget:target}:{})}:{}),submissionReady:row.status!=='changes_requested'||this.responseValid(row.reviewResponseDraft,target),authorFeedback:feedback.map(item=>({id:item.id,publishedAt:item.publishedAt.toISOString(),message:item.message,...(item.body??{})})),noticeIds:notices.map(item=>item.id),unreadNotices:notices.filter(item=>!item.seen).length,canManage:!staff && row.ownerId===state.personId,...(staff && row.submittedContent ? row.submittedContent : {}),editable:!staff && this.editable(row,state,row.call.timezone),
       versions:versions.map(v=>({...v,createdAt:v.createdAt.toISOString()})),history:history.map(h=>({...h,createdAt:h.createdAt.toISOString()}))};
   }
   async record(tx:DbTransaction,context:RequestContext,id:string,action:string,message='',actor:'author'|'staff'='author',authorFeedback?:AuthorFeedbackBody) {
@@ -103,7 +116,9 @@ export class AuthorWorksService {
   submit(context:RequestContext,id:string,revision:number) {
     return this.database.scoped({...context,organizationAdmin:false},async tx=>{
       const {row,state}=await this.locked(tx,context,id,revision,true);
-      if(row.status==='changes_requested'&&row.submittedContent&&submissionKey(this.content(row))===submissionKey(row.submittedContent))throw new ApiException(409,'WORK_UNCHANGED');
+      const target=await this.responseTarget(tx,row);
+      if(row.status==='changes_requested'&&!this.responseValid(row.reviewResponseDraft,target))throw new ApiException(409,'REVIEW_RESPONSE_REQUIRED');
+      const response=row.status==='changes_requested'?this.responseSnapshot(row.reviewResponseDraft!,target!):undefined;
       const initial=['draft','withdrawn'].includes(row.status);
       if(initial) {
         if(!state.call || !state.call.content.opensOn || this.today(state.call.timezone)<state.call.content.opensOn)throw new ApiException(409,'SUBMISSION_NOT_OPEN');
@@ -129,9 +144,10 @@ export class AuthorWorksService {
       }
       const [{count}]=await tx.select({count:sql<number>`count(*)::int`}).from(workVersions).where(eq(workVersions.workId,id));
       if(count>=10)throw new ApiException(409,'VERSION_LIMIT');
-      const content={...this.content(row),authors:await this.authors(tx,context,row.authors,row.authors)},kind=finalRound?'final' as const:'submission' as const;
+      const content={...this.content(row),...(response?{reviewResponse:response}:{}),authors:await this.authors(tx,context,row.authors,row.authors)},kind=finalRound?'final' as const:'submission' as const;
       await tx.insert(workVersions).values({id:randomUUID(),organizationId:context.organizationId,eventId:context.eventId!,workId:id,ownerId:context.personId!,number:count+1,kind,content,fileId:row.manuscript?.id??null});
-      const [next]=await tx.update(works).set({authors:content.authors,status:kind==='final'?'final_submitted':'submitted',submittedAt:row.submittedAt??new Date(),submittedContent:content,responseDeadline:null,revision:revision+1,updatedAt:new Date()}).where(and(this.scope(context),eq(works.id,id))).returning();
+      const [next]=await tx.update(works).set({reviewResponseDraft:null,authors:content.authors,status:kind==='final'?'final_submitted':'submitted',submittedAt:row.submittedAt??new Date(),submittedContent:content,responseDeadline:null,revision:revision+1,updatedAt:new Date()}).where(and(this.scope(context),eq(works.id,id))).returning();
+      if(response)await this.record(tx,context,id,'review_response_submitted');
       await this.record(tx,context,id,kind==='final'?'final_submitted':'submitted');await this.audit.record(tx,context,'work.submitted',context.eventId!,id);return this.detail(tx,next,state);
     });
   }
@@ -261,6 +277,12 @@ export class AuthorWorksService {
       const [before] = await tx.select().from(works).where(and(this.scope(context), eq(works.id, id))).for('update');
       if (!before) throw new ApiException(404, 'NOT_FOUND');
       if (!this.editable(before,state,before.call.timezone)) throw new ApiException(409, 'WORKS_UNAVAILABLE');
+      if(dto.reviewResponseDraft!==undefined&&dto.reviewResponseDraft!==null){
+        const target=await this.responseTarget(tx,before);
+        if(!target||dto.reviewResponseDraft.decisionId!==target.decisionId)throw new ApiException(409,'REVIEW_RESPONSE_STALE');
+        const numbers=(target.feedback?.comments??[]).map(item=>item.number);
+        if(dto.reviewResponseDraft.replies.some(reply=>!numbers.includes(reply.number)))throw new ApiException(400,'VALIDATION_FAILED');
+      }
       const finalRound=await this.finalRound(tx,before);
       if (!finalRound&&!state.languages.includes(dto.language)) throw new ApiException(400, 'VALIDATION_FAILED');
       if (finalRound && (dto.trackId !== before.trackId || dto.contributionTypeId !== before.contributionTypeId || dto.language !== before.language)) throw new ApiException(409,'FINAL_CLASSIFICATION');

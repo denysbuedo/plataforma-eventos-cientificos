@@ -8,6 +8,8 @@ import WorkAuthors, { accountAuthor, type AuthorAccount } from './work-authors';
 import WorkFlow, { WorkContentView } from './work-flow';
 import WorkFeedback from './work-feedback';
 import WorkSendDialog from './work-send-dialog';
+import WorkResponseEditor from './work-response';
+import {responseCopy} from './work-response-copy';
 import {feedbackCopy} from './work-feedback-copy';
 import WorkSharing from './work-sharing';
 
@@ -91,7 +93,7 @@ export default function AuthorWorks({ initial, locale, contextKey, publicUrl, pe
     let fieldsSaved = false;
     try {
       let next = await request<AuthorWork>(`/${work.id}`, 'PUT', { title: work.title, abstract: work.abstract, language: work.language, ...(work.canManage===false?{}:{authors:work.authors}),
-        trackId: work.trackId, contributionTypeId: work.contributionTypeId, keywords: keywords.split('\n').map((k) => k.trim()).filter(Boolean), revision: work.revision });
+        reviewResponseDraft:work.reviewResponseDraft,trackId: work.trackId, contributionTypeId: work.contributionTypeId, keywords: keywords.split('\n').map((k) => k.trim()).filter(Boolean), revision: work.revision });
       // Preserve the committed revision if the subsequent file operation fails.
       setSaved(next); setWork(next); setKeywords(next.keywords.join('\n'));
       fieldsSaved = true;
@@ -141,7 +143,7 @@ export default function AuthorWorks({ initial, locale, contextKey, publicUrl, pe
         {!work.editable && <p id="work-edit-reason" className="work-edit-notice">{['submitted','in_review','final_submitted'].includes(work.status)?text.workLockedSubmitted:work.status==='accepted'?text.workLockedAccepted:work.status==='rejected'?text.workLockedRejected:work.responseDeadline?text.workLockedDeadline:text.workLockedUnavailable}</p>}
         <p className="muted small">{text.workPinnedRules} {work.call.revision}</p>{callChanged && <p className="notice notice-muted">{text.workCallChanged}</p>}
         {!editing ? <div className="form-fields">
-          <WorkContentView content={work} locale={locale} showTitle={false} />{work.canManage===false&&<p className="notice notice-muted">{text.sharedEditorHelp}</p>}
+          <WorkContentView content={work} locale={locale} showTitle={false} showResponse={false} />{work.canManage===false&&<p className="notice notice-muted">{text.sharedEditorHelp}</p>}
           {work.canManage!==false&&<WorkSharing key={work.id} work={work} personId={person.id} eventId={workspace.event.id} locale={locale} contextKey={contextKey} busy={busy} onBusyChange={setBusy} onUpdate={next=>{select(next);setWorkspace(current=>({...current,works:current.works.map(row=>row.id===next.id?next:row)}));}}/>}
         </div> : <form id="work-edit-form" className="work-editor" onSubmit={(e) => { e.preventDefault(); void save(undefined,true); }}>
           <section className="work-editor-section"><h3>{feedback.details}</h3><label className="field"><span>{text.workTitle}</span><input required minLength={3} maxLength={300} value={work.title} disabled={busy || !work.editable} onChange={(e) => setWork({ ...work, title: e.target.value })} /></label>
@@ -167,7 +169,8 @@ export default function AuthorWorks({ initial, locale, contextKey, publicUrl, pe
             {(pendingFile || removeFile) && <button className="button button-outline" type="button" disabled={busy} onClick={() => { setPendingFile(null); setRemoveFile(false); }}>{text.undoManuscriptChange}</button>}
             {work.manuscript && !removeFile && <button className="button button-outline" type="button" disabled={busy} onClick={() => { setRemoveFile(true); setPendingFile(null); }}>{text.removeManuscript}</button>}
           </section>
-          <div className="work-editor-footer"><p className="profile-help">{dirty?feedback.saveFirst:work.submissionReady===false?feedback.changeFirst:feedback.saveHelp}</p><div className="editor-actions"><button className="button button-primary" type="submit" disabled={busy || !work.editable || !dirty}>{busy ? text.saving : text.saveWorkChanges}</button><button className="button button-outline" type="button" disabled={busy||dirty||work.submissionReady===false||!work.editable||callChanged&&['draft','withdrawn'].includes(work.status)} onClick={()=>setPreparing(true)}>{feedback.prepare} {Math.max(0,...work.versions.map(item=>item.number))+1}</button><button className="button button-outline" type="button" disabled={busy} onClick={returnToList}>{text.cancel}</button></div></div>
+          {work.responseTarget&&<WorkResponseEditor target={work.responseTarget} value={work.reviewResponseDraft} onChange={reviewResponseDraft=>setWork({...work,reviewResponseDraft})} locale={locale} disabled={busy||!work.editable}/>}
+          <div className="work-editor-footer"><p className="profile-help">{dirty?feedback.saveFirst:work.submissionReady===false?(work.responseTarget?responseCopy[locale].sendHelp:feedback.changeFirst):feedback.saveHelp}</p><div className="editor-actions"><button className="button button-primary" type="submit" disabled={busy || !work.editable || !dirty}>{busy ? text.saving : text.saveWorkChanges}</button><button className="button button-outline" type="button" disabled={busy||dirty||work.submissionReady===false||!work.editable||callChanged&&['draft','withdrawn'].includes(work.status)} onClick={()=>setPreparing(true)}>{feedback.prepare} {Math.max(0,...work.versions.map(item=>item.number))+1}</button><button className="button button-outline" type="button" disabled={busy} onClick={returnToList}>{text.cancel}</button></div></div>
         </form>}
         <WorkFlow key={`${work.id}:${work.revision}`} work={saved??work} eventId={workspace.event.id} locale={locale} contextKey={contextKey} busy={busy} onBusyChange={setBusy} callChanged={callChanged} editing={editing} feedback={<WorkFeedback work={saved??work} locale={locale} unread={!!workspace.works.find(row=>row.id===work.id)?.unreadNotices} onRead={markNoticesRead}/>} onEdit={()=>{startEdit();requestAnimationFrame(()=>document.getElementById('work-edit-form')?.scrollIntoView({block:'start'}));}} onUpdate={(next) => { select(next); setWorkspace({ ...workspace, works: workspace.works.map((row) => row.id === next.id ? next : row) }); setNotice({ error: false, message: text.workActionSaved }); }} />
         {preparing&&<WorkSendDialog work={saved??work} locale={locale} busy={busy} onClose={()=>setPreparing(false)} onSend={async()=>{setBusy(true);try{const next=await request<AuthorWork>(`/${work.id}/submit`,'POST',{revision:(saved??work).revision,confirmed:true});select(next);setPreparing(false);setWorkspace(current=>({...current,works:current.works.map(row=>row.id===next.id?next:row)}));setNotice({error:false,message:text.workActionSaved});}finally{setBusy(false);}}}/>}
