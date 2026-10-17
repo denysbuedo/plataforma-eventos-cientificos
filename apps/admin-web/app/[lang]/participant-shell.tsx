@@ -3,6 +3,8 @@ import { createContext, useCallback, useContext, useEffect, useRef, useState, ty
 import { Brand, Icon } from '@sep/ui';
 import { webCopy, type Locale } from '@sep/i18n';
 import AuthorshipNav from './authorship-nav';
+import ReviewNav from './peer-review-nav';
+import {reviewCopy} from './peer-review-copy';
 import { authorshipCopy } from './authorship-copy';
 
 type Guard = (action: () => void) => void;
@@ -16,7 +18,7 @@ export const participantCopy = {
   en: { space:'My workspace', account:'My account options', home:'SEP · My workspace home', navigation:'Event participation', public:'Go to public portal', noEvent:'Select an event from its portal to view your works and authorship.' },
 } as const;
 export default function ParticipantShell({children,person,locale,contextKey,eventId,tab,publicUrl,busy=false,onNavigate,onCurrentWorks}: {
-  children:ReactNode; person:{name:string}; locale:Locale; contextKey:string; eventId?:string|null; tab:'works'|'authorship'|'profile'; publicUrl:string;
+  children:ReactNode; person:{name:string}; locale:Locale; contextKey:string; eventId?:string|null; tab:'works'|'authorship'|'profile'|'reviews'; publicUrl:string;
   busy?:boolean; onNavigate?:Guard; onCurrentWorks?:()=>void;
 }) {
   const text=webCopy[locale], copy=participantCopy[locale];
@@ -25,7 +27,7 @@ export default function ParticipantShell({children,person,locale,contextKey,even
   const register=useCallback((guard:Guard|null)=>{registeredGuard.current=guard;},[]);
   const prefix=`/${locale}?event=${encodeURIComponent(contextKey)}&tab=`;
   const home=eventId?prefix+'works':prefix+'profile';
-  const pageName=tab==='profile'?text.myProfile:tab==='works'?text.myWorks:authorshipCopy[locale].title;
+  const pageName=tab==='reviews'?reviewCopy[locale].mine:tab==='profile'?text.myProfile:tab==='works'?text.myWorks:authorshipCopy[locale].title;
   const names=person.name.trim().split(/\s+/u);
   const initials=[names[0],...(names.length>1?[names.at(-1)!]:[])].map(name=>Array.from(name)[0]??'').join('').toLocaleUpperCase(locale);
   function guard(action:()=>void) { if(busy||signingOut)return; (onNavigate??registeredGuard.current??((next:()=>void)=>next()))(action); }
@@ -46,6 +48,7 @@ export default function ParticipantShell({children,person,locale,contextKey,even
       <nav aria-label={copy.navigation}>{eventId?<>
         <a href={prefix+'works'} className={tab==='works'?'active':undefined} aria-current={tab==='works'?'page':undefined} onClick={event=>{event.preventDefault();if(tab==='works'&&onCurrentWorks)onCurrentWorks();else navigate(prefix+'works');}}><Icon name="book" size={18}/><span>{text.myWorks}</span></a>
         <a href={prefix+'authorship'} className={tab==='authorship'?'active':undefined} aria-current={tab==='authorship'?'page':undefined} onClick={event=>{event.preventDefault();navigate(prefix+'authorship');}}><Icon name="check" size={18}/><span><AuthorshipNav eventId={eventId} contextKey={contextKey} locale={locale}/></span></a>
+        <a href={prefix+'reviews'} className={tab==='reviews'?'active':undefined} aria-current={tab==='reviews'?'page':undefined} onClick={event=>{event.preventDefault();navigate(prefix+'reviews');}}><Icon name="edit" size={18}/><span><ReviewNav eventId={eventId} contextKey={contextKey} locale={locale}/></span></a>
       </>:<p className="participant-no-event">{copy.noEvent}</p>}</nav>
       {publicUrl&&<div className="sidebar-bottom"><a href={publicUrl} onClick={event=>{event.preventDefault();navigate(publicUrl);}}><Icon name="external" size={17}/><span>{text.publicPortal}</span></a></div>}
     </aside>

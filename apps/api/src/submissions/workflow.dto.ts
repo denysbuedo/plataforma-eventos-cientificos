@@ -8,6 +8,7 @@ export class WorkMessageDto extends WorkRevisionDto {
   @ApiProperty({minLength:10,maxLength:2000}) @Transform(({value})=>typeof value==='string'?value.trim():value) @IsString() @MinLength(10) @MaxLength(2000) message!:string;
 }
 export class WorkDecisionDto extends WorkMessageDto {
+  @ApiPropertyOptional({minLength:20,maxLength:2000,description:'Excepción explícita y auditada cuando falta revisión de la versión actual.'}) @ValidateIf((_,value)=>value!==undefined) @Transform(({value})=>typeof value==='string'?value.trim():value) @IsString() @MinLength(20) @MaxLength(2000) reviewOverrideReason?:string;
   @ApiProperty({enum:['in_review','changes_requested','accepted','rejected','final_requested']}) @IsIn(['in_review','changes_requested','accepted','rejected','final_requested']) decision!:'in_review'|'changes_requested'|'accepted'|'rejected'|'final_requested';
   @ApiProperty({type:String,nullable:true,format:'date'}) @ValidateBy({name:'dateOnly',validator:{validate:(v:unknown)=>v===null||typeof v==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(v)&&v>='1900-01-01'&&v<='9999-12-31'&&Number.isFinite(Date.parse(v))&&new Date(v).toISOString().slice(0,10)===v}}) responseDeadline!:string|null;
 }

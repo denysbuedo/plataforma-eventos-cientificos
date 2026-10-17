@@ -47,12 +47,16 @@ La conservación de reglas, versiones y archivos está implementada y se comprob
 
 ## Próximos incrementos
 
-1. Comités, conflictos, asignación de revisores y evaluación por pares.
-2. Programa científico, sesiones y ponentes.
-3. Publicación de trabajos aceptados y memorias.
+1. Programa científico, sesiones y ponentes.
+2. Publicación de trabajos aceptados y memorias.
+3. Ampliaciones de revisión: doble ciego, debate, réplica y asignación automática.
 
 ## Validación pendiente
 
 La compilación completa y el análisis estático pasaron. En la demo se aplicaron las migraciones y se comprobó guardar/publicar/consultar/retirar mediante los servicios con sep_runtime dentro de una transacción revertida, preservando los datos originales. La API y las pantallas administrativas y públicas respondieron en español e inglés. No se ejecutó una batería completa ni se validaron las interacciones por navegador.
 
 Las pruebas completas siguen aplazadas por el propietario. Al retomarlas cubrir: roles y revocación, IDs ajenos, catálogos inválidos o repetidos, límites de requisitos, fechas reales y rangos, borrador no filtrado, publicación incompleta, conflictos de revisión, retirada concurrente, cambios de zona horaria, cancelación/finalización y aislamiento del portal. RedUniv y Google siguen pendientes de activación.
+
+## Revisión científica implementada
+
+Comité y revisores, aceptación independiente de asignaciones, conflictos automáticos/declarados, rondas sobre versiones oficiales, criterios bilingües, informes privados/enviados, PDF autorizado y dictamen apoyado en evaluaciones. El modo inicial es simple ciego; no simula doble ciego. Véanse el [recorrido, reglas y límites](../development/revision-cientifica.md) y [ADR-020](../adr/ADR-020-revision-cientifica.md). Programa, memorias y validación funcional completa continúan pendientes.

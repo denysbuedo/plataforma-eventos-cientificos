@@ -1,3 +1,4 @@
+import { PeerReviewService } from './reviews.service.js';
 import { Injectable } from '@nestjs/common';
 import { and, eq, isNotNull, desc, sql } from 'drizzle-orm';
 import type { SubmissionPage, StaffWork } from '@sep/contracts';
@@ -9,7 +10,7 @@ import { AuthorWorksService } from './works.service.js';
 import type { WorkDecisionDto, SubmissionQuery } from './workflow.dto.js';
 @Injectable()
 export class SubmissionsStaffService {
-  constructor(private readonly authorization:AuthorizationService,private readonly authors:AuthorWorksService,private readonly audit:AuditService) {}
+  constructor(private readonly authorization:AuthorizationService,private readonly authors:AuthorWorksService,private readonly audit:AuditService,private readonly reviews:PeerReviewService) {}
   private scope(c:RequestContext) {return and(eq(works.organizationId,c.organizationId),eq(works.eventId,c.eventId!),isNotNull(works.submittedAt));}
   list(context:RequestContext,query:SubmissionQuery):Promise<SubmissionPage> {
     return this.authorization.run(context,'submissions-manage',async tx=>{
@@ -36,6 +37,7 @@ export class SubmissionsStaffService {
       if(!allowed)throw new ApiException(409,'CONFLICT');
       const requested=['changes_requested','final_requested'].includes(dto.decision);
       if(requested && (!dto.responseDeadline || dto.responseDeadline<this.authors.today(row.call.timezone)) || !requested && dto.responseDeadline!==null)throw new ApiException(400,'RESPONSE_DEADLINE');
+      await this.reviews.beforeDecision(tx,context,row,dto);
       const [next]=await tx.update(works).set({status:dto.decision,responseDeadline:dto.responseDeadline,revision:row.revision+1,updatedAt:new Date()}).where(and(this.scope(context),eq(works.id,id))).returning();
       await this.authors.record(tx,context,id,dto.decision,dto.message,'staff');await this.audit.record(tx,context,'work.decision',context.eventId!,id);
       return {...await this.authors.detail(tx,next,state,true),canDecide:true};

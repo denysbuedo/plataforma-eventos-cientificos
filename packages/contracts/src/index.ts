@@ -137,3 +137,14 @@ export interface EventConfiguration {
 
 export { COUNTRY_CODES } from './countries.js';
 export { validOrcid } from './orcid.js';
+
+
+export const REVIEW_RECOMMENDATIONS=['accept','minor_changes','major_changes','reject'] as const;
+export interface ReviewCriterion { id:string; labelEs:string; labelEn:string }
+export interface ReviewEvaluation { scores:{criterionId:string;score:number}[]; recommendation:typeof REVIEW_RECOMMENDATIONS[number]|''; authorComments:string; confidentialComments:string }
+export interface ReviewMember { pendingReviews?:number; personId:string; name:string; status:'invited'|'accepted'|'declined'|'revoked'; expertise:string; revision:number; createdAt:string }
+export interface ReviewContent { title:string; abstract:string; keywords:string[]; language:'es'|'en'; authors:{fullName:string;affiliations:WorkAffiliation[]}[]; manuscript:Manuscript|null }
+export interface ReviewRound { id:string;workId:string;versionId:string;versionNumber:number;number:number;status:'open'|'closed';deadline:string;timezone:string;minimumReviews:number;criteria:ReviewCriterion[];revision:number;createdAt:string;closedAt:string|null }
+export interface ReviewAssignment { eligible?:boolean; id:string;roundId:string;workId:string;reviewerId:string;reviewerName:string;status:'invited'|'accepted'|'declined'|'conflict'|'revoked'|'submitted';title:string;versionNumber:number;deadline:string;timezone:string;revision:number;submittedAt:string|null;message:string;evaluation:ReviewEvaluation|null;content?:ReviewContent;criteria:ReviewCriterion[];available:boolean }
+export interface ReviewWorkspace { members:ReviewMember[];assignments:ReviewAssignment[] }
+export interface WorkReviewFile { rounds:ReviewRound[];assignments:ReviewAssignment[] }

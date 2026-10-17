@@ -2,7 +2,7 @@
 
 > Plataforma integral, multiinstitución, multievento y multilingüe para gestionar congresos científicos desde la convocatoria hasta la publicación de memorias y certificados.
 
-**Estado:** portal y administración con CMS, convocatoria científica y módulo de trabajos implementados: autoría, PDF privado, envío, versiones, correcciones, dictámenes del organizador, versión final, gestión compartida y [reconocimiento de autorías con aprobación y avisos internos](docs/development/reconocimiento-autorias.md). Revisión por pares y validación funcional completa pendientes · **Idiomas iniciales:** español e inglés.
+**Estado:** portal y administración con CMS, convocatoria científica y módulo de trabajos implementados: autoría, PDF privado, envío, versiones, correcciones, dictámenes del organizador, versión final, gestión compartida y [reconocimiento de autorías con aprobación y avisos internos](docs/development/reconocimiento-autorias.md). [Revisión por pares de simple ciego](docs/development/revision-cientifica.md) implementada; validación funcional completa pendiente · **Idiomas iniciales:** español e inglés.
 
 ## Visión
 
@@ -179,3 +179,5 @@ El informe completo [PROYECTO_TECNICO_INICIAL.md](PROYECTO_TECNICO_INICIAL.md) e
 ## Estado del proyecto
 
 Este README describe la **visión objetivo**. No representa una aplicación terminada ni valida características que todavía no se han construido.
+
+**Revisión científica** incorpora comité/revisores con aceptación, rondas sobre versiones oficiales, criterios bilingües, conflictos, asignaciones, borradores privados, informes inmutables y dictámenes condicionados. El autor recibe comentarios publicados sin notas confidenciales ni identidad de revisores. Ver [recorrido y límites](docs/development/revision-cientifica.md). Doble ciego y correo automático siguen pendientes.

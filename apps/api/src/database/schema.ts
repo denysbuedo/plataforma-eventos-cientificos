@@ -1,6 +1,6 @@
 import { sql, type SQL } from 'drizzle-orm';
 import { boolean, check, customType, date, foreignKey, index, integer, jsonb, pgPolicy, pgRole, pgTable, primaryKey, text, timestamp, unique, uniqueIndex, uuid } from 'drizzle-orm/pg-core';
-import type { EventConfiguration, PublishedScientificCall, PublishedSite, ScientificCallContent, SiteContent, WorkAuthor, WorkStatus, WorkContent, Manuscript, WorkAffiliation, ResearcherBackground } from '@sep/contracts';
+import type { EventConfiguration, PublishedScientificCall, PublishedSite, ScientificCallContent, SiteContent, WorkAuthor, WorkStatus, WorkContent, Manuscript, WorkAffiliation, ResearcherBackground, ReviewCriterion, ReviewEvaluation, ReviewContent } from '@sep/contracts';
 
 const binary = customType<{ data: Buffer; driverData: Buffer }>({ dataType: () => 'bytea' });
 const runtime = pgRole('sep_runtime').existing();
@@ -60,6 +60,7 @@ export const events = pgTable('events', {
   foreignKey({ columns: [t.organizationId, t.editionId], foreignColumns: [editions.organizationId, editions.id] }),
   check('events_status_check', sql`${t.status} IN ('draft', 'published', 'archived')`),
   policy(eventScope(sql`${t.organizationId}`, sql`${t.id}`)),
+  pgPolicy('review_registry',{for:'select',to:registryOwner,using:sql`current_setting('sep.review_rpc',true)='true' AND ${organizationScope(sql`${t.organizationId}`)} AND ${t.id}=nullif(current_setting('sep.event_id',true),'')::uuid`}),
   registryRead(organizationScope(sql`${t.organizationId}`)),
   pgPolicy('authorship_rpc',{for:'select',to:registryOwner,using:authorshipScope(sql`${t.organizationId}`,sql`${t.id}`)}),
   // SELECT FOR UPDATE in the registry function needs an UPDATE USING policy;
@@ -84,6 +85,7 @@ export const eventConfigurations = pgTable('event_configurations', {
   revision: integer('revision').notNull().default(1),
 }, (t) => [
   primaryKey({ columns: [t.organizationId, t.eventId] }),
+  pgPolicy('review_registry',{for:'select',to:registryOwner,using:sql`current_setting('sep.review_rpc',true)='true' AND ${organizationScope(sql`${t.organizationId}`)} AND ${t.eventId}=nullif(current_setting('sep.event_id',true),'')::uuid`}),
   foreignKey({ columns: [t.organizationId, t.eventId], foreignColumns: [events.organizationId, events.id] }),
   check('event_configuration_dates', sql`(${t.startDate} IS NULL AND ${t.endDate} IS NULL) OR (${t.startDate} IS NOT NULL AND ${t.endDate} IS NOT NULL AND ${t.endDate} >= ${t.startDate})`),
   check('event_configuration_modality', sql`${t.modality} IN ('in_person','virtual','hybrid')`),
@@ -98,6 +100,7 @@ export const people = pgTable('people', {
   id: uuid('id').primaryKey(), name: text('name').notNull(), active: boolean('active').notNull().default(true),
 }, (t) => [
   pgPolicy('authorship_people',{for:'select',to:registryOwner,using:sql`current_setting('sep.authorship_rpc',true)='true'`}),
+  pgPolicy('review_registry',{for:'select',to:registryOwner,using:sql`current_setting('sep.review_rpc',true)='true' AND ${actorScope(sql`${t.id}`)}`}),
   pgPolicy('profile_owner_update',{as:'restrictive',for:'update',to:runtime,using:actorScope(sql`${t.id}`),withCheck:actorScope(sql`${t.id}`)}),
   pgPolicy('directory_actor',{for:'select',to:registryOwner,using:actorScope(sql`${t.id}`)}),
   pgPolicy('directory_lookup',{for:'select',to:registryOwner,using:sql`current_setting('sep.directory_read',true)='true' AND EXISTS(SELECT 1 FROM researcher_profiles p WHERE p.person_id=${t.id} AND p.discoverable)`}),
@@ -117,7 +120,7 @@ export const orcidConnections = pgTable('orcid_connections', {
   personId: uuid('person_id').primaryKey().references(()=>people.id),
   orcid: text('orcid'), environment: text('environment').notNull().default('production'), connectedAt: timestamp('connected_at',{withTimezone:true}),
   stateHash: text('state_hash'), expiresAt: timestamp('expires_at',{withTimezone:true}), returnTo: text('return_to'),
-}, t=>[unique().on(t.environment,t.orcid), check('orcid_environment',sql`${t.environment} IN ('production','sandbox')`),policy(actorScope(sql`${t.personId}`)),
+}, t=>[pgPolicy('review_registry',{for:'select',to:registryOwner,using:sql`current_setting('sep.review_rpc',true)='true' AND ${t.personId}=nullif(current_setting('sep.review_target',true),'')::uuid`}),unique().on(t.environment,t.orcid), check('orcid_environment',sql`${t.environment} IN ('production','sandbox')`),policy(actorScope(sql`${t.personId}`)),
   authorshipActorRead(sql`${t.personId}`),
   pgPolicy('directory_lookup',{for:'select',to:registryOwner,using:sql`current_setting('sep.directory_read',true)='true' AND EXISTS(SELECT 1 FROM researcher_profiles p WHERE p.person_id=${t.personId} AND p.discoverable)`}),
 ]);
@@ -207,6 +210,8 @@ export const authorWorks = pgTable('author_works', {
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(), updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
 }, (t) => [unique().on(t.organizationId,t.eventId,t.id), foreignKey({ columns: [t.organizationId, t.eventId], foreignColumns: [events.organizationId, events.id] }),
   authorshipPolicy(sql`${t.organizationId}`,sql`${t.eventId}`),
+  pgPolicy('review_registry',{for:'select',to:registryOwner,using:sql`current_setting('sep.review_rpc',true)='true' AND ${organizationScope(sql`${t.organizationId}`)} AND ${t.eventId}=nullif(current_setting('sep.event_id',true),'')::uuid`}),
+  pgPolicy('review_registry_lock',{for:'update',to:registryOwner,using:sql`current_setting('sep.review_rpc',true)='true' AND ${organizationScope(sql`${t.organizationId}`)} AND ${t.eventId}=nullif(current_setting('sep.event_id',true),'')::uuid`,withCheck:sql`false`}),
   check('work_status_values',sql`${t.status} IN ('draft','submitted','in_review','changes_requested','accepted','rejected','withdrawn','final_requested','final_submitted')`),
   index('author_works_owner_event_idx').on(t.organizationId, t.eventId, t.ownerId),
   unique('author_works_owner_scope_unique').on(t.organizationId,t.eventId,t.id,t.ownerId),
@@ -230,6 +235,7 @@ export const workCollaborations = pgTable('work_collaborations',{
   authorshipPolicy(sql`${t.organizationId}`,sql`${t.eventId}`),
   foreignKey({columns:[t.organizationId,t.eventId,t.workId,t.ownerId],foreignColumns:[authorWorks.organizationId,authorWorks.eventId,authorWorks.id,authorWorks.ownerId]}),
   uniqueIndex('work_corresponding_collaboration_unique').on(t.workId,t.authorId).where(sql`${t.status} IN ('pending','accepted')`),
+  pgPolicy('review_registry',{for:'select',to:registryOwner,using:sql`current_setting('sep.review_rpc',true)='true' AND ${organizationScope(sql`${t.organizationId}`)} AND ${t.eventId}=nullif(current_setting('sep.event_id',true),'')::uuid`}),
   check('work_collaboration_status',sql`${t.status} IN ('pending','accepted','revoked')`),check('work_collaboration_dates',sql`${t.expiresAt}>${t.createdAt}`),
   check('work_collaboration_acceptance',sql`${t.status}<>'accepted' OR (${t.personId} IS NOT NULL AND ${t.acceptedAt} IS NOT NULL)`),
   pgPolicy('collaboration_read',{for:'select',to:runtime,using:sql`${organizationScope(sql`${t.organizationId}`)} AND ${t.eventId}=nullif(current_setting('sep.event_id',true),'')::uuid AND (${actorScope(sql`${t.ownerId}`)} OR ${actorScope(sql`${t.personId}`)} OR ${t.tokenHash}=current_setting('sep.work_invitation_hash',true))`}),
@@ -240,6 +246,7 @@ export const workFiles = pgTable('work_files', {
   id: uuid('id').primaryKey(), organizationId: uuid('organization_id').notNull(), eventId: uuid('event_id').notNull(), workId: uuid('work_id').notNull(),
   ownerId: uuid('owner_id').notNull().references(() => people.id), metadata: jsonb('metadata').$type<Manuscript>().notNull(), data: binary('data').notNull(),
 }, (t) => [unique().on(t.organizationId,t.eventId,t.workId,t.id), foreignKey({ columns: [t.organizationId,t.eventId,t.workId], foreignColumns: [authorWorks.organizationId,authorWorks.eventId,authorWorks.id] }),
+  pgPolicy('review_file_read',{for:'select',to:runtime,using:sql`${organizationScope(sql`${t.organizationId}`)} AND ${t.eventId}=nullif(current_setting('sep.event_id',true),'')::uuid AND EXISTS(SELECT 1 FROM review_assignments a JOIN review_rounds r ON r.id=a.round_id WHERE a.organization_id=${t.organizationId} AND a.event_id=${t.eventId} AND a.work_id=${t.workId} AND a.reviewer_id=nullif(current_setting('sep.person_id',true),'')::uuid AND a.status IN ('accepted','submitted') AND a.content->'manuscript'->>'id'=${t.id}::text AND r.status='open' AND sep_review_available(${t.organizationId},${t.eventId},${t.workId},r.version_id,false))`}),
   pgPolicy('file_read', { for: 'select', to: runtime, using: sql`${workVisible(sql`${t.organizationId}`,sql`${t.eventId}`,sql`${t.workId}`)} AND (current_setting('sep.submissions_staff',true) IS DISTINCT FROM 'true' OR EXISTS (SELECT 1 FROM work_versions v WHERE v.file_id=${t.id} AND v.work_id=${t.workId}))` }),
   pgPolicy('file_insert', { for: 'insert', to: runtime, withCheck: sql`${workVisible(sql`${t.organizationId}`,sql`${t.eventId}`,sql`${t.workId}`)} AND ${actorScope(sql`${t.ownerId}`)}` }),
   pgPolicy('file_delete', { for: 'delete', to: runtime, using: sql`${authorWorkVisible(sql`${t.organizationId}`,sql`${t.eventId}`,sql`${t.workId}`)} AND NOT EXISTS (SELECT 1 FROM work_versions v WHERE v.file_id=${t.id})` }),
@@ -249,6 +256,8 @@ export const workVersions = pgTable('work_versions', {
   ownerId: uuid('owner_id').notNull().references(() => people.id), number: integer('number').notNull(), kind: text('kind').$type<'submission'|'final'>().notNull(),
   content: jsonb('content').$type<WorkContent>().notNull(), fileId: uuid('file_id'), createdAt: timestamp('created_at',{withTimezone:true}).notNull().defaultNow(),
 }, (t) => [foreignKey({columns:[t.organizationId,t.eventId,t.workId,t.fileId],foreignColumns:[workFiles.organizationId,workFiles.eventId,workFiles.workId,workFiles.id]}), unique().on(t.workId,t.number), foreignKey({ columns: [t.organizationId,t.eventId,t.workId],foreignColumns:[authorWorks.organizationId,authorWorks.eventId,authorWorks.id] }),
+  pgPolicy('review_registry',{for:'select',to:registryOwner,using:sql`current_setting('sep.review_rpc',true)='true' AND ${organizationScope(sql`${t.organizationId}`)} AND ${t.eventId}=nullif(current_setting('sep.event_id',true),'')::uuid`}),
+  unique('work_versions_review_scope').on(t.organizationId,t.eventId,t.workId,t.id),
   check('version_number_positive',sql`${t.number} > 0 AND ${t.number} <= 10`), check('version_kind_values',sql`${t.kind} IN ('submission','final')`),
   pgPolicy('version_read',{for:'select',to:runtime,using:workVisible(sql`${t.organizationId}`,sql`${t.eventId}`,sql`${t.workId}`)}),
   pgPolicy('version_insert',{for:'insert',to:runtime,withCheck:sql`${workVisible(sql`${t.organizationId}`,sql`${t.eventId}`,sql`${t.workId}`)} AND ${actorScope(sql`${t.ownerId}`)}`}),
@@ -297,3 +306,31 @@ export const organizationInvitations = pgTable('organization_invitations', {
     using: sql`${organizationScope(sql`${t.organizationId}`)} AND (current_setting('sep.organization_admin', true) = 'true' OR ${t.tokenHash} = current_setting('sep.invitation_hash', true))`,
     withCheck: sql`${organizationScope(sql`${t.organizationId}`)} AND (current_setting('sep.organization_admin', true) = 'true' OR (${t.tokenHash} = current_setting('sep.invitation_hash', true) AND ${actorScope(sql`${t.acceptedBy}`)}))` }),
 ]);
+
+
+const reviewScope=(org:SQL,event:SQL)=>sql`${organizationScope(org)} AND ${event}=nullif(current_setting('sep.event_id',true),'')::uuid`;
+const reviewStaff=(org:SQL,event:SQL)=>sql`${reviewScope(org,event)} AND current_setting('sep.submissions_staff',true)='true'`;
+const reviewRegistry=(org:SQL,event:SQL)=>pgPolicy('review_registry',{for:'select',to:registryOwner,using:sql`${reviewScope(org,event)} AND current_setting('sep.review_rpc',true)='true'`});
+export const reviewMembers=pgTable('review_members',{
+  organizationId:uuid('organization_id').notNull(),eventId:uuid('event_id').notNull(),personId:uuid('person_id').notNull().references(()=>people.id),
+  name:text('name').notNull(),status:text('status').$type<'invited'|'accepted'|'declined'|'revoked'>().notNull().default('invited'),expertise:text('expertise').notNull().default(''),revision:integer('revision').notNull().default(1),createdAt:timestamp('created_at',{withTimezone:true}).notNull().defaultNow(),
+},t=>[primaryKey({columns:[t.organizationId,t.eventId,t.personId]}),foreignKey({columns:[t.organizationId,t.eventId],foreignColumns:[events.organizationId,events.id]}),
+ check('review_member_status',sql`${t.status} IN ('invited','accepted','declined','revoked')`),check('review_member_revision',sql`${t.revision}>0`),reviewRegistry(sql`${t.organizationId}`,sql`${t.eventId}`),
+ policy(sql`${reviewStaff(sql`${t.organizationId}`,sql`${t.eventId}`)} OR (${reviewScope(sql`${t.organizationId}`,sql`${t.eventId}`)} AND ${actorScope(sql`${t.personId}`)})`)]);
+export const reviewRounds=pgTable('review_rounds',{
+ id:uuid('id').primaryKey(),organizationId:uuid('organization_id').notNull(),eventId:uuid('event_id').notNull(),workId:uuid('work_id').notNull(),versionId:uuid('version_id').notNull(),versionNumber:integer('version_number').notNull(),number:integer('number').notNull(),
+ status:text('status').$type<'open'|'closed'>().notNull().default('open'),deadline:date('deadline').notNull(),timezone:text('timezone').notNull(),minimumReviews:integer('minimum_reviews').notNull(),criteria:jsonb('criteria').$type<ReviewCriterion[]>().notNull(),revision:integer('revision').notNull().default(1),createdAt:timestamp('created_at',{withTimezone:true}).notNull().defaultNow(),closedAt:timestamp('closed_at',{withTimezone:true}),
+},t=>[unique().on(t.organizationId,t.eventId,t.workId,t.id),unique().on(t.workId,t.number),uniqueIndex('review_round_open').on(t.workId).where(sql`${t.status}='open'`),
+ foreignKey({columns:[t.organizationId,t.eventId,t.workId,t.versionId],foreignColumns:[workVersions.organizationId,workVersions.eventId,workVersions.workId,workVersions.id]}),
+ check('review_round_status',sql`${t.status} IN ('open','closed') AND (${t.status}='closed')=(${t.closedAt} IS NOT NULL)`),check('review_round_limits',sql`${t.minimumReviews} BETWEEN 1 AND 5 AND ${t.number} BETWEEN 1 AND 20 AND ${t.revision}>0`),
+ reviewRegistry(sql`${t.organizationId}`,sql`${t.eventId}`),pgPolicy('review_staff',{for:'all',to:runtime,using:reviewStaff(sql`${t.organizationId}`,sql`${t.eventId}`),withCheck:reviewStaff(sql`${t.organizationId}`,sql`${t.eventId}`)}),
+ pgPolicy('review_assigned',{for:'select',to:runtime,using:sql`${reviewScope(sql`${t.organizationId}`,sql`${t.eventId}`)} AND EXISTS(SELECT 1 FROM review_assignments a WHERE a.round_id=${t.id} AND a.reviewer_id=nullif(current_setting('sep.person_id',true),'')::uuid)`})]);
+export const reviewAssignments=pgTable('review_assignments',{
+ id:uuid('id').primaryKey(),organizationId:uuid('organization_id').notNull(),eventId:uuid('event_id').notNull(),workId:uuid('work_id').notNull(),roundId:uuid('round_id').notNull(),reviewerId:uuid('reviewer_id').notNull(),reviewerName:text('reviewer_name').notNull(),
+ status:text('status').$type<import('@sep/contracts').ReviewAssignment['status']>().notNull().default('invited'),content:jsonb('content').$type<ReviewContent>().notNull(),revision:integer('revision').notNull().default(1),message:text('message').notNull().default(''),evaluation:jsonb('evaluation').$type<ReviewEvaluation>(),submittedAt:timestamp('submitted_at',{withTimezone:true}),
+},t=>[index('review_reviewer_event_idx').on(t.organizationId,t.eventId,t.reviewerId),unique().on(t.roundId,t.reviewerId),foreignKey({columns:[t.organizationId,t.eventId,t.workId,t.roundId],foreignColumns:[reviewRounds.organizationId,reviewRounds.eventId,reviewRounds.workId,reviewRounds.id]}),foreignKey({columns:[t.organizationId,t.eventId,t.reviewerId],foreignColumns:[reviewMembers.organizationId,reviewMembers.eventId,reviewMembers.personId]}),
+ check('review_assignment_status',sql`${t.status} IN ('invited','accepted','declined','conflict','revoked','submitted')`),check('review_assignment_revision',sql`${t.revision}>0`),check('review_assignment_submitted',sql`${t.status}<>'submitted' OR (${t.submittedAt} IS NOT NULL AND ${t.evaluation} IS NOT NULL)`),
+ reviewRegistry(sql`${t.organizationId}`,sql`${t.eventId}`),policy(sql`${reviewStaff(sql`${t.organizationId}`,sql`${t.eventId}`)} OR (${reviewScope(sql`${t.organizationId}`,sql`${t.eventId}`)} AND ${actorScope(sql`${t.reviewerId}`)} AND EXISTS(SELECT 1 FROM review_members m WHERE m.organization_id=${t.organizationId} AND m.event_id=${t.eventId} AND m.person_id=${t.reviewerId} AND m.status='accepted'))`)]);
+export const reviewConflicts=pgTable('review_conflicts',{
+ organizationId:uuid('organization_id').notNull(),eventId:uuid('event_id').notNull(),workId:uuid('work_id').notNull(),personId:uuid('person_id').notNull(),reason:text('reason').notNull(),createdAt:timestamp('created_at',{withTimezone:true}).notNull().defaultNow(),
+},t=>[primaryKey({columns:[t.organizationId,t.eventId,t.workId,t.personId]}),foreignKey({columns:[t.organizationId,t.eventId,t.workId],foreignColumns:[authorWorks.organizationId,authorWorks.eventId,authorWorks.id]}),foreignKey({columns:[t.organizationId,t.eventId,t.personId],foreignColumns:[reviewMembers.organizationId,reviewMembers.eventId,reviewMembers.personId]}),reviewRegistry(sql`${t.organizationId}`,sql`${t.eventId}`),policy(sql`${reviewStaff(sql`${t.organizationId}`,sql`${t.eventId}`)} OR (${reviewScope(sql`${t.organizationId}`,sql`${t.eventId}`)} AND ${actorScope(sql`${t.personId}`)})`)]);

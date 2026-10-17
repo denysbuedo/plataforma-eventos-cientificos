@@ -1,10 +1,11 @@
+import MyReviews from './peer-review-mine';
 import Authorship from './authorship';
 import { authorshipCopy, authorshipUi } from './authorship-copy';
 import ParticipantShell from './participant-shell';
 import { cookies, headers } from 'next/headers';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
-import type { SubmissionPage, AuthorWorkspace, ScientificCallDraft, EventConfiguration, EventPage, EventTeam, OrganizationSettings, PeopleDirectory, SessionView, SiteDraft } from '@sep/contracts';
+import type { ReviewWorkspace, SubmissionPage, AuthorWorkspace, ScientificCallDraft, EventConfiguration, EventPage, EventTeam, OrganizationSettings, PeopleDirectory, SessionView, SiteDraft } from '@sep/contracts';
 import { webCopy, type Locale } from '@sep/i18n';
 import { apiRequest, bindingFor, demoConfiguration, googleLoginEnabled, redunivLoginEnabled, oidcEnabled, removeOidcValue, SESSION_COOKIE, tokenForCookie, ApiTransportError } from '@sep/web-server';
 import Login from './login';
@@ -39,6 +40,11 @@ export default async function AdminPage({ params, searchParams }: { params: Prom
     if (query.tab === 'profile') {
       const person=(await apiRequest<{person:AuthorAccount}>(binding,'me',{token,locale})).person;
       return <Profile person={person} locale={locale} contextKey={contextKey} eventId={binding.eventId} publicUrl={publicUrl?`${publicUrl}/${locale}?event=${encodeURIComponent(contextKey)}`:''} error={!!query.orcidError}/>;
+    }
+    if(query.tab==='reviews'&&binding.eventId){
+      const person=(await apiRequest<{person:AuthorAccount}>(binding,'me',{token,locale})).person;
+      const workspace=await apiRequest<ReviewWorkspace>(binding,`events/${binding.eventId}/peer-review/mine`,{token,locale});
+      return <ParticipantShell person={person} locale={locale} contextKey={contextKey} eventId={binding.eventId} tab="reviews" publicUrl={publicUrl?`${publicUrl}/${locale}?event=${encodeURIComponent(contextKey)}`:''}><MyReviews key={contextKey} initial={workspace} eventId={binding.eventId} contextKey={contextKey} locale={locale}/></ParticipantShell>;
     }
     if (query.tab === 'authorship' && binding.eventId) {
       const person=(await apiRequest<{person:AuthorAccount}>(binding,'me',{token,locale})).person;

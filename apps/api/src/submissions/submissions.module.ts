@@ -1,3 +1,5 @@
+import {PeerReviewService} from './reviews.service.js';
+import {PeerReviewController} from './reviews.controller.js';
 import { WorkCollaborationsController, WorkCollaborationsService } from './collaborations.js';
 import { AuthorshipController, AuthorshipService } from './authorship.js';
 import { Body, Controller, Delete, Get, Module, Param, Post, Put, Req, Res, Query, UploadedFile, UseInterceptors } from '@nestjs/common';
@@ -68,5 +70,5 @@ class SubmissionsStaffController {
   async file(@Req() req:SepRequest,@Param('workId') id:string,@Param('fileId') fileId:string,@Res() res:Response){uuid(id,fileId);sendPdf(res,await this.service.file(req.security,id,fileId));}
 }
 
-@Module({ imports:[IdentityModule], controllers: [AuthorWorksController, SubmissionsStaffController, WorkCollaborationsController, AuthorshipController], providers: [AuthorWorksService, AuditService, ManuscriptsService, SubmissionsStaffService, WorkCollaborationsService, AuthorshipService] })
+@Module({ imports:[IdentityModule], controllers: [AuthorWorksController, SubmissionsStaffController, WorkCollaborationsController, AuthorshipController, PeerReviewController], providers: [PeerReviewService, AuthorWorksService, AuditService, ManuscriptsService, SubmissionsStaffService, WorkCollaborationsService, AuthorshipService] })
 export class SubmissionsModule {}
