@@ -1,40 +1,52 @@
 # Formación y trayectoria del investigador
 
-La sección de Mi perfil pasa de «Información académica» a **Formación y trayectoria** para incluir formación, grado científico y actividad profesional. No se añade un formulario obligatorio al acceso RedUniv/Google: se completa voluntariamente desde Mi perfil, sin excluir a estudiantes, asistentes o personas sin titulación universitaria.
+Mi perfil permite declarar voluntariamente títulos, grados científicos y actividad profesional. No es necesario tener una titulación para participar. El registro no exige estos datos ni crea equivalencias entre países.
 
-## Referencias y criterio
+## Títulos y grados independientes
 
-ORCID separa [educación y cualificaciones](https://support.orcid.org/hc/en-us/articles/360006894714-Metadata-in-the-Education-and-Qualification-section), donde conserva el nombre del título, institución y fechas, de la actividad profesional. Su [información biográfica](https://support.orcid.org/hc/en-us/articles/360006973673-Add-identifying-biographical-information-to-your-ORCID-record) permite áreas/palabras clave, reseña, enlaces y otros identificadores. No existe un único formulario obligatorio internacional para cualquier investigador.
+Se elimina del formulario «Nivel de formación completado» y el campo combinado «Grado académico o científico / título obtenido». Ese diseño confundía una clasificación de niveles con las credenciales concretas y solo permitía describir una.
 
-La clasificación [ISCED de UNESCO](https://www.uis.unesco.org/en/methods-and-tools/isced) permite describir niveles educativos entre países; no convierte por sí sola títulos individuales ni acredita equivalencias. Los perfiles [R1–R4 de la Comisión Europea](https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=OJ%3AC_202301640) describen trayectoria investigadora y no son grados académicos. No se importan como una categoría científica universal ni se asignan automáticamente por edad, cargo o título.
+Ahora se pueden añadir hasta diez credenciales, distribuidas en dos apartados:
 
-## Datos implementados
-
-| Dato | Regla |
+| Apartado | Opciones |
 |---|---|
-| Nivel de formación completado | Sin especificar, titulación superior de ciclo corto, grado/licenciatura o equivalente, maestría o equivalente, doctorado u otra titulación |
-| Grado académico o científico / título obtenido | Texto de hasta 150 caracteres; conserva la denominación del país, por ejemplo Doctor en Ciencias Técnicas, PhD in Engineering, MSc o una titulación profesional |
-| Cargo o función actual | Texto de hasta 150 caracteres; permite investigador, docente, doctorando, profesional, etc. |
-| Áreas de investigación | Hasta 10 áreas de hasta 80 caracteres, sin duplicados; edición separada por punto y coma y presentación en etiquetas |
-| Breve reseña profesional | Hasta 1500 caracteres, texto plano |
-| Sitio web profesional | Hasta 300 caracteres, solo HTTP/HTTPS, sin credenciales incorporadas |
+| Títulos universitarios y de posgrado | Título universitario de pregrado, especialidad de posgrado, maestría/máster, otro título |
+| Doctorados y grados científicos | Doctorado de investigación, doctorado superior, otro grado científico |
 
-Se conservan nombre, afiliaciones con institución/país y ORCID. Todos los nuevos campos son opcionales y pueden borrarse explícitamente. El nivel se refiere a formación completada: estar cursando un doctorado o desempeñar un posdoctorado no añade automáticamente un grado obtenido. No se añaden prefijos Dr./Dra. al nombre, no se valida equivalencia legal ni se presentan títulos declarados como verificados. Estos datos no modifican autorías, permisos, versiones oficiales ni certificados.
+Cada entrada registra su **tipo**, **denominación oficial** (2–150 caracteres) y **país que la otorga**. No se infiere el país del usuario ni de su afiliación actual. Una persona puede registrar simultáneamente licenciatura/ingeniería, maestría y doctorado; las entradas no se sustituyen por un supuesto nivel máximo.
 
-## Privacidad y compatibilidad
+Para Cuba, las opciones científicas muestran **Doctor en determinada área del conocimiento (Dr. C.)** y **Doctor en Ciencias (Dr. Cs.)**. Son grados distintos. La denominación exacta del diploma, por ejemplo «Doctor en Ciencias Técnicas», se conserva en texto. Para otros países se mantienen las opciones generales y el nombre oficial, sin convertir PhD, DSc o cualquier otro título a una credencial cubana. Los agrupamientos ayudan a organizar lo declarado y no acreditan reconocimiento legal.
 
-Los nuevos datos se conservan en `researcher_profiles.background`, con RLS/FORCE de la cuenta, migración 0045 y valores iniciales vacíos. `/me` devuelve el bloque propio; PUT `/me/researcher-profile` lo valida y guarda con revisión optimista y auditoría del perfil. Omitir background conserva sus valores, para admitir clientes anteriores. Enviarlo completo con campos vacíos los borra expresamente.
+Una titulación profesional médica no se clasifica automáticamente como doctorado de investigación. El posdoctorado, los cargos, y las categorías docentes o científicas no se ofrecen como títulos obtenidos. El cargo o función actual tiene un campo independiente. No se añaden prefijos Dr./Dra. al nombre ni se presentan estas declaraciones como verificadas.
 
-El directorio voluntario sigue exponiendo únicamente nombre, afiliaciones y ORCID de producción. No publica grado, cargo, reseña, áreas o sitio web, ni importa el expediente completo de ORCID. La conexión actual de ORCID continúa sirviendo para autenticar el identificador; no obtiene la formación del usuario.
+## Otras informaciones
 
-## Ampliaciones recomendadas
+- Cargo o función actual: hasta 150 caracteres.
+- Áreas de investigación: hasta diez, con 1–80 caracteres cada una, sin duplicados; edición separada por punto y coma y vista en etiquetas.
+- Breve reseña profesional: hasta 1500 caracteres, texto plano.
+- Sitio web profesional: hasta 300 caracteres, solo HTTP/HTTPS sin credenciales incorporadas.
 
-Si el uso del sistema lo requiere, ampliar hacia múltiples titulaciones (institución, país, fecha y estado), departamento/cargo por afiliación, nombres de publicación y enlaces a otros identificadores como Scopus Author ID o ResearcherID. Los departamentos y cargos deben asociarse a su institución correspondiente si hay varias; no inventar una equivalencia común de categorías docentes/científicas nacionales. ROR puede ayudar a identificar instituciones en una futura integración.
+Se conservan nombre, afiliaciones con institución/país y ORCID. Todos los bloques de formación son opcionales; cada entrada puede quitarse. Si se añade una, se completa su denominación y país antes de guardar.
 
-No se solicitan por defecto documento de identidad, fecha de nacimiento, género, nacionalidad, teléfono o domicilio para gestionar trabajos científicos. Una necesidad específica de inscripción o facturación debe tratarse en su módulo y justificarse por su uso. No se exige cargar diplomas o CV ni conectar todos los identificadores externos para participar.
+## Compatibilidad y privacidad
 
-## Comprobaciones
+`researcher_profiles.background.qualifications` almacena la lista. El JSONB existente admite este campo sin modificar migraciones ya aplicadas ni requerir una nueva columna. Los perfiles anteriores sin lista se muestran con lista vacía.
 
-Se verificaron con servicios reales y transacciones revertidas el guardado, lectura, borrado explícito, preservación al omitir background y aislamiento de los datos frente a otras cuentas y al directorio. La validación rechaza nivel desconocido, áreas duplicadas/excesivas, campos demasiado largos, bloques no estructurados y URLs ejecutables o con credenciales. Se conservan perfiles y conexiones ORCID de demo. En navegador se verificaron los campos y su presentación guardada en español/inglés, la separación de áreas, reseña y enlace web, y la vista móvil; ese guardado se interceptó solo en el navegador para no alterar el perfil real. Las comprobaciones HTTP confirmaron la continuidad de Mis trabajos, Autorías, el portal y la conexión ORCID Sandbox.
+Los campos anteriores `educationLevel` y `degreeTitle` quedan obsoletos en la API y no se convierten automáticamente. Si contienen información, la interfaz la muestra como «Dato del formulario anterior», con instrucciones para registrarla en su apartado y un botón para quitar el dato anterior. Se preserva el texto original hasta que el usuario lo retire expresamente.
 
-Para preparar la interfaz sin sobrescribir la compilación en uso, admin-web admite `SEP_NEXT_DIST_DIR`. Compilar en un directorio de entrega diferente y arrancar con ese mismo valor permite revisar/promover la nueva versión conservando la anterior. El valor por defecto sigue siendo `.next`; los directorios `.next-*` son locales y no se versionan.
+Omitir `background` conserva todo el bloque. Un cliente anterior que envía `background` sin `qualifications` conserva la lista existente. Enviar `qualifications: []` la borra expresamente. La revisión optimista, auditoría y RLS/FORCE de la cuenta siguen protegiendo el perfil.
+
+El directorio voluntario expone únicamente nombre, afiliaciones y ORCID de producción. Los títulos, grados, cargo, reseña, áreas y sitio web no se publican allí. Estos datos no cambian autorías, permisos, versiones oficiales ni certificados. La conexión ORCID autentica el identificador; no importa el expediente educativo.
+
+## Referencias
+
+- [ORCID: educación y cualificaciones](https://support.orcid.org/hc/en-us/articles/360006973933-Add-an-education-or-qualification-to-your-ORCID-record). Registra entradas educativas y su denominación, sin reducirlas a un único nivel máximo.
+- [Ministerio de Educación Nacional de Colombia: guía del sistema educativo de Cuba](https://contenidos.mineducacion.gov.co/ntg/men/micrositio_convalidaciones/Guias_mineducacion/MINEDU-cuba/assets/files/Guia_Sistema_Educativo_de_Cuba.pdf). Distingue especialidad, maestría y grados científicos Dr. C./Dr. Cs.
+
+## Comprobaciones y ampliaciones
+
+Comprobaciones acotadas, sin una batería completa: compilación de API e interfaz, lint, validación de entradas múltiples/tipos/países/límites, guardado y compatibilidad con clientes anteriores mediante transacciones revertidas. Vista española/inglesa y móvil con guardado interceptado en el navegador para conservar el perfil real.
+
+Como ampliación futura pueden añadirse institución otorgante, fechas y estudios en curso, y cargos/categorías asociados a cada afiliación. No se solicitan por defecto diplomas, documento de identidad, fecha de nacimiento, nacionalidad o domicilio para gestionar trabajos científicos.
+
+Para compilar la interfaz sin sobrescribir la demo en uso, admin-web admite `SEP_NEXT_DIST_DIR`. Preparar un directorio distinto y arrancar con ese mismo valor permite promover la nueva versión conservando la anterior; `.next-*` no se versiona.

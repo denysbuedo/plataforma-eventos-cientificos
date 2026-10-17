@@ -85,11 +85,15 @@ export interface AuthorWorkSummary {
 export interface WorkAffiliation { institution: string; countryCode: string }
 export interface WorkAuthor { id: string; fullName: string; email: string; affiliations: WorkAffiliation[]; corresponding: boolean; orcid?: string; personId?: string; orcidVerified?: boolean; authorshipConfirmed?:boolean }
 export const EDUCATION_LEVELS = ['', 'short_cycle', 'bachelor', 'master', 'doctorate', 'other'] as const;
+export const QUALIFICATION_TYPES = ['university_title','postgraduate_specialization','masters','other_title','research_doctorate','higher_doctorate','other_scientific_degree'] as const;
+export interface ResearcherQualification { type:typeof QUALIFICATION_TYPES[number]; title:string; countryCode:string }
 export interface ResearcherBackground {
+  qualifications?:ResearcherQualification[];
+  /** Legacy declarations retained without guessing their qualification type. */
   educationLevel:typeof EDUCATION_LEVELS[number]; degreeTitle:string; position:string;
   researchInterests:string[]; biography:string; website:string;
 }
-export const emptyResearcherBackground = ():ResearcherBackground => ({educationLevel:'',degreeTitle:'',position:'',researchInterests:[],biography:'',website:''});
+export const emptyResearcherBackground = ():ResearcherBackground => ({qualifications:[],educationLevel:'',degreeTitle:'',position:'',researchInterests:[],biography:'',website:''});
 export interface ResearcherProfile { name:string; affiliations:WorkAffiliation[]; discoverable:boolean; revision:number; background?:ResearcherBackground }
 export interface ResearcherCandidate { personId:string; name:string; affiliations:WorkAffiliation[]; orcid:string|null }
 export interface OrcidConnection { id: string; environment: 'production' | 'sandbox'; connectedAt: string }

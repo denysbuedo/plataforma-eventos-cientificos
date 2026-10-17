@@ -1,7 +1,7 @@
 'use client';
 import { useEffect,useMemo,useRef,useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { COUNTRY_CODES,EDUCATION_LEVELS,emptyResearcherBackground,type ResearcherBackground,type ResearcherProfile } from '@sep/contracts';
+import { COUNTRY_CODES,QUALIFICATION_TYPES,emptyResearcherBackground,type ResearcherBackground,type ResearcherQualification,type ResearcherProfile } from '@sep/contracts';
 import { webCopy,type Locale } from '@sep/i18n';
 import { Icon } from '@sep/ui';
 import { profileCopy, researcherCopy } from './profile-copy';
@@ -11,6 +11,24 @@ export default function ResearcherDetails({initial,locale,contextKey}:{initial:R
   const [interestsText,setInterestsText]=useState(normalized.background.researchInterests.join('; '));
   const background=form.background??emptyResearcherBackground(),savedBackground=saved.background??emptyResearcherBackground();
   function changeBackground(update:Partial<ResearcherBackground>){setForm({...form,background:{...background,...update}});}
+  const scientificTypes=new Set<ResearcherQualification['type']>(['research_doctorate','higher_doctorate','other_scientific_degree']);
+  function qualificationLabel(item:ResearcherQualification){return item.countryCode==='CU'&&item.type==='research_doctorate'?research.cubanDoctorate:item.countryCode==='CU'&&item.type==='higher_doctorate'?research.cubanHigherDoctorate:research.types[item.type];}
+  function changeQualification(index:number,update:Partial<ResearcherQualification>){changeBackground({qualifications:(background.qualifications??[]).map((item,i)=>i===index?{...item,...update}:item)});}
+  function qualificationSection(scientific:boolean){
+    const items=editing?background.qualifications??[]:savedBackground.qualifications??[];
+    return <section className="profile-section"><div className="profile-section-heading"><h4>{scientific?research.scientific:research.titles}</h4><span className="profile-count">{items.filter(item=>scientificTypes.has(item.type)===scientific).length}</span></div>
+      {editing&&<p className="profile-help">{scientific?research.scientificHelp:research.titlesHelp}</p>}
+      {items.map((item,index)=>scientificTypes.has(item.type)!==scientific?null:editing?<div className="profile-qualification-editor" key={index} role="group" aria-label={`${scientific?research.scientific:research.titles} ${index+1}`}>
+        <div className="profile-affiliation-heading"><strong>{scientific?research.scientific:research.titles}</strong><button className="button button-outline profile-remove" type="button" disabled={busy} aria-label={`${research.remove} ${item.title||index+1}`} onClick={()=>changeBackground({qualifications:items.filter((_,i)=>i!==index)})}>{research.remove}</button></div>
+        <div className="profile-background-fields"><label className="field"><span>{scientific?research.scientificType:research.type}</span><select disabled={busy} value={item.type} onChange={event=>changeQualification(index,{type:event.target.value as ResearcherQualification['type']})}>{QUALIFICATION_TYPES.filter(type=>scientificTypes.has(type)===scientific).map(type=><option key={type} value={type}>{qualificationLabel({...item,type})}</option>)}</select></label>
+          <label className="field"><span>{research.country}</span><select required disabled={busy} value={item.countryCode} onChange={event=>changeQualification(index,{countryCode:event.target.value})}><option value="">{research.chooseCountry}</option>{countries.map(country=><option key={country.code} value={country.code}>{country.name}</option>)}</select></label>
+          <label className="field profile-qualification-title"><span>{research.title}</span><input required minLength={2} maxLength={150} disabled={busy} value={item.title} placeholder={scientific?research.scientificExample:research.titleExample} onChange={event=>changeQualification(index,{title:event.target.value})}/></label>
+        </div>{scientific&&<p className="profile-help">{item.countryCode==='CU'?research.cubaHelp:research.internationalHelp}</p>}
+      </div>:<div className="profile-qualification" key={index}><strong>{item.title}</strong><span>{qualificationLabel(item)} · {countries.find(country=>country.code===item.countryCode)?.name??item.countryCode}</span></div>)}
+      {!items.some(item=>scientificTypes.has(item.type)===scientific)&&<p className="profile-help">{scientific?research.noneScientific:research.noneTitles}</p>}
+      {editing&&<button className="button button-outline" type="button" disabled={busy||items.length>=10} onClick={()=>changeBackground({qualifications:[...items,{type:scientific?'research_doctorate':'university_title',title:'',countryCode:''}]})}><Icon name="plus" size={16}/>{scientific?research.addScientific:research.addTitle}</button>}
+    </section>;
+  }
   const dirty=JSON.stringify(form)!==JSON.stringify(saved);
   const [closing,setClosing]=useState(false);const dialog=useRef<HTMLDialogElement>(null);const warnOnUnload=useRef(false);const pendingNavigation=useRef<(()=>void)|null>(null);
   useParticipantNavigationGuard(next=>{if(busy)return;if(dirty){pendingNavigation.current=next;setClosing(true);}else next();});
@@ -27,7 +45,9 @@ export default function ResearcherDetails({initial,locale,contextKey}:{initial:R
     {!editing?<>
       <section className="profile-section"><h3>{research.education}</h3>
         {!Object.values(savedBackground).some(value=>Array.isArray(value)?value.length:!!value)?<p className="profile-help">{research.empty}</p>:<>
-          <dl className="profile-background-facts">{savedBackground.educationLevel&&<div><dt>{research.level}</dt><dd>{research.levels[savedBackground.educationLevel]}</dd></div>}{savedBackground.degreeTitle&&<div><dt>{research.degree}</dt><dd>{savedBackground.degreeTitle}</dd></div>}{savedBackground.position&&<div><dt>{research.position}</dt><dd>{savedBackground.position}</dd></div>}</dl>
+          {qualificationSection(false)}{qualificationSection(true)}
+          {(savedBackground.degreeTitle||savedBackground.educationLevel)&&<div className="profile-legacy"><strong>{research.legacy}</strong><p>{savedBackground.degreeTitle||savedBackground.educationLevel}</p><p className="profile-help">{research.legacyHelp}</p></div>}
+          <dl className="profile-background-facts">{savedBackground.position&&<div><dt>{research.position}</dt><dd>{savedBackground.position}</dd></div>}</dl>
           {savedBackground.researchInterests.length>0&&<div className="profile-research-interests"><h4>{research.areas}</h4><ul>{savedBackground.researchInterests.map(area=><li key={area}>{area}</li>)}</ul></div>}
           {savedBackground.biography&&<div className="profile-biography"><h4>{research.biography}</h4><p>{savedBackground.biography}</p></div>}
           {savedBackground.website&&<a className="profile-website" href={savedBackground.website} target="_blank" rel="noopener noreferrer">{research.website}<Icon name="external" size={15}/></a>}
@@ -40,8 +60,9 @@ export default function ResearcherDetails({initial,locale,contextKey}:{initial:R
     </>:<form id="researcher-profile-form" className="profile-edit-form" onSubmit={event=>{event.preventDefault();void save();}}>
       <label className="field"><span>{copy.personal}</span><input autoFocus required minLength={2} maxLength={150} value={form.name} disabled={busy} onChange={event=>setForm({...form,name:event.target.value})}/></label>
       <section className="profile-section"><div className="profile-section-heading"><h3>{research.education}</h3><span className="profile-count">{research.optional}</span></div>
-        <div className="profile-background-fields"><label className="field"><span>{research.level}</span><select value={background.educationLevel} disabled={busy} onChange={event=>changeBackground({educationLevel:event.target.value as ResearcherBackground['educationLevel']})}>{EDUCATION_LEVELS.map(level=><option key={level} value={level}>{research.levels[level]}</option>)}</select></label>
-          <label className="field"><span>{research.degree}</span><input maxLength={150} value={background.degreeTitle} placeholder={research.degreeExample} disabled={busy} onChange={event=>changeBackground({degreeTitle:event.target.value})}/><small>{research.degreeHelp}</small></label>
+        {qualificationSection(false)}{qualificationSection(true)}
+        {(background.degreeTitle||background.educationLevel)&&<div className="profile-legacy"><strong>{research.legacy}</strong><p>{background.degreeTitle||background.educationLevel}</p><p className="profile-help">{research.legacyHelp}</p><button className="button button-outline" type="button" disabled={busy} onClick={()=>changeBackground({educationLevel:'',degreeTitle:''})}>{research.removeLegacy}</button></div>}
+        <div className="profile-background-fields">
           <label className="field"><span>{research.position}</span><input maxLength={150} value={background.position} disabled={busy} onChange={event=>changeBackground({position:event.target.value})}/><small>{research.positionHelp}</small></label>
           <label className="field"><span>{research.areas}</span><textarea rows={2} maxLength={1000} value={interestsText} disabled={busy} onChange={event=>{setInterestsText(event.target.value);changeBackground({researchInterests:event.target.value.split(/[;\n]+/u).map(area=>area.trim()).filter(Boolean)});}}/><small>{research.areasHelp}</small></label>
         </div>

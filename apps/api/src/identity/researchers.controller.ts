@@ -3,7 +3,7 @@ import { ApiBearerAuth, ApiOkResponse, ApiProperty, ApiPropertyOptional, ApiTags
 import { Transform, Type } from 'class-transformer';
 import { ArrayMaxSize, ArrayUnique, IsArray, IsBoolean, IsIn, IsInt, IsObject, IsString, IsUrl, Max, MaxLength, Min, MinLength, ValidateIf, ValidateNested } from 'class-validator';
 import { and, eq, sql } from 'drizzle-orm';
-import { EDUCATION_LEVELS, emptyResearcherBackground, type ResearcherBackground, type ResearcherCandidate, type ResearcherProfile } from '@sep/contracts';
+import { COUNTRY_CODES, EDUCATION_LEVELS, QUALIFICATION_TYPES, emptyResearcherBackground, type ResearcherQualification, type ResearcherBackground, type ResearcherCandidate, type ResearcherProfile } from '@sep/contracts';
 import { DatabaseService, type DbTransaction } from '../database/database.service.js';
 import { people,researcherProfiles } from '../database/schema.js';
 import { ApiException,type RequestContext,type SepRequest } from '../common/http.js';
@@ -11,9 +11,16 @@ import { AuditService } from '../common/audit.service.js';
 import { Access } from '../platform/context.guard.js';
 import { ApiErrors } from '../common/openapi.js';
 import { WorkAffiliationDto } from '../submissions/works.dto.js';
+class ResearcherQualificationDto implements ResearcherQualification {
+  @ApiProperty({enum:QUALIFICATION_TYPES}) @IsIn(QUALIFICATION_TYPES) type!:ResearcherQualification['type'];
+  @ApiProperty({minLength:2,maxLength:150}) @Transform(({value})=>typeof value==='string'?value.trim():value) @IsString() @MinLength(2) @MaxLength(150) title!:string;
+  @ApiProperty({enum:COUNTRY_CODES}) @IsIn(COUNTRY_CODES) countryCode!:string;
+}
 class ResearcherBackgroundDto implements ResearcherBackground {
-  @ApiProperty({enum:EDUCATION_LEVELS,default:''}) @IsIn(EDUCATION_LEVELS) educationLevel:ResearcherBackground['educationLevel']='';
-  @ApiProperty({maxLength:150,default:''}) @Transform(({value})=>typeof value==='string'?value.trim():value) @IsString() @MaxLength(150) degreeTitle='';
+  @ApiPropertyOptional({type:[ResearcherQualificationDto],maxItems:10,description:'Títulos y grados obtenidos, independientes y sin equivalencia automática. Omitir conserva los existentes.'})
+  @ValidateIf((_,value)=>value!==undefined) @IsArray() @ArrayMaxSize(10) @IsObject({each:true}) @ValidateNested({each:true}) @Type(()=>ResearcherQualificationDto) qualifications?:ResearcherQualificationDto[];
+  @ApiProperty({deprecated:true,enum:EDUCATION_LEVELS,default:''}) @IsIn(EDUCATION_LEVELS) educationLevel:ResearcherBackground['educationLevel']='';
+  @ApiProperty({deprecated:true,maxLength:150,default:''}) @Transform(({value})=>typeof value==='string'?value.trim():value) @IsString() @MaxLength(150) degreeTitle='';
   @ApiProperty({maxLength:150,default:''}) @Transform(({value})=>typeof value==='string'?value.trim():value) @IsString() @MaxLength(150) position='';
   @ApiProperty({type:[String],maxItems:10,default:[]}) @Transform(({value})=>Array.isArray(value)?value.map(item=>typeof item==='string'?item.trim().normalize('NFC'):item):value)
   @IsArray() @ArrayMaxSize(10) @ArrayUnique((item:unknown)=>typeof item==='string'?item.toLowerCase():item) @IsString({each:true}) @MinLength(1,{each:true}) @MaxLength(80,{each:true}) researchInterests:string[]=[];
@@ -62,7 +69,8 @@ export class ResearchersService {
     const [before]=await tx.select().from(researcherProfiles).where(eq(researcherProfiles.personId,context.personId!));if((before?.revision??0)!==dto.revision)throw new ApiException(409,'REVISION_CONFLICT');
     if(dto.discoverable&&!dto.affiliations.length)throw new ApiException(400,'RESEARCHER_AFFILIATION_REQUIRED');
     const keys=dto.affiliations.map(item=>`${item.institution.trim().normalize('NFC').toLowerCase()}:${item.countryCode}`);if(new Set(keys).size!==keys.length)throw new ApiException(400,'AUTHOR_AFFILIATION_DUPLICATE');
-    const values={affiliations:dto.affiliations,discoverable:dto.discoverable,revision:dto.revision+1,background:dto.background??before?.background??emptyResearcherBackground()};
+    const background=dto.background?{...dto.background,qualifications:dto.background.qualifications??before?.background?.qualifications??[]}:before?.background??emptyResearcherBackground();
+    const values={affiliations:dto.affiliations,discoverable:dto.discoverable,revision:dto.revision+1,background};
     await tx.insert(researcherProfiles).values({personId:context.personId!,...values}).onConflictDoUpdate({target:researcherProfiles.personId,set:values});
     await tx.update(people).set({name:dto.name}).where(eq(people.id,context.personId!));
     await this.audit.organization(tx,context,'identity.profile.updated',context.personId!);

@@ -407,3 +407,9 @@ dialog::backdrop { background:rgb(18 36 28 / 45%); }
   .authorship-workspace .button { white-space:normal; }
   .authorship-workspace .editor-actions .button { min-height:44px; font-size:12px; }
 }
+
+.profile-qualification-editor{margin:1rem 0;padding:1rem;border:1px solid var(--line);border-radius:12px;background:var(--white)}
+.profile-qualification-title{grid-column:1/-1}
+.profile-qualification{display:flex;flex-direction:column;gap:.3rem;padding:.85rem 0;border-bottom:1px solid var(--line);overflow-wrap:anywhere}
+.profile-qualification span{font-size:.875rem;color:var(--muted,#596579)}
+.profile-legacy{margin:1rem 0;padding:1rem;border:1px solid var(--line);border-radius:12px}
