@@ -17,6 +17,8 @@ const view = (row: typeof works.$inferSelect): AuthorWork => ({ id: row.id, titl
 const summaryFields = { ownerId:works.ownerId, status: works.status, submittedAt: works.submittedAt, responseDeadline: works.responseDeadline, callTimezone: sql<string>`call_snapshot->>'timezone'`, id: works.id, title: works.title, language: works.language, trackId: works.trackId,
   contributionTypeId: works.contributionTypeId, revision: works.revision, createdAt: works.createdAt, updatedAt: works.updatedAt };
 const authorshipKey=(authors:WorkAuthor[])=>JSON.stringify(authors.map(author=>[author.id,author.fullName,author.email,author.corresponding,author.personId??'',author.orcid??'',author.orcidVerified??false,author.authorshipConfirmed??null,author.affiliations.map(affiliation=>[affiliation.institution,affiliation.countryCode])]));
+// Compare scientific content, excluding account verification and authorship acknowledgments.
+const submissionKey=(content:WorkContent)=>JSON.stringify([content.title,content.abstract,content.keywords,content.language,content.trackId,content.contributionTypeId,content.call.revision,content.authors.map(author=>[author.fullName,author.email,author.corresponding,author.affiliations,author.orcid??'']),content.manuscript?[content.manuscript.sha256,content.manuscript.name]:null]);
 @Injectable()
 export class AuthorWorksService {
   today(timezone: string) {
@@ -75,7 +77,7 @@ export class AuthorWorksService {
     const history=await tx.select({id:workHistory.id,action:workHistory.action,message:workHistory.message,actor:workHistory.actor,actorId:workHistory.actorId,actorName:workHistory.actorName,createdAt:workHistory.createdAt}).from(workHistory).where(and(eq(workHistory.workId,row.id),staff ? sql`(${workHistory.actor}='staff' OR ${workHistory.action} IN ('submitted','final_submitted','withdrawn'))` : undefined)).orderBy(desc(workHistory.createdAt),desc(workHistory.id)).limit(200);
     const feedback=await tx.select({id:workHistory.id,publishedAt:workHistory.createdAt,message:workHistory.message,body:workHistory.authorFeedback}).from(workHistory).where(and(eq(workHistory.workId,row.id),eq(workHistory.action,'peer_reviews_released'),eq(workHistory.actor,'staff'))).orderBy(desc(workHistory.createdAt),desc(workHistory.id));
     const notices=!staff&&state.personId?await this.noticeRows(tx,state.personId,row.id):[];
-    return {...view(row),authorFeedback:feedback.map(item=>({id:item.id,publishedAt:item.publishedAt.toISOString(),message:item.message,...(item.body??{})})),noticeIds:notices.map(item=>item.id),unreadNotices:notices.filter(item=>!item.seen).length,canManage:!staff && row.ownerId===state.personId,...(staff && row.submittedContent ? row.submittedContent : {}),editable:!staff && this.editable(row,state,row.call.timezone),
+    return {...view(row),submissionReady:row.status!=='changes_requested'||!row.submittedContent||submissionKey(this.content(row))!==submissionKey(row.submittedContent),authorFeedback:feedback.map(item=>({id:item.id,publishedAt:item.publishedAt.toISOString(),message:item.message,...(item.body??{})})),noticeIds:notices.map(item=>item.id),unreadNotices:notices.filter(item=>!item.seen).length,canManage:!staff && row.ownerId===state.personId,...(staff && row.submittedContent ? row.submittedContent : {}),editable:!staff && this.editable(row,state,row.call.timezone),
       versions:versions.map(v=>({...v,createdAt:v.createdAt.toISOString()})),history:history.map(h=>({...h,createdAt:h.createdAt.toISOString()}))};
   }
   async record(tx:DbTransaction,context:RequestContext,id:string,action:string,message='',actor:'author'|'staff'='author',authorFeedback?:AuthorFeedbackBody) {
@@ -101,6 +103,7 @@ export class AuthorWorksService {
   submit(context:RequestContext,id:string,revision:number) {
     return this.database.scoped({...context,organizationAdmin:false},async tx=>{
       const {row,state}=await this.locked(tx,context,id,revision,true);
+      if(row.status==='changes_requested'&&row.submittedContent&&submissionKey(this.content(row))===submissionKey(row.submittedContent))throw new ApiException(409,'WORK_UNCHANGED');
       const initial=['draft','withdrawn'].includes(row.status);
       if(initial) {
         if(!state.call || !state.call.content.opensOn || this.today(state.call.timezone)<state.call.content.opensOn)throw new ApiException(409,'SUBMISSION_NOT_OPEN');

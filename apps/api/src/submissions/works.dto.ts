@@ -67,6 +67,7 @@ class WorkNoticeSummaryDto implements WorkNoticeSummary { @ApiProperty({format:'
 export class WorkNoticeBoardDto implements WorkNoticeBoard { @ApiProperty({minimum:0}) count!:number;@ApiProperty({type:[WorkNoticeSummaryDto]}) items!:WorkNoticeSummary[] }
 export class ReadWorkNoticesDto { @ApiProperty({type:[String],minItems:1,maxItems:200}) @IsArray() @ArrayMinSize(1) @ArrayMaxSize(200) @ArrayUnique() @IsUUID('all',{each:true}) noticeIds!:string[] }
 export class WorkDto extends WorkSummaryDto implements AuthorWork {
+ @ApiPropertyOptional({description:'False when requested corrections have not changed saved content.'}) submissionReady?:boolean;
  @ApiPropertyOptional({type:[AuthorReviewFeedbackDto]}) authorFeedback?:AuthorReviewFeedback[];
  @ApiPropertyOptional({type:[String]}) noticeIds?:string[];
   @ApiProperty({type:()=>ManuscriptDto,nullable:true}) manuscript!:Manuscript|null;

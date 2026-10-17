@@ -11571,6 +11571,10 @@
             "type": "string",
             "format": "date-time"
           },
+          "submissionReady": {
+            "type": "boolean",
+            "description": "False when requested corrections have not changed saved content."
+          },
           "authorFeedback": {
             "type": "array",
             "items": {
@@ -11970,6 +11974,10 @@
           "updatedAt": {
             "type": "string",
             "format": "date-time"
+          },
+          "submissionReady": {
+            "type": "boolean",
+            "description": "False when requested corrections have not changed saved content."
           },
           "authorFeedback": {
             "type": "array",

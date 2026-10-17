@@ -122,7 +122,7 @@ export interface AuthorFeedbackBody { roundNumber:number;versionNumber:number;co
 export interface AuthorReviewFeedback { id:string;publishedAt:string;message:string;roundNumber?:number;versionNumber?:number;comments?:{number:number;text:string}[] }
 export interface WorkNoticeSummary { workId:string;title:string;status:WorkStatus;unreadNotices:number;latestAt:string }
 export interface WorkNoticeBoard { count:number;items:WorkNoticeSummary[] }
-export interface AuthorWork extends AuthorWorkSummary, WorkContent { authorFeedback?:AuthorReviewFeedback[];noticeIds?:string[]; versions: WorkVersionSummary[]; history: WorkHistory[]; editable: boolean }
+export interface AuthorWork extends AuthorWorkSummary, WorkContent { submissionReady?:boolean;authorFeedback?:AuthorReviewFeedback[];noticeIds?:string[]; versions: WorkVersionSummary[]; history: WorkHistory[]; editable: boolean }
 export interface StaffWork extends AuthorWork { canDecide: boolean }
 export interface SubmissionPage { data: AuthorWorkSummary[]; limit: number; offset: number }
 export const MAX_WORK_BODY_BYTES = 384 * 1024;
