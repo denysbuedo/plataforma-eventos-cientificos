@@ -1,0 +1,1 @@
+CREATE POLICY "editorial_lock" ON "author_works" AS PERMISSIVE FOR UPDATE TO "sep_runtime" USING ("author_works"."organization_id" = nullif(current_setting('sep.organization_id', true), '')::uuid AND "author_works"."event_id"=nullif(current_setting('sep.event_id',true),'')::uuid AND current_setting('sep.editorial_staff',true)='true') WITH CHECK (false);

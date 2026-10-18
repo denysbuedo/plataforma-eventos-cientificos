@@ -20,6 +20,10 @@ Plantillas bilingües con color, logotipo y firmantes; requisitos por tipo de pa
 
 Centro personal por evento, contador y lectura persistente; preferencias de correo e idioma; avisos automáticos del ciclo científico y operativo; comunicados bilingües para inscritos o revisores; catálogo de plantillas y bandeja de entregas. Cola transaccional, SMTP configurable, reintentos acotados, arrendamientos e historial. Validación dirigida en PostgreSQL, SMTP local y navegador en escritorio/móvil. No se han enviado correos reales; activar SMTP institucional y RedUniv/Google sigue pendiente. Ver [guía](../development/comunicaciones.md) y [ADR-027](../adr/ADR-027-comunicaciones.md).
 
+## Paquete 5: publicación científica y archivo — implementado
+
+Selección editorial de versiones aceptadas, autorización explícita del responsable del envío, licencias por contribución, aprobación editorial, prueba PDF y publicación de libros de resúmenes y memorias. Portada, créditos, comité, presentación, índices, archivos finales autorizados, fichas públicas, ORCID, exportaciones SEP JSON/CSL-JSON/BibTeX/RIS y ediciones inmutables con retirada motivada. Validación dirigida en PostgreSQL y recorrido de navegador en escritorio/móvil; solo datos sintéticos en un evento aislado. Ver [guía](../development/publicaciones-cientificas.md) y [ADR-028](../adr/ADR-028-publicacion-editorial.md).
+
 ## Ampliaciones posteriores
 
 Recordatorios programados, campañas de gran volumen, exportaciones, requisitos por categoría y pagos cuando se defina el modelo institucional. No se presentan como disponibles en la demo.

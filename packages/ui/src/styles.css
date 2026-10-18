@@ -574,3 +574,22 @@ dialog::backdrop { background:rgb(18 36 28 / 45%); }
 .notification-bell:focus-visible{outline:2px solid currentColor;outline-offset:3px}
 .notification-bell-count{position:absolute;top:-2px;right:-5px;display:flex;align-items:center;justify-content:center;min-width:19px;height:19px;padding:0 4px;box-sizing:border-box;border-radius:999px;background:#b42318;color:white;font-size:10px;line-height:1;font-weight:700;border:1px solid white;font-variant-numeric:tabular-nums;pointer-events:none}
 @media(max-width:580px){.admin-topbar .breadcrumb{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.notification-bell{width:34px;height:34px}.admin-topbar .topbar-right{flex-shrink:0}}
+
+.editorial-module .editorial-row{padding:18px 0;border-bottom:1px solid var(--line,#e3e7e5);background:transparent;box-shadow:none;overflow-wrap:anywhere}
+.editorial-module h2,.editorial-module h3{font-family:inherit;font-size:1.05rem;line-height:1.45}
+.editorial-module h3{font-size:1rem;margin:6px 0}
+.editorial-module .field{margin:16px 0;min-width:0}
+.editorial-module .registration-check{margin:18px 0}
+.editorial-search{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:16px}
+.editorial-candidates{margin:12px 0 24px;border-top:1px solid var(--line,#e3e7e5)}
+.publication-page{box-sizing:border-box;width:min(1060px,calc(100% - 40px));margin:32px auto;padding:20px 24px 48px;overflow-wrap:anywhere;font-family:inherit}
+.publication-page h1{font-family:inherit;font-size:clamp(1.7rem,4vw,2.6rem);line-height:1.25;margin:26px 0 16px}
+.publication-page h2,.publication-page h3{font-family:inherit;line-height:1.4}
+.publication-page h2{font-size:1.3rem}.publication-page h3{font-size:1.1rem}
+.publication-page p{line-height:1.7}.publication-page .language-switch{justify-content:flex-end}
+.publication-section{margin:30px 0;padding:24px 0;border-top:1px solid var(--line,#e3e7e5)}
+.publication-paper{padding:18px 0;border-bottom:1px solid var(--line,#e3e7e5);background:transparent;box-shadow:none;scroll-margin-top:24px}
+.publication-actions{display:flex;flex-wrap:wrap;gap:10px;margin:22px 0}
+.publication-authors{display:flex;flex-wrap:wrap;gap:14px 32px;margin:24px 0}.publication-authors p{margin:4px 0}
+.publication-hash{overflow-wrap:anywhere;font-size:.8rem}.publication-page .field{margin:14px 0;min-width:0}
+@media(max-width:700px){.editorial-search{grid-template-columns:1fr;gap:0;margin-bottom:16px}.editorial-module .registration-line{flex-wrap:wrap}.editorial-module .editor-actions{width:100%}.publication-page{width:calc(100% - 24px);padding:12px 6px;margin:20px auto}.publication-page .registration-fields{grid-template-columns:1fr}}

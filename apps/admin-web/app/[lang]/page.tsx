@@ -1,3 +1,4 @@
+import MyPublicationsView from './my-publications';
 import NotificationCenter from './notification-center';
 import MyCertificates from './my-certificates';
 import type {CertificatePage} from '@sep/contracts';
@@ -49,6 +50,10 @@ export default async function AdminPage({ params, searchParams }: { params: Prom
     if (query.tab === 'profile') {
       const person=(await apiRequest<{person:AuthorAccount}>(binding,'me',{token,locale})).person;
       return <Profile person={person} locale={locale} contextKey={contextKey} eventId={binding.eventId} publicUrl={publicUrl?`${publicUrl}/${locale}?event=${encodeURIComponent(contextKey)}`:''} error={!!query.orcidError}/>;
+    }
+    if(query.tab==='publications'&&binding.eventId){
+      const person=(await apiRequest<{person:AuthorAccount}>(binding,'me',{token,locale})).person;
+      return <ParticipantShell person={person} locale={locale} contextKey={contextKey} eventId={binding.eventId} tab="publications" publicUrl={publicUrl?`${publicUrl}/${locale}?event=${encodeURIComponent(contextKey)}`:''}><MyPublicationsView eventId={binding.eventId} contextKey={contextKey} locale={locale}/></ParticipantShell>;
     }
     if(query.tab==='notifications'&&binding.eventId){
       const person=(await apiRequest<{person:AuthorAccount}>(binding,'me',{token,locale})).person;

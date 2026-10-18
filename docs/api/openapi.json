@@ -21604,6 +21604,3389 @@
           "communications"
         ]
       }
+    },
+    "/api/v1/events/{eventId}/editorial/mine": {
+      "get": {
+        "operationId": "EditorialController_mine",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "requests": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "workId": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "title": {
+                            "type": "string"
+                          },
+                          "versionId": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "versionNumber": {
+                            "type": "integer"
+                          },
+                          "versionKind": {
+                            "type": "string"
+                          },
+                          "requestedFor": {
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "enum": [
+                                "abstracts",
+                                "proceedings"
+                              ]
+                            }
+                          },
+                          "current": {
+                            "type": "boolean"
+                          },
+                          "permission": {
+                            "type": "object",
+                            "properties": {
+                              "revision": {
+                                "type": "integer"
+                              },
+                              "abstractAllowed": {
+                                "type": "boolean"
+                              },
+                              "fullTextAllowed": {
+                                "type": "boolean"
+                              },
+                              "license": {
+                                "type": "string",
+                                "enum": [
+                                  "CC-BY-4.0",
+                                  "CC-BY-SA-4.0",
+                                  "CC-BY-NC-4.0",
+                                  "all-rights-reserved"
+                                ]
+                              },
+                              "updatedAt": {
+                                "type": "string",
+                                "format": "date-time",
+                                "nullable": true
+                              }
+                            },
+                            "required": [
+                              "revision",
+                              "abstractAllowed",
+                              "fullTextAllowed",
+                              "license",
+                              "updatedAt"
+                            ]
+                          },
+                          "fileId": {
+                            "type": "string",
+                            "format": "uuid",
+                            "nullable": true
+                          },
+                          "fileName": {
+                            "type": "string",
+                            "nullable": true
+                          }
+                        },
+                        "required": [
+                          "workId",
+                          "title",
+                          "versionId",
+                          "versionNumber",
+                          "versionKind",
+                          "requestedFor",
+                          "current",
+                          "permission",
+                          "fileId",
+                          "fileName"
+                        ]
+                      }
+                    },
+                    "publications": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "revision": {
+                            "type": "integer"
+                          },
+                          "id": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "kind": {
+                            "type": "string",
+                            "enum": [
+                              "abstracts",
+                              "proceedings"
+                            ]
+                          },
+                          "edition": {
+                            "type": "integer"
+                          },
+                          "titleEs": {
+                            "type": "string"
+                          },
+                          "titleEn": {
+                            "type": "string"
+                          },
+                          "status": {
+                            "type": "string",
+                            "enum": [
+                              "published",
+                              "withdrawn"
+                            ]
+                          },
+                          "publishedAt": {
+                            "type": "string",
+                            "format": "date-time"
+                          },
+                          "withdrawnAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "nullable": true
+                          },
+                          "withdrawReason": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "sha256": {
+                            "type": "string"
+                          },
+                          "pages": {
+                            "type": "integer"
+                          },
+                          "paperCount": {
+                            "type": "integer"
+                          },
+                          "canonicalUrl": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "revision",
+                          "id",
+                          "kind",
+                          "edition",
+                          "titleEs",
+                          "titleEn",
+                          "status",
+                          "publishedAt",
+                          "withdrawnAt",
+                          "withdrawReason",
+                          "sha256",
+                          "pages",
+                          "paperCount",
+                          "canonicalUrl"
+                        ]
+                      }
+                    },
+                    "history": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "action": {
+                            "type": "string"
+                          },
+                          "actorName": {
+                            "type": "string"
+                          },
+                          "reason": {
+                            "type": "string"
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "format": "date-time"
+                          },
+                          "workId": {
+                            "type": "string",
+                            "format": "uuid",
+                            "nullable": true
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "action",
+                          "actorName",
+                          "reason",
+                          "createdAt",
+                          "workId"
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "requests",
+                    "publications",
+                    "history"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "editorial"
+        ]
+      }
+    },
+    "/api/v1/events/{eventId}/editorial/permissions/{workId}": {
+      "put": {
+        "operationId": "EditorialController_permission",
+        "parameters": [
+          {
+            "name": "workId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthorPublicationPermissionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "updated": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "updated"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "editorial"
+        ]
+      }
+    },
+    "/api/v1/events/{eventId}/editorial/history": {
+      "get": {
+        "operationId": "EditorialController_history",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "action": {
+                            "type": "string"
+                          },
+                          "actorName": {
+                            "type": "string"
+                          },
+                          "reason": {
+                            "type": "string"
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "format": "date-time"
+                          },
+                          "workId": {
+                            "type": "string",
+                            "format": "uuid",
+                            "nullable": true
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "action",
+                          "actorName",
+                          "reason",
+                          "createdAt",
+                          "workId"
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "editorial"
+        ]
+      }
+    },
+    "/api/v1/events/{eventId}/editorial/releases/{id}/pdf": {
+      "get": {
+        "operationId": "EditorialController_pdf",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/pdf": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "editorial"
+        ]
+      }
+    },
+    "/api/v1/events/{eventId}/editorial/releases/{id}/withdraw": {
+      "post": {
+        "operationId": "EditorialController_withdraw",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WithdrawPublicationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "withdrawn": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "withdrawn"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "editorial"
+        ]
+      }
+    },
+    "/api/v1/events/{eventId}/editorial/{kind}/candidates": {
+      "get": {
+        "operationId": "EditorialController_candidates",
+        "parameters": [
+          {
+            "name": "kind",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "workId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "name": "q",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/Object"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/Object"
+            }
+          },
+          {
+            "name": "offset",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/Object"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "workId": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "title": {
+                            "type": "string"
+                          },
+                          "status": {
+                            "type": "string"
+                          },
+                          "versionId": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "versionNumber": {
+                            "type": "integer"
+                          },
+                          "versionKind": {
+                            "type": "string"
+                          },
+                          "eligible": {
+                            "type": "boolean"
+                          }
+                        },
+                        "required": [
+                          "workId",
+                          "title",
+                          "status",
+                          "versionId",
+                          "versionNumber",
+                          "versionKind",
+                          "eligible"
+                        ]
+                      }
+                    },
+                    "total": {
+                      "type": "integer"
+                    },
+                    "offset": {
+                      "type": "integer"
+                    },
+                    "limit": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "data",
+                    "total",
+                    "offset",
+                    "limit"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "editorial"
+        ]
+      }
+    },
+    "/api/v1/events/{eventId}/editorial/{kind}/preview": {
+      "get": {
+        "operationId": "EditorialController_preview",
+        "parameters": [
+          {
+            "name": "kind",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "proof",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/pdf": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "editorial"
+        ]
+      }
+    },
+    "/api/v1/events/{eventId}/editorial/{kind}/publish": {
+      "post": {
+        "operationId": "EditorialController_publish",
+        "parameters": [
+          {
+            "name": "kind",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PublishEditorialDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "revision": {
+                      "type": "integer"
+                    },
+                    "id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "kind": {
+                      "type": "string",
+                      "enum": [
+                        "abstracts",
+                        "proceedings"
+                      ]
+                    },
+                    "edition": {
+                      "type": "integer"
+                    },
+                    "titleEs": {
+                      "type": "string"
+                    },
+                    "titleEn": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "published",
+                        "withdrawn"
+                      ]
+                    },
+                    "publishedAt": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "withdrawnAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "nullable": true
+                    },
+                    "withdrawReason": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "sha256": {
+                      "type": "string"
+                    },
+                    "pages": {
+                      "type": "integer"
+                    },
+                    "paperCount": {
+                      "type": "integer"
+                    },
+                    "canonicalUrl": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "revision",
+                    "id",
+                    "kind",
+                    "edition",
+                    "titleEs",
+                    "titleEn",
+                    "status",
+                    "publishedAt",
+                    "withdrawnAt",
+                    "withdrawReason",
+                    "sha256",
+                    "pages",
+                    "paperCount",
+                    "canonicalUrl"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "editorial"
+        ]
+      }
+    },
+    "/api/v1/events/{eventId}/editorial/{kind}/items/{workId}": {
+      "put": {
+        "operationId": "EditorialController_select",
+        "parameters": [
+          {
+            "name": "kind",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "workId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SelectEditorialDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "proof": {
+                      "type": "string"
+                    },
+                    "kind": {
+                      "type": "string",
+                      "enum": [
+                        "abstracts",
+                        "proceedings"
+                      ]
+                    },
+                    "content": {
+                      "type": "object",
+                      "properties": {
+                        "titleEs": {
+                          "type": "string"
+                        },
+                        "titleEn": {
+                          "type": "string"
+                        },
+                        "publisher": {
+                          "type": "string"
+                        },
+                        "editors": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "creditsEs": {
+                          "type": "string"
+                        },
+                        "creditsEn": {
+                          "type": "string"
+                        },
+                        "committeeEs": {
+                          "type": "string"
+                        },
+                        "committeeEn": {
+                          "type": "string"
+                        },
+                        "prefaceEs": {
+                          "type": "string"
+                        },
+                        "prefaceEn": {
+                          "type": "string"
+                        },
+                        "groupBy": {
+                          "type": "string",
+                          "enum": [
+                            "track",
+                            "activity"
+                          ]
+                        },
+                        "locale": {
+                          "type": "string",
+                          "enum": [
+                            "es",
+                            "en"
+                          ]
+                        },
+                        "publicOrigin": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "titleEs",
+                        "titleEn",
+                        "publisher",
+                        "editors",
+                        "creditsEs",
+                        "creditsEn",
+                        "committeeEs",
+                        "committeeEn",
+                        "prefaceEs",
+                        "prefaceEn",
+                        "groupBy",
+                        "locale",
+                        "publicOrigin"
+                      ]
+                    },
+                    "revision": {
+                      "type": "integer"
+                    },
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "workId": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "title": {
+                            "type": "string"
+                          },
+                          "versionId": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "versionNumber": {
+                            "type": "integer"
+                          },
+                          "versionKind": {
+                            "type": "string",
+                            "enum": [
+                              "submission",
+                              "final"
+                            ]
+                          },
+                          "status": {
+                            "type": "string"
+                          },
+                          "included": {
+                            "type": "boolean"
+                          },
+                          "ready": {
+                            "type": "boolean"
+                          },
+                          "order": {
+                            "type": "integer"
+                          },
+                          "revision": {
+                            "type": "integer"
+                          },
+                          "note": {
+                            "type": "string"
+                          },
+                          "permission": {
+                            "type": "object",
+                            "properties": {
+                              "revision": {
+                                "type": "integer"
+                              },
+                              "abstractAllowed": {
+                                "type": "boolean"
+                              },
+                              "fullTextAllowed": {
+                                "type": "boolean"
+                              },
+                              "license": {
+                                "type": "string",
+                                "enum": [
+                                  "CC-BY-4.0",
+                                  "CC-BY-SA-4.0",
+                                  "CC-BY-NC-4.0",
+                                  "all-rights-reserved"
+                                ]
+                              },
+                              "updatedAt": {
+                                "type": "string",
+                                "format": "date-time",
+                                "nullable": true
+                              }
+                            },
+                            "required": [
+                              "revision",
+                              "abstractAllowed",
+                              "fullTextAllowed",
+                              "license",
+                              "updatedAt"
+                            ]
+                          },
+                          "issues": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          }
+                        },
+                        "required": [
+                          "workId",
+                          "title",
+                          "versionId",
+                          "versionNumber",
+                          "versionKind",
+                          "status",
+                          "included",
+                          "ready",
+                          "order",
+                          "revision",
+                          "note",
+                          "permission",
+                          "issues"
+                        ]
+                      }
+                    },
+                    "releases": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "revision": {
+                            "type": "integer"
+                          },
+                          "id": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "kind": {
+                            "type": "string",
+                            "enum": [
+                              "abstracts",
+                              "proceedings"
+                            ]
+                          },
+                          "edition": {
+                            "type": "integer"
+                          },
+                          "titleEs": {
+                            "type": "string"
+                          },
+                          "titleEn": {
+                            "type": "string"
+                          },
+                          "status": {
+                            "type": "string",
+                            "enum": [
+                              "published",
+                              "withdrawn"
+                            ]
+                          },
+                          "publishedAt": {
+                            "type": "string",
+                            "format": "date-time"
+                          },
+                          "withdrawnAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "nullable": true
+                          },
+                          "withdrawReason": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "sha256": {
+                            "type": "string"
+                          },
+                          "pages": {
+                            "type": "integer"
+                          },
+                          "paperCount": {
+                            "type": "integer"
+                          },
+                          "canonicalUrl": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "revision",
+                          "id",
+                          "kind",
+                          "edition",
+                          "titleEs",
+                          "titleEn",
+                          "status",
+                          "publishedAt",
+                          "withdrawnAt",
+                          "withdrawReason",
+                          "sha256",
+                          "pages",
+                          "paperCount",
+                          "canonicalUrl"
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "proof",
+                    "kind",
+                    "content",
+                    "revision",
+                    "items",
+                    "releases"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "editorial"
+        ]
+      }
+    },
+    "/api/v1/events/{eventId}/editorial/{kind}": {
+      "get": {
+        "operationId": "EditorialController_get",
+        "parameters": [
+          {
+            "name": "kind",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "proof": {
+                      "type": "string"
+                    },
+                    "kind": {
+                      "type": "string",
+                      "enum": [
+                        "abstracts",
+                        "proceedings"
+                      ]
+                    },
+                    "content": {
+                      "type": "object",
+                      "properties": {
+                        "titleEs": {
+                          "type": "string"
+                        },
+                        "titleEn": {
+                          "type": "string"
+                        },
+                        "publisher": {
+                          "type": "string"
+                        },
+                        "editors": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "creditsEs": {
+                          "type": "string"
+                        },
+                        "creditsEn": {
+                          "type": "string"
+                        },
+                        "committeeEs": {
+                          "type": "string"
+                        },
+                        "committeeEn": {
+                          "type": "string"
+                        },
+                        "prefaceEs": {
+                          "type": "string"
+                        },
+                        "prefaceEn": {
+                          "type": "string"
+                        },
+                        "groupBy": {
+                          "type": "string",
+                          "enum": [
+                            "track",
+                            "activity"
+                          ]
+                        },
+                        "locale": {
+                          "type": "string",
+                          "enum": [
+                            "es",
+                            "en"
+                          ]
+                        },
+                        "publicOrigin": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "titleEs",
+                        "titleEn",
+                        "publisher",
+                        "editors",
+                        "creditsEs",
+                        "creditsEn",
+                        "committeeEs",
+                        "committeeEn",
+                        "prefaceEs",
+                        "prefaceEn",
+                        "groupBy",
+                        "locale",
+                        "publicOrigin"
+                      ]
+                    },
+                    "revision": {
+                      "type": "integer"
+                    },
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "workId": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "title": {
+                            "type": "string"
+                          },
+                          "versionId": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "versionNumber": {
+                            "type": "integer"
+                          },
+                          "versionKind": {
+                            "type": "string",
+                            "enum": [
+                              "submission",
+                              "final"
+                            ]
+                          },
+                          "status": {
+                            "type": "string"
+                          },
+                          "included": {
+                            "type": "boolean"
+                          },
+                          "ready": {
+                            "type": "boolean"
+                          },
+                          "order": {
+                            "type": "integer"
+                          },
+                          "revision": {
+                            "type": "integer"
+                          },
+                          "note": {
+                            "type": "string"
+                          },
+                          "permission": {
+                            "type": "object",
+                            "properties": {
+                              "revision": {
+                                "type": "integer"
+                              },
+                              "abstractAllowed": {
+                                "type": "boolean"
+                              },
+                              "fullTextAllowed": {
+                                "type": "boolean"
+                              },
+                              "license": {
+                                "type": "string",
+                                "enum": [
+                                  "CC-BY-4.0",
+                                  "CC-BY-SA-4.0",
+                                  "CC-BY-NC-4.0",
+                                  "all-rights-reserved"
+                                ]
+                              },
+                              "updatedAt": {
+                                "type": "string",
+                                "format": "date-time",
+                                "nullable": true
+                              }
+                            },
+                            "required": [
+                              "revision",
+                              "abstractAllowed",
+                              "fullTextAllowed",
+                              "license",
+                              "updatedAt"
+                            ]
+                          },
+                          "issues": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          }
+                        },
+                        "required": [
+                          "workId",
+                          "title",
+                          "versionId",
+                          "versionNumber",
+                          "versionKind",
+                          "status",
+                          "included",
+                          "ready",
+                          "order",
+                          "revision",
+                          "note",
+                          "permission",
+                          "issues"
+                        ]
+                      }
+                    },
+                    "releases": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "revision": {
+                            "type": "integer"
+                          },
+                          "id": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "kind": {
+                            "type": "string",
+                            "enum": [
+                              "abstracts",
+                              "proceedings"
+                            ]
+                          },
+                          "edition": {
+                            "type": "integer"
+                          },
+                          "titleEs": {
+                            "type": "string"
+                          },
+                          "titleEn": {
+                            "type": "string"
+                          },
+                          "status": {
+                            "type": "string",
+                            "enum": [
+                              "published",
+                              "withdrawn"
+                            ]
+                          },
+                          "publishedAt": {
+                            "type": "string",
+                            "format": "date-time"
+                          },
+                          "withdrawnAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "nullable": true
+                          },
+                          "withdrawReason": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "sha256": {
+                            "type": "string"
+                          },
+                          "pages": {
+                            "type": "integer"
+                          },
+                          "paperCount": {
+                            "type": "integer"
+                          },
+                          "canonicalUrl": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "revision",
+                          "id",
+                          "kind",
+                          "edition",
+                          "titleEs",
+                          "titleEn",
+                          "status",
+                          "publishedAt",
+                          "withdrawnAt",
+                          "withdrawReason",
+                          "sha256",
+                          "pages",
+                          "paperCount",
+                          "canonicalUrl"
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "proof",
+                    "kind",
+                    "content",
+                    "revision",
+                    "items",
+                    "releases"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "editorial"
+        ]
+      },
+      "put": {
+        "operationId": "EditorialController_save",
+        "parameters": [
+          {
+            "name": "kind",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveEditorialDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "proof": {
+                      "type": "string"
+                    },
+                    "kind": {
+                      "type": "string",
+                      "enum": [
+                        "abstracts",
+                        "proceedings"
+                      ]
+                    },
+                    "content": {
+                      "type": "object",
+                      "properties": {
+                        "titleEs": {
+                          "type": "string"
+                        },
+                        "titleEn": {
+                          "type": "string"
+                        },
+                        "publisher": {
+                          "type": "string"
+                        },
+                        "editors": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "creditsEs": {
+                          "type": "string"
+                        },
+                        "creditsEn": {
+                          "type": "string"
+                        },
+                        "committeeEs": {
+                          "type": "string"
+                        },
+                        "committeeEn": {
+                          "type": "string"
+                        },
+                        "prefaceEs": {
+                          "type": "string"
+                        },
+                        "prefaceEn": {
+                          "type": "string"
+                        },
+                        "groupBy": {
+                          "type": "string",
+                          "enum": [
+                            "track",
+                            "activity"
+                          ]
+                        },
+                        "locale": {
+                          "type": "string",
+                          "enum": [
+                            "es",
+                            "en"
+                          ]
+                        },
+                        "publicOrigin": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "titleEs",
+                        "titleEn",
+                        "publisher",
+                        "editors",
+                        "creditsEs",
+                        "creditsEn",
+                        "committeeEs",
+                        "committeeEn",
+                        "prefaceEs",
+                        "prefaceEn",
+                        "groupBy",
+                        "locale",
+                        "publicOrigin"
+                      ]
+                    },
+                    "revision": {
+                      "type": "integer"
+                    },
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "workId": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "title": {
+                            "type": "string"
+                          },
+                          "versionId": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "versionNumber": {
+                            "type": "integer"
+                          },
+                          "versionKind": {
+                            "type": "string",
+                            "enum": [
+                              "submission",
+                              "final"
+                            ]
+                          },
+                          "status": {
+                            "type": "string"
+                          },
+                          "included": {
+                            "type": "boolean"
+                          },
+                          "ready": {
+                            "type": "boolean"
+                          },
+                          "order": {
+                            "type": "integer"
+                          },
+                          "revision": {
+                            "type": "integer"
+                          },
+                          "note": {
+                            "type": "string"
+                          },
+                          "permission": {
+                            "type": "object",
+                            "properties": {
+                              "revision": {
+                                "type": "integer"
+                              },
+                              "abstractAllowed": {
+                                "type": "boolean"
+                              },
+                              "fullTextAllowed": {
+                                "type": "boolean"
+                              },
+                              "license": {
+                                "type": "string",
+                                "enum": [
+                                  "CC-BY-4.0",
+                                  "CC-BY-SA-4.0",
+                                  "CC-BY-NC-4.0",
+                                  "all-rights-reserved"
+                                ]
+                              },
+                              "updatedAt": {
+                                "type": "string",
+                                "format": "date-time",
+                                "nullable": true
+                              }
+                            },
+                            "required": [
+                              "revision",
+                              "abstractAllowed",
+                              "fullTextAllowed",
+                              "license",
+                              "updatedAt"
+                            ]
+                          },
+                          "issues": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          }
+                        },
+                        "required": [
+                          "workId",
+                          "title",
+                          "versionId",
+                          "versionNumber",
+                          "versionKind",
+                          "status",
+                          "included",
+                          "ready",
+                          "order",
+                          "revision",
+                          "note",
+                          "permission",
+                          "issues"
+                        ]
+                      }
+                    },
+                    "releases": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "revision": {
+                            "type": "integer"
+                          },
+                          "id": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "kind": {
+                            "type": "string",
+                            "enum": [
+                              "abstracts",
+                              "proceedings"
+                            ]
+                          },
+                          "edition": {
+                            "type": "integer"
+                          },
+                          "titleEs": {
+                            "type": "string"
+                          },
+                          "titleEn": {
+                            "type": "string"
+                          },
+                          "status": {
+                            "type": "string",
+                            "enum": [
+                              "published",
+                              "withdrawn"
+                            ]
+                          },
+                          "publishedAt": {
+                            "type": "string",
+                            "format": "date-time"
+                          },
+                          "withdrawnAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "nullable": true
+                          },
+                          "withdrawReason": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "sha256": {
+                            "type": "string"
+                          },
+                          "pages": {
+                            "type": "integer"
+                          },
+                          "paperCount": {
+                            "type": "integer"
+                          },
+                          "canonicalUrl": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "revision",
+                          "id",
+                          "kind",
+                          "edition",
+                          "titleEs",
+                          "titleEn",
+                          "status",
+                          "publishedAt",
+                          "withdrawnAt",
+                          "withdrawReason",
+                          "sha256",
+                          "pages",
+                          "paperCount",
+                          "canonicalUrl"
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "proof",
+                    "kind",
+                    "content",
+                    "revision",
+                    "items",
+                    "releases"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "editorial"
+        ]
+      }
+    },
+    "/api/v1/public/events/{eventId}/publications": {
+      "get": {
+        "operationId": "PublicEditorialController_list",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "revision": {
+                            "type": "integer"
+                          },
+                          "id": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "kind": {
+                            "type": "string",
+                            "enum": [
+                              "abstracts",
+                              "proceedings"
+                            ]
+                          },
+                          "edition": {
+                            "type": "integer"
+                          },
+                          "titleEs": {
+                            "type": "string"
+                          },
+                          "titleEn": {
+                            "type": "string"
+                          },
+                          "status": {
+                            "type": "string",
+                            "enum": [
+                              "published",
+                              "withdrawn"
+                            ]
+                          },
+                          "publishedAt": {
+                            "type": "string",
+                            "format": "date-time"
+                          },
+                          "withdrawnAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "nullable": true
+                          },
+                          "withdrawReason": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "sha256": {
+                            "type": "string"
+                          },
+                          "pages": {
+                            "type": "integer"
+                          },
+                          "paperCount": {
+                            "type": "integer"
+                          },
+                          "canonicalUrl": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "revision",
+                          "id",
+                          "kind",
+                          "edition",
+                          "titleEs",
+                          "titleEn",
+                          "status",
+                          "publishedAt",
+                          "withdrawnAt",
+                          "withdrawReason",
+                          "sha256",
+                          "pages",
+                          "paperCount",
+                          "canonicalUrl"
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "publications"
+        ]
+      }
+    },
+    "/api/v1/public/publications/{id}/pdf": {
+      "get": {
+        "operationId": "PublicEditorialController_pdf",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/pdf": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "publications"
+        ]
+      }
+    },
+    "/api/v1/public/publications/{id}/papers/{workId}/pdf": {
+      "get": {
+        "operationId": "PublicEditorialController_paper",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "workId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/pdf": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "publications"
+        ]
+      }
+    },
+    "/api/v1/public/publications/{id}/export/{format}": {
+      "get": {
+        "operationId": "PublicEditorialController_export",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "format",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "paper",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "SEP JSON, CSL-JSON, BibTeX or RIS. Names retain their full literal form.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "publications"
+        ]
+      }
+    },
+    "/api/v1/public/publications/{id}": {
+      "get": {
+        "operationId": "PublicEditorialController_detail",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "revision": {
+                      "type": "integer"
+                    },
+                    "id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "kind": {
+                      "type": "string",
+                      "enum": [
+                        "abstracts",
+                        "proceedings"
+                      ]
+                    },
+                    "edition": {
+                      "type": "integer"
+                    },
+                    "titleEs": {
+                      "type": "string"
+                    },
+                    "titleEn": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "published",
+                        "withdrawn"
+                      ]
+                    },
+                    "publishedAt": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "withdrawnAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "nullable": true
+                    },
+                    "withdrawReason": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "sha256": {
+                      "type": "string"
+                    },
+                    "pages": {
+                      "type": "integer"
+                    },
+                    "paperCount": {
+                      "type": "integer"
+                    },
+                    "canonicalUrl": {
+                      "type": "string"
+                    },
+                    "snapshot": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "kind": {
+                          "type": "string",
+                          "enum": [
+                            "abstracts",
+                            "proceedings"
+                          ]
+                        },
+                        "edition": {
+                          "type": "integer"
+                        },
+                        "eventId": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "eventNameEs": {
+                          "type": "string"
+                        },
+                        "eventNameEn": {
+                          "type": "string"
+                        },
+                        "content": {
+                          "type": "object",
+                          "properties": {
+                            "titleEs": {
+                              "type": "string"
+                            },
+                            "titleEn": {
+                              "type": "string"
+                            },
+                            "publisher": {
+                              "type": "string"
+                            },
+                            "editors": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            },
+                            "creditsEs": {
+                              "type": "string"
+                            },
+                            "creditsEn": {
+                              "type": "string"
+                            },
+                            "committeeEs": {
+                              "type": "string"
+                            },
+                            "committeeEn": {
+                              "type": "string"
+                            },
+                            "prefaceEs": {
+                              "type": "string"
+                            },
+                            "prefaceEn": {
+                              "type": "string"
+                            },
+                            "groupBy": {
+                              "type": "string",
+                              "enum": [
+                                "track",
+                                "activity"
+                              ]
+                            },
+                            "locale": {
+                              "type": "string",
+                              "enum": [
+                                "es",
+                                "en"
+                              ]
+                            },
+                            "publicOrigin": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "titleEs",
+                            "titleEn",
+                            "publisher",
+                            "editors",
+                            "creditsEs",
+                            "creditsEn",
+                            "committeeEs",
+                            "committeeEn",
+                            "prefaceEs",
+                            "prefaceEn",
+                            "groupBy",
+                            "locale",
+                            "publicOrigin"
+                          ]
+                        },
+                        "publishedAt": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "papers": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "format": "uuid"
+                              },
+                              "title": {
+                                "type": "string"
+                              },
+                              "abstract": {
+                                "type": "string"
+                              },
+                              "keywords": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              },
+                              "language": {
+                                "type": "string",
+                                "enum": [
+                                  "es",
+                                  "en"
+                                ]
+                              },
+                              "authors": {
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "properties": {
+                                    "fullName": {
+                                      "type": "string"
+                                    },
+                                    "affiliations": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "object",
+                                        "properties": {
+                                          "institution": {
+                                            "type": "string"
+                                          },
+                                          "countryCode": {
+                                            "type": "string"
+                                          }
+                                        },
+                                        "required": [
+                                          "institution",
+                                          "countryCode"
+                                        ]
+                                      }
+                                    },
+                                    "orcid": {
+                                      "type": "string"
+                                    },
+                                    "orcidVerified": {
+                                      "type": "boolean"
+                                    }
+                                  },
+                                  "required": [
+                                    "fullName",
+                                    "affiliations"
+                                  ]
+                                }
+                              },
+                              "versionNumber": {
+                                "type": "integer"
+                              },
+                              "groupEs": {
+                                "type": "string"
+                              },
+                              "groupEn": {
+                                "type": "string"
+                              },
+                              "license": {
+                                "type": "string",
+                                "enum": [
+                                  "CC-BY-4.0",
+                                  "CC-BY-SA-4.0",
+                                  "CC-BY-NC-4.0",
+                                  "all-rights-reserved"
+                                ]
+                              },
+                              "firstPage": {
+                                "type": "integer"
+                              },
+                              "lastPage": {
+                                "type": "integer"
+                              },
+                              "fileSha256": {
+                                "type": "string",
+                                "nullable": true
+                              },
+                              "demoUnscanned": {
+                                "type": "boolean"
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "title",
+                              "abstract",
+                              "keywords",
+                              "language",
+                              "authors",
+                              "versionNumber",
+                              "groupEs",
+                              "groupEn",
+                              "license",
+                              "firstPage",
+                              "lastPage",
+                              "fileSha256",
+                              "demoUnscanned"
+                            ]
+                          }
+                        },
+                        "canonicalUrl": {
+                          "type": "string"
+                        },
+                        "pages": {
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "kind",
+                        "edition",
+                        "eventId",
+                        "eventNameEs",
+                        "eventNameEn",
+                        "content",
+                        "publishedAt",
+                        "papers",
+                        "canonicalUrl",
+                        "pages"
+                      ],
+                      "nullable": true
+                    }
+                  },
+                  "required": [
+                    "revision",
+                    "id",
+                    "kind",
+                    "edition",
+                    "titleEs",
+                    "titleEn",
+                    "status",
+                    "publishedAt",
+                    "withdrawnAt",
+                    "withdrawReason",
+                    "sha256",
+                    "pages",
+                    "paperCount",
+                    "canonicalUrl",
+                    "snapshot"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "publications"
+        ]
+      }
     }
   },
   "info": {
@@ -27612,6 +30995,205 @@
           "messageEn",
           "audience",
           "category"
+        ]
+      },
+      "AuthorPublicationPermissionDto": {
+        "type": "object",
+        "properties": {
+          "revision": {
+            "type": "number"
+          },
+          "versionId": {
+            "type": "string"
+          },
+          "abstractAllowed": {
+            "type": "boolean"
+          },
+          "fullTextAllowed": {
+            "type": "boolean"
+          },
+          "license": {
+            "type": "string",
+            "enum": [
+              "CC-BY-4.0",
+              "CC-BY-SA-4.0",
+              "CC-BY-NC-4.0",
+              "all-rights-reserved"
+            ]
+          },
+          "attested": {
+            "type": "boolean"
+          },
+          "reason": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "revision",
+          "versionId",
+          "abstractAllowed",
+          "fullTextAllowed",
+          "license",
+          "attested",
+          "reason"
+        ]
+      },
+      "WithdrawPublicationDto": {
+        "type": "object",
+        "properties": {
+          "revision": {
+            "type": "number"
+          },
+          "reason": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "revision",
+          "reason"
+        ]
+      },
+      "PublishEditorialDto": {
+        "type": "object",
+        "properties": {
+          "revision": {
+            "type": "number"
+          },
+          "id": {
+            "type": "string"
+          },
+          "proof": {
+            "type": "string"
+          },
+          "attested": {
+            "type": "boolean"
+          },
+          "reason": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "revision",
+          "id",
+          "proof",
+          "attested",
+          "reason"
+        ]
+      },
+      "SelectEditorialDto": {
+        "type": "object",
+        "properties": {
+          "revision": {
+            "type": "number"
+          },
+          "versionId": {
+            "type": "string"
+          },
+          "included": {
+            "type": "boolean"
+          },
+          "ready": {
+            "type": "boolean"
+          },
+          "order": {
+            "type": "number"
+          },
+          "note": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "revision",
+          "versionId",
+          "included",
+          "ready",
+          "order",
+          "note"
+        ]
+      },
+      "EditorialContentDto": {
+        "type": "object",
+        "properties": {
+          "titleEs": {
+            "type": "string"
+          },
+          "titleEn": {
+            "type": "string"
+          },
+          "publisher": {
+            "type": "string"
+          },
+          "editors": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "creditsEs": {
+            "type": "string"
+          },
+          "creditsEn": {
+            "type": "string"
+          },
+          "committeeEs": {
+            "type": "string"
+          },
+          "committeeEn": {
+            "type": "string"
+          },
+          "prefaceEs": {
+            "type": "string"
+          },
+          "prefaceEn": {
+            "type": "string"
+          },
+          "groupBy": {
+            "type": "string",
+            "enum": [
+              "track",
+              "activity"
+            ]
+          },
+          "locale": {
+            "type": "string",
+            "enum": [
+              "es",
+              "en"
+            ]
+          },
+          "publicOrigin": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "titleEs",
+          "titleEn",
+          "publisher",
+          "editors",
+          "creditsEs",
+          "creditsEn",
+          "committeeEs",
+          "committeeEn",
+          "prefaceEs",
+          "prefaceEn",
+          "groupBy",
+          "locale",
+          "publicOrigin"
+        ]
+      },
+      "SaveEditorialDto": {
+        "type": "object",
+        "properties": {
+          "revision": {
+            "type": "number"
+          },
+          "content": {
+            "$ref": "#/components/schemas/EditorialContentDto"
+          }
+        },
+        "required": [
+          "revision",
+          "content"
         ]
       }
     }

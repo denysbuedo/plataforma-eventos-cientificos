@@ -238,3 +238,20 @@ export interface MailDelivery {personName:string;id:string;notificationId:string
 export interface MailDeliveryPage {data:MailDelivery[];total:number;offset:number;limit:number;mailAvailable:boolean;counts:Record<MailDeliveryState,number>}
 export interface MailAttempt {id:string;status:string;errorCode:string|null;createdAt:string}
 export interface EventAnnouncement {id:string;messageEs:string;messageEn:string;audience:'registrants'|'reviewers';category:'operational'|'optional';createdAt:string;recipientCount:number}
+
+export type PublicationKind='abstracts'|'proceedings';
+export type PublicationLicense='CC-BY-4.0'|'CC-BY-SA-4.0'|'CC-BY-NC-4.0'|'all-rights-reserved';
+export interface EditorialContent {titleEs:string;titleEn:string;publisher:string;editors:string[];creditsEs:string;creditsEn:string;committeeEs:string;committeeEn:string;prefaceEs:string;prefaceEn:string;groupBy:'track'|'activity';locale:'es'|'en';publicOrigin:string}
+export interface PublicationAuthor {fullName:string;affiliations:WorkAffiliation[];orcid?:string;orcidVerified?:boolean}
+export interface PublicationPaper {id:string;title:string;abstract:string;keywords:string[];language:'es'|'en';authors:PublicationAuthor[];versionNumber:number;groupEs:string;groupEn:string;license:PublicationLicense;firstPage:number;lastPage:number;fileSha256:string|null;demoUnscanned:boolean}
+export interface PublicationSnapshot {id:string;kind:PublicationKind;edition:number;eventId:string;eventNameEs:string;eventNameEn:string;content:EditorialContent;publishedAt:string;papers:PublicationPaper[];canonicalUrl:string;pages:number}
+export interface PublicationSummary {revision:number;id:string;kind:PublicationKind;edition:number;titleEs:string;titleEn:string;status:'published'|'withdrawn';publishedAt:string;withdrawnAt:string|null;withdrawReason:string|null;sha256:string;pages:number;paperCount:number;canonicalUrl:string}
+export interface PublicationDetail extends PublicationSummary {snapshot:PublicationSnapshot|null}
+export interface PublicationPermission {revision:number;abstractAllowed:boolean;fullTextAllowed:boolean;license:PublicationLicense;updatedAt:string|null}
+export interface EditorialItem {workId:string;title:string;versionId:string;versionNumber:number;versionKind:'submission'|'final';status:string;included:boolean;ready:boolean;order:number;revision:number;note:string;permission:PublicationPermission;issues:string[]}
+export interface EditorialWorkspace {proof:string;kind:PublicationKind;content:EditorialContent;revision:number;items:EditorialItem[];releases:PublicationSummary[]}
+export interface EditorialCandidates {data:{workId:string;title:string;status:string;versionId:string;versionNumber:number;versionKind:'submission'|'final';eligible:boolean}[];total:number;offset:number;limit:number}
+export interface MyPublicationPermission {workId:string;title:string;versionId:string;versionNumber:number;versionKind:'submission'|'final';requestedFor:PublicationKind[];current:boolean;permission:PublicationPermission;fileId:string|null;fileName:string|null}
+export interface MyPublications {requests:MyPublicationPermission[];publications:PublicationSummary[];history:EditorialHistoryEntry[]}
+export interface EditorialHistoryEntry {id:string;action:string;actorName:string;reason:string;createdAt:string;workId:string|null}
+export const MAX_PUBLICATION_BYTES=50*1024*1024;

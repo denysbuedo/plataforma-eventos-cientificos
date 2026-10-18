@@ -5,6 +5,7 @@ import http from 'node:http';
 import https from 'node:https';
 import { MAX_WORK_BODY_BYTES, type ApiError, type PublicRegistration, type PublicProgram, type PublishedScientificCall, type PublishedSite } from '@sep/contracts';
 import { errorMessage, type ErrorCode, type Locale } from '@sep/i18n';
+export {fileTransport as publicationFileTransport} from './files.js';
 import { fileTransport } from './files.js';
 import { oidcAccessToken, oidcEnabled, removeOidcValue } from './oidc.js';
 export { adminOrigin, beginOidc, beginGoogle, finishOidc, finishGoogle, createOidcSession, createGoogleSession, googleLoginEnabled, redunivLoginEnabled, localReturnTo, oidcCookieSecure, oidcEnabled, oidcLogoutDestination, GOOGLE_FLOW_COOKIE, OIDC_FLOW_COOKIE, removeOidcValue } from './oidc.js';
@@ -51,14 +52,14 @@ export async function apiRequest<T>(binding: Binding, path: string, options: { t
   return new Promise((done, reject) => {
     const data = options.body === undefined ? undefined : JSON.stringify(options.body);
     const request = (target.protocol === 'https:' ? https : http).request(target, {
-      method: options.method ?? 'GET', timeout: 10000,
+      method: options.method ?? 'GET', timeout: /editorial|publications/.test(path)?45000:10000,
       headers: { host: binding.host, accept: 'application/json', 'accept-language': options.locale ?? 'es',
         ...(options.token ? { authorization: `Bearer ${options.token}` } : {}),
         ...(data ? { 'content-type': 'application/json', 'content-length': Buffer.byteLength(data) } : {}) },
     }, (response) => {
       let text = '';
       response.setEncoding('utf8');
-      response.on('data', (chunk: string) => { text += chunk; if (text.length > (path.includes('/program') ? 16 * 1024 * 1024 : 1_000_000)) request.destroy(); });
+      response.on('data', (chunk: string) => { text += chunk; if (text.length > (/program|editorial|publications/.test(path) ? 16 * 1024 * 1024 : 1_000_000)) request.destroy(); });
       response.on('end', () => {
         try {
           const body = JSON.parse(text);
@@ -105,16 +106,16 @@ export async function backendProxy(request: Request, parts: string[], cookie: st
   try {
     if (!['GET', 'POST', 'PUT', 'PATCH', 'DELETE'].includes(request.method)) throw new ApiTransportError(405, failure('FORBIDDEN'));
     const path = parts.join('/');
-    if (!/^(?:me(?:\/researcher-profile|\/orcid(?:\/(?:start|finish))?)?|session|researchers|people|organization(?:\/domains(?:\/[0-9a-f-]{36}(?:\/(?:verify|activate|deactivate))?)?)?|invitations(?:\/accept|\/[0-9a-f-]{36}\/revoke)?|events(?:\/[0-9a-f-]{36}(?:\/site(?:\/publish)?|\/session|\/my-works\/notices|\/(?:my-works|submissions)(?:\/[0-9a-f-]{36}(?:\/(?:submit|withdraw|synchronize-call|decision|notices\/read|manuscript|collaborations(?:\/[0-9a-f-]{36}\/revoke)?|versions\/[0-9a-f-]{36}|files\/[0-9a-f-]{36}))?)?|\/authorship(?:-review)?(?:\/read|\/claims\/[0-9a-f-]{36}|\/works\/[0-9a-f-]{36}\/responsibility)?|\/peer-review\/(?:tracking|response-checks(?:\/[0-9a-f-]{36}\/assess)?|committee(?:\/[0-9a-f-]{36}\/revoke)?|mine(?:\/(?:membership|status)|\/[0-9a-f-]{36}(?:\/(?:respond|submit|files\/[0-9a-f-]{36}))?)?|works\/[0-9a-f-]{36}(?:\/rounds(?:\/[0-9a-f-]{36}\/(?:close|assign|extend))?|\/assignments\/[0-9a-f-]{36}\/revoke)?)|\/work-collaborations\/accept|\/notifications(?:\/(?:preferences|[0-9a-f-]{36}\/read))?|\/communications\/(?:deliveries(?:\/[0-9a-f-]{36}\/(?:attempts|retry))?|announcements|templates)|\/certificates(?:\/(?:templates(?:\/[0-9a-f-]{36}(?:\/preview)?)?|candidates|issue|mine(?:\/[0-9a-f-]{36}(?:\/pdf)?)?|[0-9a-f-]{36}(?:\/(?:pdf|revoke))?))?|\/attendance(?:\/(?:mine|credential(?:\/revoke)?|lookup|registrations\/[0-9a-f-]{36}(?:\/check-in)?|records\/[0-9a-f-]{36}\/correction))?|\/registration\/(?:settings(?:\/(?:publish|withdraw))?|mine(?:\/cancel)?|entries(?:\/[0-9a-f-]{36}(?:\/decision)?)?)|\/program(?:\/(?:mine|candidates|publish|withdraw|spaces(?:\/[0-9a-f-]{36})?))?|\/configuration|\/call(?:\/(?:publish|withdraw))?|\/lifecycle|\/organizers(?:\/[0-9a-f-]{36})?)?)?)$/.test(path)) throw new ApiTransportError(404, failure('NOT_FOUND'));
+    if (!/^(?:me(?:\/researcher-profile|\/orcid(?:\/(?:start|finish))?)?|session|researchers|people|organization(?:\/domains(?:\/[0-9a-f-]{36}(?:\/(?:verify|activate|deactivate))?)?)?|invitations(?:\/accept|\/[0-9a-f-]{36}\/revoke)?|events(?:\/[0-9a-f-]{36}(?:\/site(?:\/publish)?|\/session|\/my-works\/notices|\/(?:my-works|submissions)(?:\/[0-9a-f-]{36}(?:\/(?:submit|withdraw|synchronize-call|decision|notices\/read|manuscript|collaborations(?:\/[0-9a-f-]{36}\/revoke)?|versions\/[0-9a-f-]{36}|files\/[0-9a-f-]{36}))?)?|\/authorship(?:-review)?(?:\/read|\/claims\/[0-9a-f-]{36}|\/works\/[0-9a-f-]{36}\/responsibility)?|\/peer-review\/(?:tracking|response-checks(?:\/[0-9a-f-]{36}\/assess)?|committee(?:\/[0-9a-f-]{36}\/revoke)?|mine(?:\/(?:membership|status)|\/[0-9a-f-]{36}(?:\/(?:respond|submit|files\/[0-9a-f-]{36}))?)?|works\/[0-9a-f-]{36}(?:\/rounds(?:\/[0-9a-f-]{36}\/(?:close|assign|extend))?|\/assignments\/[0-9a-f-]{36}\/revoke)?)|\/work-collaborations\/accept|\/editorial\/(?:mine|history|permissions\/[0-9a-f-]{36}|releases\/[0-9a-f-]{36}\/(?:pdf|withdraw)|(?:abstracts|proceedings)(?:\/(?:candidates|preview|publish|items\/[0-9a-f-]{36}))?)|\/notifications(?:\/(?:preferences|[0-9a-f-]{36}\/read))?|\/communications\/(?:deliveries(?:\/[0-9a-f-]{36}\/(?:attempts|retry))?|announcements|templates)|\/certificates(?:\/(?:templates(?:\/[0-9a-f-]{36}(?:\/preview)?)?|candidates|issue|mine(?:\/[0-9a-f-]{36}(?:\/pdf)?)?|[0-9a-f-]{36}(?:\/(?:pdf|revoke))?))?|\/attendance(?:\/(?:mine|credential(?:\/revoke)?|lookup|registrations\/[0-9a-f-]{36}(?:\/check-in)?|records\/[0-9a-f-]{36}\/correction))?|\/registration\/(?:settings(?:\/(?:publish|withdraw))?|mine(?:\/cancel)?|entries(?:\/[0-9a-f-]{36}(?:\/decision)?)?)|\/program(?:\/(?:mine|candidates|publish|withdraw|spaces(?:\/[0-9a-f-]{36})?))?|\/configuration|\/call(?:\/(?:publish|withdraw))?|\/lifecycle|\/organizers(?:\/[0-9a-f-]{36})?)?)?)$/.test(path)) throw new ApiTransportError(404, failure('NOT_FOUND'));
     if (request.method !== 'GET') checkOrigin(request);
     const url = new URL(request.url);
     const binding = bindingFor(request.headers.get('host') ?? '', url.searchParams.get('event') ?? undefined);
     const token = await tokenForCookie(cookie);
     if (!token) throw new ApiTransportError(401, failure('UNAUTHORIZED'));
     const query = new URLSearchParams();
-    for (const name of ['limit', 'offset', 'status', 'q', 'timing']) if (url.searchParams.has(name)) query.set(name, url.searchParams.get(name)!);
+    for (const name of ['limit', 'offset', 'status', 'q', 'timing','proof','filter','workId']) if (url.searchParams.has(name)) query.set(name, url.searchParams.get(name)!);
     const locale: Locale = url.searchParams.get('lang') === 'en' ? 'en' : 'es';
-    if ((request.method === 'POST' && path.endsWith('/manuscript')) || (request.method === 'GET' && (/\/files\/[0-9a-f-]{36}$/.test(path)||path.includes('/certificates/')&&/\/(?:pdf|preview)$/.test(path)))) return await fileTransport(request,binding,path,token,locale);
+    if ((request.method === 'POST' && path.endsWith('/manuscript')) || (request.method === 'GET' && (/\/files\/[0-9a-f-]{36}$/.test(path)||(path.includes('/certificates/')||path.includes('/editorial/'))&&/\/(?:pdf|preview)$/.test(path)))) return await fileTransport(request,binding,path+(query.size?'?'+query:''),token,locale);
     let body: unknown;
     if (request.method !== 'GET') {
       const text = await request.text();

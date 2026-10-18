@@ -74,3 +74,5 @@ Los documentos de planificación describen trabajo futuro. No constituyen eviden
 - [Certificados verificables](development/certificados.md) y [ADR-026](adr/ADR-026-certificados-verificables.md).
 
 - [Comunicaciones y notificaciones](development/comunicaciones.md) y [ADR-027](adr/ADR-027-comunicaciones.md).
+
+- [Publicaciones científicas: resúmenes, memorias y archivo](development/publicaciones-cientificas.md) y [ADR-028](adr/ADR-028-publicacion-editorial.md).

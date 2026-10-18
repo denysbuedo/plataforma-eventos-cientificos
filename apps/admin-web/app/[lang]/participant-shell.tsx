@@ -5,6 +5,7 @@ import { webCopy, type Locale } from '@sep/i18n';
 import AuthorshipNav from './authorship-nav';
 import WorkNoticesNav from './work-notices-nav';
 import ReviewNav from './peer-review-nav';
+import {editorialCopy} from './editorial-common';
 import NotificationNav from './notification-nav';
 import {communicationCopy} from './communications-common';
 import {certificateCopy} from './certificates-common';
@@ -25,7 +26,7 @@ export const participantCopy = {
   en: { space:'My workspace', account:'My account options', home:'SEP · My workspace home', navigation:'Event participation', public:'Go to public portal', noEvent:'Select an event from its portal to view your works and authorship.' },
 } as const;
 export default function ParticipantShell({children,person,locale,contextKey,eventId,tab,publicUrl,busy=false,onNavigate,onCurrentWorks}: {
-  children:ReactNode; person:{name:string}; locale:Locale; contextKey:string; eventId?:string|null; tab:'works'|'authorship'|'profile'|'reviews'|'participation'|'registration'|'accreditation'|'certificates'|'notifications'; publicUrl:string;
+  children:ReactNode; person:{name:string}; locale:Locale; contextKey:string; eventId?:string|null; tab:'works'|'authorship'|'profile'|'reviews'|'participation'|'registration'|'accreditation'|'certificates'|'notifications'|'publications'; publicUrl:string;
   busy?:boolean; onNavigate?:Guard; onCurrentWorks?:()=>void;
 }) {
   const text=webCopy[locale], copy=participantCopy[locale];
@@ -34,7 +35,7 @@ export default function ParticipantShell({children,person,locale,contextKey,even
   const register=useCallback((guard:Guard|null)=>{registeredGuard.current=guard;},[]);
   const prefix=`/${locale}?event=${encodeURIComponent(contextKey)}&tab=`;
   const home=eventId?prefix+'works':prefix+'profile';
-  const pageName=tab==='notifications'?communicationCopy[locale].notifications:tab==='certificates'?certificateCopy[locale].mine:tab==='accreditation'?attendanceCopy[locale].mine:tab==='registration'?registrationCopy[locale].mine:tab==='participation'?programCopy[locale].participation:tab==='reviews'?reviewCopy[locale].mine:tab==='profile'?text.myProfile:tab==='works'?text.myWorks:authorshipCopy[locale].title;
+  const pageName=tab==='publications'?editorialCopy[locale].mine:tab==='notifications'?communicationCopy[locale].notifications:tab==='certificates'?certificateCopy[locale].mine:tab==='accreditation'?attendanceCopy[locale].mine:tab==='registration'?registrationCopy[locale].mine:tab==='participation'?programCopy[locale].participation:tab==='reviews'?reviewCopy[locale].mine:tab==='profile'?text.myProfile:tab==='works'?text.myWorks:authorshipCopy[locale].title;
   const names=person.name.trim().split(/\s+/u);
   const initials=[names[0],...(names.length>1?[names.at(-1)!]:[])].map(name=>Array.from(name)[0]??'').join('').toLocaleUpperCase(locale);
   function guard(action:()=>void) { if(busy||signingOut)return; (onNavigate??registeredGuard.current??((next:()=>void)=>next()))(action); }
@@ -60,6 +61,7 @@ export default function ParticipantShell({children,person,locale,contextKey,even
         <a href={prefix+'authorship'} className={tab==='authorship'?'active':undefined} aria-current={tab==='authorship'?'page':undefined} onClick={event=>{event.preventDefault();navigate(prefix+'authorship');}}><Icon name="check" size={18}/><span><AuthorshipNav eventId={eventId} contextKey={contextKey} locale={locale}/></span></a>
         <a href={prefix+'reviews'} className={tab==='reviews'?'active':undefined} aria-current={tab==='reviews'?'page':undefined} onClick={event=>{event.preventDefault();navigate(prefix+'reviews');}}><Icon name="edit" size={18}/><span><ReviewNav eventId={eventId} contextKey={contextKey} locale={locale}/></span></a>
         <a href={prefix+'participation'} className={tab==='participation'?'active':undefined} aria-current={tab==='participation'?'page':undefined} onClick={event=>{event.preventDefault();navigate(prefix+'participation');}}><Icon name="calendar" size={18}/><span>{programCopy[locale].participation}</span></a>
+        <a href={prefix+'publications'} className={tab==='publications'?'active':undefined} aria-current={tab==='publications'?'page':undefined} onClick={event=>{event.preventDefault();navigate(prefix+'publications');}}><Icon name="book" size={18}/><span>{editorialCopy[locale].mine}</span></a>
         <a href={prefix+'notifications'} className={tab==='notifications'?'active':undefined} aria-current={tab==='notifications'?'page':undefined} onClick={event=>{event.preventDefault();navigate(prefix+'notifications');}}><Icon name="book" size={18}/><span><NotificationNav eventId={eventId} contextKey={contextKey} locale={locale}/></span></a>
       </>:<p className="participant-no-event">{copy.noEvent}</p>}</nav>
       {publicUrl&&<div className="sidebar-bottom"><a href={publicUrl} onClick={event=>{event.preventDefault();navigate(publicUrl);}}><Icon name="external" size={17}/><span>{text.publicPortal}</span></a></div>}

@@ -48,7 +48,7 @@ La conservación de reglas, versiones y archivos está implementada y se comprob
 ## Próximos incrementos
 
 1. Ampliaciones del programa: convocatorias de actividades, confirmaciones, inscripción por taller y exportaciones.
-2. Publicación de trabajos aceptados y memorias.
+2. Ampliaciones de publicación editorial: DOI/ISBN institucionales, grandes volúmenes y preservación externa; el libro de resúmenes y las memorias ya están implementados.
 3. Ampliaciones de revisión: doble ciego, debate, réplica y asignación automática.
 
 ## Validación pendiente
@@ -59,7 +59,7 @@ Las pruebas completas siguen aplazadas por el propietario. Al retomarlas cubrir:
 
 ## Revisión científica implementada
 
-Comité y revisores, aceptación independiente de asignaciones, conflictos automáticos/declarados, rondas sobre versiones oficiales, criterios bilingües, informes privados/enviados, PDF autorizado y dictamen apoyado en evaluaciones. El modo inicial es simple ciego; no simula doble ciego. Véanse el [recorrido, reglas y límites](../development/revision-cientifica.md) y [ADR-020](../adr/ADR-020-revision-cientifica.md). Memorias y validación funcional completa continúan pendientes.
+Comité y revisores, aceptación independiente de asignaciones, conflictos automáticos/declarados, rondas sobre versiones oficiales, criterios bilingües, informes privados/enviados, PDF autorizado y dictamen apoyado en evaluaciones. El modo inicial es simple ciego; no simula doble ciego. Véanse el [recorrido, reglas y límites](../development/revision-cientifica.md) y [ADR-020](../adr/ADR-020-revision-cientifica.md). La publicación editorial se implementa en el bloque de Fase 3; la validación funcional completa continúa pendiente.
 
 ## Programa científico implementado
 

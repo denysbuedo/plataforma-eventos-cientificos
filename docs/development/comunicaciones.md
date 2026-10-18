@@ -19,6 +19,9 @@ En **Preferencias** se eligen correo operativo, comunicaciones opcionales e idio
 | Decisión o cancelación de inscripción | Titular → Mi inscripción |
 | Publicación, actualización o retirada del programa | Inscritos confirmados, autores aceptados y personas programadas → Mi participación |
 | Certificado emitido o revocado | Titular → Mis certificados |
+| Selección editorial | Responsable del envío → Mis publicaciones para autorizar la versión |
+| Cambio de autorización | Organizadores → Publicaciones científicas |
+| Edición publicada o retirada | Responsables de los trabajos incluidos → Mis publicaciones |
 
 Al actualizar el programa también se avisa a los presentadores, moderadores, participantes y coordinadores de la publicación anterior, aunque hayan sido retirados de la nueva. La deduplicación evita avisar dos veces a la misma persona por una publicación.
 

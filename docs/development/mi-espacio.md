@@ -11,6 +11,7 @@ Mi espacio utiliza una estructura compartida para **Mis trabajos**, **Autorías*
 | Menú lateral, tercero | Mis revisiones | Asignaciones científicas y valoración de respuestas |
 | Menú lateral, cuarto | Mi participación | Presentaciones y moderaciones del programa publicado |
 | Menú lateral | Mis certificados | Documentos reales emitidos, descarga privada, estado e historial |
+| Menú lateral | Mis publicaciones | Autorización por versión y consulta de ediciones que incluyen trabajos propios |
 | Menú lateral | Notificaciones | Avisos personales del evento, lectura persistente y preferencias de correo |
 | Menú de cuenta, arriba a la derecha | Mi perfil | Identidad y datos académicos reutilizables entre eventos |
 | Menú de cuenta, arriba a la derecha | Cerrar sesión | Disponible desde las tres pantallas |
