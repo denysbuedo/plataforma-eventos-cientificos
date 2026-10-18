@@ -1,5 +1,8 @@
 const messages = {
   es: {
+    SPONSORSHIP_INVALID:'Revisa las categorías, instituciones, permisos de publicación y compromisos.',
+    SPONSORSHIP_CHANGED:'Los datos cambiaron. Actualiza y revisa la vista previa antes de publicar.',
+    SPONSORSHIP_LIMIT:'Se alcanzó el límite de esta entrega. Reduce la selección o el tamaño de las imágenes.',
     CERTIFICATE_INVALID:'Revisa la plantilla, las imágenes y los campos de texto del certificado.',
     CERTIFICATE_INELIGIBLE:'Las evidencias o los requisitos cambiaron. Actualiza los candidatos antes de emitir.',
     CERTIFICATE_DUPLICATE:'Ya hay un certificado vigente para esta persona, plantilla y participación.',
@@ -66,6 +69,9 @@ const messages = {
     INTERNAL_ERROR: 'No se pudo completar la solicitud.',
   },
   en: {
+    SPONSORSHIP_INVALID:'Check categories, institutions, publication permissions and commitments.',
+    SPONSORSHIP_CHANGED:'The data changed. Refresh and review the preview before publishing.',
+    SPONSORSHIP_LIMIT:'This release limit has been reached. Reduce the selection or image sizes.',
     CERTIFICATE_INVALID:'Review the certificate template, images and text fields.',
     CERTIFICATE_INELIGIBLE:'Evidence or requirements changed. Refresh candidates before issuing.',
     CERTIFICATE_DUPLICATE:'An active certificate already exists for this person, template and participation.',

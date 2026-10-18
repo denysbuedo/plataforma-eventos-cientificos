@@ -1,0 +1,15 @@
+import type {SchemaObject} from '@nestjs/swagger';
+const str:SchemaObject={type:'string'},uuid:SchemaObject={type:'string',format:'uuid'},integer:SchemaObject={type:'integer'},bool:SchemaObject={type:'boolean'},time:SchemaObject={type:'string',format:'date-time'};
+const obj=(properties:Record<string,SchemaObject>):SchemaObject=>({type:'object',properties,required:Object.keys(properties)}),arr=(items:SchemaObject):SchemaObject=>({type:'array',items}),nil=(value:SchemaObject):SchemaObject=>({...value,nullable:true});
+const category=obj({id:uuid,nameEs:str,nameEn:str,order:integer,active:bool}),settings=obj({titleEs:str,titleEn:str,introEs:str,introEn:str,categories:arr(category)});
+const contact=obj({name:str,position:str,email:str,phone:str});
+const publicPartner=obj({id:uuid,nameEs:str,nameEn:str,countryCode:str,website:str,descriptionEs:str,descriptionEn:str,logo:nil(str),categoryId:uuid,order:integer});
+const content=obj({nameEs:str,nameEn:str,countryCode:str,website:str,descriptionEs:str,descriptionEn:str,logo:nil(str),categoryId:uuid,order:integer,contacts:arr(contact),notes:str,active:bool,publicSelected:bool,publicPermission:bool});
+const partner=obj({id:uuid,revision:integer,updatedAt:time,content});
+const summary=obj({id:uuid,revision:integer,nameEs:str,nameEn:str,countryCode:str,categoryId:uuid,order:integer,active:bool,publicSelected:bool,publicPermission:bool,hasLogo:bool,contactCount:integer});
+const commitmentContent=obj({partnerId:uuid,title:str,kind:{type:'string',enum:['monetary','in_kind','service','other']},status:{type:'string',enum:['proposed','confirmed','in_progress','fulfilled','cancelled']},amount:str,currency:str,description:str,dueDate:nil({type:'string',format:'date'}),responsibleId:nil(uuid),responsibleName:str,notes:str,evidence:str});
+const commitment=obj({id:uuid,revision:integer,updatedAt:time,content:commitmentContent});
+const release=obj({id:uuid,edition:integer,active:bool,publishedAt:time,withdrawnAt:nil(time),withdrawalReason:nil(str),partnerCount:integer});
+const history=obj({id:uuid,resourceId:uuid,action:str,actorName:str,reason:str,revision:integer,createdAt:time});
+const snapshot=obj({titleEs:str,titleEn:str,introEs:str,introEn:str,categories:arr(category),partners:arr(publicPartner)});
+export const sponsorshipSchemas={partner,release,snapshot,updated:obj({id:uuid,revision:integer}),settings:obj({revision:integer,content:settings}),history:obj({data:arr(history),total:integer,offset:integer,limit:integer}),preview:obj({snapshot,fingerprint:str,alreadyPublished:bool}),public:obj({publication:nil(obj({id:uuid,edition:integer,publishedAt:time,snapshot}))}),releaseDetail:obj({...release.properties,snapshot}),workspace:obj({settings,revision:integer,partners:arr(summary),commitments:arr(commitment),responsibles:arr(obj({id:uuid,name:str})),history:arr(history),releases:arr(release),currencies:arr(str),timezone:str,today:{type:'string',format:'date'},editable:bool})};

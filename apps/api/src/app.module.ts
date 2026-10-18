@@ -1,3 +1,4 @@
+import {SponsorshipModule} from './sponsorship/sponsorship.module.js';
 import {EditorialModule} from './editorial/editorial.module.js';
 import {CommunicationsModule} from './communications/communications.module.js';
 import {CertificatesModule} from './certificates/certificates.module.js';
@@ -19,7 +20,7 @@ import { SubmissionsModule } from './submissions/submissions.module.js';
 @Module({})
 export class AppModule {
   static register(config: AppConfig): DynamicModule {
-    return { module: AppModule, imports: [ConfigurationModule.register(config), DatabaseModule, IdentityModule, EventsModule, PlatformModule, ScienceModule, SubmissionsModule, ProgramModule, RegistrationModule, AttendanceModule, CertificatesModule, CommunicationsModule, EditorialModule],
+    return { module: AppModule, imports: [ConfigurationModule.register(config), DatabaseModule, IdentityModule, EventsModule, PlatformModule, ScienceModule, SubmissionsModule, ProgramModule, RegistrationModule, AttendanceModule, CertificatesModule, CommunicationsModule, EditorialModule, SponsorshipModule],
       controllers: [HealthController], providers: [{ provide: APP_GUARD, useClass: ContextGuard }] };
   }
 }

@@ -100,7 +100,7 @@ tests/              # Contratos, seguridad, E2E
 - **Fase 1:** organizaciones, dominios, identidad, i18n y sitios configurables.
 - **Fase 2:** ciclo científico de convocatoria, revisión y programa.
 - **Fase 3:** inscripción, credenciales, certificados, pósteres y memorias.
-- **Fase 4:** pagos, eventos híbridos, patrocinadores y logística.
+- **Fase 4:** patrocinadores y colaboradores implementados; pagos, ampliaciones híbridas y logística pendientes.
 - **Fase 5:** cliente móvil, SDK, analítica y extensiones avanzadas.
 
 ### Primer hito demostrable
@@ -189,3 +189,5 @@ El programa distingue actividades científicas (simposios, talleres y otras), se
 **Comunicaciones** incorpora avisos personales, lectura persistente, preferencias, comunicados bilingües y correo transaccional con cola, historial y reintentos. El transporte SMTP institucional y los accesos reales RedUniv/Google requieren activación; la demo funciona sin enviar correo. Ver [configuración y validación](docs/development/comunicaciones.md).
 
 **Publicaciones científicas** permite seleccionar versiones aceptadas, solicitar autorización al responsable del envío, revisar contenido y licencias, generar pruebas y publicar libros de resúmenes y memorias con PDF, fichas y exportaciones bibliográficas. Las ediciones conservan metadatos y archivos inmutables; una retirada motivada bloquea descargas y conserva su ficha de estado. Ver [recorrido y límites](docs/development/publicaciones-cientificas.md).
+
+**Patrocinadores y colaboradores** incorpora catálogo por evento, contactos privados, categorías bilingües, logotipos, compromisos con responsables/plazos/evidencia y seguimiento por moneda. El reconocimiento público exige selección y autorización explícitas, vista previa y publicación independiente, con versiones e historial conservados y retirada motivada. Ver [guía y límites](docs/development/patrocinadores-colaboradores.md). Los cobros y la logística ampliada siguen pendientes de Fase 4.

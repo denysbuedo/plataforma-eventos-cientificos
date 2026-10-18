@@ -76,3 +76,5 @@ Los documentos de planificación describen trabajo futuro. No constituyen eviden
 - [Comunicaciones y notificaciones](development/comunicaciones.md) y [ADR-027](adr/ADR-027-comunicaciones.md).
 
 - [Publicaciones científicas: resúmenes, memorias y archivo](development/publicaciones-cientificas.md) y [ADR-028](adr/ADR-028-publicacion-editorial.md).
+
+- [Patrocinadores y colaboradores](development/patrocinadores-colaboradores.md), [ADR-030](adr/ADR-030-patrocinadores-colaboradores.md) y [Fase 4](functional/fase-4.md).

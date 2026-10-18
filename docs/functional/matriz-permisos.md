@@ -88,3 +88,7 @@ La persona autenticada consulta sus registros y emite/renueva/revoca su propia c
 ## Certificados
 
 `certificates-manage` exige organizador del evento: plantillas, candidatos, emisión, descarga administrativa y revocación. La persona activa consulta/descarga solo sus documentos e historial. La consulta pública requiere dominio institucional y código aleatorio; no expone correo, IDs privados, evidencia científica, PDF o motivos de revocación. Cancelar/archivar no impide revocar documentos previamente emitidos.
+
+## Patrocinadores y colaboradores
+
+`sponsorship-manage` exige organizador activo del evento: catálogo, contactos, categorías, compromisos, responsables, publicación y retirada. La asignación de responsable de un compromiso no concede permisos adicionales. Autores, revisores, acreditadores y administradores institucionales sin asignación de organizador no acceden al módulo. El público solo consulta la proyección de reconocimiento vigente, sin contactos ni datos de gestión.

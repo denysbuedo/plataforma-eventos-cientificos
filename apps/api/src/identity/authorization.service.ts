@@ -4,7 +4,7 @@ import { DatabaseService, type DbTransaction } from '../database/database.servic
 import { memberships, people, roleAssignments, attendanceOperators } from '../database/schema.js';
 import { ApiException, type RequestContext } from '../common/http.js';
 
-export type Capability = 'event-read' | 'event-update' | 'event-create' | 'session-read' | 'site-read' | 'site-update' | 'site-publish' | 'organizers-manage' | 'people-manage' | 'organization-manage' | 'invitation-accept' | 'identity-read' | 'submissions-manage' | 'registrations-manage' | 'attendance-team-manage' | 'attendance-manage' | 'certificates-manage' | 'communications-manage' | 'publications-manage';
+export type Capability = 'event-read' | 'event-update' | 'event-create' | 'session-read' | 'site-read' | 'site-update' | 'site-publish' | 'organizers-manage' | 'people-manage' | 'organization-manage' | 'invitation-accept' | 'identity-read' | 'submissions-manage' | 'registrations-manage' | 'attendance-team-manage' | 'attendance-manage' | 'certificates-manage' | 'communications-manage' | 'publications-manage' | 'sponsorship-manage';
 export interface ContextPermissions {
   accreditor: boolean; organizer: boolean; organizationAdmin: boolean; personName: string; roles: string[];
 }
@@ -38,10 +38,10 @@ export class AuthorizationService {
         : capability === 'organizers-manage' ? organizationAdmin
         : capability === 'event-create' ? organizationAdmin && context.hostEventId === null && context.eventId === null
         : capability === 'attendance-manage' ? organizer || accreditor
-        : ['event-update', 'site-update', 'site-publish', 'submissions-manage', 'registrations-manage', 'attendance-team-manage', 'certificates-manage', 'communications-manage', 'publications-manage'].includes(capability) ? organizer
+        : ['event-update', 'site-update', 'site-publish', 'submissions-manage', 'registrations-manage', 'attendance-team-manage', 'certificates-manage', 'communications-manage', 'publications-manage','sponsorship-manage'].includes(capability) ? organizer
         : capability === 'session-read' ? true : organizationAdmin || organizer;
       if (!permitted) throw new ApiException(403, 'FORBIDDEN');
-      await tx.execute(sql`SELECT set_config('sep.attendance_team',${capability==='attendance-team-manage'?'true':'false'},true),set_config('sep.editorial_staff',${capability==='publications-manage'?'true':'false'},true),set_config('sep.communication_staff',${capability==='communications-manage'?'true':'false'},true),set_config('sep.certificate_staff',${capability==='certificates-manage'?'true':'false'},true),set_config('sep.attendance_staff',${capability==='attendance-manage'?'true':'false'},true),set_config('sep.registration_staff',${capability==='registrations-manage'?'true':'false'},true),set_config('sep.submissions_staff', ${capability === 'submissions-manage' ? 'true' : 'false'}, true), set_config('sep.organization_admin', ${organizationAdmin ? 'true' : 'false'}, true)`);
+      await tx.execute(sql`SELECT set_config('sep.sponsorship_staff',${capability==='sponsorship-manage'?'true':'false'},true),set_config('sep.attendance_team',${capability==='attendance-team-manage'?'true':'false'},true),set_config('sep.editorial_staff',${capability==='publications-manage'?'true':'false'},true),set_config('sep.communication_staff',${capability==='communications-manage'?'true':'false'},true),set_config('sep.certificate_staff',${capability==='certificates-manage'?'true':'false'},true),set_config('sep.attendance_staff',${capability==='attendance-manage'?'true':'false'},true),set_config('sep.registration_staff',${capability==='registrations-manage'?'true':'false'},true),set_config('sep.submissions_staff', ${capability === 'submissions-manage' ? 'true' : 'false'}, true), set_config('sep.organization_admin', ${organizationAdmin ? 'true' : 'false'}, true)`);
       return action(tx, { accreditor, organizer, organizationAdmin, personName: principal[0].name, roles: grants.map((grant) => grant.role) });
     });
   }

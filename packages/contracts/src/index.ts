@@ -258,3 +258,22 @@ export const MAX_PUBLICATION_BYTES=50*1024*1024;
 
 export interface AttendanceDashboard {confirmed:number;checkedIn:number;pending:number;sessions:{id:string;titleEs:string;titleEn:string;present:number}[];updatedAt:string}
 export interface AttendanceTeam {data:{personId:string;name:string;active:boolean;revision:number;membershipActive:boolean}[];candidates:{personId:string;name:string}[];history:{id:string;personId:string;actorName:string;active:boolean;reason:string;createdAt:string}[]}
+
+// Sponsorship is operational acknowledgement; contacts and commitments remain private.
+export interface SponsorshipCategory {id:string;nameEs:string;nameEn:string;order:number;active:boolean}
+export interface SponsorshipSettings {titleEs:string;titleEn:string;introEs:string;introEn:string;categories:SponsorshipCategory[]}
+export interface SponsorContact {name:string;position:string;email:string;phone:string}
+export interface SponsorContent {nameEs:string;nameEn:string;countryCode:string;website:string;descriptionEs:string;descriptionEn:string;categoryId:string;logo:string|null;contacts:SponsorContact[];notes:string;active:boolean;publicSelected:boolean;publicPermission:boolean;order:number}
+export interface Sponsor {id:string;revision:number;updatedAt:string;content:SponsorContent}
+export interface SponsorSummary {id:string;revision:number;nameEs:string;nameEn:string;countryCode:string;categoryId:string;active:boolean;publicSelected:boolean;publicPermission:boolean;order:number;hasLogo:boolean;contactCount:number}
+export const SPONSORSHIP_KINDS=['monetary','in_kind','service','other'] as const;
+export const SPONSORSHIP_STATES=['proposed','confirmed','in_progress','fulfilled','cancelled'] as const;
+export interface SponsorCommitmentContent {partnerId:string;title:string;kind:typeof SPONSORSHIP_KINDS[number];status:typeof SPONSORSHIP_STATES[number];amount:string;currency:string;description:string;dueDate:string|null;responsibleId:string|null;responsibleName:string;notes:string;evidence:string}
+export interface SponsorCommitment {id:string;revision:number;updatedAt:string;content:SponsorCommitmentContent}
+export interface PublicSponsor {id:string;nameEs:string;nameEn:string;countryCode:string;website:string;descriptionEs:string;descriptionEn:string;logo:string|null;categoryId:string;order:number}
+export interface SponsorshipSnapshot {titleEs:string;titleEn:string;introEs:string;introEn:string;categories:SponsorshipCategory[];partners:PublicSponsor[]}
+export interface SponsorshipRelease {id:string;edition:number;active:boolean;publishedAt:string;withdrawnAt:string|null;withdrawalReason:string|null;partnerCount:number}
+export interface SponsorshipHistory {id:string;resourceId:string;action:string;actorName:string;reason:string;revision:number;createdAt:string}
+export interface SponsorshipWorkspace {settings:SponsorshipSettings;revision:number;partners:SponsorSummary[];commitments:SponsorCommitment[];responsibles:{id:string;name:string}[];history:SponsorshipHistory[];releases:SponsorshipRelease[];currencies:string[];timezone:string;today:string;editable:boolean}
+export interface SponsorshipPreview {snapshot:SponsorshipSnapshot;fingerprint:string;alreadyPublished:boolean}
+export interface PublicSponsorship {id:string;edition:number;publishedAt:string;snapshot:SponsorshipSnapshot}

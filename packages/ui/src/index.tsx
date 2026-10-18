@@ -43,3 +43,5 @@ export function ScienceArt({ theme, year = '26' }: { theme: 'forest' | 'ocean'; 
 }
 export function StatusBadge({ status, label }: { status: string; label: string }) { return <span className={`status status-${status}`}><i />{label}</span>; }
 export function DotPattern({ style }: { style?: CSSProperties }) { return <div className="dot-pattern" style={style} aria-hidden="true" />; }
+
+export {SponsorshipSection} from './sponsorship.js';
