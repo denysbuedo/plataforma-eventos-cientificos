@@ -12,9 +12,9 @@ Credencial mediante código, búsqueda por el organizador, registro manual de en
 
 Pendientes de ampliación: QR/cámara, delegación a acreditadores, duración/salida, reservas por sesión y evidencia automática de participación virtual.
 
-## Paquete 3: certificados — implementado, prueba funcional pendiente
+## Paquete 3: certificados — implementado, recorrido principal probado en demo
 
-Plantillas bilingües con color, logotipo y firmantes; requisitos por tipo de participación; aprobación y emisión individual/lote de veinte; PDF inmutable, QR y verificación pública; revocación con historial y Mis certificados. Véanse [guía](../development/certificados.md) y [ADR-026](../adr/ADR-026-certificados-verificables.md). La prueba funcional completa queda pendiente.
+Plantillas bilingües con color, logotipo y firmantes; requisitos por tipo de participación; aprobación y emisión individual/lote de veinte; PDF inmutable, QR y verificación pública; revocación con historial y Mis certificados. Véanse [guía](../development/certificados.md) y [ADR-026](../adr/ADR-026-certificados-verificables.md). Emisión individual, PDF/QR, revocación y lote de dos comprobados en demostración; la validación integral continúa pendiente.
 
 ## Ampliaciones posteriores
 

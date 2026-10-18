@@ -1,6 +1,6 @@
 # Certificados
 
-Módulo implementado; prueba funcional completa pendiente según indicación del usuario.
+Módulo implementado, con el recorrido principal comprobado en demostración. La validación integral del módulo continúa pendiente.
 
 ## Organizador
 
@@ -37,6 +37,17 @@ El despliegue debe conservar `apps/api/assets/fonts` junto a `dist`; se incrusta
 
 ## Validación y pendientes
 
-Compilación, análisis estático y generación técnica de una vista previa sin emisión real. La prueba funcional de emisión, lote, revocación, aislamiento y descarga queda pendiente con el usuario. No se han emitido documentos de prueba a participantes reales.
+Compilación, análisis estático y generación de una vista previa. Recorrido principal comprobado en eventos aislados de demostración:
+
+- El usuario emitió un certificado individual, descargó su PDF y abrió la verificación mediante QR.
+- Se revocó ese certificado y se confirmó que el mismo código/enlace muestra «Certificado revocado», conserva el historial y bloquea la descarga normal.
+- Se prepararon dos presentaciones simuladas, con inscripción confirmada, asistencias de prueba y evento finalizado, manteniendo las condiciones de la plantilla.
+- Una segunda evidencia alterada intencionalmente hizo fallar el lote completo, sin conservar el primer certificado ni dejar una emisión parcial.
+- El lote válido emitió dos certificados desde la interfaz. Ambos PDF tienen una página, coinciden con su SHA-256 y sus enlaces muestran vigencia.
+- Repetir el lote devolvió conflicto por duplicados y mantuvo dos certificados.
+- El titular ve ambos documentos en Mis certificados; una cuenta ajena recibe 404 al intentar la descarga privada.
+- El evento original y sus certificados permanecieron sin cambios. Los documentos de prueba están identificados como demostración, sin valor acreditativo.
+
+Estas comprobaciones no sustituyen la validación integral de roles, concurrencia, límites, edición de plantillas, caracteres/imágenes y demás combinaciones del módulo.
 
 Quedan para ampliaciones: editor gráfico libre, firma digital institucional, emisión en segundo plano/volúmenes superiores a los límites documentados y envío por correo. Las reglas iniciales usan asistencia manual y no calculan porcentaje de permanencia ni asistencia virtual automática.
