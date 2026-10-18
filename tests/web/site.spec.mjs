@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 test('an organizer saves a private draft and explicitly publishes it', async ({ page, context }) => {
-  await page.goto('/es');
+  await page.goto('/es?event=a1&tab=content');
   await page.getByRole('button', { name: 'Entrar al espacio' }).click();
   await expect(page).toHaveURL(/event=a1/);
   await page.getByRole('link', { name: 'Contenido', exact: true }).first().click();

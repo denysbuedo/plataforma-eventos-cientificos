@@ -1,5 +1,7 @@
 const messages = {
   es: {
+    ACCESS_SELF_REVOKE:'No puedes retirarte tu propio acceso de administración. Solicita el cambio a otro administrador.',
+    ACCESS_LAST_ADMIN:'La organización debe conservar al menos un administrador activo.',
     PAYMENT_INVALID:'Revisa la tarifa, moneda, medio de pago y estado del cobro. No incluyas claves privadas en los datos públicos.',
     PAYMENT_DISABLED:'Los cobros no están habilitados para este evento.',
     PAYMENT_DUPLICATE:'Ya existe este cobro o la referencia de pago se utilizó en otro cobro.',
@@ -75,6 +77,8 @@ const messages = {
     INTERNAL_ERROR: 'No se pudo completar la solicitud.',
   },
   en: {
+    ACCESS_SELF_REVOKE:'You cannot remove your own administrator access. Ask another administrator to make this change.',
+    ACCESS_LAST_ADMIN:'The organization must retain at least one active administrator.',
     PAYMENT_INVALID:'Check the fee, currency, payment method and charge status. Never include private credentials in public details.',
     PAYMENT_DISABLED:'Payments are not enabled for this event.',
     PAYMENT_DUPLICATE:'This charge already exists or this payment reference was used for another charge.',

@@ -27,7 +27,7 @@ export const participantCopy = {
   en: { space:'My workspace', account:'My account options', home:'SEP · My workspace home', navigation:'Event participation', public:'Go to public portal', noEvent:'Select an event from its portal to view your works and authorship.' },
 } as const;
 export default function ParticipantShell({children,person,locale,contextKey,eventId,tab,publicUrl,busy=false,onNavigate,onCurrentWorks}: {
-  children:ReactNode; person:{name:string}; locale:Locale; contextKey:string; eventId?:string|null; tab:'payments'|'sessions'|'posters'|'works'|'authorship'|'profile'|'reviews'|'participation'|'registration'|'accreditation'|'certificates'|'notifications'|'publications'|'attendance'; publicUrl:string;
+  children:ReactNode; person:{name:string}; locale:Locale; contextKey:string; eventId?:string|null; tab:'access'|'payments'|'sessions'|'posters'|'works'|'authorship'|'profile'|'reviews'|'participation'|'registration'|'accreditation'|'certificates'|'notifications'|'publications'|'attendance'; publicUrl:string;
   busy?:boolean; onNavigate?:Guard; onCurrentWorks?:()=>void;
 }) {
   const text=webCopy[locale], copy=participantCopy[locale];
@@ -37,8 +37,8 @@ export default function ParticipantShell({children,person,locale,contextKey,even
   const registeredGuard=useRef<Guard|null>(null), account=useRef<HTMLDetailsElement>(null);
   const register=useCallback((guard:Guard|null)=>{registeredGuard.current=guard;},[]);
   const prefix=`/${locale}?event=${encodeURIComponent(contextKey)}&tab=`;
-  const home=eventId?prefix+'works':prefix+'profile';
-  const pageName=tab==='payments'?(locale==='es'?'Mis pagos':'My payments'):tab==='sessions'?(locale==='es'?'Mis sesiones':'My sessions'):tab==='posters'?(locale==='es'?'Mis pósteres':'My posters'):tab==='attendance'?(locale==='es'?'Acreditación del evento':'Event accreditation'):tab==='publications'?editorialCopy[locale].mine:tab==='notifications'?communicationCopy[locale].notifications:tab==='certificates'?certificateCopy[locale].mine:tab==='accreditation'?attendanceCopy[locale].mine:tab==='registration'?registrationCopy[locale].mine:tab==='participation'?programCopy[locale].participation:tab==='reviews'?reviewCopy[locale].mine:tab==='profile'?text.myProfile:tab==='works'?text.myWorks:authorshipCopy[locale].title;
+  const home=prefix+'access';
+  const pageName=tab==='access'?(locale==='es'?'Mis accesos':'My access'):tab==='payments'?(locale==='es'?'Mis pagos':'My payments'):tab==='sessions'?(locale==='es'?'Mis sesiones':'My sessions'):tab==='posters'?(locale==='es'?'Mis pósteres':'My posters'):tab==='attendance'?(locale==='es'?'Acreditación del evento':'Event accreditation'):tab==='publications'?editorialCopy[locale].mine:tab==='notifications'?communicationCopy[locale].notifications:tab==='certificates'?certificateCopy[locale].mine:tab==='accreditation'?attendanceCopy[locale].mine:tab==='registration'?registrationCopy[locale].mine:tab==='participation'?programCopy[locale].participation:tab==='reviews'?reviewCopy[locale].mine:tab==='profile'?text.myProfile:tab==='works'?text.myWorks:authorshipCopy[locale].title;
   const names=person.name.trim().split(/\s+/u);
   const initials=[names[0],...(names.length>1?[names.at(-1)!]:[])].map(name=>Array.from(name)[0]??'').join('').toLocaleUpperCase(locale);
   function guard(action:()=>void) { if(busy||signingOut)return; (onNavigate??registeredGuard.current??((next:()=>void)=>next()))(action); }
@@ -56,7 +56,7 @@ export default function ParticipantShell({children,person,locale,contextKey,even
   },[]);
   return <NavigationGuard.Provider value={register}><div className="admin-shell participant-shell"><a className="skip-link" href="#main">{text.skip}</a>
     <aside className="sidebar"><a className="participant-brand" href={home} aria-label={copy.home} onClick={event=>{event.preventDefault();if(tab==='works'&&onCurrentWorks)onCurrentWorks();else navigate(home);}}><Brand compact/></a><p className="workspace-label">{copy.space}</p>
-      <nav aria-label={copy.navigation}>{eventId?<>
+      <nav aria-label={copy.navigation}><a href={prefix+'access'} className={tab==='access'?'active':undefined} aria-current={tab==='access'?'page':undefined} onClick={event=>{event.preventDefault();navigate(prefix+'access');}}><Icon name="grid" size={18}/><span>{locale==='es'?'Mis accesos':'My access'}</span></a>{eventId?<>
         {canAccredit&&<a href={prefix+'attendance'} className={tab==='attendance'?'active':undefined} aria-current={tab==='attendance'?'page':undefined} onClick={event=>{event.preventDefault();navigate(prefix+'attendance');}}><Icon name="check" size={18}/><span>{locale==='es'?'Acreditación del evento':'Event accreditation'}</span></a>}
         <a href={prefix+'works'} className={tab==='works'?'active':undefined} aria-current={tab==='works'?'page':undefined} onClick={event=>{event.preventDefault();if(tab==='works'&&onCurrentWorks)onCurrentWorks();else navigate(prefix+'works');}}><Icon name="book" size={18}/><span><WorkNoticesNav eventId={eventId} contextKey={contextKey} locale={locale}/></span></a>
         <a href={prefix+'registration'} className={tab==='registration'?'active':undefined} aria-current={tab==='registration'?'page':undefined} onClick={event=>{event.preventDefault();navigate(prefix+'registration');}}><Icon name="check" size={18}/><span>{registrationCopy[locale].mine}</span></a>
@@ -69,7 +69,7 @@ export default function ParticipantShell({children,person,locale,contextKey,even
         {(['sessions','posters']as const).map(k=><a key={k} href={prefix+k} className={tab===k?'active':undefined} aria-current={tab===k?'page':undefined} onClick={event=>{event.preventDefault();navigate(prefix+k);}}><Icon name={k==='sessions'?'calendar':'book'} size={18}/><span>{k==='sessions'?(locale==='es'?'Mis sesiones':'My sessions'):(locale==='es'?'Mis pósteres':'My posters')}</span></a>)}
         <a href={prefix+'publications'} className={tab==='publications'?'active':undefined} aria-current={tab==='publications'?'page':undefined} onClick={event=>{event.preventDefault();navigate(prefix+'publications');}}><Icon name="book" size={18}/><span>{editorialCopy[locale].mine}</span></a>
         <a href={prefix+'notifications'} className={tab==='notifications'?'active':undefined} aria-current={tab==='notifications'?'page':undefined} onClick={event=>{event.preventDefault();navigate(prefix+'notifications');}}><Icon name="book" size={18}/><span><NotificationNav eventId={eventId} contextKey={contextKey} locale={locale}/></span></a>
-      </>:<p className="participant-no-event">{copy.noEvent}</p>}</nav>
+      </>:tab!=='access'?<p className="participant-no-event">{copy.noEvent}</p>:null}</nav>
       {publicUrl&&<div className="sidebar-bottom"><a href={publicUrl} onClick={event=>{event.preventDefault();navigate(publicUrl);}}><Icon name="external" size={17}/><span>{text.publicPortal}</span></a></div>}
     </aside>
     <div className="admin-area"><header className="admin-topbar participant-topbar"><div className="participant-breadcrumb"><span>{copy.space}</span><span aria-hidden="true">/</span><strong>{pageName}</strong></div>

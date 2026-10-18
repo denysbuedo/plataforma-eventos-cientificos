@@ -308,3 +308,6 @@ export interface EventCharge {id:string;personId:string;registrationId:string;na
 export interface PaymentHistory {id:string;chargeId:string;actorName:string;action:string;reason:string;createdAt:string}
 export interface PaymentWorkspace {revision:number;settings:PaymentSettings;charges:EventCharge[];history:PaymentHistory[];registrations:{id:string;personId:string;name:string;status:string}[];settingsHistory:{id:string;revision:number;actorName:string;reason:string;createdAt:string}[];editable:boolean;totals:{currency:PaymentCurrency;paid:string;refunded:string;due:string}[]}
 export interface MyPayments {revision:number;settings:PaymentSettings;charges:EventCharge[];history:PaymentHistory[];registrationId:string|null}
+
+export interface MyAccess {person:{id:string;name:string};organizationAdmin:boolean;organizationId:string;events:{id:string;nameEs:string;nameEn:string;status:string;roles:string[];reviewStatus:string|null;canOrganize:boolean;canAccredit:boolean}[]}
+export interface OrganizationAccess {actorId:string;people:{personId:string;name:string;organizationAdmin:boolean;adminVersion:string;events:{id:string;nameEs:string;nameEn:string;roles:string[]}[]}[];history:{id:string;actorName:string;personName:string;active:boolean;reason:string;createdAt:string}[]}

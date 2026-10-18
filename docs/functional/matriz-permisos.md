@@ -1,94 +1,35 @@
-# Matriz inicial de permisos
+# Matriz de permisos implementados
 
-Estado: matriz objetivo con subconjunto implementado. La API incorpora lectura de metadatos, creación de borradores por administrador, edición/publicación por organizador y gestión de organizadores por administrador de organización. Consultar el [OpenAPI](../api/openapi.json) y el [incremento de Fase 1](fase-1.md); el resto de capacidades continúa propuesto.
+Actualizado: 18 de octubre de 2026. Reglas de negocio y confidencialidad prevalecen sobre un rol. Los permisos no se heredan entre organizaciones o eventos. La interfaz refleja accesos; la autorización se repite en servidor.
 
-## Reglas generales
-
-Denegar por defecto. Autorizar requiere principal válido cuando corresponda, organización/evento coincidentes, membresía y asignación activas, capacidad explícita y condiciones de estado, propiedad y confidencialidad satisfechas. Un módulo deshabilitado no concede acceso aunque exista el rol.
-
-Los permisos de diferentes eventos nunca se combinan. Dentro de un mismo ámbito pueden combinarse capacidades compatibles; un conflicto de intereses o una prohibición de confidencialidad prevalece. Ningún rol permite escribir directamente estados o propiedades protegidas para evitar el flujo de negocio.
-
-## Capacidades mínimas
-
-`Sí` habilita solo el ámbito indicado; `Explícito` exige además asignación del rol correspondiente en ese evento; `Propio` exige titularidad. Cualquier celda negativa deniega, salvo otro rol válido en el mismo contexto.
-
-| Acción | Superadmin técnico | Admin. organización | Organizador | Miembro de evento sin rol gestor | Público |
+| Acción | Admin. organización | Organizador de evento | Revisor | Acreditador | Cuenta autenticada |
 |---|---|---|---|---|---|
-| Aprovisionar o suspender organizaciones | Sí, plataforma | No | No | No | No |
-| Modificar configuración de organización | No | Sí, su organización | No | No | No |
-| Crear serie, edición o evento | No | Sí, su organización | No | No | No |
-| Consultar metadatos administrativos de eventos | No | Sí, su organización | Sí, su evento | No | No |
-| Editar configuración de evento | No | Explícito | Sí, su evento | No | No |
-| Gestionar dominios de organización | No | Sí, su organización | No | No | No |
-| Registrar o activar dominios de evento | No | Sí, su organización | No | No | No |
-| Designar organizadores | No | Sí, su organización | No | No | No |
-| Gestionar roles operativos delegables | No | Explícito | Sí, su evento | No | No |
-| Leer datos personales operativos | No | Explícito | Mínimos de su evento | Propio | No |
-| Consultar/asignar roles de plataforma | Sí, plataforma | No | No | No | No |
-| Consultar contenido publicado | Sí | Sí | Sí | Sí | Sí |
-| Consultar/modificar perfil personal | Propio | Propio | Propio | Propio | No |
+| Perfil y accesos propios | Propio | Propio | Propio | Propio | Propio |
+| Organización, dominios y personas/invitaciones | Su organización | No | No | No | No |
+| Asignar/retirar administradores | Su organización; protección de continuidad | No | No | No | No |
+| Crear eventos y designar organizadores | Su organización | No, salvo que también sea admin. | No | No | No |
+| Leer metadatos administrativos | Su organización | Su evento | No | No | No |
+| Editar/publicar evento y convocatoria | Solo con asignación de organizador | Su evento | No | No | No |
+| Envíos, dictámenes y comité | Solo con asignación de organizador | Su evento | Evaluaciones asignadas y respuestas habilitadas | No | Trabajos propios / gestión aceptada |
+| Programa, inscripción, logística y reservas administrativas | Solo con asignación de organizador | Su evento | No | No | Datos/operaciones personales autorizadas |
+| Registrar presencia | Solo con asignación de organizador/acreditador | Su evento | No | Delegación activa de su evento | No |
+| Corregir asistencia y gestionar acreditadores | Solo con asignación de organizador | Su evento | No | No | No |
+| Emitir/revocar certificados | Solo con asignación de organizador | Su evento | No | No | Consultar/descargar propios |
+| Publicaciones y pósteres | Solo con asignación de organizador | Aprobación y publicación | No | No | Consentimiento propio |
+| Patrocinios, cobros e informes | Solo con asignación de organizador | Su evento | No | No | Cobros y avisos propios |
 
-Publicar o archivar un evento será una acción separada de editarlo, reservada al organizador en su evento y auditada. Suspender una organización es una operación técnica distinta del estado editorial de sus eventos.
+## Distinciones
 
-En Fase 0 el organizador es el rol mínimo para probar gestión de evento. Los roles operativos siguientes se documentan para evolución; sus capacidades no se activan hasta implementar cada módulo. Los roles delegables nunca incluyen superadmin técnico ni administrador de organización. La gestión de organizadores impide retirar la asignación propia y la del último organizador activo; serializa los cambios mediante el bloqueo del evento. Los candidatos deben tener una membresía activa en la misma organización y una persona activa. La validación funcional de este incremento queda pendiente por indicación del propietario.
+- RedUniv/Google autentican la cuenta; sus roles no asignan responsabilidades del evento. El rol de acceso de cliente Keycloak habilita la aplicación, no la gestión de SEP.
+- Autor y autor de correspondencia son relaciones del trabajo, no roles globales seleccionables en el login. Editar/re-enviar exige titularidad o gestión compartida aceptada y estado/plazo válido.
+- Participación básica no equivale a inscripción confirmada. La inscripción no acredita asistencia ni concede permisos científicos.
+- Ser revisor requiere invitación aceptada; acceder a una evaluación exige asignación y ausencia de conflicto de interés. La decisión final corresponde al organizador y sus excepciones quedan auditadas.
+- El acreditador tiene consulta operativa mínima y registro de entradas; no puede corregir, exportar, decidir inscripciones ni leer manuscritos.
+- Datos públicos provienen de publicaciones autorizadas y no de bandejas privadas. El PDF público de un póster exige consentimiento y aprobación, independientes de su aceptación científica.
+- Exención/anulación/reembolso financiero y verificación de pago solo corresponden al organizador en el alcance actual. Una declaración del participante no confirma un pago.
 
-## Catálogo de roles de evento y límites futuros
+## Administración de accesos
 
-| Rol | Capacidades previstas | Condiciones y límites |
-|---|---|---|
-| Organizador | Configuración y coordinación operativa. | No recibe por defecto identidades protegidas ni revisiones confidenciales. |
-| Secretaría | Inscripciones, comunicaciones y acreditación. | Acceso mínimo a participantes; sin dictámenes científicos. |
-| Coordinador científico | Configurar evaluación, asignar y decidir. | Áreas asignadas, conflictos y auditoría; anonimato según política aprobada. |
-| Miembro de comité | Consultar y debatir expedientes asignados. | No decide ni accede a todo el evento por el nombre del rol. |
-| Revisor | Leer material anonimizado y completar evaluaciones. | Asignación vigente, plazo, ausencia de conflicto; no evalúa trabajos propios. |
-| Editor | Preparar y publicar memorias. | Autorización editorial y derechos; sin acceso automático a informes de revisión. |
-| Autor/ponente | Gestionar contribuciones propias y presentación. | Titularidad/correspondencia y estado; no modifica autorías o versiones cerradas sin procedimiento. |
-| Participante | Inscripción, agenda y documentos propios. | No accede a listas privadas ni a certificados de terceros. |
-| Acreditador | Verificar credenciales y registrar acceso. | Evento, sede/sesión y dispositivo autorizados; datos mínimos. |
-| Público | Leer programa, pósteres, memorias y verificación pública permitida. | Solo contenido publicado y campos permitidos; no es una asignación persistida. |
+Ver [login, usuarios y roles](../development/login-usuarios-roles.md). La asignación de administrador exige motivo, versión vigente y auditoría. Se bloquean retirada propia y ausencia de administrador alternativo. Organizar un evento requiere asignación explícita aunque la persona administre la organización.
 
-Los nombres autor y participante no sustituyen relaciones de autoría e inscripción. Tener el rol de autor no concede acceso a todas las contribuciones; tener una inscripción no concede capacidades de revisión.
-
-## Casos de autorización para la futura suite
-
-| Caso | Resultado esperado |
-|---|---|
-| Organizador de A1 cambia el ID para editar A2, ambos de organización A. | Denegado; aislamiento por evento. |
-| Organizador de A1 solicita un recurso de B1. | Denegado; aislamiento por organización. |
-| Misma persona es organizadora de A1 y participante de B1 e intenta editar B1. | Denegado; no combinar roles entre contextos. |
-| Admin. de A crea un evento en A. | Permitido; capacidad de organización, con auditoría. |
-| Admin. de A intenta acceder a una revisión privada sin rol científico de evento. | Denegado. |
-| Superadmin técnico intenta descargar un trabajo inédito. | Denegado por defecto. |
-| Usuario cambia host, cabecera, query o cuerpo para simular otro tenant. | Denegado; validar contexto y recurso en servidor. |
-| Membresía o rol revocado conserva una sesión autenticada. | Denegado al reevaluar asignaciones; no confiar solo en roles del token. |
-| Usuario sin membresía solicita contenido público publicado. | Permitido, únicamente proyección pública. |
-| Autor solicita revisión privada del comité o trabajo de otro autor. | Denegado aunque comparta evento. |
-| Revisor asignado tiene conflicto de intereses. | Denegado y registrado, incluso con rol activo. |
-| Organizador intenta delegar administrador de organización. | Denegado por ámbito y lista de delegación. |
-
-Los casos científicos corresponden a fases posteriores. Cada operación implementada necesitará DTO, respuesta de error y pruebas positivas y negativas; esta tabla no acredita ejecución.
-
-Referencias: [modelo de dominio](../architecture/modelo-dominio.md), [ADR-002](../adr/ADR-002-tenancy.md), [Fase 0](fase-0.md).
-
-## Inscripciones
-
-| Operación | Permiso |
-|---|---|
-| Consultar recepción publicada | Público; sin lista de participantes |
-| Solicitar, consultar y cancelar inscripción propia | Persona activa autenticada |
-| Configurar/publicar/retirar recepción | Organizador del evento; capacidad `registrations-manage` |
-| Listar participantes y decidir solicitudes | Organizador del evento; motivo e historial obligatorio |
-
-Ser autor, revisor, participante o administrador de organización sin asignación de organizador no concede gestión de inscripciones. La inscripción no crea roles ni concede acceso científico.
-
-## Acreditación y asistencia
-
-La persona autenticada consulta sus registros y emite/renueva/revoca su propia credencial si la inscripción está confirmada. El organizador y el acreditador delegado activo del evento, con `attendance-manage`, consultan la bandeja, buscan credenciales y registran presencia actual. Solo el organizador corrige evidencias, gestiona el equipo (`attendance-team-manage`) y exporta. Esta capacidad no activa acceso a manuscritos, decisiones de inscripción ni revisión científica. La delegación requiere membresía activa por evento y queda auditada con motivo; no concede capacidades científicas ni administrativas.
-
-## Certificados
-
-`certificates-manage` exige organizador del evento: plantillas, candidatos, emisión, descarga administrativa y revocación. La persona activa consulta/descarga solo sus documentos e historial. La consulta pública requiere dominio institucional y código aleatorio; no expone correo, IDs privados, evidencia científica, PDF o motivos de revocación. Cancelar/archivar no impide revocar documentos previamente emitidos.
-
-## Patrocinadores y colaboradores
-
-`sponsorship-manage` exige organizador activo del evento: catálogo, contactos, categorías, compromisos, responsables, publicación y retirada. La asignación de responsable de un compromiso no concede permisos adicionales. Autores, revisores, acreditadores y administradores institucionales sin asignación de organizador no acceden al módulo. El público solo consulta la proyección de reconocimiento vigente, sin contactos ni datos de gestión.
+Los roles de plataforma, el constructor libre de permisos y las delegaciones de caja/secretaría no están implementados. No deben simularse mediante campos de cliente o ampliando silenciosamente los permisos de acreditadores/revisores.

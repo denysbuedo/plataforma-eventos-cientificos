@@ -1,3 +1,5 @@
+import MyAccessView from './my-access';
+import type {MyAccess} from '@sep/contracts';
 import PaymentsManager from './payments-workspace';
 import MySessions from './my-sessions';
 import PosterManager from './poster-workspace';
@@ -38,9 +40,11 @@ export default async function AdminPage({ params, searchParams }: { params: Prom
   const cookie = (await cookies()).get(SESSION_COOKIE)?.value;
   const token = await tokenForCookie(cookie);
   const query = await searchParams;
-  const institutional = oidcEnabled(); const contextKey = query.event ?? (institutional ? 'org' : 'a1');
-  const returnTo = `/${locale}?event=${encodeURIComponent(contextKey)}${query.tab ? `&tab=${encodeURIComponent(query.tab)}` : ''}`;
-  const login = <Login locale={locale} publicUrl={publicUrl} enabled={!!config} preserveContext={!!query.event||!!query.tab} accreditorDemo={!!config?.events.attendanceDemo} institutional={institutional} googleEnabled={googleLoginEnabled()} redunivEnabled={redunivLoginEnabled()} returnTo={returnTo} authError={!!query.authError} logoutError={!!query.logoutError} />;
+  const institutional = oidcEnabled(); const contextKey = query.event ?? (institutional ? 'org' : 'orgA');
+  const returnTo = `/${locale}?event=${encodeURIComponent(contextKey)}${query.tab ? `&tab=${encodeURIComponent(query.tab)}` : '&tab=access'}`;
+  const accounts:{id:string;name:string}[]=[];
+  if(config&&!token){const binding=bindingFor((await headers()).get('host')??'',query.event??'orgA');const loaded=await Promise.all(Object.keys(config.tokens).filter(id=>['mixed','operator','admin','outsider','reviewer','reviewer2'].includes(id)).map(async id=>{try{const v=await apiRequest<{person:{name:string}}>(binding,'me',{token:config.tokens[id],locale});return {id,name:v.person.name};}catch{return null;}}));accounts.push(...loaded.filter((v):v is {id:string;name:string}=>!!v));}
+  const login = <Login locale={locale} publicUrl={publicUrl} enabled={!!config} preserveContext={!!query.event||!!query.tab} accounts={accounts} institutional={institutional} googleEnabled={googleLoginEnabled()} redunivEnabled={redunivLoginEnabled()} returnTo={returnTo} authError={!!query.authError} logoutError={!!query.logoutError} />;
   if (!token) return login;
   let profile: { id: string; name: string } | null = null;
   let session: SessionView | null = null; let events: EventPage = { data: [], limit: 20, offset: 0 }; let site: SiteDraft | null = null; let denied = false;
@@ -51,6 +55,10 @@ export default async function AdminPage({ params, searchParams }: { params: Prom
   let configuration: EventConfiguration | null = null; let scientificCall: ScientificCallDraft | null = null; let inbox: SubmissionPage | null = null;
   try {
     binding = bindingFor((await headers()).get('host') ?? '', query.event);
+    if(!query.tab||query.tab==='access'){
+      const value=await apiRequest<MyAccess>(binding,'me/access',{token,locale});
+      return <ParticipantShell person={value.person} locale={locale} contextKey={contextKey} eventId={binding.eventId} tab="access" publicUrl={publicUrl?`${publicUrl}/${locale}?event=${encodeURIComponent(contextKey)}`:''}><MyAccessView value={value} locale={locale} contextKey={contextKey} contextEvents={config?.events??{}} demo={!!config}/></ParticipantShell>;
+    }
     if (query.tab === 'profile') {
       const person=(await apiRequest<{person:AuthorAccount}>(binding,'me',{token,locale})).person;
       return <Profile person={person} locale={locale} contextKey={contextKey} eventId={binding.eventId} publicUrl={publicUrl?`${publicUrl}/${locale}?event=${encodeURIComponent(contextKey)}`:''} error={!!query.orcidError}/>;

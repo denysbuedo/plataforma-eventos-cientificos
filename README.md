@@ -198,3 +198,5 @@ El programa distingue actividades científicas (simposios, talleres y otras), se
 - [Galería de pósteres y consentimiento de publicación](docs/development/galeria-posteres.md).
 - [Cobros: efectivo, Transfermóvil/Enzona y catálogo de pasarelas; CUP, USD y EUR](docs/development/cobros-pagos.md). La confirmación automática de proveedores requiere adaptadores específicos.
 - [Indicadores y exportaciones](docs/development/indicadores-informes.md).
+
+- [Login, Mis accesos y usuarios/roles](docs/development/login-usuarios-roles.md): la demo entra con cuentas independientes; los permisos se asignan en la plataforma y por evento.

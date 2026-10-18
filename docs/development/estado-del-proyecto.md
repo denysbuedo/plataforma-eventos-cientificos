@@ -7,7 +7,7 @@ El ciclo principal dispone de implementación funcional y demostración local. E
 | Módulo | Implementado | Pendiente relevante |
 |---|---|---|
 | Organizaciones y eventos | Organizaciones, series/ediciones, responsables, dominios y configuración | DNS/TLS reales, revisión operativa |
-| Identidad y perfil | Acceso RedUniv/Google implementado, perfil académico/científico, ORCID, identidad reutilizable | Activación institucional y Google real; ORCID de producción |
+| Identidad y perfil | Acceso RedUniv/Google implementado, Mis accesos, administración auditada de usuarios/roles, perfil académico/científico, ORCID, identidad reutilizable | Activación institucional y Google real; ORCID de producción |
 | Portal y convocatoria | CMS bilingüe, publicación independiente, temas y reglas científicas | Contenido institucional y validación de accesibilidad completa |
 | Trabajos y autorías | Borradores, autores, reconocimiento, gestión compartida, PDF, versiones y correcciones | Prueba integral de todos los estados y concurrencia |
 | Revisión científica | Comité, conflictos, asignaciones, evaluaciones, respuesta del autor, valoración y dictamen auditado | Doble ciego y otras modalidades avanzadas; revisión funcional completa |

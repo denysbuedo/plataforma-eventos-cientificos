@@ -90,3 +90,5 @@ Los documentos de planificación describen trabajo futuro. No constituyen eviden
 
 - [ADR-031: logística, reservas y pósteres](adr/ADR-031-logistica-reservas-posteres.md).
 - [ADR-032: cobros configurables multimoneda](adr/ADR-032-cobros-genericos-multimoneda.md).
+
+- [Inicio de sesión, Mis accesos y administración de usuarios/roles](development/login-usuarios-roles.md).

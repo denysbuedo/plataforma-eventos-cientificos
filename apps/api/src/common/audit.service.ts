@@ -5,7 +5,7 @@ import { auditEntries } from '../database/schema.js';
 import type { RequestContext } from './http.js';
 @Injectable()
 export class AuditService {
-  async organization(tx: DbTransaction, context: RequestContext, action: 'identity.profile.updated' | 'identity.orcid.connected' | 'invitation.created' | 'invitation.revoked' | 'invitation.accepted' | 'organization.updated' | 'domain.registered' | 'domain.verified' | 'domain.activated' | 'domain.deactivated' | 'domain.deleted', resourceId: string): Promise<void> {
+  async organization(tx: DbTransaction, context: RequestContext, action: 'access.admin.assigned'|'access.admin.revoked'|'identity.profile.updated' | 'identity.orcid.connected' | 'invitation.created' | 'invitation.revoked' | 'invitation.accepted' | 'organization.updated' | 'domain.registered' | 'domain.verified' | 'domain.activated' | 'domain.deactivated' | 'domain.deleted', resourceId: string): Promise<void> {
     if (!context.personId) throw new Error('Audit actor missing');
     await tx.insert(auditEntries).values({ id: randomUUID(), organizationId: context.organizationId, eventId: null,
       personId: context.personId, action, resourceId, requestId: context.requestId });

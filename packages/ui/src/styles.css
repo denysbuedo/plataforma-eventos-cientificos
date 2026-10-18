@@ -636,3 +636,9 @@ dialog::backdrop { background:rgb(18 36 28 / 45%); }
 .module-workspace .notice{background:transparent;box-shadow:none;border:0;border-bottom:1px solid var(--line,#e3e7e5);border-radius:0;padding:12px 0}
 .module-workspace .registration-line>.field{flex:1;min-width:0}
 @media(max-width:640px){.module-workspace .form-grid,.poster-page .form-grid{grid-template-columns:1fr}.module-workspace .registration-line{flex-wrap:wrap}.module-workspace .profile-card-heading .editor-actions{flex-wrap:wrap}}
+
+.access-event-row{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:12px 0;border-top:1px solid var(--line,#e3e7e5)}
+.access-event-row p{margin:6px 0 0}
+@media(max-width:640px){.access-event-row{align-items:flex-start;flex-direction:column}}
+
+.access-home{display:grid;gap:20px}.access-home>.admin-heading{margin-bottom:0}.access-home>.panel>h2{font-family:inherit;font-size:19px;line-height:1.4;margin:0 0 14px}
