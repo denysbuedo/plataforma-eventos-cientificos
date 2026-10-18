@@ -1,5 +1,9 @@
 const messages = {
   es: {
+    CERTIFICATE_INVALID:'Revisa la plantilla, las imágenes y los campos de texto del certificado.',
+    CERTIFICATE_INELIGIBLE:'Las evidencias o los requisitos cambiaron. Actualiza los candidatos antes de emitir.',
+    CERTIFICATE_DUPLICATE:'Ya hay un certificado vigente para esta persona, plantilla y participación.',
+    CERTIFICATE_STATE:'El certificado no admite esta operación o el evento está cancelado o archivado.',
     ATTENDANCE_INVALID:'La acreditación requiere una inscripción confirmada y una modalidad compatible.',
     ATTENDANCE_TIME:'La fecha de presencia debe estar dentro del evento o sesión y no puede ser futura.',
     ATTENDANCE_EVENT_REQUIRED:'Registra primero la entrada al evento. Para anularla, anula antes las presencias en sesiones.',
@@ -61,6 +65,10 @@ const messages = {
     INTERNAL_ERROR: 'No se pudo completar la solicitud.',
   },
   en: {
+    CERTIFICATE_INVALID:'Review the certificate template, images and text fields.',
+    CERTIFICATE_INELIGIBLE:'Evidence or requirements changed. Refresh candidates before issuing.',
+    CERTIFICATE_DUPLICATE:'An active certificate already exists for this person, template and participation.',
+    CERTIFICATE_STATE:'This operation is unavailable or the event is cancelled or archived.',
     ATTENDANCE_INVALID:'Accreditation requires a confirmed registration and a compatible attendance mode.',
     ATTENDANCE_TIME:'Attendance time must fall within the event or session and cannot be in the future.',
     ATTENDANCE_EVENT_REQUIRED:'Record event entry first. Void session attendance before voiding event entry.',

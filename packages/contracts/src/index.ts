@@ -214,3 +214,17 @@ export interface AttendanceHistory {id:string;recordId:string;action:string;acto
 export interface AttendanceDetail {registration:RegistrationSummary|null;credential:AttendanceCredential|null;records:AttendanceRecord[];history:AttendanceHistory[]}
 export interface AttendanceSession {id:string;titleEs:string;titleEn:string;date:string;startsAt:string;endsAt:string;modality:'in_person'|'virtual'|'hybrid';room:string}
 export interface AttendanceWorkspace {data:(RegistrationSummary&{eventPresent:boolean;sessionCount:number})[];total:number;limit:number;offset:number;sessions:AttendanceSession[];timezone:string;startDate:string|null;endDate:string|null}
+
+export const CERTIFICATE_KINDS=['attendance','presentation','review','organization','custom'] as const;
+export type CertificateKind=typeof CERTIFICATE_KINDS[number];
+export interface CertificateSigner {name:string;position:string;image:string|null}
+export interface CertificateTemplateContent {name:string;kind:CertificateKind;active:boolean;afterEvent:boolean;titleEs:string;titleEn:string;bodyEs:string;bodyEn:string;participationEs:string;participationEn:string;accent:string;logo:string|null;signers:CertificateSigner[];verificationOrigin:string}
+export interface CertificateTemplate {id:string;revision:number;content:CertificateTemplateContent}
+export interface CertificateTemplateSummary {id:string;revision:number;name:string;kind:CertificateKind;active:boolean}
+export interface CertificateCandidate {personId:string;name:string;subjectKey:string;subjectTitle:string;eligible:boolean;missing:string[];evidenceHash:string}
+export interface CertificateCandidatePage {data:CertificateCandidate[];total:number;limit:number;offset:number;templateRevision:number}
+export interface CertificateSummary {id:string;templateId:string;personId:string;name:string;kind:CertificateKind;participation:string;subjectTitle:string;status:'issued'|'revoked';revision:number;code:string;verificationUrl:string;issuedAt:string;revokedAt:string|null;sha256:string;locale:'es'|'en'}
+export interface CertificatePage {data:CertificateSummary[];total:number;limit:number;offset:number}
+export interface CertificateHistory {id:string;action:string;actorName:string;reason:string;createdAt:string}
+export interface CertificateDetail {certificate:CertificateSummary;history:CertificateHistory[]}
+export interface PublicCertificate {name:string;event:string;title:string;participation:string;subjectTitle:string;status:'issued'|'revoked';code:string;issuedAt:string;revokedAt:string|null;sha256:string}

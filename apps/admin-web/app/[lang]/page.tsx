@@ -1,3 +1,5 @@
+import MyCertificates from './my-certificates';
+import type {CertificatePage} from '@sep/contracts';
 import MyAttendance from './my-attendance';
 import type {AttendanceDetail} from '@sep/contracts';
 import MyRegistrationView from './my-registration';
@@ -46,6 +48,11 @@ export default async function AdminPage({ params, searchParams }: { params: Prom
     if (query.tab === 'profile') {
       const person=(await apiRequest<{person:AuthorAccount}>(binding,'me',{token,locale})).person;
       return <Profile person={person} locale={locale} contextKey={contextKey} eventId={binding.eventId} publicUrl={publicUrl?`${publicUrl}/${locale}?event=${encodeURIComponent(contextKey)}`:''} error={!!query.orcidError}/>;
+    }
+    if(query.tab==='certificates'&&binding.eventId){
+      const person=(await apiRequest<{person:AuthorAccount}>(binding,'me',{token,locale})).person;
+      const value=await apiRequest<CertificatePage>(binding,`events/${binding.eventId}/certificates/mine`,{token,locale});
+      return <ParticipantShell person={person} locale={locale} contextKey={contextKey} eventId={binding.eventId} tab="certificates" publicUrl={publicUrl?`${publicUrl}/${locale}?event=${encodeURIComponent(contextKey)}`:''}><MyCertificates initial={value} eventId={binding.eventId} contextKey={contextKey} locale={locale}/></ParticipantShell>;
     }
     if(query.tab==='accreditation'&&binding.eventId){
       const person=(await apiRequest<{person:AuthorAccount}>(binding,'me',{token,locale})).person;

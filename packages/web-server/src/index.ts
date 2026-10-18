@@ -30,7 +30,8 @@ export function bindingFor(host: string, key: string | undefined): Binding {
   if (config && ['127.0.0.1', 'localhost'].includes(normalized)) {
     const selected = key ?? 'a1';
     if (/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(selected)) {
-      return { host: config.hosts.orgA, key: selected, eventId: selected, config };
+      const known=Object.entries(config.events).find(([,id])=>id===selected)?.[0];
+      return { host: known?config.hosts[known]:config.hosts.orgA, key: selected, eventId: selected, config };
     }
     if (!Object.hasOwn(config.hosts, selected) || selected === 'pending') throw new ApiTransportError(404, failure('NOT_FOUND'));
     return { host: config.hosts[selected], key: selected, eventId: config.events[selected] ?? null, config };
@@ -104,7 +105,7 @@ export async function backendProxy(request: Request, parts: string[], cookie: st
   try {
     if (!['GET', 'POST', 'PUT', 'PATCH', 'DELETE'].includes(request.method)) throw new ApiTransportError(405, failure('FORBIDDEN'));
     const path = parts.join('/');
-    if (!/^(?:me(?:\/researcher-profile|\/orcid(?:\/(?:start|finish))?)?|session|researchers|people|organization(?:\/domains(?:\/[0-9a-f-]{36}(?:\/(?:verify|activate|deactivate))?)?)?|invitations(?:\/accept|\/[0-9a-f-]{36}\/revoke)?|events(?:\/[0-9a-f-]{36}(?:\/site(?:\/publish)?|\/session|\/my-works\/notices|\/(?:my-works|submissions)(?:\/[0-9a-f-]{36}(?:\/(?:submit|withdraw|synchronize-call|decision|notices\/read|manuscript|collaborations(?:\/[0-9a-f-]{36}\/revoke)?|versions\/[0-9a-f-]{36}|files\/[0-9a-f-]{36}))?)?|\/authorship(?:-review)?(?:\/read|\/claims\/[0-9a-f-]{36}|\/works\/[0-9a-f-]{36}\/responsibility)?|\/peer-review\/(?:tracking|response-checks(?:\/[0-9a-f-]{36}\/assess)?|committee(?:\/[0-9a-f-]{36}\/revoke)?|mine(?:\/(?:membership|status)|\/[0-9a-f-]{36}(?:\/(?:respond|submit|files\/[0-9a-f-]{36}))?)?|works\/[0-9a-f-]{36}(?:\/rounds(?:\/[0-9a-f-]{36}\/(?:close|assign|extend))?|\/assignments\/[0-9a-f-]{36}\/revoke)?)|\/work-collaborations\/accept|\/attendance(?:\/(?:mine|credential(?:\/revoke)?|lookup|registrations\/[0-9a-f-]{36}(?:\/check-in)?|records\/[0-9a-f-]{36}\/correction))?|\/registration\/(?:settings(?:\/(?:publish|withdraw))?|mine(?:\/cancel)?|entries(?:\/[0-9a-f-]{36}(?:\/decision)?)?)|\/program(?:\/(?:mine|candidates|publish|withdraw|spaces(?:\/[0-9a-f-]{36})?))?|\/configuration|\/call(?:\/(?:publish|withdraw))?|\/lifecycle|\/organizers(?:\/[0-9a-f-]{36})?)?)?)$/.test(path)) throw new ApiTransportError(404, failure('NOT_FOUND'));
+    if (!/^(?:me(?:\/researcher-profile|\/orcid(?:\/(?:start|finish))?)?|session|researchers|people|organization(?:\/domains(?:\/[0-9a-f-]{36}(?:\/(?:verify|activate|deactivate))?)?)?|invitations(?:\/accept|\/[0-9a-f-]{36}\/revoke)?|events(?:\/[0-9a-f-]{36}(?:\/site(?:\/publish)?|\/session|\/my-works\/notices|\/(?:my-works|submissions)(?:\/[0-9a-f-]{36}(?:\/(?:submit|withdraw|synchronize-call|decision|notices\/read|manuscript|collaborations(?:\/[0-9a-f-]{36}\/revoke)?|versions\/[0-9a-f-]{36}|files\/[0-9a-f-]{36}))?)?|\/authorship(?:-review)?(?:\/read|\/claims\/[0-9a-f-]{36}|\/works\/[0-9a-f-]{36}\/responsibility)?|\/peer-review\/(?:tracking|response-checks(?:\/[0-9a-f-]{36}\/assess)?|committee(?:\/[0-9a-f-]{36}\/revoke)?|mine(?:\/(?:membership|status)|\/[0-9a-f-]{36}(?:\/(?:respond|submit|files\/[0-9a-f-]{36}))?)?|works\/[0-9a-f-]{36}(?:\/rounds(?:\/[0-9a-f-]{36}\/(?:close|assign|extend))?|\/assignments\/[0-9a-f-]{36}\/revoke)?)|\/work-collaborations\/accept|\/certificates(?:\/(?:templates(?:\/[0-9a-f-]{36}(?:\/preview)?)?|candidates|issue|mine(?:\/[0-9a-f-]{36}(?:\/pdf)?)?|[0-9a-f-]{36}(?:\/(?:pdf|revoke))?))?|\/attendance(?:\/(?:mine|credential(?:\/revoke)?|lookup|registrations\/[0-9a-f-]{36}(?:\/check-in)?|records\/[0-9a-f-]{36}\/correction))?|\/registration\/(?:settings(?:\/(?:publish|withdraw))?|mine(?:\/cancel)?|entries(?:\/[0-9a-f-]{36}(?:\/decision)?)?)|\/program(?:\/(?:mine|candidates|publish|withdraw|spaces(?:\/[0-9a-f-]{36})?))?|\/configuration|\/call(?:\/(?:publish|withdraw))?|\/lifecycle|\/organizers(?:\/[0-9a-f-]{36})?)?)?)$/.test(path)) throw new ApiTransportError(404, failure('NOT_FOUND'));
     if (request.method !== 'GET') checkOrigin(request);
     const url = new URL(request.url);
     const binding = bindingFor(request.headers.get('host') ?? '', url.searchParams.get('event') ?? undefined);
@@ -113,11 +114,11 @@ export async function backendProxy(request: Request, parts: string[], cookie: st
     const query = new URLSearchParams();
     for (const name of ['limit', 'offset', 'status', 'q', 'timing']) if (url.searchParams.has(name)) query.set(name, url.searchParams.get(name)!);
     const locale: Locale = url.searchParams.get('lang') === 'en' ? 'en' : 'es';
-    if ((request.method === 'POST' && path.endsWith('/manuscript')) || (request.method === 'GET' && /\/files\/[0-9a-f-]{36}$/.test(path))) return await fileTransport(request,binding,path,token,locale);
+    if ((request.method === 'POST' && path.endsWith('/manuscript')) || (request.method === 'GET' && (/\/files\/[0-9a-f-]{36}$/.test(path)||path.includes('/certificates/')&&/\/(?:pdf|preview)$/.test(path)))) return await fileTransport(request,binding,path,token,locale);
     let body: unknown;
     if (request.method !== 'GET') {
       const text = await request.text();
-      if ((path.includes('/my-works')||path.endsWith('/program')) ? Buffer.byteLength(text, 'utf8') > MAX_WORK_BODY_BYTES : text.length > 64000) throw new ApiTransportError(400, failure('VALIDATION_FAILED', locale));
+      if ((path.includes('/my-works')||path.endsWith('/program')||path.includes('/certificates/templates/')) ? Buffer.byteLength(text, 'utf8') > MAX_WORK_BODY_BYTES : text.length > 64000) throw new ApiTransportError(400, failure('VALIDATION_FAILED', locale));
       body = text ? JSON.parse(text) : {};
     }
     const data = await apiRequest(binding, path + (query.size ? `?${query}` : ''), { token, method: request.method, body, locale });

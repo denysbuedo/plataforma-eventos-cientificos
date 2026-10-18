@@ -17630,6 +17630,2480 @@
           "attendance"
         ]
       }
+    },
+    "/api/v1/events/{eventId}/certificates/templates": {
+      "get": {
+        "operationId": "CertificatesController_templates",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "revision": {
+                            "type": "integer"
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "kind": {
+                            "type": "string",
+                            "enum": [
+                              "attendance",
+                              "presentation",
+                              "review",
+                              "organization",
+                              "custom"
+                            ]
+                          },
+                          "active": {
+                            "type": "boolean"
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "revision",
+                          "name",
+                          "kind",
+                          "active"
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "certificates"
+        ]
+      }
+    },
+    "/api/v1/events/{eventId}/certificates/templates/{id}": {
+      "get": {
+        "operationId": "CertificatesController_template",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "revision": {
+                      "type": "integer"
+                    },
+                    "content": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string"
+                        },
+                        "kind": {
+                          "type": "string",
+                          "enum": [
+                            "attendance",
+                            "presentation",
+                            "review",
+                            "organization",
+                            "custom"
+                          ]
+                        },
+                        "active": {
+                          "type": "boolean"
+                        },
+                        "afterEvent": {
+                          "type": "boolean"
+                        },
+                        "titleEs": {
+                          "type": "string"
+                        },
+                        "titleEn": {
+                          "type": "string"
+                        },
+                        "bodyEs": {
+                          "type": "string"
+                        },
+                        "bodyEn": {
+                          "type": "string"
+                        },
+                        "participationEs": {
+                          "type": "string"
+                        },
+                        "participationEn": {
+                          "type": "string"
+                        },
+                        "accent": {
+                          "type": "string"
+                        },
+                        "logo": {
+                          "type": "string",
+                          "nullable": true
+                        },
+                        "signers": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "name": {
+                                "type": "string"
+                              },
+                              "position": {
+                                "type": "string"
+                              },
+                              "image": {
+                                "type": "string",
+                                "nullable": true
+                              }
+                            },
+                            "required": [
+                              "name",
+                              "position",
+                              "image"
+                            ]
+                          }
+                        },
+                        "verificationOrigin": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "name",
+                        "kind",
+                        "active",
+                        "afterEvent",
+                        "titleEs",
+                        "titleEn",
+                        "bodyEs",
+                        "bodyEn",
+                        "participationEs",
+                        "participationEn",
+                        "accent",
+                        "logo",
+                        "signers",
+                        "verificationOrigin"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "revision",
+                    "content"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "certificates"
+        ]
+      },
+      "put": {
+        "operationId": "CertificatesController_save",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveCertificateTemplateDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "revision": {
+                      "type": "integer"
+                    },
+                    "content": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string"
+                        },
+                        "kind": {
+                          "type": "string",
+                          "enum": [
+                            "attendance",
+                            "presentation",
+                            "review",
+                            "organization",
+                            "custom"
+                          ]
+                        },
+                        "active": {
+                          "type": "boolean"
+                        },
+                        "afterEvent": {
+                          "type": "boolean"
+                        },
+                        "titleEs": {
+                          "type": "string"
+                        },
+                        "titleEn": {
+                          "type": "string"
+                        },
+                        "bodyEs": {
+                          "type": "string"
+                        },
+                        "bodyEn": {
+                          "type": "string"
+                        },
+                        "participationEs": {
+                          "type": "string"
+                        },
+                        "participationEn": {
+                          "type": "string"
+                        },
+                        "accent": {
+                          "type": "string"
+                        },
+                        "logo": {
+                          "type": "string",
+                          "nullable": true
+                        },
+                        "signers": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "name": {
+                                "type": "string"
+                              },
+                              "position": {
+                                "type": "string"
+                              },
+                              "image": {
+                                "type": "string",
+                                "nullable": true
+                              }
+                            },
+                            "required": [
+                              "name",
+                              "position",
+                              "image"
+                            ]
+                          }
+                        },
+                        "verificationOrigin": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "name",
+                        "kind",
+                        "active",
+                        "afterEvent",
+                        "titleEs",
+                        "titleEn",
+                        "bodyEs",
+                        "bodyEn",
+                        "participationEs",
+                        "participationEn",
+                        "accent",
+                        "logo",
+                        "signers",
+                        "verificationOrigin"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "revision",
+                    "content"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "certificates"
+        ]
+      }
+    },
+    "/api/v1/events/{eventId}/certificates/templates/{id}/preview": {
+      "get": {
+        "operationId": "CertificatesController_preview",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "certificates"
+        ]
+      }
+    },
+    "/api/v1/events/{eventId}/certificates/candidates": {
+      "post": {
+        "operationId": "CertificatesController_candidates",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CertificateCandidatesDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "personId": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "subjectKey": {
+                            "type": "string"
+                          },
+                          "subjectTitle": {
+                            "type": "string"
+                          },
+                          "eligible": {
+                            "type": "boolean"
+                          },
+                          "missing": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          "evidenceHash": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "personId",
+                          "name",
+                          "subjectKey",
+                          "subjectTitle",
+                          "eligible",
+                          "missing",
+                          "evidenceHash"
+                        ]
+                      }
+                    },
+                    "total": {
+                      "type": "integer"
+                    },
+                    "limit": {
+                      "type": "integer"
+                    },
+                    "offset": {
+                      "type": "integer"
+                    },
+                    "templateRevision": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "data",
+                    "total",
+                    "limit",
+                    "offset",
+                    "templateRevision"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "certificates"
+        ]
+      }
+    },
+    "/api/v1/events/{eventId}/certificates/issue": {
+      "post": {
+        "operationId": "CertificatesController_issue",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IssueCertificatesDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "templateId": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "personId": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "kind": {
+                            "type": "string",
+                            "enum": [
+                              "attendance",
+                              "presentation",
+                              "review",
+                              "organization",
+                              "custom"
+                            ]
+                          },
+                          "participation": {
+                            "type": "string"
+                          },
+                          "subjectTitle": {
+                            "type": "string"
+                          },
+                          "status": {
+                            "type": "string",
+                            "enum": [
+                              "issued",
+                              "revoked"
+                            ]
+                          },
+                          "revision": {
+                            "type": "integer"
+                          },
+                          "code": {
+                            "type": "string"
+                          },
+                          "verificationUrl": {
+                            "type": "string"
+                          },
+                          "issuedAt": {
+                            "type": "string",
+                            "format": "date-time"
+                          },
+                          "revokedAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "nullable": true
+                          },
+                          "sha256": {
+                            "type": "string"
+                          },
+                          "locale": {
+                            "type": "string",
+                            "enum": [
+                              "es",
+                              "en"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "templateId",
+                          "personId",
+                          "name",
+                          "kind",
+                          "participation",
+                          "subjectTitle",
+                          "status",
+                          "revision",
+                          "code",
+                          "verificationUrl",
+                          "issuedAt",
+                          "revokedAt",
+                          "sha256",
+                          "locale"
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "certificates"
+        ]
+      }
+    },
+    "/api/v1/events/{eventId}/certificates/mine": {
+      "get": {
+        "operationId": "CertificatesController_mine",
+        "parameters": [
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/Object"
+            }
+          },
+          {
+            "name": "offset",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/Object"
+            }
+          },
+          {
+            "name": "q",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/Object"
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "issued",
+                "revoked"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "templateId": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "personId": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "kind": {
+                            "type": "string",
+                            "enum": [
+                              "attendance",
+                              "presentation",
+                              "review",
+                              "organization",
+                              "custom"
+                            ]
+                          },
+                          "participation": {
+                            "type": "string"
+                          },
+                          "subjectTitle": {
+                            "type": "string"
+                          },
+                          "status": {
+                            "type": "string",
+                            "enum": [
+                              "issued",
+                              "revoked"
+                            ]
+                          },
+                          "revision": {
+                            "type": "integer"
+                          },
+                          "code": {
+                            "type": "string"
+                          },
+                          "verificationUrl": {
+                            "type": "string"
+                          },
+                          "issuedAt": {
+                            "type": "string",
+                            "format": "date-time"
+                          },
+                          "revokedAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "nullable": true
+                          },
+                          "sha256": {
+                            "type": "string"
+                          },
+                          "locale": {
+                            "type": "string",
+                            "enum": [
+                              "es",
+                              "en"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "templateId",
+                          "personId",
+                          "name",
+                          "kind",
+                          "participation",
+                          "subjectTitle",
+                          "status",
+                          "revision",
+                          "code",
+                          "verificationUrl",
+                          "issuedAt",
+                          "revokedAt",
+                          "sha256",
+                          "locale"
+                        ]
+                      }
+                    },
+                    "total": {
+                      "type": "integer"
+                    },
+                    "limit": {
+                      "type": "integer"
+                    },
+                    "offset": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "data",
+                    "total",
+                    "limit",
+                    "offset"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "certificates"
+        ]
+      }
+    },
+    "/api/v1/events/{eventId}/certificates/mine/{id}": {
+      "get": {
+        "operationId": "CertificatesController_mineDetail",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "certificate": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "templateId": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "personId": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "kind": {
+                          "type": "string",
+                          "enum": [
+                            "attendance",
+                            "presentation",
+                            "review",
+                            "organization",
+                            "custom"
+                          ]
+                        },
+                        "participation": {
+                          "type": "string"
+                        },
+                        "subjectTitle": {
+                          "type": "string"
+                        },
+                        "status": {
+                          "type": "string",
+                          "enum": [
+                            "issued",
+                            "revoked"
+                          ]
+                        },
+                        "revision": {
+                          "type": "integer"
+                        },
+                        "code": {
+                          "type": "string"
+                        },
+                        "verificationUrl": {
+                          "type": "string"
+                        },
+                        "issuedAt": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "revokedAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "nullable": true
+                        },
+                        "sha256": {
+                          "type": "string"
+                        },
+                        "locale": {
+                          "type": "string",
+                          "enum": [
+                            "es",
+                            "en"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "templateId",
+                        "personId",
+                        "name",
+                        "kind",
+                        "participation",
+                        "subjectTitle",
+                        "status",
+                        "revision",
+                        "code",
+                        "verificationUrl",
+                        "issuedAt",
+                        "revokedAt",
+                        "sha256",
+                        "locale"
+                      ]
+                    },
+                    "history": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "action": {
+                            "type": "string"
+                          },
+                          "actorName": {
+                            "type": "string"
+                          },
+                          "reason": {
+                            "type": "string"
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "format": "date-time"
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "action",
+                          "actorName",
+                          "reason",
+                          "createdAt"
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "certificate",
+                    "history"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "certificates"
+        ]
+      }
+    },
+    "/api/v1/events/{eventId}/certificates/mine/{id}/pdf": {
+      "get": {
+        "operationId": "CertificatesController_minePdf",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "certificates"
+        ]
+      }
+    },
+    "/api/v1/events/{eventId}/certificates": {
+      "get": {
+        "operationId": "CertificatesController_list",
+        "parameters": [
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/Object"
+            }
+          },
+          {
+            "name": "offset",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/Object"
+            }
+          },
+          {
+            "name": "q",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/Object"
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "issued",
+                "revoked"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "templateId": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "personId": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "kind": {
+                            "type": "string",
+                            "enum": [
+                              "attendance",
+                              "presentation",
+                              "review",
+                              "organization",
+                              "custom"
+                            ]
+                          },
+                          "participation": {
+                            "type": "string"
+                          },
+                          "subjectTitle": {
+                            "type": "string"
+                          },
+                          "status": {
+                            "type": "string",
+                            "enum": [
+                              "issued",
+                              "revoked"
+                            ]
+                          },
+                          "revision": {
+                            "type": "integer"
+                          },
+                          "code": {
+                            "type": "string"
+                          },
+                          "verificationUrl": {
+                            "type": "string"
+                          },
+                          "issuedAt": {
+                            "type": "string",
+                            "format": "date-time"
+                          },
+                          "revokedAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "nullable": true
+                          },
+                          "sha256": {
+                            "type": "string"
+                          },
+                          "locale": {
+                            "type": "string",
+                            "enum": [
+                              "es",
+                              "en"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "templateId",
+                          "personId",
+                          "name",
+                          "kind",
+                          "participation",
+                          "subjectTitle",
+                          "status",
+                          "revision",
+                          "code",
+                          "verificationUrl",
+                          "issuedAt",
+                          "revokedAt",
+                          "sha256",
+                          "locale"
+                        ]
+                      }
+                    },
+                    "total": {
+                      "type": "integer"
+                    },
+                    "limit": {
+                      "type": "integer"
+                    },
+                    "offset": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "data",
+                    "total",
+                    "limit",
+                    "offset"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "certificates"
+        ]
+      }
+    },
+    "/api/v1/events/{eventId}/certificates/{id}/pdf": {
+      "get": {
+        "operationId": "CertificatesController_pdf",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "certificates"
+        ]
+      }
+    },
+    "/api/v1/events/{eventId}/certificates/{id}": {
+      "get": {
+        "operationId": "CertificatesController_detail",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "certificate": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "templateId": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "personId": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "kind": {
+                          "type": "string",
+                          "enum": [
+                            "attendance",
+                            "presentation",
+                            "review",
+                            "organization",
+                            "custom"
+                          ]
+                        },
+                        "participation": {
+                          "type": "string"
+                        },
+                        "subjectTitle": {
+                          "type": "string"
+                        },
+                        "status": {
+                          "type": "string",
+                          "enum": [
+                            "issued",
+                            "revoked"
+                          ]
+                        },
+                        "revision": {
+                          "type": "integer"
+                        },
+                        "code": {
+                          "type": "string"
+                        },
+                        "verificationUrl": {
+                          "type": "string"
+                        },
+                        "issuedAt": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "revokedAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "nullable": true
+                        },
+                        "sha256": {
+                          "type": "string"
+                        },
+                        "locale": {
+                          "type": "string",
+                          "enum": [
+                            "es",
+                            "en"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "templateId",
+                        "personId",
+                        "name",
+                        "kind",
+                        "participation",
+                        "subjectTitle",
+                        "status",
+                        "revision",
+                        "code",
+                        "verificationUrl",
+                        "issuedAt",
+                        "revokedAt",
+                        "sha256",
+                        "locale"
+                      ]
+                    },
+                    "history": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "action": {
+                            "type": "string"
+                          },
+                          "actorName": {
+                            "type": "string"
+                          },
+                          "reason": {
+                            "type": "string"
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "format": "date-time"
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "action",
+                          "actorName",
+                          "reason",
+                          "createdAt"
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "certificate",
+                    "history"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "certificates"
+        ]
+      }
+    },
+    "/api/v1/events/{eventId}/certificates/{id}/revoke": {
+      "post": {
+        "operationId": "CertificatesController_revoke",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RevokeCertificateDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "revoked": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "revoked"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "certificates"
+        ]
+      }
+    },
+    "/api/v1/public/certificates/{code}": {
+      "get": {
+        "operationId": "PublicCertificatesController_get",
+        "parameters": [
+          {
+            "name": "code",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string"
+                    },
+                    "event": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "participation": {
+                      "type": "string"
+                    },
+                    "subjectTitle": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "issued",
+                        "revoked"
+                      ]
+                    },
+                    "code": {
+                      "type": "string"
+                    },
+                    "issuedAt": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "revokedAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "nullable": true
+                    },
+                    "sha256": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "name",
+                    "event",
+                    "title",
+                    "participation",
+                    "subjectTitle",
+                    "status",
+                    "code",
+                    "issuedAt",
+                    "revokedAt",
+                    "sha256"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "public"
+        ]
+      }
     }
   },
   "info": {
@@ -23360,6 +25834,209 @@
         "required": [
           "revision",
           "state",
+          "reason"
+        ]
+      },
+      "SignerDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "position": {
+            "type": "string"
+          },
+          "image": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "name",
+          "position",
+          "image"
+        ]
+      },
+      "TemplateContentDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "attendance",
+              "presentation",
+              "review",
+              "organization",
+              "custom"
+            ]
+          },
+          "active": {
+            "type": "boolean"
+          },
+          "afterEvent": {
+            "type": "boolean"
+          },
+          "titleEs": {
+            "type": "string"
+          },
+          "titleEn": {
+            "type": "string"
+          },
+          "bodyEs": {
+            "type": "string"
+          },
+          "bodyEn": {
+            "type": "string"
+          },
+          "participationEs": {
+            "type": "string"
+          },
+          "participationEn": {
+            "type": "string"
+          },
+          "accent": {
+            "type": "string"
+          },
+          "logo": {
+            "type": "string",
+            "nullable": true
+          },
+          "signers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SignerDto"
+            }
+          },
+          "verificationOrigin": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "kind",
+          "active",
+          "afterEvent",
+          "titleEs",
+          "titleEn",
+          "bodyEs",
+          "bodyEn",
+          "participationEs",
+          "participationEn",
+          "accent",
+          "logo",
+          "signers",
+          "verificationOrigin"
+        ]
+      },
+      "SaveCertificateTemplateDto": {
+        "type": "object",
+        "properties": {
+          "revision": {
+            "type": "number"
+          },
+          "content": {
+            "$ref": "#/components/schemas/TemplateContentDto"
+          }
+        },
+        "required": [
+          "revision",
+          "content"
+        ]
+      },
+      "CertificateCandidatesDto": {
+        "type": "object",
+        "properties": {
+          "templateId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "q": {
+            "type": "object"
+          },
+          "limit": {
+            "type": "object"
+          },
+          "offset": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "templateId",
+          "q",
+          "limit",
+          "offset"
+        ]
+      },
+      "IssueItemDto": {
+        "type": "object",
+        "properties": {
+          "personId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "subjectKey": {
+            "type": "string"
+          },
+          "evidenceHash": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "personId",
+          "subjectKey",
+          "evidenceHash"
+        ]
+      },
+      "IssueCertificatesDto": {
+        "type": "object",
+        "properties": {
+          "templateId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "templateRevision": {
+            "type": "number"
+          },
+          "locale": {
+            "type": "string",
+            "enum": [
+              "es",
+              "en"
+            ]
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/IssueItemDto"
+            }
+          },
+          "reason": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "templateId",
+          "templateRevision",
+          "locale",
+          "items",
+          "reason"
+        ]
+      },
+      "RevokeCertificateDto": {
+        "type": "object",
+        "properties": {
+          "revision": {
+            "type": "number"
+          },
+          "reason": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "revision",
           "reason"
         ]
       }

@@ -546,3 +546,16 @@ dialog::backdrop { background:rgb(18 36 28 / 45%); }
 .attendance-editor{padding:16px 0;border-bottom:1px solid var(--line,#e3e7e5);margin-bottom:24px}
 .attendance-editor .field{margin:16px 0}
 @media(max-width:700px){.attendance-lookup{grid-template-columns:1fr}.attendance-credential code{font-size:.85rem}}
+
+.certificates-module .certificate-card,.certificate-signer{padding:18px 0;border-bottom:1px solid var(--line,#e3e7e5);background:transparent;box-shadow:none}
+.certificate-image-row{display:flex;align-items:center;gap:16px;margin:16px 0;flex-wrap:wrap}
+.certificate-image-row img{object-fit:contain;max-width:180px;max-height:70px}
+.certificate-issue-form .field,.certificate-signer .field,.certificates-module .registration-detail .field{margin:18px 0}
+.certificate-verification{width:min(860px,calc(100% - 40px));margin:45px auto;padding:28px;background:white;box-sizing:border-box;box-shadow:none;overflow-wrap:anywhere}
+.certificate-verification h1{font-size:1.8rem;font-family:inherit;margin:28px 0 16px}
+.certificate-verification h2{font-size:1.1rem;font-family:inherit}
+.certificate-verification .field{display:flex;flex-direction:column;gap:8px;margin:20px 0}
+.certificate-verification .field input{min-width:0;width:100%;box-sizing:border-box}
+.certificate-hash{overflow-wrap:anywhere;word-break:break-all;font-size:.85rem}
+.certificate-file-check{border-top:1px solid var(--line,#e3e7e5);padding-top:20px;margin-top:28px}
+@media(max-width:700px){.certificate-verification{padding:12px;margin:20px auto}.certificate-verification .registration-summary{grid-template-columns:1fr}}

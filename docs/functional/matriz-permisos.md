@@ -84,3 +84,7 @@ Ser autor, revisor, participante o administrador de organización sin asignació
 ## Acreditación y asistencia
 
 La persona autenticada consulta sus registros y emite/renueva/revoca su propia credencial si la inscripción está confirmada. Solo el organizador del evento, con `attendance-manage`, consulta la bandeja, busca códigos, registra presencia y corrige evidencias. Esta capacidad no activa acceso a manuscritos, decisiones de inscripción ni revisión científica. La delegación a acreditadores está pendiente.
+
+## Certificados
+
+`certificates-manage` exige organizador del evento: plantillas, candidatos, emisión, descarga administrativa y revocación. La persona activa consulta/descarga solo sus documentos e historial. La consulta pública requiere dominio institucional y código aleatorio; no expone correo, IDs privados, evidencia científica, PDF o motivos de revocación. Cancelar/archivar no impide revocar documentos previamente emitidos.

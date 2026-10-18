@@ -40,4 +40,4 @@ Compilación, lint y comprobaciones puntuales con transacción revertida: reserv
 
 ## Siguiente paquete
 
-Control de asistencia y acreditación: credenciales, lectura/check-in, permisos de acreditador, registros por evento/sesión y correcciones auditadas. Después, reglas y emisión de certificados. Pagos, correos, exportaciones y requisitos particulares de categorías quedan fuera de este primer paquete.
+Control de asistencia y acreditación: credenciales, lectura/check-in, permisos de acreditador, registros por evento/sesión y correcciones auditadas. El [módulo de certificados](certificados.md) ya incorpora reglas iniciales y emisión; su prueba funcional está pendiente. Pagos, correos, exportaciones y requisitos particulares de categorías quedan fuera de este primer paquete.

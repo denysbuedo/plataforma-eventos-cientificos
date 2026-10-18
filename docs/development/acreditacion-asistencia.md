@@ -38,4 +38,4 @@ Nunca se devuelve el hash del código ni el código en consultas posteriores. No
 
 ## Pendientes
 
-Prueba funcional completa con el usuario. Escaneo QR, permisos delegados de acreditador, salida/duración, sesiones con reserva o control de aforo propio, acreditación presencial automatizada y evidencia de conexión virtual. Después se implementarán reglas y emisión de certificados.
+Prueba funcional completa con el usuario. Escaneo QR, permisos delegados de acreditador, salida/duración, sesiones con reserva o control de aforo propio, acreditación presencial automatizada y evidencia de conexión virtual. Las reglas iniciales y la emisión están implementadas en el [módulo de certificados](certificados.md), con validación funcional pendiente.

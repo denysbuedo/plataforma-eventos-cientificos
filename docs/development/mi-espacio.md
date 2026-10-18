@@ -10,7 +10,7 @@ Mi espacio utiliza una estructura compartida para **Mis trabajos**, **Autorías*
 | Menú lateral, segundo | Autorías | Reconocimiento, solicitudes y actividad del evento |
 | Menú lateral, tercero | Mis revisiones | Asignaciones científicas y valoración de respuestas |
 | Menú lateral, cuarto | Mi participación | Presentaciones y moderaciones del programa publicado |
-| Menú lateral, futuro | Mis certificados | Certificados emitidos por la participación en el evento, cuando esté implementado el módulo |
+| Menú lateral | Mis certificados | Documentos reales emitidos, descarga privada, estado e historial |
 | Menú de cuenta, arriba a la derecha | Mi perfil | Identidad y datos académicos reutilizables entre eventos |
 | Menú de cuenta, arriba a la derecha | Cerrar sesión | Disponible desde las tres pantallas |
 | Acceso secundario al pie del lateral | Portal público | Portal del contexto conservado; en móvil se ofrece dentro del menú superior |
@@ -28,9 +28,9 @@ El menú de cuenta admite navegación por teclado, cierre con Escape y cierre al
 
 ## Certificados: ubicación y alcance futuro
 
-**Mis certificados** se incorporará al menú lateral junto a Mi participación cuando exista emisión real. No se crea ahora una pestaña vacía ni se anuncian certificados inexistentes. Esta ubicación sirve también para asistentes que no presentan trabajos.
+**Mis certificados** está integrado en el menú lateral, con emisión real desde el módulo del organizador. Muestra solo los documentos de la persona en el evento. Esta ubicación sirve también para asistentes que no presentan trabajos.
 
-Cada certificado futuro debe identificar la persona, el evento, el concepto de participación (asistencia, ponencia, organización, revisión u otros configurados), el estado de emisión y las acciones reales disponibles: descargar y verificar. Una autoría reconocida no debe producir un certificado automáticamente. La elegibilidad depende de las reglas del evento y de las evidencias correspondientes, como asistencia o presentación; la definición y emisión pertenecen al módulo de certificación, aún pendiente.
+Cada certificado futuro debe identificar la persona, el evento, el concepto de participación (asistencia, ponencia, organización, revisión u otros configurados), el estado de emisión y las acciones reales disponibles: descargar y verificar. Una autoría reconocida no debe producir un certificado automáticamente. La elegibilidad depende de las reglas del evento y de las evidencias correspondientes, como asistencia o presentación; la definición y emisión pertenecen al [módulo de certificados](certificados.md).
 
 La configuración de plantillas y reglas, emisión y revocación será del organizador; la consulta/descarga propia estará en Mi espacio. El perfil conserva los datos personales comunes y no se transforma en un archivo de certificados por evento.
 
@@ -56,4 +56,4 @@ Mi participación se alimenta del [programa científico publicado](programa-cien
 
 Mi inscripción se incorpora como área del participante, con la misma cabecera y cuenta. Muestra la solicitud y su historial, separada de la agenda de Mi participación. Véase [Inscripciones](inscripciones.md).
 
-Mi acreditación incorpora la credencial por evento y la consulta del historial de asistencia propio. Mantiene la cabecera y navegación compartidas. Los certificados siguen pendientes, separados de la credencial de acceso.
+Mi acreditación incorpora la credencial por evento y la consulta del historial de asistencia propio. Mantiene la cabecera y navegación compartidas. Los certificados están en su sección propia, separados de la credencial de acceso.
