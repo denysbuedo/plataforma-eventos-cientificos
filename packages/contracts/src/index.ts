@@ -221,7 +221,7 @@ export interface CertificateSigner {name:string;position:string;image:string|nul
 export interface CertificateTemplateContent {name:string;kind:CertificateKind;active:boolean;afterEvent:boolean;titleEs:string;titleEn:string;bodyEs:string;bodyEn:string;participationEs:string;participationEn:string;accent:string;logo:string|null;signers:CertificateSigner[];verificationOrigin:string}
 export interface CertificateTemplate {id:string;revision:number;content:CertificateTemplateContent}
 export interface CertificateTemplateSummary {id:string;revision:number;name:string;kind:CertificateKind;active:boolean}
-export interface CertificateCandidate {personId:string;name:string;subjectKey:string;subjectTitle:string;eligible:boolean;missing:string[];evidenceHash:string}
+export interface CertificateCandidate {personId:string|null;name:string;subjectKey:string;subjectTitle:string;eligible:boolean;missing:string[];evidenceHash:string}
 export interface CertificateCandidatePage {data:CertificateCandidate[];total:number;limit:number;offset:number;templateRevision:number}
 export interface CertificateSummary {id:string;templateId:string;personId:string;name:string;kind:CertificateKind;participation:string;subjectTitle:string;status:'issued'|'revoked';revision:number;code:string;verificationUrl:string;issuedAt:string;revokedAt:string|null;sha256:string;locale:'es'|'en'}
 export interface CertificatePage {data:CertificateSummary[];total:number;limit:number;offset:number}

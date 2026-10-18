@@ -18333,7 +18333,8 @@
                         "properties": {
                           "personId": {
                             "type": "string",
-                            "format": "uuid"
+                            "format": "uuid",
+                            "nullable": true
                           },
                           "name": {
                             "type": "string"
