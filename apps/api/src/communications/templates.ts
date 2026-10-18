@@ -1,4 +1,8 @@
 export const notificationTemplates = {
+ 'payment.updated':['Novedad en tus cobros y pagos','Update to your charges and payments'],
+ 'payment.reported':['Un participante comunicó un pago para verificar','A participant reported a payment for verification'],
+ 'gallery.updated':['Novedad en la publicación de tu póster','Update to your poster publication'],
+ 'session.booking.updated':['Novedad en tus reservas de sesiones','Update to your session bookings'],
  'editorial.permission.requested':['El equipo solicita autorización para publicar tu trabajo','Publication permission is requested for your work'],
  'editorial.permission.updated':['Se actualizó una autorización de publicación','A publication permission was updated'],
  'editorial.published':['Tu trabajo forma parte de una edición publicada','Your work is included in a published edition'],

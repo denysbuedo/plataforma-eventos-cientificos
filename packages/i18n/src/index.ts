@@ -1,5 +1,11 @@
 const messages = {
   es: {
+    PAYMENT_INVALID:'Revisa la tarifa, moneda, medio de pago y estado del cobro. No incluyas claves privadas en los datos públicos.',
+    PAYMENT_DISABLED:'Los cobros no están habilitados para este evento.',
+    PAYMENT_DUPLICATE:'Ya existe este cobro o la referencia de pago se utilizó en otro cobro.',
+    OPERATIONS_INVALID:'Revisa la disponibilidad, el programa, los permisos y el estado de la inscripción.',
+    RESOURCE_UNAVAILABLE:'La cantidad solicitada supera las existencias o coincide con otra asignación.',
+    SESSION_BOOKING_REQUIRED:'Esta sesión requiere una reserva confirmada y vigente.',
     SPONSORSHIP_INVALID:'Revisa las categorías, instituciones, permisos de publicación y compromisos.',
     SPONSORSHIP_CHANGED:'Los datos cambiaron. Actualiza y revisa la vista previa antes de publicar.',
     SPONSORSHIP_LIMIT:'Se alcanzó el límite de esta entrega. Reduce la selección o el tamaño de las imágenes.',
@@ -69,6 +75,12 @@ const messages = {
     INTERNAL_ERROR: 'No se pudo completar la solicitud.',
   },
   en: {
+    PAYMENT_INVALID:'Check the fee, currency, payment method and charge status. Never include private credentials in public details.',
+    PAYMENT_DISABLED:'Payments are not enabled for this event.',
+    PAYMENT_DUPLICATE:'This charge already exists or this payment reference was used for another charge.',
+    OPERATIONS_INVALID:'Check availability, program, permissions and registration status.',
+    RESOURCE_UNAVAILABLE:'The requested quantity exceeds stock or overlaps another allocation.',
+    SESSION_BOOKING_REQUIRED:'This session requires a current confirmed booking.',
     SPONSORSHIP_INVALID:'Check categories, institutions, publication permissions and commitments.',
     SPONSORSHIP_CHANGED:'The data changed. Refresh and review the preview before publishing.',
     SPONSORSHIP_LIMIT:'This release limit has been reached. Reduce the selection or image sizes.',

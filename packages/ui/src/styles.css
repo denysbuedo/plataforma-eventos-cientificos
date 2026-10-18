@@ -612,3 +612,27 @@ dialog::backdrop { background:rgb(18 36 28 / 45%); }
 .sponsorship-public>h2{font-family:inherit;font-size:clamp(1.5rem,3vw,2rem);line-height:1.3;margin:0 0 1rem}.sponsorship-intro{white-space:pre-wrap;line-height:1.75;max-width:65ch}.sponsorship-group{padding:1.25rem 0;border-top:1px solid var(--line);margin-top:1.5rem}.sponsorship-group>h3{font-family:inherit;font-size:1.1rem;margin:0 0 1.25rem}.sponsorship-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1.5rem}.sponsorship-partner{padding:1rem 0;background:transparent;box-shadow:none;min-width:0}.sponsorship-partner>img{display:block;object-fit:contain;object-position:left center;width:100%;max-width:240px;height:100px;margin-bottom:1rem}.sponsorship-partner h4{font-family:inherit;font-size:1rem;line-height:1.5;margin:.5rem 0}.sponsorship-partner p{font-size:.9rem;line-height:1.7;white-space:pre-wrap}.sponsorship-partner .sponsorship-country{font-size:.8rem;color:var(--muted)}.sponsorship-partner a{font-size:.85rem;text-underline-offset:.25em}.sponsorship-partner h4,.sponsorship-partner p,.sponsor-detail-body a{overflow-wrap:anywhere}.sponsor-preview .sponsorship-public{margin:1rem 0}
 @media(max-width:900px){.sponsorship-toolbar{flex-direction:column}.sponsorship-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.sponsor-totals{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:600px){.sponsor-form-grid,.sponsor-facts,.sponsorship-grid{grid-template-columns:1fr}.sponsor-row{align-items:stretch;flex-direction:column}.sponsor-row .editor-actions{justify-content:flex-start}.sponsor-totals{grid-template-columns:1fr}.sponsor-totals>div{display:flex;align-items:center;justify-content:space-between;gap:1rem}.sponsor-totals dd{margin:0}.sponsor-currency-row{flex-direction:column;gap:.5rem}.sponsor-detail .registration-line{align-items:stretch}.sponsorship-tabs .button{flex:1 1 auto}.sponsor-category-editor .sponsor-check{margin-top:.25rem}}
+
+/* Scientific exhibition: plain surfaces, consistent with participant profiles. */
+.poster-page{max-width:1200px;margin:auto;overflow-wrap:anywhere}
+.poster-page h1,.poster-page h2{font-family:inherit}
+.poster-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:1.5rem}
+.poster-card{border:1px solid var(--line,#dce2e4);border-radius:12px;padding:1.25rem;display:flex;gap:1rem;align-items:start}
+.poster-card>img{width:88px;max-height:160px;object-fit:contain}
+.poster-card h2{font-size:1.125rem;line-height:1.4;margin-top:0}
+.poster-authors{display:flex;flex-wrap:wrap;gap:1.25rem 2rem;margin-block:1.5rem}
+.poster-authors p{margin:.3rem 0}
+.poster-viewer{width:100%;height:80vh;min-height:420px;border:1px solid var(--line,#dce2e4);border-radius:8px;margin-top:1.5rem}
+@media(max-width:600px){.poster-card{flex-direction:column}.poster-viewer{height:65vh}.poster-page .form-grid{grid-template-columns:1fr}}
+
+.module-workspace .form-grid,.poster-page .form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:start;gap:18px;margin-block:18px}
+.module-workspace .form-grid>.field,.poster-page .form-grid>.field{margin:0;min-width:0}
+.module-workspace .form-grid input,.module-workspace .form-grid select,.poster-page .form-grid input,.poster-page .form-grid select{width:100%;min-height:44px}
+.module-workspace fieldset{border:0;margin:0;padding:0;min-width:0}
+.module-workspace .editorial-row{padding:18px 0;border-bottom:1px solid var(--line,#e3e7e5);overflow-wrap:anywhere}
+.module-workspace .editorial-row:last-child{border-bottom:0}
+.module-workspace .editorial-row h2,.module-workspace .editorial-row h3{font-family:inherit;font-size:17px;line-height:1.5;margin:0 0 8px}
+.module-workspace .registration-detail>h2,.module-workspace .registration-detail>.registration-line h2{font-family:inherit;font-size:19px;line-height:1.5}
+.module-workspace .notice{background:transparent;box-shadow:none;border:0;border-bottom:1px solid var(--line,#e3e7e5);border-radius:0;padding:12px 0}
+.module-workspace .registration-line>.field{flex:1;min-width:0}
+@media(max-width:640px){.module-workspace .form-grid,.poster-page .form-grid{grid-template-columns:1fr}.module-workspace .registration-line{flex-wrap:wrap}.module-workspace .profile-card-heading .editor-actions{flex-wrap:wrap}}

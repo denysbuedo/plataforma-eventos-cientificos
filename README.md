@@ -2,7 +2,7 @@
 
 > Plataforma integral, multiinstitución, multievento y multilingüe para gestionar congresos científicos desde la convocatoria hasta la publicación de memorias y certificados.
 
-**Estado:** portal y administración con CMS, convocatoria científica y módulo de trabajos implementados: autoría, PDF privado, envío, versiones, correcciones, dictámenes del organizador, versión final, gestión compartida y [reconocimiento de autorías con aprobación y avisos internos](docs/development/reconocimiento-autorias.md). [Revisión por pares de simple ciego](docs/development/revision-cientifica.md) implementada; validación funcional completa pendiente. [Inscripciones y participantes](docs/development/inscripciones.md) implementados como primer paquete de Fase 3: categorías, cupos, lista de espera, aprobación e historial. [Acreditación y asistencia](docs/development/acreditacion-asistencia.md) con QR/cámara/imagen, equipo delegado, control de duplicados, panel, CSV y correcciones auditadas. [Certificados](docs/development/certificados.md): plantillas, emisión individual/lote, PDF, QR, verificación y revocación; recorrido principal probado en demo, validación integral pendiente · **Idiomas iniciales:** español e inglés.
+**Estado:** ciclo principal implementado y demo local disponible: portal, convocatoria, trabajos/autorías, revisión, programa, inscripción, acreditación, certificados, comunicaciones, publicaciones, patrocinadores, logística/reservas, galería de pósteres, cobros multimoneda con verificación manual e indicadores. La validación integral por módulos y la activación de proveedores siguen pendientes. Consulte el [estado real del proyecto](docs/development/estado-del-proyecto.md) y la [guía de pruebas por módulo](docs/development/pruebas-por-modulo.md). **Idiomas:** español e inglés.
 
 ## Visión
 
@@ -191,3 +191,10 @@ El programa distingue actividades científicas (simposios, talleres y otras), se
 **Publicaciones científicas** permite seleccionar versiones aceptadas, solicitar autorización al responsable del envío, revisar contenido y licencias, generar pruebas y publicar libros de resúmenes y memorias con PDF, fichas y exportaciones bibliográficas. Las ediciones conservan metadatos y archivos inmutables; una retirada motivada bloquea descargas y conserva su ficha de estado. Ver [recorrido y límites](docs/development/publicaciones-cientificas.md).
 
 **Patrocinadores y colaboradores** incorpora catálogo por evento, contactos privados, categorías bilingües, logotipos, compromisos con responsables/plazos/evidencia y seguimiento por moneda. El reconocimiento público exige selección y autorización explícitas, vista previa y publicación independiente, con versiones e historial conservados y retirada motivada. Ver [guía y límites](docs/development/patrocinadores-colaboradores.md). Los cobros y la logística ampliada siguen pendientes de Fase 4.
+
+## Bloques operativos recientes
+
+- [Logística, reservas y acceso a sesiones](docs/development/logistica-reservas.md).
+- [Galería de pósteres y consentimiento de publicación](docs/development/galeria-posteres.md).
+- [Cobros: efectivo, Transfermóvil/Enzona y catálogo de pasarelas; CUP, USD y EUR](docs/development/cobros-pagos.md). La confirmación automática de proveedores requiere adaptadores específicos.
+- [Indicadores y exportaciones](docs/development/indicadores-informes.md).

@@ -11,7 +11,7 @@ import { migrateDatabase } from '../apps/api/dist/database/migrate.js';
 import { demoAuthentication, fixture, seedDemo } from './demo-fixtures.mjs';
 
 const mode = process.argv[2];
-if (!['test', 'sponsorship-test', 'attendance-test', 'communications-test', 'editorial-test', 'demo', 'web-test'].includes(mode)) throw new Error('Use npm test or npm run dev:demo');
+if (!['test', 'completion-test','operations-test', 'sponsorship-test', 'attendance-test', 'communications-test', 'editorial-test', 'demo', 'web-test'].includes(mode)) throw new Error('Use npm test or npm run dev:demo');
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const runDirectory = join(root, '.local', `api-${randomUUID()}`);
 const data = join(runDirectory, 'data');
@@ -73,13 +73,13 @@ try {
   await migrateDatabase(url('sep_migrator'));
   await migrateDatabase(url('sep_migrator'));
   const admin = new Pool({ connectionString: url('sep_local_admin') });
-  try { await seedDemo(admin); await seedSites(admin, fixture, !['test','sponsorship-test','attendance-test','communications-test','editorial-test'].includes(mode)); } finally { await admin.end(); }
+  try { await seedDemo(admin); await seedSites(admin, fixture, !['test','completion-test','operations-test','sponsorship-test','attendance-test','communications-test','editorial-test'].includes(mode)); } finally { await admin.end(); }
   const auth = demoAuthentication();
-  const environment = { ...process.env, NODE_ENV: ['test','sponsorship-test','attendance-test','communications-test','editorial-test'].includes(mode) ? 'test' : 'development', AUTH_MODE: 'development-token',
+  const environment = { ...process.env, NODE_ENV: ['test','completion-test','operations-test','sponsorship-test','attendance-test','communications-test','editorial-test'].includes(mode) ? 'test' : 'development', AUTH_MODE: 'development-token',
     DATABASE_URL: url('sep_runtime'), DEV_AUTH_TOKENS_JSON: JSON.stringify(auth.mapping),
     SEP_TEST_ADMIN_URL: url('sep_local_admin'), SEP_TEST_TOKENS: JSON.stringify(auth.tokens) };
-  if (['test','sponsorship-test','attendance-test','communications-test','editorial-test'].includes(mode)) {
-    const result = spawnSync(process.execPath, ['--test', '--test-reporter=spec', mode==='sponsorship-test'?'tests/api/sponsorship.test.mjs':mode==='attendance-test'?'tests/api/attendance.test.mjs':mode==='editorial-test'?'tests/api/editorial.test.mjs':mode==='communications-test'?'tests/api/communications.test.mjs':'tests/api/api.test.mjs'],
+  if (['test','completion-test','operations-test','sponsorship-test','attendance-test','communications-test','editorial-test'].includes(mode)) {
+    const result = spawnSync(process.execPath, ['--test', '--test-reporter=spec', mode==='completion-test'?'tests/api/completion.test.mjs':mode==='operations-test'?'tests/api/operations.test.mjs':mode==='sponsorship-test'?'tests/api/sponsorship.test.mjs':mode==='attendance-test'?'tests/api/attendance.test.mjs':mode==='editorial-test'?'tests/api/editorial.test.mjs':mode==='communications-test'?'tests/api/communications.test.mjs':'tests/api/api.test.mjs'],
       { cwd: root, env: environment, windowsHide: true, stdio: 'inherit', timeout: 60000 });
     if (result.error || result.status !== 0) process.exitCode = 1;
   } else {

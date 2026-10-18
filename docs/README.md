@@ -78,3 +78,15 @@ Los documentos de planificación describen trabajo futuro. No constituyen eviden
 - [Publicaciones científicas: resúmenes, memorias y archivo](development/publicaciones-cientificas.md) y [ADR-028](adr/ADR-028-publicacion-editorial.md).
 
 - [Patrocinadores y colaboradores](development/patrocinadores-colaboradores.md), [ADR-030](adr/ADR-030-patrocinadores-colaboradores.md) y [Fase 4](functional/fase-4.md).
+
+## Cierre del ciclo operativo y validación
+
+- [Estado real y pendientes](development/estado-del-proyecto.md).
+- [Pruebas módulo a módulo](development/pruebas-por-modulo.md).
+- [Logística, reservas y sesiones híbridas](development/logistica-reservas.md).
+- [Galería de pósteres](development/galeria-posteres.md).
+- [Cobros y pagos por evento](development/cobros-pagos.md).
+- [Indicadores e informes](development/indicadores-informes.md).
+
+- [ADR-031: logística, reservas y pósteres](adr/ADR-031-logistica-reservas-posteres.md).
+- [ADR-032: cobros configurables multimoneda](adr/ADR-032-cobros-genericos-multimoneda.md).

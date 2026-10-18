@@ -277,3 +277,34 @@ export interface SponsorshipHistory {id:string;resourceId:string;action:string;a
 export interface SponsorshipWorkspace {settings:SponsorshipSettings;revision:number;partners:SponsorSummary[];commitments:SponsorCommitment[];responsibles:{id:string;name:string}[];history:SponsorshipHistory[];releases:SponsorshipRelease[];currencies:string[];timezone:string;today:string;editable:boolean}
 export interface SponsorshipPreview {snapshot:SponsorshipSnapshot;fingerprint:string;alreadyPublished:boolean}
 export interface PublicSponsorship {id:string;edition:number;publishedAt:string;snapshot:SponsorshipSnapshot}
+
+export interface EventResource {id:string;name:string;kind:'equipment'|'material'|'service';unit:string;quantity:number;reusable:boolean;active:boolean;notes:string}
+export type LogisticsStatus='requested'|'confirmed'|'ready'|'fulfilled'|'cancelled';
+export interface LogisticsAssignment {id:string;resourceId:string;sessionId:string|null;title:string;quantity:number;status:LogisticsStatus;responsibleId:string|null;responsibleName:string;notes:string;evidence:string;context:{titleEs:string;titleEn:string;starts:string;ends:string;timezone:string;room:string;fingerprint:string}}
+export interface LogisticsContent {resources:EventResource[];assignments:LogisticsAssignment[]}
+export interface EventSessionPolicy {sessionId:string;revision:number;enabled:boolean;open:boolean;capacityInPerson:number|null;capacityVirtual:number|null;waitlist:boolean;fingerprint:string}
+export interface EventSessionBooking {id:string;sessionId:string;personId:string;name:string;registrationId:string;registrationRevision:number;modality:RegistrationModality;state:'confirmed'|'waitlisted'|'cancelled';revision:number;fingerprint:string;createdAt:string;updatedAt:string;sessionTitleEs:string;sessionTitleEn:string}
+export interface SessionChannel {sessionId:string;revision:number;platform:string;joinUrl:string;recordingUrl:string;recordingAuthorized:boolean;enabled:boolean;fingerprint:string}
+export interface OperationsHistory {id:string;resourceId:string;action:string;actorName:string;reason:string;details:Record<string,unknown>;createdAt:string}
+export interface OperationsSession {id:string;titleEs:string;titleEn:string;date:string;startsAt:string;endsAt:string;modality:'in_person'|'virtual'|'hybrid';room:string;roomId:string|null;capacity:number|null;fingerprint:string}
+export interface OperationsWorkspace {revision:number;content:LogisticsContent;sessions:OperationsSession[];publishedSessions:OperationsSession[];policies:EventSessionPolicy[];bookings:EventSessionBooking[];channels:SessionChannel[];history:OperationsHistory[];responsibles:{id:string;name:string}[];timezone:string;editable:boolean;staleAssignments:string[]}
+export interface MyEventSessions {timezone:string;registration:RegistrationSummary|null;sessions:(OperationsSession&{policy:EventSessionPolicy|null;booking:EventSessionBooking|null;confirmed:number;waiting:number;availableInPerson:number|null;availableVirtual:number|null;canBook:boolean;channelConfigured:boolean;canJoin:boolean;recordingAvailable:boolean})[]}
+
+export interface PosterPermission {authorized:boolean;license:'all-rights-reserved'|'CC-BY-4.0'|'CC-BY-SA-4.0'|'CC-BY-NC-4.0';showDownload:boolean;thumbnail:string|null;altText:string}
+export interface PosterPublicContent {workId:string;versionNumber:number;title:string;abstract:string;keywords:string[];language:string;trackEs:string;trackEn:string;authors:{name:string;affiliations:WorkAffiliation[];orcid:string|null;orcidVerified:boolean}[];license:PosterPermission['license'];showDownload:boolean;thumbnail:string|null;altText:string;pages:number;sha256:string;bytes:number;demo:boolean}
+export interface PosterEntry {workId:string;title:string;versionId:string;versionNumber:number;fileId:string|null;eligible:boolean;revision:number;permission:PosterPermission|null;approved:boolean;note:string;ownerName?:string;releases:{id:string;active:boolean;publishedAt:string;withdrawalReason:string|null}[]}
+export interface PosterWorkspace {entries:PosterEntry[];editable:boolean;history:{id:string;workId:string;action:string;actorName:string;reason:string;createdAt:string}[]}
+export interface PublicPoster {id:string;publishedAt:string;content:PosterPublicContent}
+
+export interface EventReports {generatedAt:string;timezone:string;groups:{id:string;rows:{state:string;total:number}[]}[];readiness:{module:string;state:'ready'|'pending'|'configured';detail:string}[];integrations:{reduniv:boolean;google:boolean;orcid:'sandbox'|'production'|'disabled';email:boolean;payments:boolean};currencies:{currency:string;confirmed:string;fulfilled:string}[]}
+export interface EventReportExport {filename:string;csv:string;count:number;generatedAt:string}
+
+export type PaymentCurrency='CUP'|'USD'|'EUR';
+export interface PaymentMethod {id:string;name:string;kind:'cash'|'gateway';currencies:PaymentCurrency[];active:boolean;checkoutUrl:string;instructions:string;fields:{label:string;value:string}[]}
+export interface EventFee {id:string;name:string;description:string;active:boolean;prices:{currency:PaymentCurrency;amount:string}[]}
+export interface PaymentSettings {enabled:boolean;methods:PaymentMethod[];fees:EventFee[];instructions:string}
+export type ChargeState='open'|'reported'|'paid'|'waived'|'cancelled'|'refunded';
+export interface EventCharge {id:string;personId:string;registrationId:string;name:string;feeId:string;feeName:string;amount:string;currency:PaymentCurrency;state:ChargeState;revision:number;methodId:string|null;methodName:string|null;reference:string;report:string;createdAt:string;updatedAt:string}
+export interface PaymentHistory {id:string;chargeId:string;actorName:string;action:string;reason:string;createdAt:string}
+export interface PaymentWorkspace {revision:number;settings:PaymentSettings;charges:EventCharge[];history:PaymentHistory[];registrations:{id:string;personId:string;name:string;status:string}[];settingsHistory:{id:string;revision:number;actorName:string;reason:string;createdAt:string}[];editable:boolean;totals:{currency:PaymentCurrency;paid:string;refunded:string;due:string}[]}
+export interface MyPayments {revision:number;settings:PaymentSettings;charges:EventCharge[];history:PaymentHistory[];registrationId:string|null}
