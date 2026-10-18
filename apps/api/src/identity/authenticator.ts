@@ -50,6 +50,7 @@ export class OidcAuthenticator implements Authenticator {
       : typeof claims.preferred_username === 'string' ? claims.preferred_username.slice(0, 120) : 'Usuario';
     const personId = await this.database.oidcPerson(this.config.oidc!.issuer, claims.sub!, name);
     const verifiedEmail = claims.email_verified === true && typeof claims.email === 'string' ? claims.email.trim().toLowerCase() : undefined;
+    if(verifiedEmail)await this.database.rememberVerifiedEmail(personId,verifiedEmail);
     return { personId, authMode: 'oidc', verifiedEmail };
   }
   private async googleSession(authorization: string): Promise<AuthenticatedPerson> {
@@ -69,6 +70,7 @@ export class OidcAuthenticator implements Authenticator {
     } catch { throw new ApiException(401, 'UNAUTHORIZED'); }
     const name = typeof identity.name === 'string' && identity.name.trim() ? identity.name.trim().slice(0, 120) : 'Usuario';
     const personId = await this.database.oidcPerson('https://accounts.google.com', identity.sub!, name);
-    return { personId, authMode: 'google', verifiedEmail: (identity.email as string).trim().toLowerCase() };
+    const verifiedEmail=(identity.email as string).trim().toLowerCase();await this.database.rememberVerifiedEmail(personId,verifiedEmail);
+    return { personId, authMode: 'google', verifiedEmail };
   }
 }

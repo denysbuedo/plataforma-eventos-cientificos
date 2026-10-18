@@ -559,3 +559,12 @@ dialog::backdrop { background:rgb(18 36 28 / 45%); }
 .certificate-hash{overflow-wrap:anywhere;word-break:break-all;font-size:.85rem}
 .certificate-file-check{border-top:1px solid var(--line,#e3e7e5);padding-top:20px;margin-top:28px}
 @media(max-width:700px){.certificate-verification{padding:12px;margin:20px auto}.certificate-verification .registration-summary{grid-template-columns:1fr}}
+
+.communications-module .communication-row{padding:18px 0;border-bottom:1px solid var(--line,#e3e7e5);background:transparent;box-shadow:none;overflow-wrap:anywhere}
+.communications-module h2,.communications-module h3{font-family:inherit;font-size:1.05rem;line-height:1.45}
+.communications-module h3{font-size:1rem;margin:6px 0}
+.communications-module .field{margin:16px 0}
+.communications-module .registration-line>.field{min-width:220px;max-width:100%}
+.communications-module .registration-check{margin:18px 0}
+.communications-module .registration-fields .field{min-width:0}
+@media(max-width:700px){.communications-module .registration-line{flex-wrap:wrap}.communications-module .editor-actions{width:100%}.communications-module .registration-line>.field{min-width:0;width:100%}}

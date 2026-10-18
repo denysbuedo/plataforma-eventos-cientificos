@@ -228,3 +228,13 @@ export interface CertificatePage {data:CertificateSummary[];total:number;limit:n
 export interface CertificateHistory {id:string;action:string;actorName:string;reason:string;createdAt:string}
 export interface CertificateDetail {certificate:CertificateSummary;history:CertificateHistory[]}
 export interface PublicCertificate {name:string;event:string;title:string;participation:string;subjectTitle:string;status:'issued'|'revoked';code:string;issuedAt:string;revokedAt:string|null;sha256:string}
+
+// Communications: inbox contents are scoped to the signed-in person and event.
+export interface EventNotification {id:string;kind:string;title:string;message:string;target:string;resourceId:string|null;category:'operational'|'optional';createdAt:string;readAt:string|null}
+export interface NotificationPage {data:EventNotification[];total:number;unread:number;offset:number;limit:number}
+export interface NotificationPreferences {emailEnabled:boolean;optionalEmail:boolean;locale:'es'|'en';revision:number;verifiedEmail:string|null;mailAvailable:boolean}
+export type MailDeliveryState='pending'|'processing'|'retry'|'sent'|'failed'|'suppressed'|'blocked';
+export interface MailDelivery {personName:string;id:string;notificationId:string;title:string;recipient:string|null;status:MailDeliveryState;attempts:number;errorCode:string|null;createdAt:string;nextAttemptAt:string|null;deliveredAt:string|null}
+export interface MailDeliveryPage {data:MailDelivery[];total:number;offset:number;limit:number;mailAvailable:boolean;counts:Record<MailDeliveryState,number>}
+export interface MailAttempt {id:string;status:string;errorCode:string|null;createdAt:string}
+export interface EventAnnouncement {id:string;messageEs:string;messageEn:string;audience:'registrants'|'reviewers';category:'operational'|'optional';createdAt:string;recipientCount:number}

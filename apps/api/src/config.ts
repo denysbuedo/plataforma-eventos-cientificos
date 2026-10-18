@@ -5,6 +5,7 @@ export interface AppConfig {
   oidc?: { issuer: string; audience: string; jwksUrl: string; authorizedParty?: string; roleClientId: string; allowedClientRoles: string[] };
   google?: { clientId: string; signingKey: string; audience: string };
   orcid?: { clientId:string; clientSecret:string; redirectUri:string; environment:'production'|'sandbox' };
+  mail?:{host:string;port:number;secure:boolean;localPlaintext:boolean;user?:string;password?:string;from:string;adminOrigin:string;messageDomain:string};
   tokens: ReadonlyMap<string, string>;
   port: number;
 }
@@ -55,5 +56,16 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
     if(redirect.href!==new URL('/api/auth/orcid/callback',env.SEP_ADMIN_ORIGIN).href||redirect.username||redirect.password||redirect.protocol!=='https:'&&!(loopback&&redirect.protocol==='http:'))throw new Error('Invalid ORCID callback');
     orcid={clientId:env.ORCID_CLIENT_ID!,clientSecret:env.ORCID_CLIENT_SECRET,redirectUri:redirect.href,environment:environment as 'production'|'sandbox'};
   }
-  return { databaseUrl: env.DATABASE_URL, authMode: env.AUTH_MODE as AppConfig['authMode'], oidc, google, orcid, tokens, port };
+  let mail:AppConfig['mail'];
+  if(env.SEP_MAIL_ENABLED==='1'){
+    const host=env.SMTP_HOST??'',port=Number(env.SMTP_PORT??'587'),from=env.SMTP_FROM??'';
+    const localPlaintext=env.NODE_ENV!=='production'&&env.SEP_SMTP_ALLOW_LOCAL_PLAINTEXT==='1'&&['127.0.0.1','localhost'].includes(host);
+    if(!/^[a-z0-9.-]+$/i.test(host)||!Number.isInteger(port)||port<1||port>65535||! /^[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+$/.test(from)||from.length>254||!!env.SMTP_USER!==!!env.SMTP_PASSWORD||!env.SEP_ADMIN_ORIGIN)throw new Error('Incomplete SMTP configuration');
+    const origin=new URL(env.SEP_ADMIN_ORIGIN);
+    if(origin.username||origin.password||origin.pathname!=='/'||origin.search||origin.hash||origin.protocol!=='https:'&&!(env.NODE_ENV!=='production'&&origin.protocol==='http:'&&['127.0.0.1','localhost'].includes(origin.hostname)))throw new Error('Invalid mail application origin');
+    const secure=env.SMTP_SECURE==='1';
+    if(!localPlaintext&&port===465&&!secure)throw new Error('SMTP port 465 requires SMTP_SECURE=1');
+    mail={host,port,secure,localPlaintext,user:env.SMTP_USER,password:env.SMTP_PASSWORD,from,adminOrigin:origin.origin,messageDomain:from.split('@')[1]};
+  }
+  return { mail, databaseUrl: env.DATABASE_URL, authMode: env.AUTH_MODE as AppConfig['authMode'], oidc, google, orcid, tokens, port };
 }

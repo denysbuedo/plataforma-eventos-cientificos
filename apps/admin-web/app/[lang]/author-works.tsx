@@ -13,8 +13,8 @@ import {responseCopy} from './work-response-copy';
 import {feedbackCopy} from './work-feedback-copy';
 import WorkSharing from './work-sharing';
 
-export default function AuthorWorks({ initial, locale, contextKey, publicUrl, person }: {
-  initial: AuthorWorkspace; locale: Locale; contextKey: string; publicUrl: string; person: AuthorAccount;
+export default function AuthorWorks({ initial, locale, contextKey, publicUrl, person, initialWorkId }: {
+  initialWorkId?:string; initial: AuthorWorkspace; locale: Locale; contextKey: string; publicUrl: string; person: AuthorAccount;
 }) {
   const text = webCopy[locale], feedback=feedbackCopy[locale]; const [workspace, setWorkspace] = useState(initial);
   const [saved, setSaved] = useState<AuthorWork | null>(null); const [work, setWork] = useState<AuthorWork | null>(null);
@@ -38,6 +38,8 @@ export default function AuthorWorks({ initial, locale, contextKey, publicUrl, pe
     return () => window.removeEventListener('beforeunload', warn);
   }, [dirty]);
   function guard(next: () => void, closing = false) { if (busy) return; if (dirty) { setClosingPanel(closing); setPendingAction(() => next); } else next(); }
+  const openedFromLink=useRef<string|null>(null);
+  useEffect(()=>{if(initialWorkId&&/^[0-9a-f-]{36}$/i.test(initialWorkId)&&openedFromLink.current!==initialWorkId){openedFromLink.current=initialWorkId;void open(initialWorkId);}},[initialWorkId]);
   const type = work?.call.content.contributionTypes.find((t) => t.id === work.contributionTypeId);
   const words = work?.abstract.trim() ? work.abstract.trim().split(/\s+/u).length : 0;
   const callChanged = !!work && !!workspace.call && (workspace.call.revision !== work.call.revision || workspace.call.publishedAt !== work.call.publishedAt);

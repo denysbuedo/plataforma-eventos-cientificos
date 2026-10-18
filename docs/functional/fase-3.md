@@ -16,6 +16,10 @@ Pendientes de ampliación: QR/cámara, delegación a acreditadores, duración/sa
 
 Plantillas bilingües con color, logotipo y firmantes; requisitos por tipo de participación; aprobación y emisión individual/lote de veinte; PDF inmutable, QR y verificación pública; revocación con historial y Mis certificados. Véanse [guía](../development/certificados.md) y [ADR-026](../adr/ADR-026-certificados-verificables.md). Emisión individual, PDF/QR, revocación y lote de dos comprobados en demostración; la validación integral continúa pendiente.
 
+## Paquete 4: comunicaciones y notificaciones — implementado
+
+Centro personal por evento, contador y lectura persistente; preferencias de correo e idioma; avisos automáticos del ciclo científico y operativo; comunicados bilingües para inscritos o revisores; catálogo de plantillas y bandeja de entregas. Cola transaccional, SMTP configurable, reintentos acotados, arrendamientos e historial. Validación dirigida en PostgreSQL, SMTP local y navegador en escritorio/móvil. No se han enviado correos reales; activar SMTP institucional y RedUniv/Google sigue pendiente. Ver [guía](../development/comunicaciones.md) y [ADR-027](../adr/ADR-027-comunicaciones.md).
+
 ## Ampliaciones posteriores
 
-Comunicación transaccional, exportaciones, requisitos por categoría y pagos cuando se defina el modelo institucional. No se presentan como disponibles en la demo.
+Recordatorios programados, campañas de gran volumen, exportaciones, requisitos por categoría y pagos cuando se defina el modelo institucional. No se presentan como disponibles en la demo.

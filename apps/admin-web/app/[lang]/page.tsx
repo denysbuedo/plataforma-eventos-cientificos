@@ -1,3 +1,4 @@
+import NotificationCenter from './notification-center';
 import MyCertificates from './my-certificates';
 import type {CertificatePage} from '@sep/contracts';
 import MyAttendance from './my-attendance';
@@ -49,6 +50,10 @@ export default async function AdminPage({ params, searchParams }: { params: Prom
       const person=(await apiRequest<{person:AuthorAccount}>(binding,'me',{token,locale})).person;
       return <Profile person={person} locale={locale} contextKey={contextKey} eventId={binding.eventId} publicUrl={publicUrl?`${publicUrl}/${locale}?event=${encodeURIComponent(contextKey)}`:''} error={!!query.orcidError}/>;
     }
+    if(query.tab==='notifications'&&binding.eventId){
+      const person=(await apiRequest<{person:AuthorAccount}>(binding,'me',{token,locale})).person;
+      return <ParticipantShell person={person} locale={locale} contextKey={contextKey} eventId={binding.eventId} tab="notifications" publicUrl={publicUrl?`${publicUrl}/${locale}?event=${encodeURIComponent(contextKey)}`:''}><NotificationCenter eventId={binding.eventId} contextKey={contextKey} locale={locale}/></ParticipantShell>;
+    }
     if(query.tab==='certificates'&&binding.eventId){
       const person=(await apiRequest<{person:AuthorAccount}>(binding,'me',{token,locale})).person;
       const value=await apiRequest<CertificatePage>(binding,`events/${binding.eventId}/certificates/mine`,{token,locale});
@@ -82,7 +87,7 @@ export default async function AdminPage({ params, searchParams }: { params: Prom
     if (query.tab === 'works' && binding.eventId) {
       const authorWorkspace = await apiRequest<AuthorWorkspace>(binding, `events/${binding.eventId}/my-works`, { token, locale });
       const author = (await apiRequest<{ person: AuthorAccount }>(binding, 'me', { token, locale })).person;
-      return <AuthorWorks key={contextKey} initial={authorWorkspace} locale={locale} contextKey={contextKey} person={author} publicUrl={publicUrl?`${publicUrl}/${locale}?event=${encodeURIComponent(contextKey)}`:''} />;
+      return <AuthorWorks key={contextKey} initialWorkId={query.work} initial={authorWorkspace} locale={locale} contextKey={contextKey} person={author} publicUrl={publicUrl?`${publicUrl}/${locale}?event=${encodeURIComponent(contextKey)}`:''} />;
     }
     if (institutional) profile = (await apiRequest<{ person: { id: string; name: string } }>(binding, 'me', { token, locale })).person;
     session = await apiRequest<SessionView>(binding, binding.eventId ? `events/${binding.eventId}/session` : 'session', { token, locale });
