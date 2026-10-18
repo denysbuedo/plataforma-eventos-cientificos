@@ -29,6 +29,7 @@
     "build:api": "npm run build -w @sep/contracts && npm run build -w @sep/i18n && npm run build -w @sep/api",
     "test:web": "node scripts/local-postgres.mjs web-test",
     "test:communications": "npm run build:api && node scripts/local-postgres.mjs communications-test",
+    "test:attendance": "npm run build:api && node scripts/local-postgres.mjs attendance-test",
     "test:editorial": "npm run build:api && node scripts/local-postgres.mjs editorial-test"
   },
   "devDependencies": {

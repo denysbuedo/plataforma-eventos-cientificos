@@ -2,6 +2,7 @@ import MyPublicationsView from './my-publications';
 import NotificationCenter from './notification-center';
 import MyCertificates from './my-certificates';
 import type {CertificatePage} from '@sep/contracts';
+import AttendanceAdmin from './attendance-admin';
 import MyAttendance from './my-attendance';
 import type {AttendanceDetail} from '@sep/contracts';
 import MyRegistrationView from './my-registration';
@@ -36,7 +37,7 @@ export default async function AdminPage({ params, searchParams }: { params: Prom
   const query = await searchParams;
   const institutional = oidcEnabled(); const contextKey = query.event ?? (institutional ? 'org' : 'a1');
   const returnTo = `/${locale}?event=${encodeURIComponent(contextKey)}${query.tab ? `&tab=${encodeURIComponent(query.tab)}` : ''}`;
-  const login = <Login locale={locale} publicUrl={publicUrl} enabled={!!config} institutional={institutional} googleEnabled={googleLoginEnabled()} redunivEnabled={redunivLoginEnabled()} returnTo={returnTo} authError={!!query.authError} logoutError={!!query.logoutError} />;
+  const login = <Login locale={locale} publicUrl={publicUrl} enabled={!!config} preserveContext={!!query.event||!!query.tab} accreditorDemo={!!config?.events.attendanceDemo} institutional={institutional} googleEnabled={googleLoginEnabled()} redunivEnabled={redunivLoginEnabled()} returnTo={returnTo} authError={!!query.authError} logoutError={!!query.logoutError} />;
   if (!token) return login;
   let profile: { id: string; name: string } | null = null;
   let session: SessionView | null = null; let events: EventPage = { data: [], limit: 20, offset: 0 }; let site: SiteDraft | null = null; let denied = false;
@@ -93,6 +94,10 @@ export default async function AdminPage({ params, searchParams }: { params: Prom
       const authorWorkspace = await apiRequest<AuthorWorkspace>(binding, `events/${binding.eventId}/my-works`, { token, locale });
       const author = (await apiRequest<{ person: AuthorAccount }>(binding, 'me', { token, locale })).person;
       return <AuthorWorks key={contextKey} initialWorkId={query.work} initial={authorWorkspace} locale={locale} contextKey={contextKey} person={author} publicUrl={publicUrl?`${publicUrl}/${locale}?event=${encodeURIComponent(contextKey)}`:''} />;
+    }
+    if((!query.tab||['attendance','overview'].includes(query.tab))&&binding.eventId){
+      const access=await apiRequest<SessionView>(binding,`events/${binding.eventId}/session`,{token,locale});
+      if(access.canAccredit&&!access.canRead){const person=(await apiRequest<{person:AuthorAccount}>(binding,'me',{token,locale})).person;return <ParticipantShell person={person} locale={locale} contextKey={contextKey} eventId={binding.eventId} tab="attendance" publicUrl={publicUrl?`${publicUrl}/${locale}?event=${encodeURIComponent(contextKey)}`:''}><div className="admin-heading"><div><h1>{locale==='es'?'Acreditación del evento':'Event accreditation'}</h1><p>{locale==='es'?'Consulta participantes y confirma entradas.':'Look up participants and confirm entries.'}</p></div></div><AttendanceAdmin eventId={binding.eventId} contextKey={contextKey} locale={locale}/></ParticipantShell>;}
     }
     if (institutional) profile = (await apiRequest<{ person: { id: string; name: string } }>(binding, 'me', { token, locale })).person;
     session = await apiRequest<SessionView>(binding, binding.eventId ? `events/${binding.eventId}/session` : 'session', { token, locale });

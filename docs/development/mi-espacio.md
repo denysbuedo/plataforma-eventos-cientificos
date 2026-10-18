@@ -59,3 +59,5 @@ Mi participación se alimenta del [programa científico publicado](programa-cien
 Mi inscripción se incorpora como área del participante, con la misma cabecera y cuenta. Muestra la solicitud y su historial, separada de la agenda de Mi participación. Véase [Inscripciones](inscripciones.md).
 
 Mi acreditación incorpora la credencial por evento y la consulta del historial de asistencia propio. Mantiene la cabecera y navegación compartidas. Los certificados están en su sección propia, separados de la credencial de acceso.
+
+A las personas con delegación activa se les muestra **Acreditación del evento** en Mi espacio. Pueden registrar entradas actuales sin acceder a la administración científica. El organizador conserva la pantalla completa, con equipo, correcciones y exportación.

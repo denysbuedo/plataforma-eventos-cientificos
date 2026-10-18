@@ -14821,6 +14821,28 @@
             "schema": {
               "$ref": "#/components/schemas/Object"
             }
+          },
+          {
+            "name": "presence",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "any",
+                "present",
+                "missing"
+              ]
+            }
+          },
+          {
+            "name": "sessionId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -14831,6 +14853,64 @@
                 "schema": {
                   "type": "object",
                   "properties": {
+                    "canCorrect": {
+                      "type": "boolean"
+                    },
+                    "canManageTeam": {
+                      "type": "boolean"
+                    },
+                    "dashboard": {
+                      "type": "object",
+                      "properties": {
+                        "confirmed": {
+                          "type": "integer"
+                        },
+                        "checkedIn": {
+                          "type": "integer"
+                        },
+                        "pending": {
+                          "type": "integer"
+                        },
+                        "sessions": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "format": "uuid"
+                              },
+                              "titleEs": {
+                                "type": "string"
+                              },
+                              "titleEn": {
+                                "type": "string"
+                              },
+                              "present": {
+                                "type": "integer"
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "titleEs",
+                              "titleEn",
+                              "present"
+                            ]
+                          }
+                        },
+                        "updatedAt": {
+                          "type": "string",
+                          "format": "date-time"
+                        }
+                      },
+                      "required": [
+                        "confirmed",
+                        "checkedIn",
+                        "pending",
+                        "sessions",
+                        "updatedAt"
+                      ]
+                    },
                     "data": {
                       "type": "array",
                       "items": {
@@ -14994,6 +15074,9 @@
                     }
                   },
                   "required": [
+                    "canCorrect",
+                    "canManageTeam",
+                    "dashboard",
                     "data",
                     "total",
                     "limit",
@@ -15002,6 +15085,579 @@
                     "startDate",
                     "endDate",
                     "sessions"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "attendance"
+        ]
+      }
+    },
+    "/api/v1/events/{eventId}/attendance/team": {
+      "get": {
+        "operationId": "AttendanceController_team",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "personId": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "active": {
+                            "type": "boolean"
+                          },
+                          "revision": {
+                            "type": "integer"
+                          },
+                          "membershipActive": {
+                            "type": "boolean"
+                          }
+                        },
+                        "required": [
+                          "personId",
+                          "name",
+                          "active",
+                          "revision",
+                          "membershipActive"
+                        ]
+                      }
+                    },
+                    "candidates": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "personId": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "name": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "personId",
+                          "name"
+                        ]
+                      }
+                    },
+                    "history": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "personId": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "actorName": {
+                            "type": "string"
+                          },
+                          "active": {
+                            "type": "boolean"
+                          },
+                          "reason": {
+                            "type": "string"
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "format": "date-time"
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "personId",
+                          "actorName",
+                          "active",
+                          "reason",
+                          "createdAt"
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "data",
+                    "candidates",
+                    "history"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "attendance"
+        ]
+      }
+    },
+    "/api/v1/events/{eventId}/attendance/team/{id}": {
+      "put": {
+        "operationId": "AttendanceController_operator",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AttendanceOperatorDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "personId": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "active": {
+                            "type": "boolean"
+                          },
+                          "revision": {
+                            "type": "integer"
+                          },
+                          "membershipActive": {
+                            "type": "boolean"
+                          }
+                        },
+                        "required": [
+                          "personId",
+                          "name",
+                          "active",
+                          "revision",
+                          "membershipActive"
+                        ]
+                      }
+                    },
+                    "candidates": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "personId": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "name": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "personId",
+                          "name"
+                        ]
+                      }
+                    },
+                    "history": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "personId": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "actorName": {
+                            "type": "string"
+                          },
+                          "active": {
+                            "type": "boolean"
+                          },
+                          "reason": {
+                            "type": "string"
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "format": "date-time"
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "personId",
+                          "actorName",
+                          "active",
+                          "reason",
+                          "createdAt"
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "data",
+                    "candidates",
+                    "history"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "attendance"
+        ]
+      }
+    },
+    "/api/v1/events/{eventId}/attendance/report": {
+      "get": {
+        "operationId": "AttendanceController_report",
+        "parameters": [
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "pending",
+                "confirmed",
+                "waitlisted",
+                "rejected",
+                "cancelled"
+              ]
+            }
+          },
+          {
+            "name": "q",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/Object"
+            }
+          },
+          {
+            "name": "limit",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/Object"
+            }
+          },
+          {
+            "name": "offset",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/Object"
+            }
+          },
+          {
+            "name": "presence",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "any",
+                "present",
+                "missing"
+              ]
+            }
+          },
+          {
+            "name": "sessionId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "filename": {
+                      "type": "string"
+                    },
+                    "content": {
+                      "type": "string"
+                    },
+                    "total": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "filename",
+                    "content",
+                    "total"
                   ]
                 }
               }
@@ -15100,6 +15756,42 @@
                 "schema": {
                   "type": "object",
                   "properties": {
+                    "event": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "nameEs": {
+                          "type": "string"
+                        },
+                        "nameEn": {
+                          "type": "string"
+                        },
+                        "startDate": {
+                          "type": "string",
+                          "format": "date",
+                          "nullable": true
+                        },
+                        "endDate": {
+                          "type": "string",
+                          "format": "date",
+                          "nullable": true
+                        },
+                        "timezone": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "nameEs",
+                        "nameEn",
+                        "startDate",
+                        "endDate",
+                        "timezone"
+                      ]
+                    },
                     "registration": {
                       "type": "object",
                       "properties": {
@@ -15206,6 +15898,13 @@
                       "items": {
                         "type": "object",
                         "properties": {
+                          "method": {
+                            "type": "string",
+                            "enum": [
+                              "manual",
+                              "qr"
+                            ]
+                          },
                           "id": {
                             "type": "string",
                             "format": "uuid"
@@ -15346,6 +16045,7 @@
                     }
                   },
                   "required": [
+                    "event",
                     "registration",
                     "credential",
                     "records",
@@ -15461,6 +16161,42 @@
                     "detail": {
                       "type": "object",
                       "properties": {
+                        "event": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "format": "uuid"
+                            },
+                            "nameEs": {
+                              "type": "string"
+                            },
+                            "nameEn": {
+                              "type": "string"
+                            },
+                            "startDate": {
+                              "type": "string",
+                              "format": "date",
+                              "nullable": true
+                            },
+                            "endDate": {
+                              "type": "string",
+                              "format": "date",
+                              "nullable": true
+                            },
+                            "timezone": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "nameEs",
+                            "nameEn",
+                            "startDate",
+                            "endDate",
+                            "timezone"
+                          ]
+                        },
                         "registration": {
                           "type": "object",
                           "properties": {
@@ -15567,6 +16303,13 @@
                           "items": {
                             "type": "object",
                             "properties": {
+                              "method": {
+                                "type": "string",
+                                "enum": [
+                                  "manual",
+                                  "qr"
+                                ]
+                              },
                               "id": {
                                 "type": "string",
                                 "format": "uuid"
@@ -15707,11 +16450,20 @@
                         }
                       },
                       "required": [
+                        "event",
                         "registration",
                         "credential",
                         "records",
                         "history"
                       ]
+                    },
+                    "qrDataUrl": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "payload": {
+                      "type": "string",
+                      "nullable": true
                     },
                     "code": {
                       "type": "string",
@@ -15722,6 +16474,8 @@
                   },
                   "required": [
                     "detail",
+                    "qrDataUrl",
+                    "payload",
                     "code"
                   ]
                 }
@@ -15834,6 +16588,42 @@
                     "detail": {
                       "type": "object",
                       "properties": {
+                        "event": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "format": "uuid"
+                            },
+                            "nameEs": {
+                              "type": "string"
+                            },
+                            "nameEn": {
+                              "type": "string"
+                            },
+                            "startDate": {
+                              "type": "string",
+                              "format": "date",
+                              "nullable": true
+                            },
+                            "endDate": {
+                              "type": "string",
+                              "format": "date",
+                              "nullable": true
+                            },
+                            "timezone": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "nameEs",
+                            "nameEn",
+                            "startDate",
+                            "endDate",
+                            "timezone"
+                          ]
+                        },
                         "registration": {
                           "type": "object",
                           "properties": {
@@ -15940,6 +16730,13 @@
                           "items": {
                             "type": "object",
                             "properties": {
+                              "method": {
+                                "type": "string",
+                                "enum": [
+                                  "manual",
+                                  "qr"
+                                ]
+                              },
                               "id": {
                                 "type": "string",
                                 "format": "uuid"
@@ -16080,11 +16877,20 @@
                         }
                       },
                       "required": [
+                        "event",
                         "registration",
                         "credential",
                         "records",
                         "history"
                       ]
+                    },
+                    "qrDataUrl": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "payload": {
+                      "type": "string",
+                      "nullable": true
                     },
                     "code": {
                       "type": "string",
@@ -16095,6 +16901,8 @@
                   },
                   "required": [
                     "detail",
+                    "qrDataUrl",
+                    "payload",
                     "code"
                   ]
                 }
@@ -16204,6 +17012,42 @@
                 "schema": {
                   "type": "object",
                   "properties": {
+                    "event": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "nameEs": {
+                          "type": "string"
+                        },
+                        "nameEn": {
+                          "type": "string"
+                        },
+                        "startDate": {
+                          "type": "string",
+                          "format": "date",
+                          "nullable": true
+                        },
+                        "endDate": {
+                          "type": "string",
+                          "format": "date",
+                          "nullable": true
+                        },
+                        "timezone": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "nameEs",
+                        "nameEn",
+                        "startDate",
+                        "endDate",
+                        "timezone"
+                      ]
+                    },
                     "registration": {
                       "type": "object",
                       "properties": {
@@ -16310,6 +17154,13 @@
                       "items": {
                         "type": "object",
                         "properties": {
+                          "method": {
+                            "type": "string",
+                            "enum": [
+                              "manual",
+                              "qr"
+                            ]
+                          },
                           "id": {
                             "type": "string",
                             "format": "uuid"
@@ -16450,6 +17301,7 @@
                     }
                   },
                   "required": [
+                    "event",
                     "registration",
                     "credential",
                     "records",
@@ -16561,6 +17413,42 @@
                 "schema": {
                   "type": "object",
                   "properties": {
+                    "event": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "nameEs": {
+                          "type": "string"
+                        },
+                        "nameEn": {
+                          "type": "string"
+                        },
+                        "startDate": {
+                          "type": "string",
+                          "format": "date",
+                          "nullable": true
+                        },
+                        "endDate": {
+                          "type": "string",
+                          "format": "date",
+                          "nullable": true
+                        },
+                        "timezone": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "nameEs",
+                        "nameEn",
+                        "startDate",
+                        "endDate",
+                        "timezone"
+                      ]
+                    },
                     "registration": {
                       "type": "object",
                       "properties": {
@@ -16667,6 +17555,13 @@
                       "items": {
                         "type": "object",
                         "properties": {
+                          "method": {
+                            "type": "string",
+                            "enum": [
+                              "manual",
+                              "qr"
+                            ]
+                          },
                           "id": {
                             "type": "string",
                             "format": "uuid"
@@ -16807,6 +17702,7 @@
                     }
                   },
                   "required": [
+                    "event",
                     "registration",
                     "credential",
                     "records",
@@ -16928,6 +17824,42 @@
                 "schema": {
                   "type": "object",
                   "properties": {
+                    "event": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "nameEs": {
+                          "type": "string"
+                        },
+                        "nameEn": {
+                          "type": "string"
+                        },
+                        "startDate": {
+                          "type": "string",
+                          "format": "date",
+                          "nullable": true
+                        },
+                        "endDate": {
+                          "type": "string",
+                          "format": "date",
+                          "nullable": true
+                        },
+                        "timezone": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "nameEs",
+                        "nameEn",
+                        "startDate",
+                        "endDate",
+                        "timezone"
+                      ]
+                    },
                     "registration": {
                       "type": "object",
                       "properties": {
@@ -17034,6 +17966,13 @@
                       "items": {
                         "type": "object",
                         "properties": {
+                          "method": {
+                            "type": "string",
+                            "enum": [
+                              "manual",
+                              "qr"
+                            ]
+                          },
                           "id": {
                             "type": "string",
                             "format": "uuid"
@@ -17174,6 +18113,7 @@
                     }
                   },
                   "required": [
+                    "event",
                     "registration",
                     "credential",
                     "records",
@@ -17295,6 +18235,42 @@
                 "schema": {
                   "type": "object",
                   "properties": {
+                    "event": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "nameEs": {
+                          "type": "string"
+                        },
+                        "nameEn": {
+                          "type": "string"
+                        },
+                        "startDate": {
+                          "type": "string",
+                          "format": "date",
+                          "nullable": true
+                        },
+                        "endDate": {
+                          "type": "string",
+                          "format": "date",
+                          "nullable": true
+                        },
+                        "timezone": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "nameEs",
+                        "nameEn",
+                        "startDate",
+                        "endDate",
+                        "timezone"
+                      ]
+                    },
                     "registration": {
                       "type": "object",
                       "properties": {
@@ -17401,6 +18377,13 @@
                       "items": {
                         "type": "object",
                         "properties": {
+                          "method": {
+                            "type": "string",
+                            "enum": [
+                              "manual",
+                              "qr"
+                            ]
+                          },
                           "id": {
                             "type": "string",
                             "format": "uuid"
@@ -17541,6 +18524,7 @@
                     }
                   },
                   "required": [
+                    "event",
                     "registration",
                     "credential",
                     "records",
@@ -25565,6 +26549,9 @@
               "type": "string"
             }
           },
+          "canAccredit": {
+            "type": "boolean"
+          },
           "canRead": {
             "type": "boolean"
           },
@@ -25580,6 +26567,7 @@
           "organizationId",
           "eventId",
           "roles",
+          "canAccredit",
           "canRead",
           "canEdit",
           "organizationAdmin"
@@ -30643,6 +31631,25 @@
           "reason"
         ]
       },
+      "AttendanceOperatorDto": {
+        "type": "object",
+        "properties": {
+          "revision": {
+            "type": "number"
+          },
+          "active": {
+            "type": "boolean"
+          },
+          "reason": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "revision",
+          "active",
+          "reason"
+        ]
+      },
       "CredentialRevisionDto": {
         "type": "object",
         "properties": {
@@ -30669,6 +31676,9 @@
       "CheckInDto": {
         "type": "object",
         "properties": {
+          "credentialCode": {
+            "type": "string"
+          },
           "target": {
             "type": "string",
             "enum": [

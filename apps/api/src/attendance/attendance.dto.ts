@@ -1,10 +1,19 @@
 import {ApiProperty,ApiPropertyOptional} from '@nestjs/swagger';
-import {IsIn,IsInt,IsISO8601,IsOptional,IsString,IsUUID,Matches,MaxLength,Min,MinLength} from 'class-validator';
+import {IsBoolean,IsIn,IsInt,IsISO8601,IsOptional,IsString,IsUUID,Matches,MaxLength,Min,MinLength} from 'class-validator';
 import {RegistrationQuery,RevisionDto} from '../registrations/registration.dto.js';
-export class AttendanceQuery extends RegistrationQuery{}
+export class AttendanceQuery extends RegistrationQuery{
+ @ApiPropertyOptional({enum:['any','present','missing']}) @IsIn(['any','present','missing']) presence:'any'|'present'|'missing'='any';
+ @ApiPropertyOptional({format:'uuid'}) @IsOptional() @IsUUID() sessionId?:string;
+}
+export class AttendanceOperatorDto {
+ @ApiProperty() @IsInt() @Min(0) revision!:number;
+ @ApiProperty() @IsBoolean() active!:boolean;
+ @ApiProperty() @IsString() @MinLength(10) @MaxLength(1000) reason!:string;
+}
 export class CredentialRevisionDto extends RevisionDto{}
 export class CredentialLookupDto {@ApiProperty() @IsString() @Matches(/^[a-f0-9]{48}$/) code!:string;}
 export class CheckInDto {
+ @ApiPropertyOptional() @IsOptional() @IsString() @Matches(/^[a-f0-9]{48}$/) credentialCode?:string;
  @ApiProperty({enum:['event','session']}) @IsIn(['event','session']) target!:'event'|'session';
  @ApiPropertyOptional({format:'uuid'}) @IsOptional() @IsUUID() sessionId?:string;
  @ApiPropertyOptional({format:'date-time'}) @IsOptional() @IsISO8601({strict:true}) @Matches(/^\d{4}-\d{2}-\d{2}T.*(?:Z|[+-]\d{2}:\d{2})$/) observedAt?:string;

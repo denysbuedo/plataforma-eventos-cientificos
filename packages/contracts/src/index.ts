@@ -40,7 +40,7 @@ export interface SiteDraft {
 }
 export interface SessionView {
   person: { id: string; name: string }; organizationId: string; eventId: string | null;
-  roles: string[]; canRead: boolean; canEdit: boolean; organizationAdmin: boolean;
+  roles: string[]; canAccredit?: boolean; canRead: boolean; canEdit: boolean; organizationAdmin: boolean;
 }
 export interface EventTeam {
   organizers: { personId: string; name: string }[];
@@ -209,11 +209,11 @@ export type RegistrationSummary=Omit<RegistrationEntry,'policy'|'affiliations'|'
 export interface RegistrationPage {data:RegistrationSummary[];total:number;limit:number;offset:number;counts:RegistrationCounts}
 
 export interface AttendanceCredential {revision:number;active:boolean;issuedAt:string}
-export interface AttendanceRecord {id:string;targetKey:string;eventStartDate:string;eventEndDate:string;sessionId:string|null;titleEs:string;titleEn:string;date:string|null;startsAt:string|null;endsAt:string|null;timezone:string;modality:RegistrationModality;state:'present'|'voided';observedAt:string;revision:number;updatedAt:string}
+export interface AttendanceRecord {method?:'manual'|'qr';id:string;targetKey:string;eventStartDate:string;eventEndDate:string;sessionId:string|null;titleEs:string;titleEn:string;date:string|null;startsAt:string|null;endsAt:string|null;timezone:string;modality:RegistrationModality;state:'present'|'voided';observedAt:string;revision:number;updatedAt:string}
 export interface AttendanceHistory {id:string;recordId:string;action:string;actorName:string;reason:string;state:'present'|'voided';observedAt:string;createdAt:string}
-export interface AttendanceDetail {registration:RegistrationSummary|null;credential:AttendanceCredential|null;records:AttendanceRecord[];history:AttendanceHistory[]}
+export interface AttendanceDetail {event?:{id:string;nameEs:string;nameEn:string;startDate:string|null;endDate:string|null;timezone:string};registration:RegistrationSummary|null;credential:AttendanceCredential|null;records:AttendanceRecord[];history:AttendanceHistory[]}
 export interface AttendanceSession {id:string;titleEs:string;titleEn:string;date:string;startsAt:string;endsAt:string;modality:'in_person'|'virtual'|'hybrid';room:string}
-export interface AttendanceWorkspace {data:(RegistrationSummary&{eventPresent:boolean;sessionCount:number})[];total:number;limit:number;offset:number;sessions:AttendanceSession[];timezone:string;startDate:string|null;endDate:string|null}
+export interface AttendanceWorkspace {canCorrect:boolean;canManageTeam:boolean;dashboard:AttendanceDashboard;data:(RegistrationSummary&{eventPresent:boolean;sessionCount:number})[];total:number;limit:number;offset:number;sessions:AttendanceSession[];timezone:string;startDate:string|null;endDate:string|null}
 
 export const CERTIFICATE_KINDS=['attendance','presentation','review','organization','custom'] as const;
 export type CertificateKind=typeof CERTIFICATE_KINDS[number];
@@ -255,3 +255,6 @@ export interface MyPublicationPermission {workId:string;title:string;versionId:s
 export interface MyPublications {requests:MyPublicationPermission[];publications:PublicationSummary[];history:EditorialHistoryEntry[]}
 export interface EditorialHistoryEntry {id:string;action:string;actorName:string;reason:string;createdAt:string;workId:string|null}
 export const MAX_PUBLICATION_BYTES=50*1024*1024;
+
+export interface AttendanceDashboard {confirmed:number;checkedIn:number;pending:number;sessions:{id:string;titleEs:string;titleEn:string;present:number}[];updatedAt:string}
+export interface AttendanceTeam {data:{personId:string;name:string;active:boolean;revision:number;membershipActive:boolean}[];candidates:{personId:string;name:string}[];history:{id:string;personId:string;actorName:string;active:boolean;reason:string;createdAt:string}[]}

@@ -19,3 +19,5 @@ Tres tablas nuevas tienen RLS/FORCE. Cada persona consulta únicamente sus regis
 ## Límites de esta entrega
 
 Registro y búsqueda manual, código descargable como texto, consulta propia y correcciones. No hay escaneo QR/cámara, kiosco, operación sin conexión ni delegación a acreditadores. Son ampliaciones pendientes, no controles simulados. No se mide duración, salida, porcentaje de sesiones ni conexión virtual. La presencia administrativa registrada no emite un certificado; las reglas y evidencias de certificación son otro paquete.
+
+La ampliación con credencial QR, lectura de cámara/imagen, equipo delegado, panel y exportación se documenta en [ADR-029](ADR-029-acreditacion-operativa-qr.md).

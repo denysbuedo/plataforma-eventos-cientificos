@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Brand, Icon, ScienceArt } from '@sep/ui';
 import { webCopy, type Locale } from '@sep/i18n';
 import SignInButtons from './sign-in-buttons';
-export default function Login({ locale, publicUrl, enabled, institutional = false, googleEnabled = false, redunivEnabled = false, returnTo = '/es', authError = false, logoutError = false }: { locale: Locale; publicUrl: string; enabled: boolean; institutional?: boolean; googleEnabled?: boolean; redunivEnabled?: boolean; returnTo?: string; authError?: boolean; logoutError?: boolean }) {
+export default function Login({ locale, publicUrl, enabled, preserveContext=false, accreditorDemo=false, institutional = false, googleEnabled = false, redunivEnabled = false, returnTo = '/es', authError = false, logoutError = false }: { locale: Locale; publicUrl: string; enabled: boolean; preserveContext?:boolean; accreditorDemo?:boolean; institutional?: boolean; googleEnabled?: boolean; redunivEnabled?: boolean; returnTo?: string; authError?: boolean; logoutError?: boolean }) {
   const text = webCopy[locale]; const [profile, setProfile] = useState('organizer'); const [loading, setLoading] = useState(false); const [error, setError] = useState('');
   const options = [
     { id: 'organizer', title: text.organizer, help: text.organizerHelp, persona: 'mixed', event: 'a1', icon: 'edit' as const },
@@ -12,6 +12,7 @@ export default function Login({ locale, publicUrl, enabled, institutional = fals
     { id: 'author', title: text.author, help: text.authorHelp, persona: 'outsider', event: 'a1', icon: 'book' as const },
     { id:'reviewer',title:text.demoReviewer1,help:text.demoReviewerHelp,persona:'reviewer',event:'a1',icon:'check' as const },
     { id:'reviewer2',title:text.demoReviewer2,help:text.demoReviewerHelp,persona:'reviewer2',event:'a1',icon:'check' as const },
+    ...(accreditorDemo?[{id:'accreditor',title:locale==='es'?'Acreditador de demostración':'Demonstration accreditor',help:locale==='es'?'Consulta participantes y registra entradas en el evento de demostración.':'Look up participants and check them in at the demonstration event.',persona:'reviewer2',event:'attendanceDemo',icon:'check' as const}]:[]),
     { id: 'guest', title: text.guest, help: text.guestHelp, persona: 'outsider', event: 'orgA', icon: 'book' as const },
   ];
   async function login() {
@@ -20,7 +21,7 @@ export default function Login({ locale, publicUrl, enabled, institutional = fals
       const response = await fetch('/api/auth/login', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ persona: chosen.persona }) });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error?.message ?? text.noAuth);
-      window.location.assign(returnTo.includes('&tab=works')&&!['reviewer','reviewer2'].includes(chosen.id) ? returnTo : `/${locale}?event=${chosen.event}${chosen.id === 'author' ? '&tab=works' : ['reviewer','reviewer2'].includes(chosen.id)?'&tab=reviews':''}`);
+      window.location.assign(preserveContext?returnTo:`/${locale}?event=${chosen.event}${chosen.id==='accreditor'?'&tab=attendance':chosen.id==='author'?'&tab=works':['reviewer','reviewer2'].includes(chosen.id)?'&tab=reviews':''}`);
     } catch (failure) { setError(failure instanceof Error ? failure.message : text.noAuth); setLoading(false); }
   }
   return <main className="login-page"><section className="login-story"><Brand /><h1>{text.loginTitle}</h1><p>{text.loginSubtitle}</p><ScienceArt theme="forest" /></section>

@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { and, eq, isNull, lte, or, sql } from 'drizzle-orm';
 import { DatabaseService, type DbTransaction } from '../database/database.service.js';
-import { memberships, people, roleAssignments } from '../database/schema.js';
+import { memberships, people, roleAssignments, attendanceOperators } from '../database/schema.js';
 import { ApiException, type RequestContext } from '../common/http.js';
 
-export type Capability = 'event-read' | 'event-update' | 'event-create' | 'session-read' | 'site-read' | 'site-update' | 'site-publish' | 'organizers-manage' | 'people-manage' | 'organization-manage' | 'invitation-accept' | 'identity-read' | 'submissions-manage' | 'registrations-manage' | 'attendance-manage' | 'certificates-manage' | 'communications-manage' | 'publications-manage';
+export type Capability = 'event-read' | 'event-update' | 'event-create' | 'session-read' | 'site-read' | 'site-update' | 'site-publish' | 'organizers-manage' | 'people-manage' | 'organization-manage' | 'invitation-accept' | 'identity-read' | 'submissions-manage' | 'registrations-manage' | 'attendance-team-manage' | 'attendance-manage' | 'certificates-manage' | 'communications-manage' | 'publications-manage';
 export interface ContextPermissions {
-  organizer: boolean; organizationAdmin: boolean; personName: string; roles: string[];
+  accreditor: boolean; organizer: boolean; organizationAdmin: boolean; personName: string; roles: string[];
 }
 @Injectable()
 export class AuthorizationService {
@@ -29,16 +29,20 @@ export class AuthorizationService {
         const [membership] = await tx.select({ id: memberships.id }).from(memberships).where(and(eq(memberships.personId, context.personId),
           eq(memberships.organizationId, context.organizationId), eq(memberships.active, true),
           context.eventId ? or(isNull(memberships.eventId), eq(memberships.eventId, context.eventId)) : isNull(memberships.eventId))).limit(1);
-        if (capability !== 'session-read' || !membership) throw new ApiException(404, 'NOT_FOUND');
+        if (!['session-read','attendance-manage'].includes(capability) || !membership) throw new ApiException(404, 'NOT_FOUND');
       }
+      const [delegation]=context.eventId?await tx.select().from(attendanceOperators).where(and(eq(attendanceOperators.organizationId,context.organizationId),eq(attendanceOperators.eventId,context.eventId),eq(attendanceOperators.personId,context.personId),eq(attendanceOperators.active,true))):[];
+      const [eventMembership]=delegation?await tx.select({id:memberships.id}).from(memberships).where(and(eq(memberships.personId,context.personId),eq(memberships.organizationId,context.organizationId),eq(memberships.eventId,context.eventId!),eq(memberships.active,true))):[];
+      const accreditor=!!delegation&&!!eventMembership;
       const permitted = ['people-manage', 'organization-manage'].includes(capability) ? organizationAdmin && context.hostEventId === null && context.eventId === null
         : capability === 'organizers-manage' ? organizationAdmin
         : capability === 'event-create' ? organizationAdmin && context.hostEventId === null && context.eventId === null
-        : ['event-update', 'site-update', 'site-publish', 'submissions-manage', 'registrations-manage', 'attendance-manage', 'certificates-manage', 'communications-manage', 'publications-manage'].includes(capability) ? organizer
+        : capability === 'attendance-manage' ? organizer || accreditor
+        : ['event-update', 'site-update', 'site-publish', 'submissions-manage', 'registrations-manage', 'attendance-team-manage', 'certificates-manage', 'communications-manage', 'publications-manage'].includes(capability) ? organizer
         : capability === 'session-read' ? true : organizationAdmin || organizer;
       if (!permitted) throw new ApiException(403, 'FORBIDDEN');
-      await tx.execute(sql`SELECT set_config('sep.editorial_staff',${capability==='publications-manage'?'true':'false'},true),set_config('sep.communication_staff',${capability==='communications-manage'?'true':'false'},true),set_config('sep.certificate_staff',${capability==='certificates-manage'?'true':'false'},true),set_config('sep.attendance_staff',${capability==='attendance-manage'?'true':'false'},true),set_config('sep.registration_staff',${capability==='registrations-manage'?'true':'false'},true),set_config('sep.submissions_staff', ${capability === 'submissions-manage' ? 'true' : 'false'}, true), set_config('sep.organization_admin', ${organizationAdmin ? 'true' : 'false'}, true)`);
-      return action(tx, { organizer, organizationAdmin, personName: principal[0].name, roles: grants.map((grant) => grant.role) });
+      await tx.execute(sql`SELECT set_config('sep.attendance_team',${capability==='attendance-team-manage'?'true':'false'},true),set_config('sep.editorial_staff',${capability==='publications-manage'?'true':'false'},true),set_config('sep.communication_staff',${capability==='communications-manage'?'true':'false'},true),set_config('sep.certificate_staff',${capability==='certificates-manage'?'true':'false'},true),set_config('sep.attendance_staff',${capability==='attendance-manage'?'true':'false'},true),set_config('sep.registration_staff',${capability==='registrations-manage'?'true':'false'},true),set_config('sep.submissions_staff', ${capability === 'submissions-manage' ? 'true' : 'false'}, true), set_config('sep.organization_admin', ${organizationAdmin ? 'true' : 'false'}, true)`);
+      return action(tx, { accreditor, organizer, organizationAdmin, personName: principal[0].name, roles: grants.map((grant) => grant.role) });
     });
   }
 }

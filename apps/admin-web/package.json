@@ -10,12 +10,14 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "next": "16.4.1",
-    "react": "19.3.1",
-    "react-dom": "19.3.1",
     "@sep/contracts": "0.1.0",
     "@sep/i18n": "0.1.0",
     "@sep/ui": "0.1.0",
-    "@sep/web-server": "0.1.0"
+    "@sep/web-server": "0.1.0",
+    "@zxing/browser": "0.1.5",
+    "@zxing/library": "0.21.3",
+    "next": "16.4.1",
+    "react": "19.3.1",
+    "react-dom": "19.3.1"
   }
 }

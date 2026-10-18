@@ -1,5 +1,5 @@
 import {attendanceSchemas} from './attendance.openapi.js';
-import {Module,Controller,Get,Post,Body,Query,Req,HttpCode,Param,ParseUUIDPipe} from '@nestjs/common';
+import {Module,Controller,Get,Post,Put,Body,Query,Req,HttpCode,Param,ParseUUIDPipe} from '@nestjs/common';
 import {ApiTags,ApiBearerAuth,ApiOkResponse} from '@nestjs/swagger';
 import {IdentityModule} from '../identity/identity.module.js';
 import {AuditService} from '../common/audit.service.js';
@@ -7,11 +7,14 @@ import {ApiErrors} from '../common/openapi.js';
 import type {SepRequest} from '../common/http.js';
 import {Access} from '../platform/context.guard.js';
 import {AttendanceService} from './attendance.service.js';
-import {AttendanceQuery,CredentialRevisionDto,CredentialLookupDto,CheckInDto,CorrectAttendanceDto} from './attendance.dto.js';
+import {AttendanceQuery,CredentialRevisionDto,CredentialLookupDto,CheckInDto,CorrectAttendanceDto,AttendanceOperatorDto} from './attendance.dto.js';
 @ApiTags('attendance') @ApiBearerAuth() @ApiErrors() @Controller('events/:eventId/attendance')
 class AttendanceController {
  constructor(private readonly service:AttendanceService){}
  @Get() @Access('attendance-manage') @ApiOkResponse({schema:attendanceSchemas.workspace}) list(@Req()r:SepRequest,@Query()q:AttendanceQuery){return this.service.workspace(r.security,q);}
+ @Get('team') @Access('attendance-team-manage') @ApiOkResponse({schema:attendanceSchemas.team}) team(@Req()r:SepRequest){return this.service.team(r.security);}
+ @Put('team/:id') @Access('attendance-team-manage') @ApiOkResponse({schema:attendanceSchemas.team}) operator(@Req()r:SepRequest,@Param('id',ParseUUIDPipe)id:string,@Body()d:AttendanceOperatorDto){return this.service.setOperator(r.security,id,d);}
+ @Get('report') @Access('attendance-team-manage') @ApiOkResponse({schema:attendanceSchemas.report}) report(@Req()r:SepRequest,@Query()q:AttendanceQuery){return this.service.report(r.security,q);}
  @Get('mine') @Access('author-work') @ApiOkResponse({schema:attendanceSchemas.detail}) mine(@Req()r:SepRequest){return this.service.mine(r.security);}
  @Post('credential') @HttpCode(200) @Access('author-work') @ApiOkResponse({schema:attendanceSchemas.credential}) credential(@Req()r:SepRequest,@Body()d:CredentialRevisionDto){return this.service.credential(r.security,d.revision);}
  @Post('credential/revoke') @HttpCode(200) @Access('author-work') @ApiOkResponse({schema:attendanceSchemas.credential}) revoke(@Req()r:SepRequest,@Body()d:CredentialRevisionDto){return this.service.credential(r.security,d.revision,true);}

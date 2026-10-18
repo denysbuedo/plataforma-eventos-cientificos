@@ -30,6 +30,7 @@ class SessionDto implements SessionView {
   @ApiProperty({ format: 'uuid' }) organizationId!: string;
   @ApiProperty({ nullable: true, format: 'uuid' }) eventId!: string | null;
   @ApiProperty({ type: [String] }) roles!: string[];
+  @ApiProperty() canAccredit!: boolean;
   @ApiProperty() canRead!: boolean;
   @ApiProperty() canEdit!: boolean;
   @ApiProperty() organizationAdmin!: boolean;
@@ -53,7 +54,7 @@ export class SessionController {
     const context = request.security;
     return this.authorization.run(context, 'session-read', async (_tx, permissions) => ({
       person: { id: context.personId!, name: permissions.personName }, organizationId: context.organizationId, eventId: context.eventId,
-      roles: permissions.roles, canRead: permissions.organizationAdmin || permissions.organizer,
+      roles: [...permissions.roles,...(permissions.accreditor?['accreditor']:[])], canAccredit:permissions.organizer||permissions.accreditor, canRead: permissions.organizationAdmin || permissions.organizer,
       canEdit: permissions.organizer, organizationAdmin: permissions.organizationAdmin,
     }));
   }

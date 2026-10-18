@@ -69,7 +69,7 @@ Los documentos de planificación describen trabajo futuro. No constituyen eviden
 
 - [Fase 3: participantes, asistencia y certificados](functional/fase-3.md), [inscripciones](development/inscripciones.md) y [ADR-024](adr/ADR-024-inscripciones-y-participantes.md).
 
-- [Acreditación y asistencia manual](development/acreditacion-asistencia.md) y [ADR-025](adr/ADR-025-acreditacion-y-asistencia.md).
+- [Acreditación y asistencia con QR](development/acreditacion-asistencia.md) y [ADR-025](adr/ADR-025-acreditacion-y-asistencia.md) y [ADR-029](adr/ADR-029-acreditacion-operativa-qr.md).
 
 - [Certificados verificables](development/certificados.md) y [ADR-026](adr/ADR-026-certificados-verificables.md).
 

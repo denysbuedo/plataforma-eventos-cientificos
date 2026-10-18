@@ -83,7 +83,7 @@ Ser autor, revisor, participante o administrador de organización sin asignació
 
 ## Acreditación y asistencia
 
-La persona autenticada consulta sus registros y emite/renueva/revoca su propia credencial si la inscripción está confirmada. Solo el organizador del evento, con `attendance-manage`, consulta la bandeja, busca códigos, registra presencia y corrige evidencias. Esta capacidad no activa acceso a manuscritos, decisiones de inscripción ni revisión científica. La delegación a acreditadores está pendiente.
+La persona autenticada consulta sus registros y emite/renueva/revoca su propia credencial si la inscripción está confirmada. El organizador y el acreditador delegado activo del evento, con `attendance-manage`, consultan la bandeja, buscan credenciales y registran presencia actual. Solo el organizador corrige evidencias, gestiona el equipo (`attendance-team-manage`) y exporta. Esta capacidad no activa acceso a manuscritos, decisiones de inscripción ni revisión científica. La delegación requiere membresía activa por evento y queda auditada con motivo; no concede capacidades científicas ni administrativas.
 
 ## Certificados
 

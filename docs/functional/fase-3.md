@@ -6,11 +6,11 @@ Recepción configurable y publicación independiente; categorías bilingües, mo
 
 La validación funcional por el usuario sigue pendiente. Inscribirse no acredita asistencia ni concede permisos científicos.
 
-## Paquete 2: acreditación y asistencia — primera entrega manual implementada
+## Paquete 2: acreditación y asistencia — operación manual y QR implementada
 
-Credencial mediante código, búsqueda por el organizador, registro manual de entrada al evento y sesiones, consulta propia y correcciones motivadas con historial. Se validan fechas, horario, modalidad y entrada previa al evento. Prueba funcional pendiente. Ver [guía de acreditación y asistencia](../development/acreditacion-asistencia.md).
+Credencial con código/QR, lectura local por cámara o imagen y confirmación explícita, entrada al evento y sesiones, equipo delegado, consulta propia y correcciones motivadas con historial. Panel global y CSV filtrado para organizadores. Se validan fechas, horario, modalidad, entrada previa al evento y vigencia de credencial/delegación al confirmar. Comprobaciones dirigidas de API, escritorio/móvil y cámara simulada; validación integral y teléfonos físicos pendientes. Ver [guía de acreditación y asistencia](../development/acreditacion-asistencia.md).
 
-Pendientes de ampliación: QR/cámara, delegación a acreditadores, duración/salida, reservas por sesión y evidencia automática de participación virtual.
+Pendientes de ampliación: duración/salida, reservas y aforo por sesión, modo sin conexión y evidencia automática de participación virtual. Ver [ADR-029](../adr/ADR-029-acreditacion-operativa-qr.md).
 
 ## Paquete 3: certificados — implementado, recorrido principal probado en demo
 
