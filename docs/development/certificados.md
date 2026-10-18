@@ -46,6 +46,7 @@ Compilación, análisis estático y generación de una vista previa. Recorrido p
 - El lote válido emitió dos certificados desde la interfaz. Ambos PDF tienen una página, coinciden con su SHA-256 y sus enlaces muestran vigencia.
 - Repetir el lote devolvió conflicto por duplicados y mantuvo dos certificados.
 - El titular ve ambos documentos en Mis certificados; una cuenta ajena recibe 404 al intentar la descarga privada.
+- «Ver» en Emitidos y Mis certificados desplaza la pantalla y lleva el foco al detalle, identificado por el trabajo; «Cerrar» devuelve el foco al botón de origen. Comprobado con varios certificados en escritorio y móvil, incluyendo reapertura, historial de revocación y conservación de cambios al cancelar la salida.
 - El evento original y sus certificados permanecieron sin cambios. Los documentos de prueba están identificados como demostración, sin valor acreditativo.
 
 Estas comprobaciones no sustituyen la validación integral de roles, concurrencia, límites, edición de plantillas, caracteres/imágenes y demás combinaciones del módulo.
