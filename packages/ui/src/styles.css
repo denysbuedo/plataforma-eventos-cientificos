@@ -568,3 +568,9 @@ dialog::backdrop { background:rgb(18 36 28 / 45%); }
 .communications-module .registration-check{margin:18px 0}
 .communications-module .registration-fields .field{min-width:0}
 @media(max-width:700px){.communications-module .registration-line{flex-wrap:wrap}.communications-module .editor-actions{width:100%}.communications-module .registration-line>.field{min-width:0;width:100%}}
+
+.notification-bell{position:relative;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;width:38px;height:38px;color:var(--green,#153a30);text-decoration:none;border-radius:50%;background:transparent;box-shadow:none}
+.notification-bell:hover{color:#0b251e}
+.notification-bell:focus-visible{outline:2px solid currentColor;outline-offset:3px}
+.notification-bell-count{position:absolute;top:-2px;right:-5px;display:flex;align-items:center;justify-content:center;min-width:19px;height:19px;padding:0 4px;box-sizing:border-box;border-radius:999px;background:#b42318;color:white;font-size:10px;line-height:1;font-weight:700;border:1px solid white;font-variant-numeric:tabular-nums;pointer-events:none}
+@media(max-width:580px){.admin-topbar .breadcrumb{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.notification-bell{width:34px;height:34px}.admin-topbar .topbar-right{flex-shrink:0}}

@@ -1,5 +1,7 @@
 # Comunicaciones y notificaciones
 
+La cabecera compartida muestra una campana junto al perfil del participante y del organizador. Un contador rojo indica los avisos sin leer del evento actual (99+ para cantidades superiores); desaparece cuando no quedan pendientes. La campana abre el centro y respeta la protección de cambios sin guardar.
+
 El centro **Notificaciones** está disponible en el menú del participante y del organizador, dentro del evento seleccionado. Conserva avisos personales, permite consultar su destino y marcar leído/sin leer; el contador se actualiza y el estado persiste al recargar. Consultar un aviso lo marca como leído. Abrir otra sección por su cuenta no marca todos los avisos como leídos.
 
 En **Preferencias** se eligen correo operativo, comunicaciones opcionales e idioma. Los avisos internos permanecen disponibles aunque se desactive todo el correo. Las comunicaciones opcionales por correo están desactivadas por defecto. Las preferencias son personales por evento; la dirección verificada es común a la cuenta.

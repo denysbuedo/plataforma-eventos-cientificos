@@ -1,6 +1,6 @@
 import type { CSSProperties } from 'react';
 
-export type IconName = 'arrow' | 'globe' | 'calendar' | 'pin' | 'grid' | 'edit' | 'palette' | 'settings' | 'logout' | 'check' | 'plus' | 'external' | 'lock' | 'book' | 'leaf';
+export type IconName = 'arrow' | 'globe' | 'calendar' | 'pin' | 'grid' | 'edit' | 'palette' | 'settings' | 'logout' | 'check' | 'plus' | 'external' | 'lock' | 'book' | 'leaf' | 'bell';
 const paths: Record<IconName, string> = {
   arrow: 'M5 12h14m-6-6 6 6-6 6', globe: 'M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0ZM3 12h18M12 3c5 5 5 13 0 18-5-5-5-13 0-18Z',
   calendar: 'M5 5h14v15H5zM8 3v4m8-4v4M5 10h14', pin: 'M19 10c0 5-7 11-7 11S5 15 5 10a7 7 0 1 1 14 0ZM15 10a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z',
@@ -8,6 +8,7 @@ const paths: Record<IconName, string> = {
   edit: 'm4 16 11-11 4 4L8 20H4v-4Zm9-9 4 4M4 20h16', palette: 'M12 3a9 9 0 1 0 0 18c4 0 0-5 4-5h2c5 0 2-13-6-13ZM7 9h.01M12 6h.01M17 9h.01M7 14h.01',
   settings: 'M4 7h16M4 17h16M9 4v6m6 4v6', logout: 'M9 4H4v16h5m5-13 5 5-5 5m-5-5h10', check: 'm5 12 4 4L19 6', plus: 'M12 5v14M5 12h14',
   external: 'M14 3h7v7m0-7-11 11M10 3H3v18h18v-7', lock: 'M6 10h12v11H6zM8 10V7a4 4 0 0 1 8 0v3m-4 5v2',
+  bell: 'M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4',
   book: 'M3 4c4-1 7 0 9 2 2-2 5-3 9-2v15c-4-1-7 0-9 2-2-2-5-3-9-2V4Zm9 2v15', leaf: 'M20 3C7 2 2 8 5 15s15 5 15-12ZM5 20 16 9',
 };
 export function Icon({ name, size = 20 }: { name: IconName; size?: number }) {
