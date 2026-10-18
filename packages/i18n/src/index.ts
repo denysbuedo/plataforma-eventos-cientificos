@@ -1,5 +1,10 @@
 const messages = {
   es: {
+    ATTENDANCE_INVALID:'La acreditación requiere una inscripción confirmada y una modalidad compatible.',
+    ATTENDANCE_TIME:'La fecha de presencia debe estar dentro del evento o sesión y no puede ser futura.',
+    ATTENDANCE_EVENT_REQUIRED:'Registra primero la entrada al evento. Para anularla, anula antes las presencias en sesiones.',
+    ATTENDANCE_DUPLICATE:'Ya existe un registro para esta entrada. Actualiza y utiliza la corrección si corresponde.',
+    CREDENTIAL_INVALID:'La credencial no está activa o no corresponde a una inscripción confirmada de este evento.',
     REGISTRATION_CLOSED:'La recepción de inscripciones no está abierta. Puedes consultar tu solicitud o contactar al organizador.',
     REGISTRATION_STALE:'La configuración de inscripción cambió. Actualiza y revisa las condiciones antes de continuar.',
     REGISTRATION_FULL:'No hay plazas disponibles para confirmar esta modalidad. Revisa el cupo o mantén la solicitud en espera.',
@@ -56,6 +61,11 @@ const messages = {
     INTERNAL_ERROR: 'No se pudo completar la solicitud.',
   },
   en: {
+    ATTENDANCE_INVALID:'Accreditation requires a confirmed registration and a compatible attendance mode.',
+    ATTENDANCE_TIME:'Attendance time must fall within the event or session and cannot be in the future.',
+    ATTENDANCE_EVENT_REQUIRED:'Record event entry first. Void session attendance before voiding event entry.',
+    ATTENDANCE_DUPLICATE:'An entry already exists. Refresh and use a correction if needed.',
+    CREDENTIAL_INVALID:'This credential is inactive or does not belong to a confirmed registration in this event.',
     REGISTRATION_CLOSED:'Registration is not open. You can view your application or contact the organizer.',
     REGISTRATION_STALE:'Registration settings changed. Refresh and review the conditions before continuing.',
     REGISTRATION_FULL:'There are no seats available to confirm this attendance mode. Review capacity or keep the application waitlisted.',

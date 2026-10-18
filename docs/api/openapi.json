@@ -14778,6 +14778,2858 @@
           "public"
         ]
       }
+    },
+    "/api/v1/events/{eventId}/attendance": {
+      "get": {
+        "operationId": "AttendanceController_list",
+        "parameters": [
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "pending",
+                "confirmed",
+                "waitlisted",
+                "rejected",
+                "cancelled"
+              ]
+            }
+          },
+          {
+            "name": "q",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/Object"
+            }
+          },
+          {
+            "name": "limit",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/Object"
+            }
+          },
+          {
+            "name": "offset",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/Object"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "personId": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "category": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "format": "uuid"
+                              },
+                              "nameEs": {
+                                "type": "string"
+                              },
+                              "nameEn": {
+                                "type": "string"
+                              },
+                              "active": {
+                                "type": "boolean"
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "nameEs",
+                              "nameEn",
+                              "active"
+                            ]
+                          },
+                          "modality": {
+                            "type": "string",
+                            "enum": [
+                              "in_person",
+                              "virtual"
+                            ]
+                          },
+                          "status": {
+                            "type": "string",
+                            "enum": [
+                              "pending",
+                              "confirmed",
+                              "waitlisted",
+                              "rejected",
+                              "cancelled"
+                            ]
+                          },
+                          "revision": {
+                            "type": "integer"
+                          },
+                          "requestedAt": {
+                            "type": "string",
+                            "format": "date-time"
+                          },
+                          "updatedAt": {
+                            "type": "string",
+                            "format": "date-time"
+                          },
+                          "eventPresent": {
+                            "type": "boolean"
+                          },
+                          "sessionCount": {
+                            "type": "integer"
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "personId",
+                          "name",
+                          "category",
+                          "modality",
+                          "status",
+                          "revision",
+                          "requestedAt",
+                          "updatedAt",
+                          "eventPresent",
+                          "sessionCount"
+                        ]
+                      }
+                    },
+                    "total": {
+                      "type": "integer"
+                    },
+                    "limit": {
+                      "type": "integer"
+                    },
+                    "offset": {
+                      "type": "integer"
+                    },
+                    "timezone": {
+                      "type": "string"
+                    },
+                    "startDate": {
+                      "type": "string",
+                      "format": "date",
+                      "nullable": true
+                    },
+                    "endDate": {
+                      "type": "string",
+                      "format": "date",
+                      "nullable": true
+                    },
+                    "sessions": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "titleEs": {
+                            "type": "string"
+                          },
+                          "titleEn": {
+                            "type": "string"
+                          },
+                          "date": {
+                            "type": "string",
+                            "format": "date"
+                          },
+                          "startsAt": {
+                            "type": "string"
+                          },
+                          "endsAt": {
+                            "type": "string"
+                          },
+                          "modality": {
+                            "type": "string",
+                            "enum": [
+                              "in_person",
+                              "virtual",
+                              "hybrid"
+                            ]
+                          },
+                          "room": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "titleEs",
+                          "titleEn",
+                          "date",
+                          "startsAt",
+                          "endsAt",
+                          "modality",
+                          "room"
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "data",
+                    "total",
+                    "limit",
+                    "offset",
+                    "timezone",
+                    "startDate",
+                    "endDate",
+                    "sessions"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "attendance"
+        ]
+      }
+    },
+    "/api/v1/events/{eventId}/attendance/mine": {
+      "get": {
+        "operationId": "AttendanceController_mine",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "registration": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "personId": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "category": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "format": "uuid"
+                            },
+                            "nameEs": {
+                              "type": "string"
+                            },
+                            "nameEn": {
+                              "type": "string"
+                            },
+                            "active": {
+                              "type": "boolean"
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "nameEs",
+                            "nameEn",
+                            "active"
+                          ]
+                        },
+                        "modality": {
+                          "type": "string",
+                          "enum": [
+                            "in_person",
+                            "virtual"
+                          ]
+                        },
+                        "status": {
+                          "type": "string",
+                          "enum": [
+                            "pending",
+                            "confirmed",
+                            "waitlisted",
+                            "rejected",
+                            "cancelled"
+                          ]
+                        },
+                        "revision": {
+                          "type": "integer"
+                        },
+                        "requestedAt": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "updatedAt": {
+                          "type": "string",
+                          "format": "date-time"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "personId",
+                        "name",
+                        "category",
+                        "modality",
+                        "status",
+                        "revision",
+                        "requestedAt",
+                        "updatedAt"
+                      ],
+                      "nullable": true
+                    },
+                    "credential": {
+                      "type": "object",
+                      "properties": {
+                        "revision": {
+                          "type": "integer"
+                        },
+                        "active": {
+                          "type": "boolean"
+                        },
+                        "issuedAt": {
+                          "type": "string",
+                          "format": "date-time"
+                        }
+                      },
+                      "required": [
+                        "revision",
+                        "active",
+                        "issuedAt"
+                      ],
+                      "nullable": true
+                    },
+                    "records": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "targetKey": {
+                            "type": "string"
+                          },
+                          "eventStartDate": {
+                            "type": "string",
+                            "format": "date"
+                          },
+                          "eventEndDate": {
+                            "type": "string",
+                            "format": "date"
+                          },
+                          "sessionId": {
+                            "type": "string",
+                            "format": "uuid",
+                            "nullable": true
+                          },
+                          "titleEs": {
+                            "type": "string"
+                          },
+                          "titleEn": {
+                            "type": "string"
+                          },
+                          "date": {
+                            "type": "string",
+                            "format": "date",
+                            "nullable": true
+                          },
+                          "startsAt": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "endsAt": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "timezone": {
+                            "type": "string"
+                          },
+                          "modality": {
+                            "type": "string",
+                            "enum": [
+                              "in_person",
+                              "virtual"
+                            ]
+                          },
+                          "state": {
+                            "type": "string",
+                            "enum": [
+                              "present",
+                              "voided"
+                            ]
+                          },
+                          "observedAt": {
+                            "type": "string",
+                            "format": "date-time"
+                          },
+                          "revision": {
+                            "type": "integer"
+                          },
+                          "updatedAt": {
+                            "type": "string",
+                            "format": "date-time"
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "targetKey",
+                          "eventStartDate",
+                          "eventEndDate",
+                          "sessionId",
+                          "titleEs",
+                          "titleEn",
+                          "date",
+                          "startsAt",
+                          "endsAt",
+                          "timezone",
+                          "modality",
+                          "state",
+                          "observedAt",
+                          "revision",
+                          "updatedAt"
+                        ]
+                      }
+                    },
+                    "history": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "recordId": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "action": {
+                            "type": "string"
+                          },
+                          "actorName": {
+                            "type": "string"
+                          },
+                          "reason": {
+                            "type": "string"
+                          },
+                          "state": {
+                            "type": "string",
+                            "enum": [
+                              "present",
+                              "voided"
+                            ]
+                          },
+                          "observedAt": {
+                            "type": "string",
+                            "format": "date-time"
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "format": "date-time"
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "recordId",
+                          "action",
+                          "actorName",
+                          "reason",
+                          "state",
+                          "observedAt",
+                          "createdAt"
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "registration",
+                    "credential",
+                    "records",
+                    "history"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "attendance"
+        ]
+      }
+    },
+    "/api/v1/events/{eventId}/attendance/credential": {
+      "post": {
+        "operationId": "AttendanceController_credential",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CredentialRevisionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "object",
+                      "properties": {
+                        "registration": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "format": "uuid"
+                            },
+                            "personId": {
+                              "type": "string",
+                              "format": "uuid"
+                            },
+                            "name": {
+                              "type": "string"
+                            },
+                            "category": {
+                              "type": "object",
+                              "properties": {
+                                "id": {
+                                  "type": "string",
+                                  "format": "uuid"
+                                },
+                                "nameEs": {
+                                  "type": "string"
+                                },
+                                "nameEn": {
+                                  "type": "string"
+                                },
+                                "active": {
+                                  "type": "boolean"
+                                }
+                              },
+                              "required": [
+                                "id",
+                                "nameEs",
+                                "nameEn",
+                                "active"
+                              ]
+                            },
+                            "modality": {
+                              "type": "string",
+                              "enum": [
+                                "in_person",
+                                "virtual"
+                              ]
+                            },
+                            "status": {
+                              "type": "string",
+                              "enum": [
+                                "pending",
+                                "confirmed",
+                                "waitlisted",
+                                "rejected",
+                                "cancelled"
+                              ]
+                            },
+                            "revision": {
+                              "type": "integer"
+                            },
+                            "requestedAt": {
+                              "type": "string",
+                              "format": "date-time"
+                            },
+                            "updatedAt": {
+                              "type": "string",
+                              "format": "date-time"
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "personId",
+                            "name",
+                            "category",
+                            "modality",
+                            "status",
+                            "revision",
+                            "requestedAt",
+                            "updatedAt"
+                          ],
+                          "nullable": true
+                        },
+                        "credential": {
+                          "type": "object",
+                          "properties": {
+                            "revision": {
+                              "type": "integer"
+                            },
+                            "active": {
+                              "type": "boolean"
+                            },
+                            "issuedAt": {
+                              "type": "string",
+                              "format": "date-time"
+                            }
+                          },
+                          "required": [
+                            "revision",
+                            "active",
+                            "issuedAt"
+                          ],
+                          "nullable": true
+                        },
+                        "records": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "format": "uuid"
+                              },
+                              "targetKey": {
+                                "type": "string"
+                              },
+                              "eventStartDate": {
+                                "type": "string",
+                                "format": "date"
+                              },
+                              "eventEndDate": {
+                                "type": "string",
+                                "format": "date"
+                              },
+                              "sessionId": {
+                                "type": "string",
+                                "format": "uuid",
+                                "nullable": true
+                              },
+                              "titleEs": {
+                                "type": "string"
+                              },
+                              "titleEn": {
+                                "type": "string"
+                              },
+                              "date": {
+                                "type": "string",
+                                "format": "date",
+                                "nullable": true
+                              },
+                              "startsAt": {
+                                "type": "string",
+                                "nullable": true
+                              },
+                              "endsAt": {
+                                "type": "string",
+                                "nullable": true
+                              },
+                              "timezone": {
+                                "type": "string"
+                              },
+                              "modality": {
+                                "type": "string",
+                                "enum": [
+                                  "in_person",
+                                  "virtual"
+                                ]
+                              },
+                              "state": {
+                                "type": "string",
+                                "enum": [
+                                  "present",
+                                  "voided"
+                                ]
+                              },
+                              "observedAt": {
+                                "type": "string",
+                                "format": "date-time"
+                              },
+                              "revision": {
+                                "type": "integer"
+                              },
+                              "updatedAt": {
+                                "type": "string",
+                                "format": "date-time"
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "targetKey",
+                              "eventStartDate",
+                              "eventEndDate",
+                              "sessionId",
+                              "titleEs",
+                              "titleEn",
+                              "date",
+                              "startsAt",
+                              "endsAt",
+                              "timezone",
+                              "modality",
+                              "state",
+                              "observedAt",
+                              "revision",
+                              "updatedAt"
+                            ]
+                          }
+                        },
+                        "history": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "format": "uuid"
+                              },
+                              "recordId": {
+                                "type": "string",
+                                "format": "uuid"
+                              },
+                              "action": {
+                                "type": "string"
+                              },
+                              "actorName": {
+                                "type": "string"
+                              },
+                              "reason": {
+                                "type": "string"
+                              },
+                              "state": {
+                                "type": "string",
+                                "enum": [
+                                  "present",
+                                  "voided"
+                                ]
+                              },
+                              "observedAt": {
+                                "type": "string",
+                                "format": "date-time"
+                              },
+                              "createdAt": {
+                                "type": "string",
+                                "format": "date-time"
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "recordId",
+                              "action",
+                              "actorName",
+                              "reason",
+                              "state",
+                              "observedAt",
+                              "createdAt"
+                            ]
+                          }
+                        }
+                      },
+                      "required": [
+                        "registration",
+                        "credential",
+                        "records",
+                        "history"
+                      ]
+                    },
+                    "code": {
+                      "type": "string",
+                      "nullable": true,
+                      "pattern": "^[a-f0-9]{48}$",
+                      "description": "Only returned upon issuance. Raw value is not persisted."
+                    }
+                  },
+                  "required": [
+                    "detail",
+                    "code"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "attendance"
+        ]
+      }
+    },
+    "/api/v1/events/{eventId}/attendance/credential/revoke": {
+      "post": {
+        "operationId": "AttendanceController_revoke",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CredentialRevisionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "object",
+                      "properties": {
+                        "registration": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "format": "uuid"
+                            },
+                            "personId": {
+                              "type": "string",
+                              "format": "uuid"
+                            },
+                            "name": {
+                              "type": "string"
+                            },
+                            "category": {
+                              "type": "object",
+                              "properties": {
+                                "id": {
+                                  "type": "string",
+                                  "format": "uuid"
+                                },
+                                "nameEs": {
+                                  "type": "string"
+                                },
+                                "nameEn": {
+                                  "type": "string"
+                                },
+                                "active": {
+                                  "type": "boolean"
+                                }
+                              },
+                              "required": [
+                                "id",
+                                "nameEs",
+                                "nameEn",
+                                "active"
+                              ]
+                            },
+                            "modality": {
+                              "type": "string",
+                              "enum": [
+                                "in_person",
+                                "virtual"
+                              ]
+                            },
+                            "status": {
+                              "type": "string",
+                              "enum": [
+                                "pending",
+                                "confirmed",
+                                "waitlisted",
+                                "rejected",
+                                "cancelled"
+                              ]
+                            },
+                            "revision": {
+                              "type": "integer"
+                            },
+                            "requestedAt": {
+                              "type": "string",
+                              "format": "date-time"
+                            },
+                            "updatedAt": {
+                              "type": "string",
+                              "format": "date-time"
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "personId",
+                            "name",
+                            "category",
+                            "modality",
+                            "status",
+                            "revision",
+                            "requestedAt",
+                            "updatedAt"
+                          ],
+                          "nullable": true
+                        },
+                        "credential": {
+                          "type": "object",
+                          "properties": {
+                            "revision": {
+                              "type": "integer"
+                            },
+                            "active": {
+                              "type": "boolean"
+                            },
+                            "issuedAt": {
+                              "type": "string",
+                              "format": "date-time"
+                            }
+                          },
+                          "required": [
+                            "revision",
+                            "active",
+                            "issuedAt"
+                          ],
+                          "nullable": true
+                        },
+                        "records": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "format": "uuid"
+                              },
+                              "targetKey": {
+                                "type": "string"
+                              },
+                              "eventStartDate": {
+                                "type": "string",
+                                "format": "date"
+                              },
+                              "eventEndDate": {
+                                "type": "string",
+                                "format": "date"
+                              },
+                              "sessionId": {
+                                "type": "string",
+                                "format": "uuid",
+                                "nullable": true
+                              },
+                              "titleEs": {
+                                "type": "string"
+                              },
+                              "titleEn": {
+                                "type": "string"
+                              },
+                              "date": {
+                                "type": "string",
+                                "format": "date",
+                                "nullable": true
+                              },
+                              "startsAt": {
+                                "type": "string",
+                                "nullable": true
+                              },
+                              "endsAt": {
+                                "type": "string",
+                                "nullable": true
+                              },
+                              "timezone": {
+                                "type": "string"
+                              },
+                              "modality": {
+                                "type": "string",
+                                "enum": [
+                                  "in_person",
+                                  "virtual"
+                                ]
+                              },
+                              "state": {
+                                "type": "string",
+                                "enum": [
+                                  "present",
+                                  "voided"
+                                ]
+                              },
+                              "observedAt": {
+                                "type": "string",
+                                "format": "date-time"
+                              },
+                              "revision": {
+                                "type": "integer"
+                              },
+                              "updatedAt": {
+                                "type": "string",
+                                "format": "date-time"
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "targetKey",
+                              "eventStartDate",
+                              "eventEndDate",
+                              "sessionId",
+                              "titleEs",
+                              "titleEn",
+                              "date",
+                              "startsAt",
+                              "endsAt",
+                              "timezone",
+                              "modality",
+                              "state",
+                              "observedAt",
+                              "revision",
+                              "updatedAt"
+                            ]
+                          }
+                        },
+                        "history": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "format": "uuid"
+                              },
+                              "recordId": {
+                                "type": "string",
+                                "format": "uuid"
+                              },
+                              "action": {
+                                "type": "string"
+                              },
+                              "actorName": {
+                                "type": "string"
+                              },
+                              "reason": {
+                                "type": "string"
+                              },
+                              "state": {
+                                "type": "string",
+                                "enum": [
+                                  "present",
+                                  "voided"
+                                ]
+                              },
+                              "observedAt": {
+                                "type": "string",
+                                "format": "date-time"
+                              },
+                              "createdAt": {
+                                "type": "string",
+                                "format": "date-time"
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "recordId",
+                              "action",
+                              "actorName",
+                              "reason",
+                              "state",
+                              "observedAt",
+                              "createdAt"
+                            ]
+                          }
+                        }
+                      },
+                      "required": [
+                        "registration",
+                        "credential",
+                        "records",
+                        "history"
+                      ]
+                    },
+                    "code": {
+                      "type": "string",
+                      "nullable": true,
+                      "pattern": "^[a-f0-9]{48}$",
+                      "description": "Only returned upon issuance. Raw value is not persisted."
+                    }
+                  },
+                  "required": [
+                    "detail",
+                    "code"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "attendance"
+        ]
+      }
+    },
+    "/api/v1/events/{eventId}/attendance/lookup": {
+      "post": {
+        "operationId": "AttendanceController_lookup",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CredentialLookupDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "registration": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "personId": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "category": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "format": "uuid"
+                            },
+                            "nameEs": {
+                              "type": "string"
+                            },
+                            "nameEn": {
+                              "type": "string"
+                            },
+                            "active": {
+                              "type": "boolean"
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "nameEs",
+                            "nameEn",
+                            "active"
+                          ]
+                        },
+                        "modality": {
+                          "type": "string",
+                          "enum": [
+                            "in_person",
+                            "virtual"
+                          ]
+                        },
+                        "status": {
+                          "type": "string",
+                          "enum": [
+                            "pending",
+                            "confirmed",
+                            "waitlisted",
+                            "rejected",
+                            "cancelled"
+                          ]
+                        },
+                        "revision": {
+                          "type": "integer"
+                        },
+                        "requestedAt": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "updatedAt": {
+                          "type": "string",
+                          "format": "date-time"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "personId",
+                        "name",
+                        "category",
+                        "modality",
+                        "status",
+                        "revision",
+                        "requestedAt",
+                        "updatedAt"
+                      ],
+                      "nullable": true
+                    },
+                    "credential": {
+                      "type": "object",
+                      "properties": {
+                        "revision": {
+                          "type": "integer"
+                        },
+                        "active": {
+                          "type": "boolean"
+                        },
+                        "issuedAt": {
+                          "type": "string",
+                          "format": "date-time"
+                        }
+                      },
+                      "required": [
+                        "revision",
+                        "active",
+                        "issuedAt"
+                      ],
+                      "nullable": true
+                    },
+                    "records": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "targetKey": {
+                            "type": "string"
+                          },
+                          "eventStartDate": {
+                            "type": "string",
+                            "format": "date"
+                          },
+                          "eventEndDate": {
+                            "type": "string",
+                            "format": "date"
+                          },
+                          "sessionId": {
+                            "type": "string",
+                            "format": "uuid",
+                            "nullable": true
+                          },
+                          "titleEs": {
+                            "type": "string"
+                          },
+                          "titleEn": {
+                            "type": "string"
+                          },
+                          "date": {
+                            "type": "string",
+                            "format": "date",
+                            "nullable": true
+                          },
+                          "startsAt": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "endsAt": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "timezone": {
+                            "type": "string"
+                          },
+                          "modality": {
+                            "type": "string",
+                            "enum": [
+                              "in_person",
+                              "virtual"
+                            ]
+                          },
+                          "state": {
+                            "type": "string",
+                            "enum": [
+                              "present",
+                              "voided"
+                            ]
+                          },
+                          "observedAt": {
+                            "type": "string",
+                            "format": "date-time"
+                          },
+                          "revision": {
+                            "type": "integer"
+                          },
+                          "updatedAt": {
+                            "type": "string",
+                            "format": "date-time"
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "targetKey",
+                          "eventStartDate",
+                          "eventEndDate",
+                          "sessionId",
+                          "titleEs",
+                          "titleEn",
+                          "date",
+                          "startsAt",
+                          "endsAt",
+                          "timezone",
+                          "modality",
+                          "state",
+                          "observedAt",
+                          "revision",
+                          "updatedAt"
+                        ]
+                      }
+                    },
+                    "history": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "recordId": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "action": {
+                            "type": "string"
+                          },
+                          "actorName": {
+                            "type": "string"
+                          },
+                          "reason": {
+                            "type": "string"
+                          },
+                          "state": {
+                            "type": "string",
+                            "enum": [
+                              "present",
+                              "voided"
+                            ]
+                          },
+                          "observedAt": {
+                            "type": "string",
+                            "format": "date-time"
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "format": "date-time"
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "recordId",
+                          "action",
+                          "actorName",
+                          "reason",
+                          "state",
+                          "observedAt",
+                          "createdAt"
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "registration",
+                    "credential",
+                    "records",
+                    "history"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "attendance"
+        ]
+      }
+    },
+    "/api/v1/events/{eventId}/attendance/registrations/{id}": {
+      "get": {
+        "operationId": "AttendanceController_detail",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "registration": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "personId": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "category": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "format": "uuid"
+                            },
+                            "nameEs": {
+                              "type": "string"
+                            },
+                            "nameEn": {
+                              "type": "string"
+                            },
+                            "active": {
+                              "type": "boolean"
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "nameEs",
+                            "nameEn",
+                            "active"
+                          ]
+                        },
+                        "modality": {
+                          "type": "string",
+                          "enum": [
+                            "in_person",
+                            "virtual"
+                          ]
+                        },
+                        "status": {
+                          "type": "string",
+                          "enum": [
+                            "pending",
+                            "confirmed",
+                            "waitlisted",
+                            "rejected",
+                            "cancelled"
+                          ]
+                        },
+                        "revision": {
+                          "type": "integer"
+                        },
+                        "requestedAt": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "updatedAt": {
+                          "type": "string",
+                          "format": "date-time"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "personId",
+                        "name",
+                        "category",
+                        "modality",
+                        "status",
+                        "revision",
+                        "requestedAt",
+                        "updatedAt"
+                      ],
+                      "nullable": true
+                    },
+                    "credential": {
+                      "type": "object",
+                      "properties": {
+                        "revision": {
+                          "type": "integer"
+                        },
+                        "active": {
+                          "type": "boolean"
+                        },
+                        "issuedAt": {
+                          "type": "string",
+                          "format": "date-time"
+                        }
+                      },
+                      "required": [
+                        "revision",
+                        "active",
+                        "issuedAt"
+                      ],
+                      "nullable": true
+                    },
+                    "records": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "targetKey": {
+                            "type": "string"
+                          },
+                          "eventStartDate": {
+                            "type": "string",
+                            "format": "date"
+                          },
+                          "eventEndDate": {
+                            "type": "string",
+                            "format": "date"
+                          },
+                          "sessionId": {
+                            "type": "string",
+                            "format": "uuid",
+                            "nullable": true
+                          },
+                          "titleEs": {
+                            "type": "string"
+                          },
+                          "titleEn": {
+                            "type": "string"
+                          },
+                          "date": {
+                            "type": "string",
+                            "format": "date",
+                            "nullable": true
+                          },
+                          "startsAt": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "endsAt": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "timezone": {
+                            "type": "string"
+                          },
+                          "modality": {
+                            "type": "string",
+                            "enum": [
+                              "in_person",
+                              "virtual"
+                            ]
+                          },
+                          "state": {
+                            "type": "string",
+                            "enum": [
+                              "present",
+                              "voided"
+                            ]
+                          },
+                          "observedAt": {
+                            "type": "string",
+                            "format": "date-time"
+                          },
+                          "revision": {
+                            "type": "integer"
+                          },
+                          "updatedAt": {
+                            "type": "string",
+                            "format": "date-time"
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "targetKey",
+                          "eventStartDate",
+                          "eventEndDate",
+                          "sessionId",
+                          "titleEs",
+                          "titleEn",
+                          "date",
+                          "startsAt",
+                          "endsAt",
+                          "timezone",
+                          "modality",
+                          "state",
+                          "observedAt",
+                          "revision",
+                          "updatedAt"
+                        ]
+                      }
+                    },
+                    "history": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "recordId": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "action": {
+                            "type": "string"
+                          },
+                          "actorName": {
+                            "type": "string"
+                          },
+                          "reason": {
+                            "type": "string"
+                          },
+                          "state": {
+                            "type": "string",
+                            "enum": [
+                              "present",
+                              "voided"
+                            ]
+                          },
+                          "observedAt": {
+                            "type": "string",
+                            "format": "date-time"
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "format": "date-time"
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "recordId",
+                          "action",
+                          "actorName",
+                          "reason",
+                          "state",
+                          "observedAt",
+                          "createdAt"
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "registration",
+                    "credential",
+                    "records",
+                    "history"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "attendance"
+        ]
+      }
+    },
+    "/api/v1/events/{eventId}/attendance/registrations/{id}/check-in": {
+      "post": {
+        "operationId": "AttendanceController_checkIn",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CheckInDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "registration": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "personId": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "category": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "format": "uuid"
+                            },
+                            "nameEs": {
+                              "type": "string"
+                            },
+                            "nameEn": {
+                              "type": "string"
+                            },
+                            "active": {
+                              "type": "boolean"
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "nameEs",
+                            "nameEn",
+                            "active"
+                          ]
+                        },
+                        "modality": {
+                          "type": "string",
+                          "enum": [
+                            "in_person",
+                            "virtual"
+                          ]
+                        },
+                        "status": {
+                          "type": "string",
+                          "enum": [
+                            "pending",
+                            "confirmed",
+                            "waitlisted",
+                            "rejected",
+                            "cancelled"
+                          ]
+                        },
+                        "revision": {
+                          "type": "integer"
+                        },
+                        "requestedAt": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "updatedAt": {
+                          "type": "string",
+                          "format": "date-time"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "personId",
+                        "name",
+                        "category",
+                        "modality",
+                        "status",
+                        "revision",
+                        "requestedAt",
+                        "updatedAt"
+                      ],
+                      "nullable": true
+                    },
+                    "credential": {
+                      "type": "object",
+                      "properties": {
+                        "revision": {
+                          "type": "integer"
+                        },
+                        "active": {
+                          "type": "boolean"
+                        },
+                        "issuedAt": {
+                          "type": "string",
+                          "format": "date-time"
+                        }
+                      },
+                      "required": [
+                        "revision",
+                        "active",
+                        "issuedAt"
+                      ],
+                      "nullable": true
+                    },
+                    "records": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "targetKey": {
+                            "type": "string"
+                          },
+                          "eventStartDate": {
+                            "type": "string",
+                            "format": "date"
+                          },
+                          "eventEndDate": {
+                            "type": "string",
+                            "format": "date"
+                          },
+                          "sessionId": {
+                            "type": "string",
+                            "format": "uuid",
+                            "nullable": true
+                          },
+                          "titleEs": {
+                            "type": "string"
+                          },
+                          "titleEn": {
+                            "type": "string"
+                          },
+                          "date": {
+                            "type": "string",
+                            "format": "date",
+                            "nullable": true
+                          },
+                          "startsAt": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "endsAt": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "timezone": {
+                            "type": "string"
+                          },
+                          "modality": {
+                            "type": "string",
+                            "enum": [
+                              "in_person",
+                              "virtual"
+                            ]
+                          },
+                          "state": {
+                            "type": "string",
+                            "enum": [
+                              "present",
+                              "voided"
+                            ]
+                          },
+                          "observedAt": {
+                            "type": "string",
+                            "format": "date-time"
+                          },
+                          "revision": {
+                            "type": "integer"
+                          },
+                          "updatedAt": {
+                            "type": "string",
+                            "format": "date-time"
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "targetKey",
+                          "eventStartDate",
+                          "eventEndDate",
+                          "sessionId",
+                          "titleEs",
+                          "titleEn",
+                          "date",
+                          "startsAt",
+                          "endsAt",
+                          "timezone",
+                          "modality",
+                          "state",
+                          "observedAt",
+                          "revision",
+                          "updatedAt"
+                        ]
+                      }
+                    },
+                    "history": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "recordId": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "action": {
+                            "type": "string"
+                          },
+                          "actorName": {
+                            "type": "string"
+                          },
+                          "reason": {
+                            "type": "string"
+                          },
+                          "state": {
+                            "type": "string",
+                            "enum": [
+                              "present",
+                              "voided"
+                            ]
+                          },
+                          "observedAt": {
+                            "type": "string",
+                            "format": "date-time"
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "format": "date-time"
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "recordId",
+                          "action",
+                          "actorName",
+                          "reason",
+                          "state",
+                          "observedAt",
+                          "createdAt"
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "registration",
+                    "credential",
+                    "records",
+                    "history"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "attendance"
+        ]
+      }
+    },
+    "/api/v1/events/{eventId}/attendance/records/{id}/correction": {
+      "post": {
+        "operationId": "AttendanceController_correction",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CorrectAttendanceDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "registration": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "personId": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "category": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "format": "uuid"
+                            },
+                            "nameEs": {
+                              "type": "string"
+                            },
+                            "nameEn": {
+                              "type": "string"
+                            },
+                            "active": {
+                              "type": "boolean"
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "nameEs",
+                            "nameEn",
+                            "active"
+                          ]
+                        },
+                        "modality": {
+                          "type": "string",
+                          "enum": [
+                            "in_person",
+                            "virtual"
+                          ]
+                        },
+                        "status": {
+                          "type": "string",
+                          "enum": [
+                            "pending",
+                            "confirmed",
+                            "waitlisted",
+                            "rejected",
+                            "cancelled"
+                          ]
+                        },
+                        "revision": {
+                          "type": "integer"
+                        },
+                        "requestedAt": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "updatedAt": {
+                          "type": "string",
+                          "format": "date-time"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "personId",
+                        "name",
+                        "category",
+                        "modality",
+                        "status",
+                        "revision",
+                        "requestedAt",
+                        "updatedAt"
+                      ],
+                      "nullable": true
+                    },
+                    "credential": {
+                      "type": "object",
+                      "properties": {
+                        "revision": {
+                          "type": "integer"
+                        },
+                        "active": {
+                          "type": "boolean"
+                        },
+                        "issuedAt": {
+                          "type": "string",
+                          "format": "date-time"
+                        }
+                      },
+                      "required": [
+                        "revision",
+                        "active",
+                        "issuedAt"
+                      ],
+                      "nullable": true
+                    },
+                    "records": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "targetKey": {
+                            "type": "string"
+                          },
+                          "eventStartDate": {
+                            "type": "string",
+                            "format": "date"
+                          },
+                          "eventEndDate": {
+                            "type": "string",
+                            "format": "date"
+                          },
+                          "sessionId": {
+                            "type": "string",
+                            "format": "uuid",
+                            "nullable": true
+                          },
+                          "titleEs": {
+                            "type": "string"
+                          },
+                          "titleEn": {
+                            "type": "string"
+                          },
+                          "date": {
+                            "type": "string",
+                            "format": "date",
+                            "nullable": true
+                          },
+                          "startsAt": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "endsAt": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "timezone": {
+                            "type": "string"
+                          },
+                          "modality": {
+                            "type": "string",
+                            "enum": [
+                              "in_person",
+                              "virtual"
+                            ]
+                          },
+                          "state": {
+                            "type": "string",
+                            "enum": [
+                              "present",
+                              "voided"
+                            ]
+                          },
+                          "observedAt": {
+                            "type": "string",
+                            "format": "date-time"
+                          },
+                          "revision": {
+                            "type": "integer"
+                          },
+                          "updatedAt": {
+                            "type": "string",
+                            "format": "date-time"
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "targetKey",
+                          "eventStartDate",
+                          "eventEndDate",
+                          "sessionId",
+                          "titleEs",
+                          "titleEn",
+                          "date",
+                          "startsAt",
+                          "endsAt",
+                          "timezone",
+                          "modality",
+                          "state",
+                          "observedAt",
+                          "revision",
+                          "updatedAt"
+                        ]
+                      }
+                    },
+                    "history": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "recordId": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "action": {
+                            "type": "string"
+                          },
+                          "actorName": {
+                            "type": "string"
+                          },
+                          "reason": {
+                            "type": "string"
+                          },
+                          "state": {
+                            "type": "string",
+                            "enum": [
+                              "present",
+                              "voided"
+                            ]
+                          },
+                          "observedAt": {
+                            "type": "string",
+                            "format": "date-time"
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "format": "date-time"
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "recordId",
+                          "action",
+                          "actorName",
+                          "reason",
+                          "state",
+                          "observedAt",
+                          "createdAt"
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "registration",
+                    "credential",
+                    "records",
+                    "history"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "attendance"
+        ]
+      }
     }
   },
   "info": {
@@ -20431,6 +23283,83 @@
         "required": [
           "revision",
           "action",
+          "reason"
+        ]
+      },
+      "CredentialRevisionDto": {
+        "type": "object",
+        "properties": {
+          "revision": {
+            "type": "number",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "revision"
+        ]
+      },
+      "CredentialLookupDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "code"
+        ]
+      },
+      "CheckInDto": {
+        "type": "object",
+        "properties": {
+          "target": {
+            "type": "string",
+            "enum": [
+              "event",
+              "session"
+            ]
+          },
+          "sessionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "observedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "reason": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "target",
+          "reason"
+        ]
+      },
+      "CorrectAttendanceDto": {
+        "type": "object",
+        "properties": {
+          "revision": {
+            "type": "number"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "present",
+              "voided"
+            ]
+          },
+          "observedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "reason": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "revision",
+          "state",
           "reason"
         ]
       }

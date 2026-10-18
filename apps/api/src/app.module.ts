@@ -1,3 +1,4 @@
+import {AttendanceModule} from './attendance/attendance.module.js';
 import {RegistrationModule} from './registrations/registration.module.js';
 import { Module, type DynamicModule } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
@@ -15,7 +16,7 @@ import { SubmissionsModule } from './submissions/submissions.module.js';
 @Module({})
 export class AppModule {
   static register(config: AppConfig): DynamicModule {
-    return { module: AppModule, imports: [ConfigurationModule.register(config), DatabaseModule, IdentityModule, EventsModule, PlatformModule, ScienceModule, SubmissionsModule, ProgramModule, RegistrationModule],
+    return { module: AppModule, imports: [ConfigurationModule.register(config), DatabaseModule, IdentityModule, EventsModule, PlatformModule, ScienceModule, SubmissionsModule, ProgramModule, RegistrationModule, AttendanceModule],
       controllers: [HealthController], providers: [{ provide: APP_GUARD, useClass: ContextGuard }] };
   }
 }

@@ -6,9 +6,11 @@ Recepción configurable y publicación independiente; categorías bilingües, mo
 
 La validación funcional por el usuario sigue pendiente. Inscribirse no acredita asistencia ni concede permisos científicos.
 
-## Paquete 2: acreditación y asistencia — pendiente
+## Paquete 2: acreditación y asistencia — primera entrega manual implementada
 
-Credenciales e identificación segura, permisos de acreditador, control de presencia en evento y sesiones, rectificaciones motivadas y trazabilidad. Definir reglas para presencial/virtual y sesiones abiertas/restringidas antes de atribuir asistencia.
+Credencial mediante código, búsqueda por el organizador, registro manual de entrada al evento y sesiones, consulta propia y correcciones motivadas con historial. Se validan fechas, horario, modalidad y entrada previa al evento. Prueba funcional pendiente. Ver [guía de acreditación y asistencia](../development/acreditacion-asistencia.md).
+
+Pendientes de ampliación: QR/cámara, delegación a acreditadores, duración/salida, reservas por sesión y evidencia automática de participación virtual.
 
 ## Paquete 3: certificados — pendiente
 

@@ -55,3 +55,5 @@ El aviso «Tienes novedades en un trabajo» se presenta como texto y separadores
 Mi participación se alimenta del [programa científico publicado](programa-cientifico.md). No muestra borradores y no atribuye asistencia ni certificados por estar programado.
 
 Mi inscripción se incorpora como área del participante, con la misma cabecera y cuenta. Muestra la solicitud y su historial, separada de la agenda de Mi participación. Véase [Inscripciones](inscripciones.md).
+
+Mi acreditación incorpora la credencial por evento y la consulta del historial de asistencia propio. Mantiene la cabecera y navegación compartidas. Los certificados siguen pendientes, separados de la credencial de acceso.

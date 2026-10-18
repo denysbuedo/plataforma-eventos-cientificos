@@ -68,3 +68,5 @@ Los documentos de planificación describen trabajo futuro. No constituyen eviden
 - [Estudio comparativo internacional de actividades, sesiones y presentaciones](architecture/estudio-organizacion-cientifica-eventos.md) y [ADR-023](adr/ADR-023-estructura-cientifica-espacios-y-formatos.md).
 
 - [Fase 3: participantes, asistencia y certificados](functional/fase-3.md), [inscripciones](development/inscripciones.md) y [ADR-024](adr/ADR-024-inscripciones-y-participantes.md).
+
+- [Acreditación y asistencia manual](development/acreditacion-asistencia.md) y [ADR-025](adr/ADR-025-acreditacion-y-asistencia.md).

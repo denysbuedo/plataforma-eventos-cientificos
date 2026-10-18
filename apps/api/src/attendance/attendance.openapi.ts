@@ -1,0 +1,13 @@
+import type {SchemaObject} from '@nestjs/swagger';
+const str:SchemaObject={type:'string'},integer:SchemaObject={type:'integer'},time:SchemaObject={type:'string',format:'date-time'},uuid:SchemaObject={type:'string',format:'uuid'},date:SchemaObject={type:'string',format:'date'};
+const obj=(properties:Record<string,SchemaObject>):SchemaObject=>({type:'object',properties,required:Object.keys(properties)});
+const arr=(items:SchemaObject):SchemaObject=>({type:'array',items});
+const nil=(schema:SchemaObject):SchemaObject=>({...schema,nullable:true});
+const category=obj({id:uuid,nameEs:str,nameEn:str,active:{type:'boolean'}});
+const registration=obj({id:uuid,personId:uuid,name:str,category,modality:{type:'string',enum:['in_person','virtual']},status:{type:'string',enum:['pending','confirmed','waitlisted','rejected','cancelled']},revision:integer,requestedAt:time,updatedAt:time});
+const credential=obj({revision:integer,active:{type:'boolean'},issuedAt:time});
+const state:SchemaObject={type:'string',enum:['present','voided']};
+const record=obj({id:uuid,targetKey:str,eventStartDate:date,eventEndDate:date,sessionId:nil(uuid),titleEs:str,titleEn:str,date:nil(date),startsAt:nil(str),endsAt:nil(str),timezone:str,modality:{type:'string',enum:['in_person','virtual']},state,observedAt:time,revision:integer,updatedAt:time});
+const history=obj({id:uuid,recordId:uuid,action:str,actorName:str,reason:str,state,observedAt:time,createdAt:time});
+const detail=obj({registration:nil(registration),credential:nil(credential),records:arr(record),history:arr(history)});
+export const attendanceSchemas={detail,credential:obj({detail,code:{type:'string',nullable:true,pattern:'^[a-f0-9]{48}$',description:'Only returned upon issuance. Raw value is not persisted.'}}),workspace:obj({data:arr({...registration,properties:{...registration.properties,eventPresent:{type:'boolean'},sessionCount:integer},required:[...registration.required!,'eventPresent','sessionCount']}),total:integer,limit:integer,offset:integer,timezone:str,startDate:nil(date),endDate:nil(date),sessions:arr(obj({id:uuid,titleEs:str,titleEn:str,date,startsAt:str,endsAt:str,modality:{type:'string',enum:['in_person','virtual','hybrid']},room:str}))})};

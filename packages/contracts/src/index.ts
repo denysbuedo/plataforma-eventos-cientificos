@@ -207,3 +207,10 @@ export interface RegistrationDetail {entry:RegistrationEntry;history:Registratio
 export interface MyRegistration {registration:RegistrationDetail|null;reception:PublicRegistration|null;profile:{name:string;affiliations:WorkAffiliation[];email:string|null}}
 export type RegistrationSummary=Omit<RegistrationEntry,'policy'|'affiliations'|'email'>;
 export interface RegistrationPage {data:RegistrationSummary[];total:number;limit:number;offset:number;counts:RegistrationCounts}
+
+export interface AttendanceCredential {revision:number;active:boolean;issuedAt:string}
+export interface AttendanceRecord {id:string;targetKey:string;eventStartDate:string;eventEndDate:string;sessionId:string|null;titleEs:string;titleEn:string;date:string|null;startsAt:string|null;endsAt:string|null;timezone:string;modality:RegistrationModality;state:'present'|'voided';observedAt:string;revision:number;updatedAt:string}
+export interface AttendanceHistory {id:string;recordId:string;action:string;actorName:string;reason:string;state:'present'|'voided';observedAt:string;createdAt:string}
+export interface AttendanceDetail {registration:RegistrationSummary|null;credential:AttendanceCredential|null;records:AttendanceRecord[];history:AttendanceHistory[]}
+export interface AttendanceSession {id:string;titleEs:string;titleEn:string;date:string;startsAt:string;endsAt:string;modality:'in_person'|'virtual'|'hybrid';room:string}
+export interface AttendanceWorkspace {data:(RegistrationSummary&{eventPresent:boolean;sessionCount:number})[];total:number;limit:number;offset:number;sessions:AttendanceSession[];timezone:string;startDate:string|null;endDate:string|null}

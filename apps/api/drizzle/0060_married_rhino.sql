@@ -1,0 +1,1 @@
+ALTER TABLE "attendance_credentials" ADD COLUMN "registration_revision" integer DEFAULT 0 NOT NULL;

@@ -537,3 +537,12 @@ dialog::backdrop { background:rgb(18 36 28 / 45%); }
 .registration-detail{margin-top:28px;border-top:1px solid var(--line,#e3e7e5);padding-top:16px;scroll-margin-top:24px}
 .registration-detail .field{margin:18px 0}
 @media(max-width:700px){.registration-fields,.registration-summary,.registration-filters,.registration-category{grid-template-columns:1fr}.registration-metrics{gap:22px}.registration-line{align-items:flex-start}.registration-category .registration-check{margin:6px 0}}
+
+.attendance-module .attendance-records article{border-bottom:1px solid var(--line,#e3e7e5);padding:12px 0}
+.attendance-module .attendance-records h3{margin:8px 0}
+.attendance-credential{border-top:1px solid var(--line,#e3e7e5);padding:16px 0}
+.attendance-credential code{display:block;font-size:1rem;letter-spacing:.04em;overflow-wrap:anywhere;user-select:all}
+.attendance-lookup{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:end;gap:16px;margin:22px 0;padding-bottom:22px;border-bottom:1px solid var(--line,#e3e7e5)}
+.attendance-editor{padding:16px 0;border-bottom:1px solid var(--line,#e3e7e5);margin-bottom:24px}
+.attendance-editor .field{margin:16px 0}
+@media(max-width:700px){.attendance-lookup{grid-template-columns:1fr}.attendance-credential code{font-size:.85rem}}

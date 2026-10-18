@@ -80,3 +80,7 @@ Referencias: [modelo de dominio](../architecture/modelo-dominio.md), [ADR-002](.
 | Listar participantes y decidir solicitudes | Organizador del evento; motivo e historial obligatorio |
 
 Ser autor, revisor, participante o administrador de organización sin asignación de organizador no concede gestión de inscripciones. La inscripción no crea roles ni concede acceso científico.
+
+## Acreditación y asistencia
+
+La persona autenticada consulta sus registros y emite/renueva/revoca su propia credencial si la inscripción está confirmada. Solo el organizador del evento, con `attendance-manage`, consulta la bandeja, busca códigos, registra presencia y corrige evidencias. Esta capacidad no activa acceso a manuscritos, decisiones de inscripción ni revisión científica. La delegación a acreditadores está pendiente.
