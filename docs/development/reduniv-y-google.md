@@ -30,7 +30,7 @@ Para comprobar cambios con una compilación aislada del administrador, `SEP_ADMI
 
 De cursos-enlinea se leyeron `src/lib/google-oauth.ts`, `src/app/api/auth/google/start/route.ts` y `src/app/api/auth/google/callback/route.ts`. Allí se usa Authorization Code con PKCE S256 y state, scopes openid/email/profile, consulta de UserInfo, correo verificado y sesión propia de la aplicación.
 
-SEP reproduce ese acceso directo con sus propios componentes y almacenamiento: añade validación OIDC de ID token/nonce y mantiene identidad por `(issuer, sub)`. No copia los secretos, sesiones, tablas o el enlace automático por correo de cursos-enlinea. Vincular ambas cuentas conservando historial requerirá una operación explícita posterior; no se fusionan silenciosamente.
+SEP reproduce ese acceso directo con sus propios componentes y almacenamiento: añade validación OIDC de ID token/nonce y mantiene identidad por `(issuer, sub)`. No copia los secretos, sesiones, tablas o el enlace automático por correo de cursos-enlinea. La [vinculación explícita](vinculacion-cuentas-y-roles.md) ya permite añadir accesos a la misma cuenta, preservando la cuenta principal y archivando perfiles duplicados sin actividad. Los historiales con actividad requieren revisión y no se fusionan silenciosamente.
 
 ```mermaid
 flowchart LR
@@ -92,6 +92,6 @@ Las invitaciones exigen correo verificado coincidente tanto para Google como par
 
 Cerrar una sesión Google elimina la sesión local; no cierra la cuenta global de Google. Las credenciales internas ya emitidas pueden durar hasta cinco minutos después de cerrar sesión. Cambios o revocaciones en Google se comprueban al volver a autenticar; no se consulta continuamente Google durante la sesión propia de ocho horas. Esta política es distinta de RedUniv, que conserva renovación y logout central según la guía institucional.
 
-Faltan completar el acceso Google con una cuenta real, los orígenes y clientes compartidos/productivos y recorridos específicos de renovación, revocación y cierre central. Las personas sin Google o RedUniv disponen ahora del [registro local con correo y contraseña](cuentas-locales.md); SMTP sigue pendiente y el entorno local utiliza una bandeja de pruebas explícita. El enlace explícito de identidades y la conservación de una sola persona entre proveedores también quedan pendientes.
+Faltan completar el acceso Google con una cuenta real, los orígenes y clientes compartidos/productivos y recorridos específicos de renovación, revocación y cierre central. Las personas sin Google o RedUniv disponen ahora del [registro local con correo y contraseña](cuentas-locales.md); SMTP sigue pendiente y el entorno local utiliza una bandeja de pruebas explícita. La [vinculación de accesos y los permisos de cuentas reales](vinculacion-cuentas-y-roles.md) ya tienen su flujo explícito; la consolidación de dos historiales con actividad se bloquea para revisión específica.
 
 Referencias: [OIDC de Google](https://developers.google.com/identity/openid-connect), [OAuth web de Google](https://developers.google.com/identity/protocols/oauth2/web-server), [openid-client](https://github.com/panva/openid-client).

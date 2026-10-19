@@ -1,5 +1,8 @@
 const messages = {
   es: {
+    ACCOUNT_LINK_EXPIRED:'La comprobación de la cuenta caducó o ya se utilizó. Inicia la vinculación de nuevo.',
+    ACCOUNT_LINK_ACTIVITY:'La otra cuenta ya tiene trabajos, permisos o actividad. Entra con esa cuenta y vincula desde allí un acceso sin actividad. No se mezclan historiales automáticamente.',
+    ACCOUNT_LINK_LOCAL_CONFLICT:'Ambas cuentas tienen contraseña local. Conserva una sola cuenta local; esta operación requiere revisión.',
     LOCAL_AUTH_RATE_LIMITED:'Demasiados intentos. Espera unos minutos y vuelve a intentarlo.',
     LOCAL_PASSWORD_WEAK:'Usa una contraseña de entre 15 y 128 caracteres.',
     LOCAL_INVALID_CREDENTIALS:'El correo o la contraseña no son correctos.',
@@ -83,6 +86,9 @@ const messages = {
     INTERNAL_ERROR: 'No se pudo completar la solicitud.',
   },
   en: {
+    ACCOUNT_LINK_EXPIRED:'The account verification expired or has already been used. Start linking again.',
+    ACCOUNT_LINK_ACTIVITY:'The other account already has submissions, permissions or activity. Sign in to that account and link an unused sign-in method from there. Histories are not merged automatically.',
+    ACCOUNT_LINK_LOCAL_CONFLICT:'Both accounts have local passwords. Only one local account can be retained; this operation needs review.',
     LOCAL_AUTH_RATE_LIMITED:'Too many attempts. Wait a few minutes and try again.',
     LOCAL_PASSWORD_WEAK:'Use a password between 15 and 128 characters.',
     LOCAL_INVALID_CREDENTIALS:'The email or password is incorrect.',

@@ -322,6 +322,29 @@ dialog::backdrop { background:rgb(18 36 28 / 45%); }
 .profile-status-sandbox { background:#fff2cf; color:#805917; }
 .profile-visibility .profile-status { margin-top:9px; }
 .profile-aside { display:grid; gap:22px; }
+.account-methods,.account-methods .notice,.account-link-confirm { background:white; box-shadow:none; }
+.account-method { padding:16px 0; border-bottom:1px solid var(--line); }
+.account-method>strong,.account-method>span { display:block; }
+.account-method>strong { font-size:14px; font-weight:600; }
+.account-method>span { color:var(--muted); font-size:12px; margin-top:4px; }
+.account-method form>.button { margin-top:12px; }
+.account-method summary,.account-link-history summary,.account-link-confirm summary { cursor:pointer; font-size:13px; color:var(--green); margin-top:12px; }
+.account-local-link .field { margin-top:12px; font-size:12px; }
+.account-local-link input { width:100%; min-width:0; padding:10px; border:1px solid var(--line); border-radius:6px; background:white; }
+.account-link-confirm { margin-top:18px; padding-top:18px; border-top:1px solid var(--line); }
+.account-link-confirm h3 { font-size:17px; margin-bottom:12px; }
+.account-link-confirm>p,.account-link-previous p { font-size:13px; margin:9px 0; overflow-wrap:anywhere; }
+.account-link-confirm .profile-checkbox { margin-top:16px; font-size:13px; }
+.account-link-confirm .editor-actions { margin-top:16px; flex-wrap:wrap; }
+.account-link-history article { border-top:1px solid var(--line); margin-top:14px; padding-top:14px; font-size:13px; }
+.account-link-previous { margin-top:12px; font-size:13px; }
+.registered-member { border-bottom:1px solid var(--line); padding-bottom:22px; margin-bottom:22px; }
+.registered-member h3 { font-family:inherit; font-size:18px; }
+.registered-member-search,.access-event-picker { display:flex; align-items:flex-end; flex-wrap:wrap; gap:14px; margin:18px 0; }
+.registered-member-search>.field,.access-event-picker>.field { flex:1; min-width:min(250px,100%); margin:0; }
+.registered-member-confirm { margin-top:18px; padding-top:18px; border-top:1px solid var(--line); }
+.registered-member-confirm h4 { font-family:inherit; font-size:16px; margin:0 0 14px; }
+.registered-member-confirm>.field { margin-bottom:16px; }
 .profile-orcid-brand { display:flex; align-items:center; gap:9px; }
 .profile-orcid .profile-card-heading { align-items:center; gap:9px; }
 .profile-orcid>.profile-help { margin:18px 0; }

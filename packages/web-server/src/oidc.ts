@@ -54,17 +54,17 @@ interface LocalSession extends Stored {provider:'local';accessToken:string}
 type StoredSession=Session|GoogleSession|LocalSession;
 interface GoogleGrant { subject: string; name: string; email: string; maxAge: number; returnTo: string }
 type GrantedSession = Omit<Session, 'expires'> & { maxAge: number; returnTo: string };
-function file(id: string, kind: 'flow' | 'session') {
+function file(id: string, kind: 'flow' | 'session' | 'link') {
   if (!/^[A-Za-z0-9_-]{43}$/.test(id)) throw new Error('Invalid session identifier');
   return join(settings().directory, `${kind}-${createHash('sha256').update(id).digest('hex')}.bin`);
 }
-function save<T extends Stored>(kind: 'flow' | 'session', value: T): string {
+function save<T extends Stored>(kind: 'flow' | 'session' | 'link', value: T): string {
   const config = settings(); mkdirSync(config.directory, { recursive: true, mode: 0o700 });
   const id = randomBytes(32).toString('base64url');
   writeFileSync(file(id, kind), encrypted(kind, value), { flag: 'wx', mode: 0o600 });
   return id;
 }
-function encrypted<T extends Stored>(kind: 'flow' | 'session', value: T): Buffer {
+function encrypted<T extends Stored>(kind: 'flow' | 'session' | 'link', value: T): Buffer {
   const iv = randomBytes(12); const cipher = createCipheriv('aes-256-gcm', settings().key, iv);
   cipher.setAAD(Buffer.from(kind));
   const encoded = JSON.stringify(value);
@@ -72,7 +72,7 @@ function encrypted<T extends Stored>(kind: 'flow' | 'session', value: T): Buffer
   const payload = Buffer.concat([cipher.update(encoded, 'utf8'), cipher.final()]);
   return Buffer.concat([iv, cipher.getAuthTag(), payload]);
 }
-function read<T extends Stored>(id: string | undefined, kind: 'flow' | 'session'): T | undefined {
+function read<T extends Stored>(id: string | undefined, kind: 'flow' | 'session' | 'link'): T | undefined {
   if (!id) return undefined;
   try {
     if (kind === 'session' && existsSync(file(id, kind) + '.revoked')) return undefined;
@@ -85,7 +85,7 @@ function read<T extends Stored>(id: string | undefined, kind: 'flow' | 'session'
     return value;
   } catch { return undefined; }
 }
-export function removeOidcValue(id: string | undefined, kind: 'flow' | 'session' = 'session'): void {
+export function removeOidcValue(id: string | undefined, kind: 'flow' | 'session' | 'link' = 'session'): void {
   if (!id) return;
   if (kind === 'session') {
     try { writeFileSync(file(id, kind) + '.revoked', '', { mode: 0o600 }); } catch { /* Missing storage already prevents use. */ }
@@ -147,12 +147,12 @@ export function localReturnTo(value: string): string {
   const target = new URL(value, origin);
   return target.origin === origin ? target.pathname + target.search : '/es';
 }
-export async function beginOidc(returnTo: string) {
+export async function beginOidc(returnTo: string, reauthenticate=false) {
   const config = await configuration();
   const flow: Flow = { provider: 'reduniv', expires: Date.now() + 600000, verifier: client.randomPKCECodeVerifier(), nonce: client.randomNonce(), state: client.randomState(), returnTo: localReturnTo(returnTo) };
   const destination = client.buildAuthorizationUrl(config, { redirect_uri: `${settings().origin}/api/auth/callback`, scope: 'openid profile email',
     code_challenge: await client.calculatePKCECodeChallenge(flow.verifier), code_challenge_method: 'S256', state: flow.state, nonce: flow.nonce,
-    kc_idp_hint: '' });
+    kc_idp_hint: '', ...(reauthenticate?{prompt:'login',max_age:'0'}:{}) });
   return { destination, cookie: save('flow', flow) };
 }
 export async function finishOidc(callback: URL, cookie: string | undefined): Promise<GrantedSession> {
@@ -237,3 +237,8 @@ async function googleApiCredential(session: GoogleSession): Promise<string | und
   return `sep_google.${token}`;
 }
 export function adminOrigin(): string { return settings().origin; }
+
+export const ACCOUNT_LINK_COOKIE='sep_account_link';
+export interface AccountLinkState {parent:string;provider:'reduniv'|'google'|'local';returnTo:string;expires:number;ticket?:string;preview?:Record<string,unknown>}
+export function saveAccountLink(value:AccountLinkState):string{return save('link',value);}
+export function readAccountLink(id:string|undefined,parent:string|undefined):AccountLinkState|undefined{const value=read<AccountLinkState>(id,'link');return value&&parent&&value.parent===parent?value:undefined;}

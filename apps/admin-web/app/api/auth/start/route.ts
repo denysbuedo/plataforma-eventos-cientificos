@@ -1,6 +1,6 @@
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
-import { beginOidc, beginGoogle, checkOrigin, errorResponse, oidcCookieSecure, GOOGLE_FLOW_COOKIE, OIDC_FLOW_COOKIE, removeOidcValue } from '@sep/web-server';
+import { ACCOUNT_LINK_COOKIE,beginOidc, beginGoogle, checkOrigin, errorResponse, oidcCookieSecure, GOOGLE_FLOW_COOKIE, OIDC_FLOW_COOKIE, removeOidcValue } from '@sep/web-server';
 export const runtime = 'nodejs';
 export async function POST(request: Request) {
   try {
@@ -14,6 +14,7 @@ export async function POST(request: Request) {
     const response = NextResponse.redirect(flow.destination, 303);
     response.headers.set('cache-control', 'no-store');
     response.cookies.set(cookieName, flow.cookie, { httpOnly: true, secure: oidcCookieSecure(), sameSite: 'lax', path: '/api/auth', maxAge: 600 });
+    removeOidcValue((await cookies()).get(ACCOUNT_LINK_COOKIE)?.value,'link');response.cookies.set(ACCOUNT_LINK_COOKIE,'',{httpOnly:true,secure:oidcCookieSecure(),sameSite:'lax',path:'/api/auth',maxAge:0});
     return response;
   } catch (error) { return errorResponse(error); }
 }

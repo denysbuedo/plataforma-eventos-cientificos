@@ -1,6 +1,6 @@
 # Inicio de sesión, usuarios y roles
 
-Estado: acceso personal y administración de roles implementados. El acceso local con RedUniv fue validado por el propietario; Google conserva su activación pendiente. La demo utiliza cuentas de prueba explícitas; no sustituye la autenticación de producción.
+Estado: acceso personal y administración de roles implementados. El acceso local con RedUniv fue validado por el propietario; Google está configurado localmente y se comprobó el inicio hacia su pantalla de acceso. La [vinculación explícita de accesos](vinculacion-cuentas-y-roles.md) y la incorporación de cuentas registradas ya están implementadas. La demo utiliza cuentas de prueba explícitas; no sustituye la autenticación de producción.
 
 ## Entrar con una cuenta
 
@@ -16,7 +16,7 @@ Sin destino específico, la entrada muestra **Inicio**, con las funciones dispon
 
 ## Inicio según responsabilidades
 
-La pantalla ofrece acciones concretas, sin explicaciones técnicas sobre asignaciones. El administrador ve gestión de eventos, usuarios, invitaciones y configuración de organización. El organizador dispone de gestión, trabajos recibidos, revisión científica y programa de sus eventos. Las personas invitadas o aceptadas como revisoras tienen su entrada de revisión; los acreditadores, la acreditación. Se combinan las opciones cuando la persona tiene varias responsabilidades. Las opciones personales incluyen trabajos, inscripción y certificados por evento; una cuenta sin eventos recibe una indicación y un enlace para completar su perfil.
+La pantalla ofrece acciones concretas, sin explicaciones técnicas sobre asignaciones. El administrador ve gestión de eventos, usuarios, invitaciones y configuración de organización. El organizador dispone de gestión, trabajos recibidos, revisión científica y programa de sus eventos. Las personas invitadas o aceptadas como revisoras tienen su entrada de revisión; los acreditadores, la acreditación. Se combinan las opciones cuando la persona tiene varias responsabilidades. Las opciones personales incluyen trabajos, inscripción y certificados por evento; una cuenta sin eventos recibe una indicación para incorporarse a uno y, solo si no ha guardado sus datos básicos, un enlace para completar su perfil. Después muestra Ver mi perfil, también al recargar o iniciar otra sesión.
 
 El nombre permanece en la cabecera de cuenta. La navegación personal usa **Inicio**, muestra la gestión únicamente cuando corresponde y oculta «Mis revisiones» si no existe invitación o participación en el comité. Ocultar enlaces no sustituye la autorización de la API. La ruta interna `tab=access` se conserva para mantener enlaces existentes.
 
@@ -29,7 +29,7 @@ El administrador dispone además de accesos a eventos, personas/invitaciones y u
 **Organización → Usuarios y roles** permite:
 
 - Consultar miembros activos de la organización y sus asignaciones administrativas por evento.
-- Asignar o retirar administración de organización a una persona ya vinculada; incorporar nuevas personas mediante la invitación existente.
+- Asignar o retirar administración de organización a una persona ya vinculada; incorporar cuentas ya registradas mediante búsqueda por correo confirmado, motivo y confirmación, o utilizar la invitación existente.
 - Consultar el historial de cambios con actor, persona, motivo y fecha.
 - Abrir la gestión de organizadores de cada evento.
 

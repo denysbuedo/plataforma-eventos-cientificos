@@ -28,10 +28,10 @@ Al configurar SMTP, vaciar `SEP_LOCAL_AUTH_MAIL_DIRECTORY` y habilitar las opcio
 - Confirmar correo y recuperar contraseña invalidan los otros enlaces pendientes; la recuperación elimina todas las sesiones locales de la persona. Desactivar la cuenta o la persona bloquea la siguiente petición.
 - La interfaz conserva los controles de origen en los POST, evita redirecciones externas y mantiene los recursos gráficos y fuentes servidos localmente.
 
-Los registros caducados de sesiones, desafíos y límites permanecen en las tablas hasta su mantenimiento. La limpieza periódica y la vinculación explícita entre proveedores quedan pendientes.
+Los registros caducados de sesiones, desafíos y límites permanecen en las tablas hasta su mantenimiento. La limpieza periódica queda pendiente. La [vinculación explícita entre proveedores](vinculacion-cuentas-y-roles.md) ya permite conservar una cuenta principal y añadirle accesos comprobados.
 
 ## Validación
 
 `npm run test:local-auth` comprueba registro, verificación, contraseñas protegidas, ausencia de roles automáticos, duplicados, recuperación, caducidad, revocación, límites de intentos y rechazo del correo de prueba en producción. También se comprobaron los permisos base y su administración y el recorrido completo desde el navegador. Migración: `0080_sleepy_stick.sql`; aplicar con la credencial migradora, nunca con la de ejecución.
 
-El diseño compacto evita desplazamiento en las resoluciones habituales de escritorio y móvil; no se ocultan controles mediante un bloqueo del scroll del documento. Los proveedores se presentan lado a lado con botones redondeados de 42 px. Google conserva su estado pendiente de credenciales.
+El diseño compacto evita desplazamiento en las resoluciones habituales de escritorio y móvil; no se ocultan controles mediante un bloqueo del scroll del documento. Los proveedores se presentan lado a lado con botones redondeados de 42 px. Google ya tiene sus credenciales locales configuradas. Los accesos pueden vincularse desde Mi perfil después de comprobar ambas cuentas.

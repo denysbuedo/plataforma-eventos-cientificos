@@ -1,3 +1,4 @@
+import {completeAccountLink,failedAccountLink} from '../../link/shared';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { adminOrigin, apiRequest, bindingFor, createGoogleSession, finishGoogle, GOOGLE_FLOW_COOKIE, oidcCookieSecure, removeOidcValue, SESSION_COOKIE, tokenForCookie } from '@sep/web-server';
@@ -9,11 +10,15 @@ export async function GET(request: Request) {
     created = createGoogleSession(grant);
     const token = await tokenForCookie(created);
     if (!token) throw new Error('Google session unavailable');
+    const linkResponse=await completeAccountLink(jar,token,'google');
+    if(linkResponse){removeOidcValue(created);response=linkResponse;}else {
     await apiRequest(bindingFor(new URL(adminOrigin()).host, undefined), 'me', { token });
     removeOidcValue(jar.get(SESSION_COOKIE)?.value);
     response = NextResponse.redirect(new URL(grant.returnTo, adminOrigin()), 303);
     response.cookies.set(SESSION_COOKIE, created, { httpOnly: true, secure: oidcCookieSecure(), sameSite: 'lax', path: '/', maxAge: grant.maxAge });
+    }
   } catch {
+    const linkFailure=failedAccountLink(jar,GOOGLE_FLOW_COOKIE);if(linkFailure){removeOidcValue(created);return linkFailure;}
     removeOidcValue(created);
     const origin = process.env.SEP_ADMIN_ORIGIN;
     if (!origin) return NextResponse.json({ error: { code: 'UNAUTHORIZED' } }, { status: 401 });

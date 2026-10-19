@@ -568,6 +568,13 @@
       "when": 1792374184296,
       "tag": "0080_sleepy_stick",
       "breakpoints": true
+    },
+    {
+      "idx": 81,
+      "version": "7",
+      "when": 1792385817840,
+      "tag": "0081_skinny_hawkeye",
+      "breakpoints": true
     }
   ]
 }

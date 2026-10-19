@@ -57,6 +57,12 @@ test('local registration, verified identity, recovery and revocable sessions',as
  await t.test('repeated authentication attempts are throttled',async()=>{
   for(let i=0;i<10;i++)ok(await post('login',{email:'inexistente@example.test',password}),401);ok(await post('login',{email:'inexistente@example.test',password}),429);
  });
+ await t.test('local accounts can only accept invitations addressed to their verified email',async()=>{
+  const signed=await post('login',{email,password:nextPassword});ok(signed);const token=signed.body.accessToken,raw='a'.repeat(43),{createHash,randomUUID}=await import('node:crypto');
+  const id=randomUUID();await admin.query(`INSERT INTO organization_invitations(id,organization_id,name,email,token_hash,created_by,expires_at) VALUES($1,$2,'Invitación de prueba','another@example.test',$3,$4,now()+interval '1 day')`,[id,fixture.organizations.a,createHash('sha256').update(raw).digest('hex'),fixture.people.admin]);
+  ok(await call('invitations/accept',{token,body:{token:raw}}),403);
+  await admin.query('UPDATE organization_invitations SET email=$1 WHERE id=$2',[email,id]);ok(await call('invitations/accept',{token,body:{token:raw}}),201);
+ });
  await t.test('test mail transport is rejected outside local development',()=>{
   assert.throws(()=>loadConfig({...process.env,NODE_ENV:'production',AUTH_MODE:'oidc',DEV_AUTH_TOKENS_JSON:'{}',OIDC_ISSUER:config.oidc.issuer,OIDC_AUDIENCE:'sep-api',OIDC_JWKS_URL:config.oidc.jwksUrl,OIDC_ROLE_CLIENT_ID:'sep-test',OIDC_ALLOWED_CLIENT_ROLES:'ROLE_USER',SEP_LOCAL_LOGIN_ENABLED:'1',SEP_ADMIN_ORIGIN:'https://sep.example.test',SEP_LOCAL_AUTH_MAIL_DIRECTORY:directory}));
  });

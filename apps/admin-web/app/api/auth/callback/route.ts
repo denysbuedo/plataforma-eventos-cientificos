@@ -1,3 +1,4 @@
+import {completeAccountLink,failedAccountLink} from '../link/shared';
 import { cookies } from 'next/headers';
 import { randomUUID } from 'node:crypto';
 import { NextResponse } from 'next/server';
@@ -9,6 +10,8 @@ export async function GET(request: Request) {
   let stage = 'token-exchange';
   try {
     const flow = await finishOidc(new URL(request.url), jar.get(OIDC_FLOW_COOKIE)?.value);
+    const linkResponse=await completeAccountLink(jar,flow.accessToken,'reduniv');
+    if(linkResponse)response=linkResponse;else {
     stage = 'api-profile';
     await apiRequest(bindingFor(new URL(adminOrigin()).host, undefined), 'me', { token: flow.accessToken });
     stage = 'session';
@@ -16,7 +19,9 @@ export async function GET(request: Request) {
     removeOidcValue(jar.get(SESSION_COOKIE)?.value);
     response = NextResponse.redirect(new URL(flow.returnTo, adminOrigin()), 303);
     response.cookies.set(SESSION_COOKIE, session, { httpOnly: true, secure: oidcCookieSecure(), sameSite: 'lax', path: '/', maxAge: flow.maxAge });
+    }
   } catch (error) {
+    const linkFailure=failedAccountLink(jar,OIDC_FLOW_COOKIE);if(linkFailure)return linkFailure;
     const reference = randomUUID();
     const code = error instanceof ApiTransportError ? error.body.error.code
       : error && typeof error === 'object' && 'code' in error && typeof error.code === 'string' && /^[A-Z_]{1,80}$/.test(error.code) ? error.code : 'OIDC_CALLBACK_FAILED';

@@ -92,6 +92,104 @@
         ]
       }
     },
+    "/api/v1/me/sign-in-methods": {
+      "get": {
+        "operationId": "AccountLinksController_list",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "account-links"
+        ]
+      }
+    },
+    "/api/v1/me/sign-in-methods/prepare": {
+      "post": {
+        "operationId": "AccountLinksController_prepare",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PrepareLinkDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "account-links"
+        ]
+      }
+    },
+    "/api/v1/me/sign-in-methods/confirm": {
+      "post": {
+        "operationId": "AccountLinksController_confirm",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConfirmLinkDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "account-links"
+        ]
+      }
+    },
     "/api/v1/auth/local/register": {
       "post": {
         "operationId": "LocalAuthController_register",
@@ -423,6 +521,218 @@
         ]
       }
     },
+    "/api/v1/organization/access/registered/search": {
+      "post": {
+        "operationId": "AccessController_find",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FindRegisteredDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "access"
+        ]
+      }
+    },
+    "/api/v1/organization/access/registered/add": {
+      "post": {
+        "operationId": "AccessController_add",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddRegisteredDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "access"
+        ]
+      }
+    },
     "/api/v1/organization/access": {
       "get": {
         "operationId": "AccessController_organization",
@@ -435,6 +745,29 @@
                 "schema": {
                   "type": "object",
                   "properties": {
+                    "events": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "nameEs": {
+                            "type": "string"
+                          },
+                          "nameEn": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "nameEs",
+                          "nameEn"
+                        ]
+                      }
+                    },
                     "actorId": {
                       "type": "string",
                       "format": "uuid"
@@ -502,6 +835,9 @@
                       "items": {
                         "type": "object",
                         "properties": {
+                          "kind": {
+                            "type": "string"
+                          },
                           "id": {
                             "type": "string",
                             "format": "uuid"
@@ -524,6 +860,7 @@
                           }
                         },
                         "required": [
+                          "kind",
                           "id",
                           "actorName",
                           "personName",
@@ -535,6 +872,7 @@
                     }
                   },
                   "required": [
+                    "events",
                     "actorId",
                     "people",
                     "history"
@@ -35451,6 +35789,30 @@
           "status"
         ]
       },
+      "PrepareLinkDto": {
+        "type": "object",
+        "properties": {
+          "credential": {
+            "type": "string",
+            "writeOnly": true
+          }
+        },
+        "required": [
+          "credential"
+        ]
+      },
+      "ConfirmLinkDto": {
+        "type": "object",
+        "properties": {
+          "ticket": {
+            "type": "string",
+            "writeOnly": true
+          }
+        },
+        "required": [
+          "ticket"
+        ]
+      },
       "RegisterDto": {
         "type": "object",
         "properties": {
@@ -35529,6 +35891,36 @@
         "required": [
           "token",
           "password"
+        ]
+      },
+      "FindRegisteredDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "email"
+        ]
+      },
+      "AddRegisteredDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "personId": {
+            "type": "string"
+          },
+          "reason": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "email",
+          "personId",
+          "reason"
         ]
       },
       "ChangeAdministratorDto": {

@@ -5,6 +5,7 @@ import type { EventConfiguration, PublishedScientificCall, PublishedSite, Scient
 const binary = customType<{ data: Buffer; driverData: Buffer }>({ dataType: () => 'bytea' });
 const runtime = pgRole('sep_runtime').existing();
 const registryOwner = pgRole('sep_migrator').existing();
+const accountLinkOwner=pgRole('sep_account_linker').existing();
 const organizationScope = (column: SQL) => sql`${column} = nullif(current_setting('sep.organization_id', true), '')::uuid`;
 const actorScope = (column: SQL) => sql`${column} = nullif(current_setting('sep.person_id', true), '')::uuid`;
 const eventScope = (organization: SQL, event: SQL) => sql`${organizationScope(organization)} AND
@@ -17,6 +18,14 @@ const authorshipScope = (org:SQL,event:SQL) => sql`current_setting('sep.authorsh
 const authorshipPolicy = (org:SQL,event:SQL) => pgPolicy('authorship_rpc',{for:'all',to:registryOwner,using:authorshipScope(org,event),withCheck:authorshipScope(org,event)});
 const authorshipActorRead = (actor:SQL) => pgPolicy('authorship_actor',{for:'select',to:registryOwner,using:sql`current_setting('sep.authorship_rpc',true)='true' AND ${actorScope(actor)}`});
 const localIdentityPolicy=()=>pgPolicy('local_identity_service',{for:'all',to:registryOwner,using:sql`current_setting('sep.local_auth',true)='true'`,withCheck:sql`current_setting('sep.local_auth',true)='true'`});
+
+const accountLinkPolicy=()=>pgPolicy('account_link_service',{for:'all',to:accountLinkOwner,using:sql`current_setting('sep.account_link',true)='true'`,withCheck:sql`current_setting('sep.account_link',true)='true'`});
+export const accountLinkTickets=pgTable('account_link_tickets',{
+ tokenHash:text('token_hash').primaryKey(),actorId:uuid('actor_id').notNull().references(()=>people.id),otherId:uuid('other_id').notNull().references(()=>people.id),provider:text('provider').notNull(),expiresAt:timestamp('expires_at',{withTimezone:true}).notNull(),usedAt:timestamp('used_at',{withTimezone:true}),
+},t=>[accountLinkPolicy(),check('account_link_ticket_hash',sql`${t.tokenHash} ~ '^[a-f0-9]{64}$'`),check('account_link_provider',sql`${t.provider} IN ('oidc','google','local')`)]);
+export const accountLinkHistory=pgTable('account_link_history',{
+ id:uuid('id').primaryKey(),actorId:uuid('actor_id').notNull().references(()=>people.id),otherId:uuid('other_id').notNull().references(()=>people.id),provider:text('provider').notNull(),archive:jsonb('archive').notNull(),createdAt:timestamp('created_at',{withTimezone:true}).notNull().defaultNow(),
+},t=>[pgPolicy('account_link_read',{for:'select',to:runtime,using:actorScope(sql`${t.actorId}`)}),pgPolicy('account_link_service_read',{for:'select',to:accountLinkOwner,using:sql`current_setting('sep.account_link',true)='true'`}),pgPolicy('account_link_service_insert',{for:'insert',to:accountLinkOwner,withCheck:sql`current_setting('sep.account_link',true)='true'`})]);
 
 export const localAccounts=pgTable('local_accounts',{
  personId:uuid('person_id').primaryKey().references(()=>people.id),email:text('email').notNull().unique(),passwordHash:text('password_hash').notNull(),

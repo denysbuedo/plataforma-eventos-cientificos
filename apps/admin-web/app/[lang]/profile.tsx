@@ -1,3 +1,5 @@
+import {oidcEnabled,googleLoginEnabled,redunivLoginEnabled,localLoginEnabled} from '@sep/web-server';
+import AccountMethods from './account-methods';
 import ParticipantShell from './participant-shell';
 import type { AuthorAccount } from '@sep/contracts';
 import { webCopy, type Locale } from '@sep/i18n';
@@ -19,7 +21,8 @@ export default function Profile({person,locale,contextKey,error,eventId,publicUr
         <section className="profile-identity" aria-label={copy.account}><div className="profile-avatar" aria-hidden="true">{initials}</div><div><span className="profile-kicker">{copy.account}</span><h2>{person.name}</h2>{person.email&&<p className="profile-email">{person.email}</p>}</div></section>
         <div className="profile-layout">
           <ResearcherDetails key={person.researcherProfile?.revision??0} initial={person.researcherProfile??{name:person.name,affiliations:[],discoverable:false,revision:0}} locale={locale} contextKey={contextKey}/>
-          <aside className="profile-aside" aria-label="ORCID">
+          <aside className="profile-aside" aria-label={locale==='es'?'Cuenta e identidad':'Account and identity'}>
+            {oidcEnabled()&&<AccountMethods locale={locale} contextKey={contextKey} enabled={{google:googleLoginEnabled(),reduniv:redunivLoginEnabled(),local:localLoginEnabled()}}/>}
             <section className="panel profile-card profile-orcid"><div className="profile-card-heading"><div className="profile-orcid-brand"><Image src="/orcid-id.png" alt="" width={28} height={28}/><h2>ORCID</h2></div><span className={`profile-status profile-status-${status}`}>{copy[status]}</span></div>
               <p className="profile-help">{person.orcid?copy.orcidLinkedHelp:copy.orcidHelp}</p>
               {person.orcid?<><a className="orcid-link" href={`https://${person.orcid.environment==='sandbox'?'sandbox.':''}orcid.org/${person.orcid.id}`} target="_blank" rel="noopener noreferrer">{person.orcid.id}<Icon name="external" size={16}/></a><p className="profile-caption">{copy.connectedOn} {new Intl.DateTimeFormat(locale,{dateStyle:'medium'}).format(new Date(person.orcid.connectedAt))}</p>{status==='sandbox'&&<p className="profile-sandbox-note">{copy.sandboxHelp}</p>}</>:<>{person.orcidAvailable?<form method="post" action={`/api/auth/orcid/start?event=${encodeURIComponent(contextKey)}&lang=${locale}`}><button className="button button-primary" type="submit">{text.connectOrcid}<Icon name="external" size={16}/></button></form>:<p className="profile-activation-note">{copy.unavailableHelp}</p>}</>}
