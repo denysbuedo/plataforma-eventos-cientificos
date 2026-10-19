@@ -7,6 +7,8 @@ export const notificationTemplates = {
  'editorial.permission.updated':['Se actualizó una autorización de publicación','A publication permission was updated'],
  'editorial.published':['Tu trabajo forma parte de una edición publicada','Your work is included in a published edition'],
  'editorial.withdrawn':['Se retiró una edición que incluye tu trabajo','An edition including your work was withdrawn'],
+ 'account.authorship_duplicate':['Revisa la autoría de tu trabajo tras vincular cuentas','Review your submission’s authorship after linking accounts'],
+ 'account.review_conflict':['Conflicto de autoría y revisión tras vincular cuentas','Authorship and review conflict after linking accounts'],
  'work.decision': ['Tienes un dictamen sobre tu trabajo', 'A decision is available for your submission'],
  'review.released': ['Ya puedes consultar los comentarios de revisión', 'Reviewer comments are available'],
  'work.submitted': ['Se ha recibido una versión de un trabajo', 'A submission version has been received'],

@@ -15,7 +15,7 @@ export async function POST(request:Request,{params}:{params:Promise<{action:stri
   const previous=jar.get(ACCOUNT_LINK_COOKIE)?.value;
   if(action==='confirm'){
    const state=readAccountLink(previous,parent);if(!state?.ticket)return NextResponse.json({error:{message:'La comprobación caducó. Inicia la vinculación de nuevo.'}},{status:409});
-   const result=await apiRequest(binding,'me/sign-in-methods/confirm',{method:'POST',token,body:{ticket:state.ticket}});removeOidcValue(previous,'link');return setLinkCookie(NextResponse.json(result),'');
+   let result;try{result=await apiRequest(binding,'me/sign-in-methods/confirm',{method:'POST',token,body:{...await request.json(),ticket:state.ticket}});}catch(error){if(error instanceof ApiTransportError&&['ACCOUNT_LINK_CHANGED','ACCOUNT_LINK_EXPIRED'].includes(error.body.error.code)){removeOidcValue(previous,'link');return setLinkCookie(NextResponse.json(error.body,{status:error.status}),'');}throw error;}removeOidcValue(previous,'link');return setLinkCookie(NextResponse.json(result),'');
   }
   if(action==='cancel'){removeOidcValue(previous,'link');return setLinkCookie(NextResponse.json({ok:true}),'');}
   if(action==='start'){

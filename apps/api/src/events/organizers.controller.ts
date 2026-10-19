@@ -26,7 +26,7 @@ export class OrganizersService {
     const candidates = await tx.selectDistinct({ personId: people.id, name: people.name }).from(people)
       .innerJoin(memberships, eq(memberships.personId, people.id))
       .where(and(eq(memberships.organizationId, context.organizationId), eq(memberships.active, true), eq(people.active, true))).orderBy(people.name);
-    const organizers = await tx.select({ personId: people.id, name: people.name }).from(people)
+    const organizers = await tx.selectDistinct({ personId: people.id, name: people.name }).from(people)
       .innerJoin(memberships, eq(memberships.personId, people.id)).innerJoin(roleAssignments, eq(roleAssignments.membershipId, memberships.id))
       .where(and(eq(memberships.organizationId, context.organizationId), eq(memberships.eventId, eventId), eq(memberships.active, true),
         eq(people.active, true), eq(roleAssignments.role, 'organizer'), eq(roleAssignments.active, true),
@@ -65,8 +65,7 @@ export class OrganizersService {
       const before = await this.team(tx, context, eventId);
       if (!before.organizers.some((person) => person.personId === personId)) throw new ApiException(404, 'NOT_FOUND');
       if (personId === context.personId || before.organizers.length <= 1) throw new ApiException(409, 'CONFLICT');
-      const [membership] = await tx.select().from(memberships).where(and(eq(memberships.organizationId, context.organizationId), eq(memberships.eventId, eventId), eq(memberships.personId, personId)));
-      await tx.update(roleAssignments).set({ active: false }).where(and(eq(roleAssignments.membershipId, membership.id), eq(roleAssignments.role, 'organizer')));
+      await tx.update(roleAssignments).set({ active: false }).where(and(sql`${roleAssignments.membershipId} IN (SELECT id FROM memberships WHERE organization_id=${context.organizationId}::uuid AND event_id=${eventId}::uuid AND person_id=${personId}::uuid)`, eq(roleAssignments.role, 'organizer')));
       await this.audit.record(tx, context, 'organizer.revoked', eventId, personId);
       return this.team(tx, context, eventId);
     });

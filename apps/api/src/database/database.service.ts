@@ -68,14 +68,15 @@ export class DatabaseService implements OnModuleDestroy {
       SELECT organization_id AS "organizationId", event_id AS "eventId" FROM sep_resolve_domain(${hostname})`);
     return result.rows[0];
   }
-  scoped<T>(scope: DataScope, action: (tx: DbTransaction) => Promise<T>): Promise<T> {
+  // Consolidation alone skips the shared lock: its RPC locks both principals exclusively in UUID order.
+  scoped<T>(scope: DataScope, action: (tx: DbTransaction) => Promise<T>,options:{personLock?:boolean}={}): Promise<T> {
     return this.db.transaction(async (tx) => {
       await tx.execute(sql`SELECT set_config('sep.organization_id', ${scope.organizationId}, true),
         set_config('sep.event_id', ${scope.eventId ?? ''}, true),
         set_config('sep.person_id', ${scope.personId ?? ''}, true),
         set_config('sep.access_self','false',true),set_config('sep.access_manage','false',true),set_config('sep.finance_staff','false',true),set_config('sep.reports_read','false',true),set_config('sep.gallery_staff','false',true),set_config('sep.gallery_public','false',true),set_config('sep.operations_staff','false',true),set_config('sep.operations_rpc','false',true),set_config('sep.sponsorship_staff','false',true),set_config('sep.sponsorship_public','false',true),set_config('sep.editorial_staff','false',true),set_config('sep.editorial_public','false',true),set_config('sep.communication_staff','false',true),set_config('sep.communication_rpc','false',true),set_config('sep.mail_worker','false',true),set_config('sep.certificate_staff','false',true),set_config('sep.certificate_code','',true),set_config('sep.attendance_team','false',true),set_config('sep.attendance_staff','false',true),set_config('sep.registration_staff','false',true),set_config('sep.registration_rpc','',true),set_config('sep.review_rpc','',true),set_config('sep.review_target','',true),set_config('sep.review_email','',true),set_config('sep.submissions_staff', 'false', true), set_config('sep.organization_admin', ${scope.organizationAdmin ? 'true' : 'false'}, true), set_config('sep.authorship_rpc', '', true), set_config('sep.authorship_email', '', true), set_config('sep.directory_read', '', true), set_config('sep.work_invitation_hash', '', true), set_config('sep.invitation_hash', '', true),
         set_config('sep.auth_provision', 'false', true), set_config('sep.auth_issuer', '', true), set_config('sep.auth_subject', '', true)`);
-      if(scope.personId){await tx.execute(sql`SELECT pg_advisory_xact_lock_shared(hashtextextended(${'person-session:'+scope.personId},0))`);const [person]=await tx.select({active:people.active}).from(people).where(eq(people.id,scope.personId));if(!person?.active)throw new ApiException(401,'UNAUTHORIZED');}
+      if(scope.personId){if(options.personLock!==false)await tx.execute(sql`SELECT pg_advisory_xact_lock_shared(hashtextextended(${'person-session:'+scope.personId},0))`);const [person]=await tx.select({active:people.active}).from(people).where(eq(people.id,scope.personId));if(!person?.active)throw new ApiException(401,'UNAUTHORIZED');}
       return action(tx);
     });
   }

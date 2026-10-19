@@ -1,5 +1,7 @@
 const messages = {
   es: {
+    ACCOUNT_LINK_CHANGED:'Los datos o permisos cambiaron desde la comprobación. Inicia la vinculación de nuevo para revisar la información actualizada.',
+    ACCOUNT_LINK_CONFIRMATION_REQUIRED:'Debes elegir el perfil que conservarás y confirmar que ambas cuentas te pertenecen.',
     ACCOUNT_LINK_EXPIRED:'La comprobación de la cuenta caducó o ya se utilizó. Inicia la vinculación de nuevo.',
     ACCOUNT_LINK_ACTIVITY:'La otra cuenta ya tiene trabajos, permisos o actividad. Entra con esa cuenta y vincula desde allí un acceso sin actividad. No se mezclan historiales automáticamente.',
     ACCOUNT_LINK_LOCAL_CONFLICT:'Ambas cuentas tienen contraseña local. Conserva una sola cuenta local; esta operación requiere revisión.',
@@ -86,6 +88,8 @@ const messages = {
     INTERNAL_ERROR: 'No se pudo completar la solicitud.',
   },
   en: {
+    ACCOUNT_LINK_CHANGED:'Data or permissions changed after verification. Start linking again to review the updated information.',
+    ACCOUNT_LINK_CONFIRMATION_REQUIRED:'Choose which profile to keep and confirm that both accounts belong to you.',
     ACCOUNT_LINK_EXPIRED:'The account verification expired or has already been used. Start linking again.',
     ACCOUNT_LINK_ACTIVITY:'The other account already has submissions, permissions or activity. Sign in to that account and link an unused sign-in method from there. Histories are not merged automatically.',
     ACCOUNT_LINK_LOCAL_CONFLICT:'Both accounts have local passwords. Only one local account can be retained; this operation needs review.',

@@ -55,7 +55,7 @@ El código histórico `participant` representa participación básica en un even
 
 Configurar clientes y credenciales de [RedUniv y Google](reduniv-y-google.md), dominios de retorno y entorno antes de reemplazar el acceso demo. Este incremento no registra clientes externos ni inventa credenciales. El primer administrador sigue siendo aprovisionado por la operación de la plataforma; no existe autorregistro como administrador.
 
-Una identidad externa se reconoce por proveedor y sujeto, no por el nombre. No se fusionan automáticamente cuentas RedUniv/Google por coincidencia de correo. La vinculación explícita entre proveedores requiere su propio flujo seguro y queda pendiente.
+Una identidad externa se reconoce por proveedor y sujeto, no por el nombre. No se fusionan automáticamente cuentas RedUniv/Google por coincidencia de correo. La [vinculación explícita y consolidación de cuentas](vinculacion-cuentas-y-roles.md) autentica ambos accesos, muestra la actividad y requiere elegir el perfil y confirmar la unión.
 
 No se incluye un constructor libre de roles/permisos, roles delegados de caja/secretaría ni administración global de plataforma desde esta pantalla. La tabla de usuarios muestra los roles administrativos base; el estado detallado del comité y de los acreditadores continúa en los módulos especializados.
 

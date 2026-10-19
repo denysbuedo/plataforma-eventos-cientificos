@@ -201,10 +201,10 @@ export interface PublishedRegistration {id:string;content:RegistrationContent;ti
 export interface RegistrationCounts {pending:number;confirmed:number;waitlisted:number;inPerson:number;virtual:number;ownPosition:number|null}
 export interface RegistrationSettings {content:RegistrationContent;revision:number;publication:PublishedRegistration|null;publishedActive:boolean;timezone:string;counts:RegistrationCounts}
 export interface PublicRegistration {publication:PublishedRegistration;available:boolean;reason:'open'|'upcoming'|'closed'|'inactive'|'timezone_changed';counts:RegistrationCounts}
-export interface RegistrationEntry {id:string;personId:string;name:string;email:string|null;affiliations:WorkAffiliation[];category:RegistrationCategory;modality:RegistrationModality;status:RegistrationState;revision:number;requestedAt:string;updatedAt:string;policy:PublishedRegistration}
+export interface RegistrationEntry {consolidated?:boolean;id:string;personId:string;name:string;email:string|null;affiliations:WorkAffiliation[];category:RegistrationCategory;modality:RegistrationModality;status:RegistrationState;revision:number;requestedAt:string;updatedAt:string;policy:PublishedRegistration}
 export interface RegistrationHistory {id:string;action:string;status:RegistrationState;actorName:string;message:string;createdAt:string}
 export interface RegistrationDetail {entry:RegistrationEntry;history:RegistrationHistory[]}
-export interface MyRegistration {registration:RegistrationDetail|null;reception:PublicRegistration|null;profile:{name:string;affiliations:WorkAffiliation[];email:string|null}}
+export interface MyRegistration {additionalRegistrations?:RegistrationDetail[];registration:RegistrationDetail|null;reception:PublicRegistration|null;profile:{name:string;affiliations:WorkAffiliation[];email:string|null}}
 export type RegistrationSummary=Omit<RegistrationEntry,'policy'|'affiliations'|'email'>;
 export interface RegistrationPage {data:RegistrationSummary[];total:number;limit:number;offset:number;counts:RegistrationCounts}
 

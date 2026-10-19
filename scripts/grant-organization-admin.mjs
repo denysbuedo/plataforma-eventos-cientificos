@@ -15,7 +15,7 @@ try {
   const organization = await connection.query('SELECT id FROM organizations WHERE id = $1 AND active', [organizationId]);
   if (!person.rowCount || !organization.rowCount) throw new Error('Active organization and OIDC person are required');
   await connection.query("SELECT pg_advisory_xact_lock(hashtextextended($1, 0))", [`bootstrap:${organizationId}:${personId}`]);
-  const membership = await connection.query('INSERT INTO memberships (id,person_id,organization_id) VALUES ($1,$2,$3) ON CONFLICT (person_id,organization_id) WHERE event_id IS NULL DO UPDATE SET active = true RETURNING id', [randomUUID(), personId, organizationId]);
+  const membership = await connection.query('INSERT INTO memberships (id,person_id,organization_id) VALUES ($1,$2,$3) ON CONFLICT (person_id,organization_id) WHERE event_id IS NULL AND origin_account_id IS NULL DO UPDATE SET active = true RETURNING id', [randomUUID(), personId, organizationId]);
   await connection.query("INSERT INTO role_assignments (id,membership_id,role) VALUES ($1,$2,'organization_admin') ON CONFLICT (membership_id,role) DO UPDATE SET active = true, valid_from = now(), valid_until = NULL", [randomUUID(), membership.rows[0].id]);
   await connection.query("INSERT INTO audit_entries (id,organization_id,person_id,action,resource_id,request_id) VALUES ($1,$2,$3,'organization.admin.bootstrapped',$3,$4)", [randomUUID(), organizationId, personId, randomUUID()]);
   await connection.query('COMMIT'); console.log('Organization administrator provisioned. No event roles were granted.');

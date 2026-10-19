@@ -1,6 +1,6 @@
 import {Body,Controller,Get,Inject,Injectable,Post,Req} from '@nestjs/common';
 import {ApiBearerAuth,ApiCreatedResponse,ApiOkResponse,ApiProperty,ApiTags} from '@nestjs/swagger';
-import {IsString,Matches,MaxLength,MinLength} from 'class-validator';
+import {IsBoolean,IsIn,IsString,Matches,MaxLength,MinLength} from 'class-validator';
 import {createHash,randomBytes} from 'node:crypto';
 import {sql} from 'drizzle-orm';
 import {DatabaseService} from '../database/database.service.js';
@@ -9,12 +9,16 @@ import {Access} from '../platform/context.guard.js';
 import {AUTHENTICATOR,type Authenticator} from './authenticator.js';
 const digest=(value:string)=>createHash('sha256').update(value).digest('hex');
 class PrepareLinkDto{@ApiProperty({writeOnly:true}) @IsString() @MinLength(32) @MaxLength(17000) credential!:string;}
-class ConfirmLinkDto{@ApiProperty({writeOnly:true}) @IsString() @Matches(/^[A-Za-z0-9_-]{43}$/) ticket!:string;}
+class ConfirmLinkDto{
+ @ApiProperty({writeOnly:true}) @IsString() @Matches(/^[A-Za-z0-9_-]{43}$/) ticket!:string;
+ @ApiProperty({enum:['current','other']}) @IsIn(['current','other']) profileSource!:'current'|'other';
+ @ApiProperty() @IsBoolean() accepted!:boolean;
+}
 @Injectable()
 export class AccountLinksService{
  private attempts=new Map<string,{at:number;count:number}>();
  constructor(private readonly db:DatabaseService,@Inject(AUTHENTICATOR)private readonly authenticator:Authenticator){}
- private rpc(c:RequestContext,command:string,data:unknown){return this.db.scoped(c,async tx=>{const result=await tx.execute(sql`SELECT sep_account_links(${command},${JSON.stringify(data)}::jsonb) AS value`);return result.rows[0].value as Record<string,unknown>;});}
+ private rpc(c:RequestContext,command:string,data:unknown){return this.db.scoped(c,async tx=>{const result=await tx.execute(sql`SELECT sep_account_links(${command},${JSON.stringify(data)}::jsonb) AS value`);return result.rows[0].value as Record<string,unknown>;},{personLock:command!=='confirm'});}
  async list(c:RequestContext){return {...await this.rpc(c,'list',{}),currentProvider:c.authMode};}
  async prepare(c:RequestContext,d:PrepareLinkDto){
   if(c.authMode==='development-token')throw new ApiException(403,'FORBIDDEN');
@@ -28,8 +32,9 @@ export class AccountLinksService{
   return {...result,provider:other.authMode,...(result.ready?{ticket}:{} )};
  }
  async confirm(c:RequestContext,d:ConfirmLinkDto){
-  const result=await this.rpc(c,'confirm',{tokenHash:digest(d.ticket),requestId:c.requestId,provider:c.authMode});
-  if(result.blocked)throw new ApiException(409,result.blocked==='expired'?'ACCOUNT_LINK_EXPIRED':result.blocked==='two_local_accounts'?'ACCOUNT_LINK_LOCAL_CONFLICT':'ACCOUNT_LINK_ACTIVITY');
+  if(c.authMode==='development-token')throw new ApiException(403,'FORBIDDEN');
+  const result=await this.rpc(c,'confirm',{tokenHash:digest(d.ticket),requestId:c.requestId,provider:c.authMode,profileSource:d.profileSource,accepted:d.accepted});
+  if(result.blocked)throw new ApiException(409,result.blocked==='expired'?'ACCOUNT_LINK_EXPIRED':result.blocked==='changed'?'ACCOUNT_LINK_CHANGED':'ACCOUNT_LINK_CONFIRMATION_REQUIRED');
   return result;
  }
 }

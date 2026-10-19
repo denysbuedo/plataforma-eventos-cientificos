@@ -10,7 +10,7 @@ const status:SchemaObject={type:'string',enum:['pending','confirmed','waitlisted
 const content=object({opensOn:nullable(date),closesOn:nullable(date),instructionsEs:string,instructionsEn:string,approvalRequired:boolean,capacityInPerson:nullable(integer),capacityVirtual:nullable(integer),modalities:array(modality),categories:array(category)});
 const publication=object({id:uuid,content,timezone:string,revision:integer,publishedAt:time});
 const counts=object({pending:integer,confirmed:integer,waitlisted:integer,inPerson:integer,virtual:integer,ownPosition:nullable(integer)});
-const entry=object({id:uuid,personId:uuid,name:string,email:nullable(string),affiliations:array(affiliation),category,modality,status,revision:integer,requestedAt:time,updatedAt:time,policy:publication});
+const entry=object({consolidated:boolean,id:uuid,personId:uuid,name:string,email:nullable(string),affiliations:array(affiliation),category,modality,status,revision:integer,requestedAt:time,updatedAt:time,policy:publication});
 const summary=object({id:uuid,personId:uuid,name:string,category,modality,status,revision:integer,requestedAt:time,updatedAt:time});
 const history=object({id:uuid,action:string,status,actorName:string,message:string,createdAt:time});
 const detail=object({entry,history:array(history)});
@@ -18,6 +18,6 @@ const reception=object({publication,available:boolean,reason:{type:'string',enum
 export const registrationSchemas={
  settings:object({content,revision:integer,publication:nullable(publication),publishedActive:boolean,timezone:string,counts}),
  reception,detail,
- mine:object({registration:nullable(detail),reception:nullable(reception),profile:object({name:string,affiliations:array(affiliation),email:nullable(string)})}),
+ mine:object({additionalRegistrations:array(detail),registration:nullable(detail),reception:nullable(reception),profile:object({name:string,affiliations:array(affiliation),email:nullable(string)})}),
  page:object({data:array(summary),total:integer,limit:integer,offset:integer,counts}),
 };

@@ -13233,12 +13233,284 @@
                 "schema": {
                   "type": "object",
                   "properties": {
+                    "additionalRegistrations": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "entry": {
+                            "type": "object",
+                            "properties": {
+                              "consolidated": {
+                                "type": "boolean"
+                              },
+                              "id": {
+                                "type": "string",
+                                "format": "uuid"
+                              },
+                              "personId": {
+                                "type": "string",
+                                "format": "uuid"
+                              },
+                              "name": {
+                                "type": "string"
+                              },
+                              "email": {
+                                "type": "string",
+                                "nullable": true
+                              },
+                              "affiliations": {
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "properties": {
+                                    "institution": {
+                                      "type": "string"
+                                    },
+                                    "countryCode": {
+                                      "type": "string"
+                                    }
+                                  },
+                                  "required": [
+                                    "institution",
+                                    "countryCode"
+                                  ]
+                                }
+                              },
+                              "category": {
+                                "type": "object",
+                                "properties": {
+                                  "id": {
+                                    "type": "string",
+                                    "format": "uuid"
+                                  },
+                                  "nameEs": {
+                                    "type": "string"
+                                  },
+                                  "nameEn": {
+                                    "type": "string"
+                                  },
+                                  "active": {
+                                    "type": "boolean"
+                                  }
+                                },
+                                "required": [
+                                  "id",
+                                  "nameEs",
+                                  "nameEn",
+                                  "active"
+                                ]
+                              },
+                              "modality": {
+                                "type": "string",
+                                "enum": [
+                                  "in_person",
+                                  "virtual"
+                                ]
+                              },
+                              "status": {
+                                "type": "string",
+                                "enum": [
+                                  "pending",
+                                  "confirmed",
+                                  "waitlisted",
+                                  "rejected",
+                                  "cancelled"
+                                ]
+                              },
+                              "revision": {
+                                "type": "integer"
+                              },
+                              "requestedAt": {
+                                "type": "string",
+                                "format": "date-time"
+                              },
+                              "updatedAt": {
+                                "type": "string",
+                                "format": "date-time"
+                              },
+                              "policy": {
+                                "type": "object",
+                                "properties": {
+                                  "id": {
+                                    "type": "string",
+                                    "format": "uuid"
+                                  },
+                                  "content": {
+                                    "type": "object",
+                                    "properties": {
+                                      "opensOn": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "nullable": true
+                                      },
+                                      "closesOn": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "nullable": true
+                                      },
+                                      "instructionsEs": {
+                                        "type": "string"
+                                      },
+                                      "instructionsEn": {
+                                        "type": "string"
+                                      },
+                                      "approvalRequired": {
+                                        "type": "boolean"
+                                      },
+                                      "capacityInPerson": {
+                                        "type": "integer",
+                                        "nullable": true
+                                      },
+                                      "capacityVirtual": {
+                                        "type": "integer",
+                                        "nullable": true
+                                      },
+                                      "modalities": {
+                                        "type": "array",
+                                        "items": {
+                                          "type": "string",
+                                          "enum": [
+                                            "in_person",
+                                            "virtual"
+                                          ]
+                                        }
+                                      },
+                                      "categories": {
+                                        "type": "array",
+                                        "items": {
+                                          "type": "object",
+                                          "properties": {
+                                            "id": {
+                                              "type": "string",
+                                              "format": "uuid"
+                                            },
+                                            "nameEs": {
+                                              "type": "string"
+                                            },
+                                            "nameEn": {
+                                              "type": "string"
+                                            },
+                                            "active": {
+                                              "type": "boolean"
+                                            }
+                                          },
+                                          "required": [
+                                            "id",
+                                            "nameEs",
+                                            "nameEn",
+                                            "active"
+                                          ]
+                                        }
+                                      }
+                                    },
+                                    "required": [
+                                      "opensOn",
+                                      "closesOn",
+                                      "instructionsEs",
+                                      "instructionsEn",
+                                      "approvalRequired",
+                                      "capacityInPerson",
+                                      "capacityVirtual",
+                                      "modalities",
+                                      "categories"
+                                    ]
+                                  },
+                                  "timezone": {
+                                    "type": "string"
+                                  },
+                                  "revision": {
+                                    "type": "integer"
+                                  },
+                                  "publishedAt": {
+                                    "type": "string",
+                                    "format": "date-time"
+                                  }
+                                },
+                                "required": [
+                                  "id",
+                                  "content",
+                                  "timezone",
+                                  "revision",
+                                  "publishedAt"
+                                ]
+                              }
+                            },
+                            "required": [
+                              "consolidated",
+                              "id",
+                              "personId",
+                              "name",
+                              "email",
+                              "affiliations",
+                              "category",
+                              "modality",
+                              "status",
+                              "revision",
+                              "requestedAt",
+                              "updatedAt",
+                              "policy"
+                            ]
+                          },
+                          "history": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "id": {
+                                  "type": "string",
+                                  "format": "uuid"
+                                },
+                                "action": {
+                                  "type": "string"
+                                },
+                                "status": {
+                                  "type": "string",
+                                  "enum": [
+                                    "pending",
+                                    "confirmed",
+                                    "waitlisted",
+                                    "rejected",
+                                    "cancelled"
+                                  ]
+                                },
+                                "actorName": {
+                                  "type": "string"
+                                },
+                                "message": {
+                                  "type": "string"
+                                },
+                                "createdAt": {
+                                  "type": "string",
+                                  "format": "date-time"
+                                }
+                              },
+                              "required": [
+                                "id",
+                                "action",
+                                "status",
+                                "actorName",
+                                "message",
+                                "createdAt"
+                              ]
+                            }
+                          }
+                        },
+                        "required": [
+                          "entry",
+                          "history"
+                        ]
+                      }
+                    },
                     "registration": {
                       "type": "object",
                       "properties": {
                         "entry": {
                           "type": "object",
                           "properties": {
+                            "consolidated": {
+                              "type": "boolean"
+                            },
                             "id": {
                               "type": "string",
                               "format": "uuid"
@@ -13432,6 +13704,7 @@
                             }
                           },
                           "required": [
+                            "consolidated",
                             "id",
                             "personId",
                             "name",
@@ -13696,6 +13969,7 @@
                     }
                   },
                   "required": [
+                    "additionalRegistrations",
                     "registration",
                     "reception",
                     "profile"
@@ -13808,6 +14082,9 @@
                     "entry": {
                       "type": "object",
                       "properties": {
+                        "consolidated": {
+                          "type": "boolean"
+                        },
                         "id": {
                           "type": "string",
                           "format": "uuid"
@@ -14001,6 +14278,7 @@
                         }
                       },
                       "required": [
+                        "consolidated",
                         "id",
                         "personId",
                         "name",
@@ -14173,6 +14451,9 @@
                     "entry": {
                       "type": "object",
                       "properties": {
+                        "consolidated": {
+                          "type": "boolean"
+                        },
                         "id": {
                           "type": "string",
                           "format": "uuid"
@@ -14366,6 +14647,7 @@
                         }
                       },
                       "required": [
+                        "consolidated",
                         "id",
                         "personId",
                         "name",
@@ -14805,6 +15087,9 @@
                     "entry": {
                       "type": "object",
                       "properties": {
+                        "consolidated": {
+                          "type": "boolean"
+                        },
                         "id": {
                           "type": "string",
                           "format": "uuid"
@@ -14998,6 +15283,7 @@
                         }
                       },
                       "required": [
+                        "consolidated",
                         "id",
                         "personId",
                         "name",
@@ -15179,6 +15465,9 @@
                     "entry": {
                       "type": "object",
                       "properties": {
+                        "consolidated": {
+                          "type": "boolean"
+                        },
                         "id": {
                           "type": "string",
                           "format": "uuid"
@@ -15372,6 +15661,7 @@
                         }
                       },
                       "required": [
+                        "consolidated",
                         "id",
                         "personId",
                         "name",
@@ -35807,10 +36097,22 @@
           "ticket": {
             "type": "string",
             "writeOnly": true
+          },
+          "profileSource": {
+            "type": "string",
+            "enum": [
+              "current",
+              "other"
+            ]
+          },
+          "accepted": {
+            "type": "boolean"
           }
         },
         "required": [
-          "ticket"
+          "ticket",
+          "profileSource",
+          "accepted"
         ]
       },
       "RegisterDto": {
