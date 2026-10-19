@@ -1,6 +1,12 @@
 # Dos accesos independientes: RedUniv y Google directo
 
-Estado: ambos flujos implementados en SEP. El propietario completó correctamente el acceso local con RedUniv y segundo factor usando `sep-admin-dev`, tras ajustar el permiso general en Identidad; Google sigue pendiente de credenciales y activación. La propuesta anterior de Google mediante Keycloak queda retirada por indicación del propietario. No se ha modificado cursos-enlinea, Keycloak ni Google Cloud desde SEP.
+Estado: ambos flujos implementados en SEP. El propietario completó correctamente el acceso local con RedUniv y segundo factor usando `sep-admin-dev`, tras ajustar el permiso general en Identidad; Google tiene credenciales locales configuradas y el inicio hacia Google comprobado; falta completar el retorno con una cuenta real. La propuesta anterior de Google mediante Keycloak queda retirada por indicación del propietario. No se ha modificado cursos-enlinea, Keycloak ni Google Cloud desde SEP.
+
+## Activación local de Google — 19 de octubre de 2026
+
+Las credenciales propias de SEP se guardan en `.local/google.env`, excluido de Git. Se activó `SEP_GOOGLE_LOGIN_ENABLED=1`, con audience `sep-api` y una clave privada de firma independiente de la clave de cifrado de sesiones. Los lanzadores locales cargan este archivo después de `.local/reduniv.env`; la API y el administrador web comparten la misma configuración de Google. Se conservan los datos existentes y los accesos RedUniv y local.
+
+Se comprobaron ambos botones habilitados, la redirección a `accounts.google.com`, el callback exacto `http://127.0.0.1:6789/api/auth/google/callback`, scopes `openid email profile`, PKCE S256, state, nonce y cookie HttpOnly. Google muestra la pantalla de acceso con el nombre de la plataforma. **Pendiente:** que el propietario complete el acceso real para verificar el intercambio de código, la sesión y el retorno a SEP. El inicio del flujo no valida todavía el secreto mediante el intercambio de código.
 
 ## Activación local de RedUniv — 18 de octubre de 2026
 
@@ -10,7 +16,7 @@ Se verificaron el discovery y las claves públicas (HTTP 200), el inicio del flu
 
 El arranque local preparado se ejecuta desde la raíz con `node .local/start-reduniv.mjs`, requiere que siga disponible la base PostgreSQL local existente y que estén libres los puertos 6786, 6788 y 6789. Usa las compilaciones existentes y conserva los datos. El script no detiene PostgreSQL al cerrar. No ejecutar simultáneamente con `.local/resume-demo.mjs`, que inicia el modo demo en los mismos puertos.
 
-En modo real no se aceptan cuentas demo. Una identidad institucional nueva no hereda roles ni trabajos de una cuenta de demostración por coincidencia de nombre o correo; requiere asignación explícita de permisos en SEP. La cuenta necesita además un rol general permitido de `sep-admin-dev` (`ROLE_USER` o `ROLE_ADMIN`) en el token de acceso. Google permanece deshabilitado hasta disponer de su configuración propia.
+En modo real no se aceptan cuentas demo. Una identidad institucional nueva no hereda roles ni trabajos de una cuenta de demostración por coincidencia de nombre o correo; requiere asignación explícita de permisos en SEP. La cuenta necesita además un rol general permitido de `sep-admin-dev` (`ROLE_USER` o `ROLE_ADMIN`) en el token de acceso. Google se habilitó con su configuración propia el 19 de octubre de 2026.
 
 ### Dirección local y diagnóstico del retorno
 
@@ -86,6 +92,6 @@ Las invitaciones exigen correo verificado coincidente tanto para Google como par
 
 Cerrar una sesión Google elimina la sesión local; no cierra la cuenta global de Google. Las credenciales internas ya emitidas pueden durar hasta cinco minutos después de cerrar sesión. Cambios o revocaciones en Google se comprueban al volver a autenticar; no se consulta continuamente Google durante la sesión propia de ocho horas. Esta política es distinta de RedUniv, que conserva renovación y logout central según la guía institucional.
 
-Faltan las credenciales y activación de Google, los orígenes y clientes compartidos/productivos y recorridos específicos de renovación, revocación y cierre central. Las personas sin Google o RedUniv disponen ahora del [registro local con correo y contraseña](cuentas-locales.md); SMTP sigue pendiente y el entorno local utiliza una bandeja de pruebas explícita. El enlace explícito de identidades y la conservación de una sola persona entre proveedores también quedan pendientes.
+Faltan completar el acceso Google con una cuenta real, los orígenes y clientes compartidos/productivos y recorridos específicos de renovación, revocación y cierre central. Las personas sin Google o RedUniv disponen ahora del [registro local con correo y contraseña](cuentas-locales.md); SMTP sigue pendiente y el entorno local utiliza una bandeja de pruebas explícita. El enlace explícito de identidades y la conservación de una sola persona entre proveedores también quedan pendientes.
 
 Referencias: [OIDC de Google](https://developers.google.com/identity/openid-connect), [OAuth web de Google](https://developers.google.com/identity/protocols/oauth2/web-server), [openid-client](https://github.com/panva/openid-client).
