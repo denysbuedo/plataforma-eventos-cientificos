@@ -795,3 +795,9 @@ dialog::backdrop { background:rgb(18 36 28 / 45%); }
 .account-consolidation-dialog .profile-checkbox { margin-top:18px; font-size:14px; }
 .account-consolidation-dialog .editor-actions { justify-content:flex-end; gap:12px; margin-top:24px; flex-wrap:wrap; }
 @media(max-width:600px) { .account-consolidation-dialog { padding:20px; } .account-merge-counts { grid-template-columns:1fr; } }
+
+.account-notification-email { display:grid; gap:.7rem; padding-block:1rem; margin-block:.5rem 1rem; border-block:1px solid var(--border,#dce3e8); }
+.account-notification-email h3 { margin:0; font-size:1rem; font-family:inherit; }
+.account-notification-email p { margin:0; }
+.account-notification-email .field { min-width:0; }
+.account-notification-email select { width:100%; min-width:0; }

@@ -50,6 +50,14 @@ Después se puede asignar administración desde la misma pantalla, o seleccionar
 
 Las invitaciones comprueban el correo verificado del acceso actual también para cuentas locales. Debe coincidir con el destinatario; disponer únicamente del enlace no basta.
 
+## Correo principal para notificaciones
+
+Los correos de autenticación y el destinatario de notificaciones tienen funciones distintas. SEP registra las direcciones que Google o RedUniv declaran verificadas y los correos locales confirmados. Iniciar sesión añade una dirección verificada a las opciones disponibles, sin sustituir el correo principal elegido. No se vinculan personas por coincidencia de correo.
+
+Al confirmar una vinculación se puede elegir un correo verificado de cualquiera de las dos cuentas, independientemente del perfil académico que se conserve. La elección queda en el historial y el plan se vuelve a comprobar antes de consolidar. Las direcciones de cuentas ya consolidadas se recuperan de los contactos previamente verificados y de las credenciales locales confirmadas.
+
+En **Mi perfil → Accesos a tu cuenta → Correo para notificaciones** se puede cambiar el destinatario entre las direcciones verificadas de la cuenta. El cambio queda auditado. El encabezado muestra siempre ese correo principal, incluso cuando RedUniv no aporta un correo verificado en la sesión. Sin ninguna dirección verificada se muestra cómo incorporar una. La cola de notificaciones utiliza el contacto principal; las verificaciones y la recuperación de contraseña local siguen dirigidas al correo de la credencial correspondiente. Las invitaciones siguen comprobando el correo verificado del acceso actual.
+
 ## Correo: activación pendiente
 
 El servicio SMTP se configura mañana. Se preparó `.local/smtp.env`, ignorado por Git y deshabilitado. No copiar contraseñas al repositorio ni al chat. El lanzador local de la API solo lo carga cuando `SEP_MAIL_ENABLED=1`; entonces desactiva la bandeja privada de pruebas. Los parámetros SMTP no se transmiten a los procesos web.

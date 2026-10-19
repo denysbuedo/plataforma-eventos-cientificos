@@ -201,6 +201,7 @@ export const auditEntries = pgTable('audit_entries', {
         AND EXISTS (SELECT 1 FROM orcid_connections o WHERE o.person_id=${t.personId} AND o.orcid IS NOT NULL AND o.connected_at IS NOT NULL))
       OR (${t.eventId} IS NULL AND ${t.action} = 'identity.profile.updated' AND ${t.resourceId} = ${t.personId}
         AND EXISTS (SELECT 1 FROM researcher_profiles p WHERE p.person_id=${t.personId})))`),
+  pgPolicy('notification_email_audit',{for:'insert',to:runtime,withCheck:sql`${organizationScope(sql`${t.organizationId}`)} AND ${actorScope(sql`${t.personId}`)} AND ${t.eventId} IS NULL AND ${t.action}='identity.notification-email.updated' AND ${t.resourceId}=${t.personId}`}),
 ]);
 
 export const siteDrafts = pgTable('site_drafts', {
@@ -436,7 +437,7 @@ const communicationScope=(org:SQL,event:SQL)=>sql`${organizationScope(org)} AND 
 const communicationStaff=(org:SQL,event:SQL)=>sql`${communicationScope(org,event)} AND current_setting('sep.communication_staff',true)='true'`;
 const communicationRegistry=(org:SQL,event:SQL)=>pgPolicy('communication_registry',{for:'all',to:registryOwner,using:sql`current_setting('sep.communication_rpc',true)='true' AND ${communicationScope(org,event)}`,withCheck:sql`current_setting('sep.communication_rpc',true)='true' AND ${communicationScope(org,event)}`});
 export const communicationContacts=pgTable('communication_contacts',{
- personId:uuid('person_id').primaryKey().references(()=>people.id),email:text('email').notNull(),updatedAt:timestamp('updated_at',{withTimezone:true}).notNull().defaultNow(),
+ personId:uuid('person_id').primaryKey().references(()=>people.id),email:text('email').notNull(),verifiedEmails:jsonb('verified_emails').$type<string[]>().notNull().default([]),updatedAt:timestamp('updated_at',{withTimezone:true}).notNull().defaultNow(),
 },t=>[policy(actorScope(sql`${t.personId}`)),pgPolicy('communication_registry',{for:'select',to:registryOwner,using:sql`current_setting('sep.communication_rpc',true)='true'`}),pgPolicy('mail_worker',{for:'all',to:registryOwner,using:sql`current_setting('sep.mail_worker',true)='true'`,withCheck:sql`current_setting('sep.mail_worker',true)='true'`})]);
 export const notificationPreferences=pgTable('notification_preferences',{
  organizationId:uuid('organization_id').notNull(),eventId:uuid('event_id').notNull(),personId:uuid('person_id').notNull().references(()=>people.id),emailEnabled:boolean('email_enabled').notNull().default(true),optionalEmail:boolean('optional_email').notNull().default(false),locale:text('locale').$type<'es'|'en'>().notNull().default('es'),revision:integer('revision').notNull().default(1),

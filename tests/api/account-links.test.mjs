@@ -85,6 +85,22 @@ test('explicit account linking verifies both accounts, preserves the principal a
   assert.equal((await admin.query('SELECT count(*)::int AS n FROM role_assignments r JOIN memberships m ON m.id=r.membership_id WHERE m.person_id=$1 AND r.valid_until=$2',[ids[0],'2099-01-01'])).rows[0].n,3);
   const access=await call('me/access',{token:principal});ok(access);assert(access.body.events.find(e=>e.id===event).canOrganize);const methods=await call('me/sign-in-methods',{token:principal});ok(methods);assert.equal(methods.body.methods.length,3);assert.equal(methods.body.history.length,2);
  });
+ await t.test('notification email is chosen independently, must be verified and survives alternate sign-ins',async()=>{
+  const first=await local('preferred-local@example.test'),other=await google('preferred-'+randomUUID(),'preferred-google@example.test');
+  const prepared=await call('me/sign-in-methods/prepare',{token:first.token,body:{credential:other}});ok(prepared,201);
+  assert.deepEqual(prepared.body.consolidation.notificationEmails,['preferred-google@example.test','preferred-local@example.test']);
+  ok(await call('me/sign-in-methods/confirm',{token:first.token,body:{ticket:prepared.body.ticket,notificationEmail:'not-owned@example.test'}}),409);
+  ok(await call('me/sign-in-methods/confirm',{token:first.token,body:{ticket:prepared.body.ticket,profileSource:'current',notificationEmail:'preferred-google@example.test'}}),201);
+  assert.equal((await call('me',{token:first.token})).body.person.email,'preferred-google@example.test');
+  assert.equal((await call('me',{token:other})).body.person.email,'preferred-google@example.test');
+  ok(await call('me/sign-in-methods/email',{token:other,body:{email:'not-owned@example.test'}}),400);
+  ok(await call('me/sign-in-methods/email',{token:other,body:{email:'preferred-local@example.test'}}),201);
+  assert.equal((await call('me',{token:other})).body.person.email,'preferred-local@example.test');
+  assert.equal((await call('me',{token:first.token})).body.person.email,'preferred-local@example.test');
+  const methods=await call('me/sign-in-methods',{token:other});ok(methods);assert.deepEqual([...methods.body.notificationEmails].sort(),['preferred-google@example.test','preferred-local@example.test']);
+  assert.equal(methods.body.history[0].previousProfile.notificationEmail,'preferred-google@example.test');
+  assert.equal((await admin.query("SELECT count(*)::int n FROM audit_entries WHERE person_id=$1 AND action='identity.notification-email.updated'",[(await call('me',{token:first.token})).body.person.id])).rows[0].n,1);
+ });
  await t.test('startup rejects elevated permissions on the non-login link service role',async()=>{await admin.query('ALTER ROLE sep_account_linker CREATEROLE');try{await assert.rejects(app.get(DatabaseService).verifyRuntime(),/Account link service role is unsafe/);}finally{await admin.query('ALTER ROLE sep_account_linker NOCREATEROLE');}await app.get(DatabaseService).verifyRuntime();});
  await t.test('proof and history tables cannot be modified by runtime and service flags do not leak',async()=>{assert.deepEqual((await admin.query("SELECT DISTINCT pg_get_userbyid(proowner) AS owner FROM pg_proc WHERE proname IN ('sep_account_links','sep_registered_member')")).rows,[{owner:'sep_account_linker'}]);assert.equal((await admin.query("SELECT pg_has_role('sep_migrator','sep_account_linker','USAGE') AS inherited")).rows[0].inherited,false);await assert.rejects(runtime.query('SET ROLE sep_account_linker'),{code:'42501'});await assert.rejects(runtime.query('SELECT * FROM account_link_tickets'),{code:'42501'});assert.equal((await runtime.query('SELECT * FROM account_link_history')).rows.length,0);await assert.rejects(runtime.query('DELETE FROM account_link_history'),{code:'42501'});await assert.rejects(admin.query('DELETE FROM account_link_history'),{code:'42501'});await assert.rejects(runtime.query('SELECT sep_account_link_unused($1)',[person]),{code:'42501'});const client=await runtime.connect();try{await client.query('BEGIN');await client.query("SELECT set_config('sep.person_id',$1,true)",[person]);await client.query("SELECT sep_account_links('list','{}')");assert.equal((await client.query("SELECT current_setting('sep.account_link',true) AS flag")).rows[0].flag,'false');await client.query('ROLLBACK');}finally{client.release();}});
 });

@@ -60,7 +60,8 @@ export class DatabaseService implements OnModuleDestroy {
     if(email.length>254||! /^[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+$/.test(email))return;
     await this.db.transaction(async tx=>{
       await tx.execute(sql`SELECT set_config('sep.person_id',${personId},true)`);
-      await tx.insert(communicationContacts).values({personId,email}).onConflictDoUpdate({target:communicationContacts.personId,set:{email,updatedAt:new Date()},setWhere:sql`${communicationContacts.email} IS DISTINCT FROM ${email}`});
+      await tx.execute(sql`SELECT pg_advisory_xact_lock_shared(hashtextextended(${'person-session:'+personId},0))`);
+      await tx.insert(communicationContacts).values({personId,email,verifiedEmails:[email]}).onConflictDoUpdate({target:communicationContacts.personId,set:{verifiedEmails:sql`${communicationContacts.verifiedEmails} || jsonb_build_array(${email}::text)`,updatedAt:new Date()},setWhere:sql`NOT ${communicationContacts.verifiedEmails} @> jsonb_build_array(${email}::text)`});
     });
   }
   async resolveDomain(hostname: string): Promise<{ organizationId: string; eventId: string | null } | undefined> {

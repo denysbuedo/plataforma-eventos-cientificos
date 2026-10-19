@@ -7,7 +7,7 @@ import type { SepRequest } from '../common/http.js';
 import { ApiErrors } from '../common/openapi.js';
 import type { SessionView } from '@sep/contracts';
 import { DatabaseService } from '../database/database.service.js';
-import { people, affiliations, orcidConnections, researcherProfiles } from '../database/schema.js';
+import { people, affiliations, communicationContacts, orcidConnections, researcherProfiles } from '../database/schema.js';
 import { OrcidService } from './orcid.controller.js';
 import { ResearcherProfileDto } from './researchers.controller.js';
 import { and, eq } from 'drizzle-orm';
@@ -43,10 +43,11 @@ export class SessionController {
     return this.database.scoped(request.security, async (tx) => {
       const [person] = await tx.select({ id: people.id, name: people.name }).from(people).where(and(eq(people.id, request.security.personId!), eq(people.active, true)));
       if (!person) throw new ApiException(401, 'UNAUTHORIZED');
+      const [contact]=await tx.select({email:communicationContacts.email}).from(communicationContacts).where(eq(communicationContacts.personId,person.id));
       const institutions = await tx.select({institution:affiliations.institution}).from(affiliations).where(eq(affiliations.personId,person.id));
       const [profile]=await tx.select().from(researcherProfiles).where(eq(researcherProfiles.personId,person.id));
       const [connection]=await tx.select({id:orcidConnections.orcid,environment:orcidConnections.environment,connectedAt:orcidConnections.connectedAt}).from(orcidConnections).where(eq(orcidConnections.personId,person.id));
-      return { person: {...person,email:request.security.verifiedEmail ?? '',institutions:profile?profile.affiliations.map(item=>item.institution):institutions.map(item=>item.institution),researcherProfile:{background:profile?.background??emptyResearcherBackground(),name:person.name,affiliations:profile?.affiliations??institutions.map(item=>({institution:item.institution,countryCode:''})),discoverable:profile?.discoverable??false,revision:profile?.revision??0},orcidAvailable:this.orcid.available(),orcid:connection?.id&&connection.connectedAt?{id:connection.id,environment:connection.environment,connectedAt:connection.connectedAt.toISOString()}:null} };
+      return { person: {...person,email:contact?.email ?? '',institutions:profile?profile.affiliations.map(item=>item.institution):institutions.map(item=>item.institution),researcherProfile:{background:profile?.background??emptyResearcherBackground(),name:person.name,affiliations:profile?.affiliations??institutions.map(item=>({institution:item.institution,countryCode:''})),discoverable:profile?.discoverable??false,revision:profile?.revision??0},orcidAvailable:this.orcid.available(),orcid:connection?.id&&connection.connectedAt?{id:connection.id,environment:connection.environment,connectedAt:connection.connectedAt.toISOString()}:null} };
     });
   }
   @Get(['session', 'events/:eventId/session']) @Access('session-read') @ApiOkResponse({ type: SessionDto })

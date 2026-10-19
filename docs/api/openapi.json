@@ -118,6 +118,42 @@
         ]
       }
     },
+    "/api/v1/me/sign-in-methods/email": {
+      "post": {
+        "operationId": "AccountLinksController_email",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NotificationEmailDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "account-links"
+        ]
+      }
+    },
     "/api/v1/me/sign-in-methods/prepare": {
       "post": {
         "operationId": "AccountLinksController_prepare",
@@ -36079,6 +36115,17 @@
           "status"
         ]
       },
+      "NotificationEmailDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "email"
+        ]
+      },
       "PrepareLinkDto": {
         "type": "object",
         "properties": {
@@ -36094,6 +36141,9 @@
       "ConfirmLinkDto": {
         "type": "object",
         "properties": {
+          "notificationEmail": {
+            "type": "string"
+          },
           "ticket": {
             "type": "string",
             "writeOnly": true
