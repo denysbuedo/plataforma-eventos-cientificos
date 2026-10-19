@@ -261,6 +261,9 @@ dialog::backdrop { background:rgb(18 36 28 / 45%); }
 .profile-subsection { margin-top:20px; }
 .profile-subsection+.profile-subsection { border-top:1px solid var(--line); padding-top:20px; }
 .profile-subsection h4 { font-family:inherit; font-size:15px; font-weight:650; line-height:1.5; margin:0; }
+.profile-researcher>.profile-card-heading h2 { font-size:24px; font-weight:700; }
+.profile-researcher .profile-section h3 { font-size:19px; font-weight:700; }
+.profile-researcher .profile-subsection h4 { font-size:15px; font-weight:600; }
 .profile-count { display:inline-flex; font-size:11px; padding:2px 7px; background:#f0f3ed; color:var(--muted); border-radius:99px; }
 .profile-affiliations { list-style:none; display:grid; gap:12px; margin:16px 0 0; padding:0; }
 .profile-affiliations li { display:flex; gap:14px; align-items:flex-start; padding:16px; border:1px solid #e5ebe2; border-radius:9px; }
@@ -394,6 +397,8 @@ dialog::backdrop { background:rgb(18 36 28 / 45%); }
   .profile-card { padding:20px; }
   .profile-card-heading { flex-wrap:wrap; gap:14px; }
   .profile-card-heading h2 { font-size:20px; }
+  .profile-researcher>.profile-card-heading h2 { font-size:22px; }
+  .profile-researcher .profile-section h3 { font-size:18px; }
   .profile-aside { grid-template-columns:1fr; }
   .profile-affiliation-heading { flex-wrap:wrap; }
   .profile-affiliation-editor { padding:14px; }
