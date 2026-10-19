@@ -39,3 +39,35 @@ test('a forged session does not enter the workspace', async ({ page, context, ba
   await page.goto('/es?event=a1');
   await expect(page.getByRole('button', { name: 'Entrar al espacio' })).toBeVisible();
 });
+
+test('home remembers a saved basic profile after navigation, reload and a new session', async ({ page }) => {
+  const login = async () => {
+    await page.goto('/es');
+    await page.getByRole('radio', { name: /^Demo outsider/ }).click();
+    await page.getByRole('button', { name: 'Entrar al espacio' }).click();
+    await expect(page.getByRole('heading', { level: 1, name: 'Inicio', exact: true })).toBeVisible();
+  };
+  const expectSaved = async () => {
+    await expect(page.getByRole('link', { name: 'Completar mi perfil', exact: true })).toHaveCount(0);
+    const link = page.getByRole('link', { name: 'Ver mi perfil', exact: true });
+    await expect(link).toBeVisible();
+    await expect(link).not.toHaveAttribute('href', /mode=complete-profile/);
+    await expect(page.locator('.access-profile-card')).toContainText('Tus datos básicos están guardados.');
+  };
+  await login();
+  await page.getByRole('link', { name: 'Completar mi perfil', exact: true }).click();
+  // Optional fields can stay empty: saving the initial form completes this step.
+  await page.locator('[name="affiliations.0.institution"]').fill('');
+  await page.locator('[name="affiliations.0.countryCode"]').selectOption('');
+  await page.getByRole('button', { name: 'Guardar y continuar', exact: true }).click();
+  await expect(page.getByRole('heading', { level: 1, name: 'Mi perfil', exact: true })).toBeVisible();
+  await page.locator('.sidebar').getByRole('link', { name: 'Inicio', exact: true }).click();
+  await expectSaved();
+  await page.reload();
+  await expectSaved();
+  await page.locator('.participant-account summary').click();
+  await page.getByRole('button', { name: 'Cerrar sesión', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Entrar al espacio' })).toBeVisible();
+  await login();
+  await expectSaved();
+});

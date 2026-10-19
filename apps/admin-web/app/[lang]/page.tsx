@@ -57,8 +57,8 @@ export default async function AdminPage({ params, searchParams }: { params: Prom
   try {
     binding = bindingFor((await headers()).get('host') ?? '', query.event);
     if(!query.tab||query.tab==='access'){
-      const value=await apiRequest<MyAccess>(binding,'me/access',{token,locale});
-      return <ParticipantShell person={value.person} initialAccess={value} locale={locale} contextKey={contextKey} eventId={binding.eventId} tab="access" publicUrl={publicUrl?`${publicUrl}/${locale}?event=${encodeURIComponent(contextKey)}`:''}><MyAccessView value={value} locale={locale} contextKey={contextKey} contextEvents={config?.events??{}} demo={!!config}/></ParticipantShell>;
+      const [value,{person}]=await Promise.all([apiRequest<MyAccess>(binding,'me/access',{token,locale}),apiRequest<{person:AuthorAccount}>(binding,'me',{token,locale})]);
+      return <ParticipantShell person={value.person} initialAccess={value} locale={locale} contextKey={contextKey} eventId={binding.eventId} tab="access" publicUrl={publicUrl?`${publicUrl}/${locale}?event=${encodeURIComponent(contextKey)}`:''}><MyAccessView value={value} profileSaved={(person.researcherProfile?.revision??0)>0} locale={locale} contextKey={contextKey} contextEvents={config?.events??{}} demo={!!config}/></ParticipantShell>;
     }
     if (query.tab === 'profile') {
       const person=(await apiRequest<{person:AuthorAccount}>(binding,'me',{token,locale})).person;
