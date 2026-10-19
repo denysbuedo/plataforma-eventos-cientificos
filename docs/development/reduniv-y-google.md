@@ -12,6 +12,14 @@ El arranque local preparado se ejecuta desde la raíz con `node .local/start-red
 
 En modo real no se aceptan cuentas demo. Una identidad institucional nueva no hereda roles ni trabajos de una cuenta de demostración por coincidencia de nombre o correo; requiere asignación explícita de permisos en SEP. La cuenta necesita además un rol general permitido de `sep-admin-dev` (`ROLE_USER` o `ROLE_ADMIN`) en el token de acceso. Google permanece deshabilitado hasta disponer de su configuración propia.
 
+### Dirección local y diagnóstico del retorno
+
+La dirección registrada es `http://127.0.0.1:6789`, incluida la cookie de transacción y la comprobación de origen. `localhost` es un origen distinto: el formulario iniciado allí recibía `FORBIDDEN` antes de contactar con RedUniv. La web redirige ahora las navegaciones GET/HEAD del alias local a la dirección configurada, conservando ruta y parámetros, sin aceptar POST de orígenes alternativos. El proxy deriva internamente a `/api/auth/canonical`, que emite la redirección absoluta; así evita la normalización de aliases de loopback que Next aplica a las redirecciones del proxy. El destino procede exclusivamente de la configuración del servidor. Este ajuste no introduce redirecciones entre dominios productivos.
+
+Si falla el retorno institucional, la pantalla muestra una referencia de diagnóstico. El registro privado del administrador web indica la etapa (`token-exchange`, `api-profile` o `session`) y un código de error; cuando procede, añade estado HTTP y referencia de la API. No registra URL del callback, códigos de autorización, tokens, claims ni excepciones completas. Un fallo al iniciar desde `localhost` no demuestra la causa de un fallo anterior durante el retorno.
+
+Para comprobar cambios con una compilación aislada del administrador, `SEP_ADMIN_NEXT_DIST_DIR` permite seleccionar su directorio al ejecutar `npm run test:web`; `SEP_PUBLIC_NEXT_DIST_DIR` hace lo mismo con el portal. No modifica las compilaciones que estén sirviendo una instancia activa.
+
 ## Referencia revisada
 
 De cursos-enlinea se leyeron `src/lib/google-oauth.ts`, `src/app/api/auth/google/start/route.ts` y `src/app/api/auth/google/callback/route.ts`. Allí se usa Authorization Code con PKCE S256 y state, scopes openid/email/profile, consulta de UserInfo, correo verificado y sesión propia de la aplicación.

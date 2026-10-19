@@ -47,8 +47,9 @@ const require = createRequire(import.meta.url);
 async function startWeb(name, port, environment) {
   const log = join(runDirectory, `${name}.log`);
   const fd = openSync(log, 'a');
+  const dist = name === 'admin-web' ? process.env.SEP_ADMIN_NEXT_DIST_DIR : process.env.SEP_PUBLIC_NEXT_DIST_DIR;
   const child = spawn(process.execPath, [require.resolve('next/dist/bin/next'), 'start', '--hostname', '127.0.0.1', '--port', String(port)], {
-    cwd: join(root, 'apps', name), env: environment, windowsHide: true, detached: process.platform === 'win32', stdio: ['ignore', fd, fd],
+    cwd: join(root, 'apps', name), env: { ...environment, ...(dist ? { SEP_NEXT_DIST_DIR: dist } : {}) }, windowsHide: true, detached: process.platform === 'win32', stdio: ['ignore', fd, fd],
   });
   closeSync(fd); servers.push(child);
   for (let attempt = 0; attempt < 120; attempt++) {
