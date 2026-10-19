@@ -16,6 +16,8 @@ La cuenta desde la que se inicia el proceso conserva su perfil, trabajos, inscri
 
 Una segunda cuenta con membresías, roles, trabajos, autorías declaradas, revisiones, certificados, ORCID u otra actividad no se consolida automáticamente. Se comprueba al preparar y nuevamente al confirmar, incluyendo relaciones con personas de futuras tablas. Cuando la segunda cuenta tiene actividad y la actual no, se debe iniciar sesión en la cuenta con actividad y vincular desde allí el acceso sin actividad. Si ambas tienen actividad, hace falta una consolidación específica que resuelva conflictos: este bloque la bloquea y explica la causa, conservando ambos historiales. Tampoco se fusionan dos cuentas con contraseña local. No se expone retirada de métodos de acceso en este bloque.
 
+El resultado aparece antes de la lista de accesos y recibe el foco al volver del proveedor. El método indica **Pendiente de confirmar** o **Vinculación no completada**, según corresponda. Un conflicto permite cerrar el aviso o iniciar otra comprobación; solo una confirmación pendiente bloquea temporalmente los otros botones. Al caducar su comprobante, la pantalla avisa y permite volver a iniciar el proceso.
+
 El historial de vinculaciones es inmutable y solo lo consulta su titular. Las funciones privilegiadas pertenecen a `sep_account_linker`, un rol sin login ni bypass de RLS, que no heredan ni runtime ni las demás funciones del migrador. Sus permisos son acotados, tienen RLS forzada y restablecen sus indicadores al salir. Las operaciones ordinarias comprueban que la persona siga activa y se coordinan con la vinculación para no guardar nuevos datos en una identidad consolidada.
 
 ## Incorporar personas y asignar roles

@@ -6,7 +6,7 @@ import {completeAccountLink,setLinkCookie} from '../shared';
 export const runtime='nodejs';
 async function principal(){const jar=await cookies(),parent=jar.get(SESSION_COOKIE)?.value,token=await tokenForCookie(parent);if(!oidcEnabled()||!parent||!token)throw new ApiTransportError(401,{error:{code:'UNAUTHORIZED',message:'Debes iniciar sesión.',requestId:randomUUID()}});return {jar,parent,token,binding:bindingFor(new URL(adminOrigin()).host,undefined)};}
 export async function GET(_request:Request,{params}:{params:Promise<{action:string}>}){
- try{if((await params).action!=='pending')return new NextResponse(null,{status:404});const {jar,parent,token,binding}=await principal();await apiRequest(binding,'me',{token});const state=readAccountLink(jar.get(ACCOUNT_LINK_COOKIE)?.value,parent);return NextResponse.json(state?.preview??null,{headers:{'cache-control':'no-store'}});}catch(error){return errorResponse(error);}
+ try{if((await params).action!=='pending')return new NextResponse(null,{status:404});const {jar,parent,token,binding}=await principal();await apiRequest(binding,'me',{token});const state=readAccountLink(jar.get(ACCOUNT_LINK_COOKIE)?.value,parent);return NextResponse.json(state?.preview?{...state.preview,expiresAt:state.expires}:null,{headers:{'cache-control':'no-store'}});}catch(error){return errorResponse(error);}
 }
 export async function POST(request:Request,{params}:{params:Promise<{action:string}>}){
  try{
