@@ -820,6 +820,61 @@
                           "name": {
                             "type": "string"
                           },
+                          "email": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "providers": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          "assignments": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "role": {
+                                  "type": "string"
+                                },
+                                "eventId": {
+                                  "type": "string",
+                                  "format": "uuid",
+                                  "nullable": true
+                                },
+                                "active": {
+                                  "type": "boolean"
+                                },
+                                "validFrom": {
+                                  "type": "string",
+                                  "format": "date-time"
+                                },
+                                "validUntil": {
+                                  "type": "string",
+                                  "format": "date-time",
+                                  "nullable": true
+                                },
+                                "status": {
+                                  "type": "string",
+                                  "enum": [
+                                    "current",
+                                    "scheduled",
+                                    "expired",
+                                    "revoked"
+                                  ]
+                                }
+                              },
+                              "required": [
+                                "role",
+                                "eventId",
+                                "active",
+                                "validFrom",
+                                "validUntil",
+                                "status"
+                              ]
+                            }
+                          },
                           "organizationAdmin": {
                             "type": "boolean"
                           },
@@ -846,13 +901,18 @@
                                   "items": {
                                     "type": "string"
                                   }
+                                },
+                                "reviewStatus": {
+                                  "type": "string",
+                                  "nullable": true
                                 }
                               },
                               "required": [
                                 "id",
                                 "nameEs",
                                 "nameEn",
-                                "roles"
+                                "roles",
+                                "reviewStatus"
                               ]
                             }
                           }
@@ -860,6 +920,9 @@
                         "required": [
                           "personId",
                           "name",
+                          "email",
+                          "providers",
+                          "assignments",
                           "organizationAdmin",
                           "adminVersion",
                           "events"

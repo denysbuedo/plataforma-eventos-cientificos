@@ -801,3 +801,13 @@ dialog::backdrop { background:rgb(18 36 28 / 45%); }
 .account-notification-email p { margin:0; }
 .account-notification-email .field { min-width:0; }
 .account-notification-email select { width:100%; min-width:0; }
+
+.participant-event-context { display:flex; flex-wrap:wrap; align-items:end; gap:12px 24px; padding-bottom:20px; margin-bottom:24px; border-bottom:1px solid var(--line); }
+.participant-event-context .field { width:min(100%,440px); min-width:0; }
+.participant-event-context p { margin:0 0 12px; }
+.access-assignment-details { margin-block:12px; }
+.access-assignment-details summary { cursor:pointer; color:var(--green); font-size:13px; }
+.access-assignment-details article { margin-top:12px; padding-left:12px; border-left:2px solid var(--line); }
+
+.access-roster-filters { display:grid; grid-template-columns:minmax(0,2fr) minmax(0,1fr); gap:16px; margin-block:20px; }
+@media(max-width:640px) { .access-roster-filters { grid-template-columns:1fr; } }

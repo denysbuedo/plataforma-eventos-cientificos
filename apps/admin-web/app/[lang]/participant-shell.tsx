@@ -13,6 +13,7 @@ import {certificateCopy} from './certificates-common';
 import {attendanceCopy} from './attendance-common';
 import {registrationCopy} from './registration-common';
 import {programCopy} from './program-copy';
+import {accessRole} from './my-access';
 import {reviewCopy} from './peer-review-copy';
 import { authorshipCopy } from './authorship-copy';
 
@@ -37,6 +38,9 @@ export default function ParticipantShell({children,person,locale,contextKey,even
   const currentEvent=access?.events.find(event=>event.id===eventId),canAccredit=!!currentEvent?.canAccredit;
   const canReview=currentEvent?.reviewStatus==='accepted'||currentEvent?.reviewStatus==='invited';
   const orgKey=['orgB','b1'].includes(contextKey)?'orgB':['orgA','a1','a2'].includes(contextKey)?'orgA':'org';
+  const [organizationAccess,setOrganizationAccess]=useState<MyAccess>();
+  useEffect(()=>{const controller=new AbortController();void fetch(`/api/backend/me/access?event=${orgKey}&lang=${locale}`,{signal:controller.signal,cache:'no-store'}).then(async response=>{if(response.ok){const value:MyAccess=await response.json();if(!controller.signal.aborted)setOrganizationAccess(value);}}).catch(()=>{});return()=>controller.abort();},[orgKey,locale]);
+  const eventChoices=organizationAccess?.events??access?.events??[];
   const [signingOut,setSigningOut]=useState(false), [error,setError]=useState('');
   const registeredGuard=useRef<Guard|null>(null), account=useRef<HTMLDetailsElement>(null);
   const register=useCallback((guard:Guard|null)=>{registeredGuard.current=guard;},[]);
@@ -89,6 +93,6 @@ export default function ParticipantShell({children,person,locale,contextKey,even
           </div>
         </details>
       </div>
-    </header><main id="main" className={`admin-main participant-main participant-${tab}`}>{error&&<p className="notice notice-error" role="alert">{error}</p>}{children}</main></div>
+    </header><main id="main" className={`admin-main participant-main participant-${tab}`}>{error&&<p className="notice notice-error" role="alert">{error}</p>}{eventChoices.length>0&&<div className="participant-event-context"><label className="field"><span>{locale==='es'?'Evento de trabajo':'Current event'}</span><select aria-label={locale==='es'?'Cambiar de evento':'Switch event'} value={eventId??''} disabled={busy||signingOut} onChange={event=>{if(event.target.value)navigate(`/${locale}?event=${encodeURIComponent(event.target.value)}&tab=access`);}}>{!eventId&&<option value="">{locale==='es'?'Selecciona un evento':'Select an event'}</option>}{eventId&&!eventChoices.some(event=>event.id===eventId)&&currentEvent&&<option value={eventId}>{locale==='es'?currentEvent.nameEs:currentEvent.nameEn}</option>}{eventChoices.map(event=><option key={event.id} value={event.id}>{locale==='es'?event.nameEs:event.nameEn}</option>)}</select></label>{currentEvent&&<p className="profile-help">{[...(access?.organizationAdmin?[accessRole('organization_admin',locale==='es')]:[]),...currentEvent.roles.map(role=>accessRole(role,locale==='es'))].join(' · ')|| (locale==='es'?'Participación personal en el evento':'Personal participation in the event')}</p>}</div>}{children}</main></div>
   </div></NavigationGuard.Provider>;
 }

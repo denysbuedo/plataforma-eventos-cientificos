@@ -50,6 +50,16 @@ Después se puede asignar administración desde la misma pantalla, o seleccionar
 
 Las invitaciones comprueban el correo verificado del acceso actual también para cuentas locales. Debe coincidir con el destinatario; disponer únicamente del enlace no basta.
 
+### Resumen de usuarios, roles y navegación
+
+La migración 0086 añade una consulta administrativa limitada a los miembros activos de la organización actual. **Usuarios y roles** muestra correo principal y proveedores de acceso, sin identificadores de proveedor, credenciales ni historiales privados de vinculación. La búsqueda exacta de cuentas registradas admite cualquier correo verificado de sus accesos vinculados, independientemente del destinatario elegido para notificaciones.
+
+El listado permite buscar por nombre o correo y filtrar por administración, organización, revisión o acreditación vigentes. Los revisores invitados se distinguen de quienes aceptaron. Las delegaciones de acreditación necesitan una membresía activa en ese evento. Las asignaciones muestran sus fechas y estado: vigente, programada, vencida o retirada. Estos datos no conceden permisos nuevos ni permiten al administrador intervenir en la revisión científica sin ser organizador.
+
+Reincorporar una membresía de organización inactiva desactiva su administración anterior antes de reactivarla; la asignación debe concederse de nuevo expresamente. Los permisos en eventos se conservan y la limpieza de los permisos anteriores queda en el historial de incorporación. La operación se coordina con las asignaciones de administración mediante el bloqueo de organización.
+
+Inicio permite al administrador descubrir todos los eventos de su organización sin otorgarle organización científica. Mi espacio muestra el contexto del evento y permite cambiar entre los eventos disponibles respetando la confirmación de cambios pendientes. Las funciones de varios roles se acumulan; no se cambia de identidad para pasar de autor a revisor u organizador. Las autorizaciones de la API se vuelven a comprobar en cada petición.
+
 ## Correo principal para notificaciones
 
 Los correos de autenticación y el destinatario de notificaciones tienen funciones distintas. SEP registra las direcciones que Google o RedUniv declaran verificadas y los correos locales confirmados. Iniciar sesión añade una dirección verificada a las opciones disponibles, sin sustituir el correo principal elegido. No se vinculan personas por coincidencia de correo.
