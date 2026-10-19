@@ -4,9 +4,10 @@ import { APP_CONFIG, type AppConfig } from '../config.js';
 import { ApiException } from '../common/http.js';
 import { createRemoteJWKSet, jwtVerify } from 'jose';
 import { DatabaseService } from '../database/database.service.js';
+import type {LocalAuthService} from './local-auth.controller.js';
 
 export const AUTHENTICATOR = Symbol('AUTHENTICATOR');
-export interface AuthenticatedPerson { personId: string; authMode: 'development-token' | 'oidc' | 'google'; verifiedEmail?: string }
+export interface AuthenticatedPerson { personId: string; authMode: 'development-token' | 'oidc' | 'google' | 'local'; verifiedEmail?: string }
 export interface Authenticator { authenticate(authorization: string | undefined): AuthenticatedPerson | Promise<AuthenticatedPerson> }
 @Injectable()
 export class DevelopmentTokenAuthenticator implements Authenticator {
@@ -25,11 +26,16 @@ export class DevelopmentTokenAuthenticator implements Authenticator {
 @Injectable()
 export class OidcAuthenticator implements Authenticator {
   private readonly keys;
-  constructor(@Inject(APP_CONFIG) private readonly config: AppConfig, private readonly database: DatabaseService) {
+  constructor(@Inject(APP_CONFIG) private readonly config: AppConfig, private readonly database: DatabaseService,private readonly local?:LocalAuthService) {
     if (!config.oidc) throw new Error('Missing OIDC configuration');
     this.keys = createRemoteJWKSet(new URL(config.oidc.jwksUrl), { timeoutDuration: 5000, cooldownDuration: 30000 });
   }
   async authenticate(authorization: string | undefined): Promise<AuthenticatedPerson> {
+    if(authorization?.startsWith('Bearer sep_local.')){
+      if(!this.local||!this.config.localAuth)throw new ApiException(401,'UNAUTHORIZED');
+      const principal=await this.local.authenticate(authorization);await this.database.rememberVerifiedEmail(principal.personId,principal.email);
+      return {personId:principal.personId,verifiedEmail:principal.email,authMode:'local'};
+    }
     if (authorization?.startsWith('Bearer sep_google.')) return this.googleSession(authorization);
     const match = /^Bearer ([A-Za-z0-9_.-]{32,16384})$/.exec(authorization ?? '');
     if (!match) throw new ApiException(401, 'UNAUTHORIZED');

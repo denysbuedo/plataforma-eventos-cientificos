@@ -23,7 +23,7 @@ import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import type { ReviewWorkspace, SubmissionPage, AuthorWorkspace, ScientificCallDraft, EventConfiguration, EventPage, EventTeam, OrganizationSettings, PeopleDirectory, SessionView, SiteDraft } from '@sep/contracts';
 import { webCopy, type Locale } from '@sep/i18n';
-import { apiRequest, bindingFor, demoConfiguration, googleLoginEnabled, redunivLoginEnabled, oidcEnabled, removeOidcValue, SESSION_COOKIE, tokenForCookie, ApiTransportError } from '@sep/web-server';
+import { apiRequest, bindingFor, demoConfiguration, googleLoginEnabled, redunivLoginEnabled, localLoginEnabled, oidcEnabled, removeOidcValue, SESSION_COOKIE, tokenForCookie, ApiTransportError } from '@sep/web-server';
 import Login from './login';
 import Dashboard from './workspace';
 import AuthorWorks from './author-works';
@@ -45,7 +45,7 @@ export default async function AdminPage({ params, searchParams }: { params: Prom
   const accounts:{id:string;name:string}[]=[];
   if(config&&!token){const binding=bindingFor((await headers()).get('host')??'',query.event??'orgA');const loaded=await Promise.all(Object.keys(config.tokens).filter(id=>['mixed','operator','admin','outsider','reviewer','reviewer2'].includes(id)).map(async id=>{try{const v=await apiRequest<{person:{name:string}}>(binding,'me',{token:config.tokens[id],locale});return {id,name:v.person.name};}catch{return null;}}));accounts.push(...loaded.filter((v):v is {id:string;name:string}=>!!v));}
   const authReference = /^[0-9a-f-]{36}$/.test(query.authRef ?? '') ? query.authRef : undefined;
-  const login = <Login locale={locale} publicUrl={publicUrl} enabled={!!config} preserveContext={!!query.event||!!query.tab} accounts={accounts} institutional={institutional} googleEnabled={googleLoginEnabled()} redunivEnabled={redunivLoginEnabled()} returnTo={returnTo} authError={!!query.authError} authReference={authReference} logoutError={!!query.logoutError} register={query.mode==='register'} />;
+  const login = <Login locale={locale} publicUrl={publicUrl} enabled={!!config} preserveContext={!!query.event||!!query.tab} accounts={accounts} institutional={institutional} googleEnabled={googleLoginEnabled()} redunivEnabled={redunivLoginEnabled()} returnTo={returnTo} authError={!!query.authError} authReference={authReference} logoutError={!!query.logoutError} register={query.mode==='register'} localEnabled={localLoginEnabled()} mode={query.mode} />;
   if (!token) return login;
   let profile: { id: string; name: string } | null = null;
   let session: SessionView | null = null; let events: EventPage = { data: [], limit: 20, offset: 0 }; let site: SiteDraft | null = null; let denied = false;

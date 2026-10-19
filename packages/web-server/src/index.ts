@@ -8,7 +8,7 @@ import { errorMessage, type ErrorCode, type Locale } from '@sep/i18n';
 export {fileTransport as publicFileTransport,fileTransport as publicationFileTransport} from './files.js';
 import { fileTransport } from './files.js';
 import { oidcAccessToken, oidcEnabled, removeOidcValue } from './oidc.js';
-export { adminOrigin, beginOidc, beginGoogle, finishOidc, finishGoogle, createOidcSession, createGoogleSession, googleLoginEnabled, redunivLoginEnabled, localReturnTo, oidcCookieSecure, oidcEnabled, oidcLogoutDestination, GOOGLE_FLOW_COOKIE, OIDC_FLOW_COOKIE, removeOidcValue } from './oidc.js';
+export { adminOrigin, beginOidc, beginGoogle, finishOidc, finishGoogle, createOidcSession, createGoogleSession, createLocalSession, localLoginEnabled, googleLoginEnabled, redunivLoginEnabled, localReturnTo, oidcCookieSecure, oidcEnabled, oidcLogoutDestination, GOOGLE_FLOW_COOKIE, OIDC_FLOW_COOKIE, removeOidcValue } from './oidc.js';
 
 export const SESSION_COOKIE = oidcEnabled() ? 'sep_session' : 'sep_demo_session';
 export interface DemoConfiguration {

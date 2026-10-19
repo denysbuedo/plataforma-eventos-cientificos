@@ -16,6 +16,21 @@ const registryRead = (scope: SQL) => pgPolicy('registry_authorization_read', { f
 const authorshipScope = (org:SQL,event:SQL) => sql`current_setting('sep.authorship_rpc',true)='true' AND ${organizationScope(org)} AND ${event}=nullif(current_setting('sep.event_id',true),'')::uuid`;
 const authorshipPolicy = (org:SQL,event:SQL) => pgPolicy('authorship_rpc',{for:'all',to:registryOwner,using:authorshipScope(org,event),withCheck:authorshipScope(org,event)});
 const authorshipActorRead = (actor:SQL) => pgPolicy('authorship_actor',{for:'select',to:registryOwner,using:sql`current_setting('sep.authorship_rpc',true)='true' AND ${actorScope(actor)}`});
+const localIdentityPolicy=()=>pgPolicy('local_identity_service',{for:'all',to:registryOwner,using:sql`current_setting('sep.local_auth',true)='true'`,withCheck:sql`current_setting('sep.local_auth',true)='true'`});
+
+export const localAccounts=pgTable('local_accounts',{
+ personId:uuid('person_id').primaryKey().references(()=>people.id),email:text('email').notNull().unique(),passwordHash:text('password_hash').notNull(),
+ verifiedAt:timestamp('verified_at',{withTimezone:true}),active:boolean('active').notNull().default(true),credentialVersion:integer('credential_version').notNull().default(1),createdAt:timestamp('created_at',{withTimezone:true}).notNull().defaultNow(),
+},t=>[localIdentityPolicy(),check('local_email_normalized',sql`${t.email}=lower(trim(${t.email})) AND length(${t.email}) BETWEEN 3 AND 254`),check('local_credential_version',sql`${t.credentialVersion}>0`)]);
+export const localSessions=pgTable('local_sessions',{
+ tokenHash:text('token_hash').primaryKey(),personId:uuid('person_id').notNull().references(()=>localAccounts.personId),credentialVersion:integer('credential_version').notNull(),expiresAt:timestamp('expires_at',{withTimezone:true}).notNull(),createdAt:timestamp('created_at',{withTimezone:true}).notNull().defaultNow(),
+},t=>[localIdentityPolicy(),index('local_session_person_idx').on(t.personId),check('local_session_hash',sql`${t.tokenHash} ~ '^[a-f0-9]{64}$'`)]);
+export const localChallenges=pgTable('local_challenges',{
+ tokenHash:text('token_hash').primaryKey(),personId:uuid('person_id').notNull().references(()=>localAccounts.personId),purpose:text('purpose').notNull(),payload:jsonb('payload').notNull().default({}),expiresAt:timestamp('expires_at',{withTimezone:true}).notNull(),consumedAt:timestamp('consumed_at',{withTimezone:true}),createdAt:timestamp('created_at',{withTimezone:true}).notNull().defaultNow(),
+},t=>[localIdentityPolicy(),index('local_challenge_person_idx').on(t.personId,t.purpose),check('local_challenge_hash',sql`${t.tokenHash} ~ '^[a-f0-9]{64}$'`),check('local_challenge_purpose',sql`${t.purpose} IN ('verify','reset')`)]);
+export const localAuthLimits=pgTable('local_auth_limits',{
+ bucketHash:text('bucket_hash').primaryKey(),attempts:integer('attempts').notNull(),windowAt:timestamp('window_at',{withTimezone:true}).notNull(),
+},t=>[localIdentityPolicy(),check('local_limit_hash',sql`${t.bucketHash} ~ '^[a-f0-9]{64}$'`)]);
 
 export const authorshipClaims = pgTable('authorship_claims',{
   id:uuid('id').primaryKey(),organizationId:uuid('organization_id').notNull(),eventId:uuid('event_id').notNull(),workId:uuid('work_id').notNull(),
@@ -98,6 +113,9 @@ export const eventConfigurations = pgTable('event_configurations', {
 export const people = pgTable('people', {
   id: uuid('id').primaryKey(), name: text('name').notNull(), active: boolean('active').notNull().default(true),
 }, (t) => [
+  pgPolicy('local_identity_read',{for:'select',to:registryOwner,using:sql`current_setting('sep.local_auth',true)='true' AND ${actorScope(sql`${t.id}`)}`}),
+  pgPolicy('local_identity_insert',{for:'insert',to:registryOwner,withCheck:sql`current_setting('sep.local_auth',true)='true' AND ${actorScope(sql`${t.id}`)}`}),
+  pgPolicy('local_identity_update',{for:'update',to:registryOwner,using:sql`current_setting('sep.local_auth',true)='true' AND ${actorScope(sql`${t.id}`)}`,withCheck:sql`current_setting('sep.local_auth',true)='true' AND ${actorScope(sql`${t.id}`)}`}),
   pgPolicy('authorship_people',{for:'select',to:registryOwner,using:sql`current_setting('sep.authorship_rpc',true)='true'`}),
   pgPolicy('review_registry',{for:'select',to:registryOwner,using:sql`current_setting('sep.review_rpc',true)='true' AND ${actorScope(sql`${t.id}`)}`}),
   pgPolicy('profile_owner_update',{as:'restrictive',for:'update',to:runtime,using:actorScope(sql`${t.id}`),withCheck:actorScope(sql`${t.id}`)}),
@@ -109,6 +127,7 @@ export const identities = pgTable('identities', {
   id: uuid('id').primaryKey(), personId: uuid('person_id').notNull().references(() => people.id),
   issuer: text('issuer').notNull(), subject: text('subject').notNull(), active: boolean('active').notNull().default(true),
 }, (t) => [unique().on(t.issuer, t.subject), policy(actorScope(sql`${t.personId}`)),
+  pgPolicy('local_identity_insert',{for:'insert',to:registryOwner,withCheck:sql`current_setting('sep.local_auth',true)='true' AND ${actorScope(sql`${t.personId}`)} AND ${t.issuer}='sep-local' AND ${t.subject}=${t.personId}::text`}),
   pgPolicy('oidc_identity_lookup', { for: 'select', to: runtime, using: sql`current_setting('sep.auth_provision', true) = 'true'
     AND ${t.issuer} = current_setting('sep.auth_issuer', true) AND ${t.subject} = current_setting('sep.auth_subject', true)` }),
 ]);

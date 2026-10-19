@@ -34,7 +34,8 @@
     "test:attendance": "npm run build:api && node scripts/local-postgres.mjs attendance-test",
     "test:editorial": "npm run build:api && node scripts/local-postgres.mjs editorial-test",
     "test:completion": "npm run build:api && node scripts/local-postgres.mjs completion-test",
-    "test:identity": "npm run build:api && node scripts/local-postgres.mjs identity-test"
+    "test:identity": "npm run build:api && node scripts/local-postgres.mjs identity-test",
+    "test:local-auth": "npm run build:api && node scripts/local-postgres.mjs local-auth-test"
   },
   "devDependencies": {
     "@playwright/test": "1.64.1",

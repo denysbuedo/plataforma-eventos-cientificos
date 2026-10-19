@@ -561,6 +561,13 @@
       "when": 1792353479350,
       "tag": "0079_old_newton_destine",
       "breakpoints": true
+    },
+    {
+      "idx": 80,
+      "version": "7",
+      "when": 1792374184296,
+      "tag": "0080_sleepy_stick",
+      "breakpoints": true
     }
   ]
 }

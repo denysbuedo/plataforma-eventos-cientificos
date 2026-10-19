@@ -1,5 +1,11 @@
 const messages = {
   es: {
+    LOCAL_AUTH_RATE_LIMITED:'Demasiados intentos. Espera unos minutos y vuelve a intentarlo.',
+    LOCAL_PASSWORD_WEAK:'Usa una contraseña de entre 15 y 128 caracteres.',
+    LOCAL_INVALID_CREDENTIALS:'El correo o la contraseña no son correctos.',
+    LOCAL_EMAIL_UNVERIFIED:'Confirma tu correo antes de iniciar sesión. Puedes solicitar otro mensaje de verificación.',
+    LOCAL_LINK_INVALID:'El enlace no es válido, ha caducado o ya fue utilizado. Solicita uno nuevo.',
+    LOCAL_MAIL_UNAVAILABLE:'No pudimos enviar el correo. Inténtalo de nuevo en unos minutos.',
     ACCESS_SELF_REVOKE:'No puedes retirarte tu propio acceso de administración. Solicita el cambio a otro administrador.',
     ACCESS_LAST_ADMIN:'La organización debe conservar al menos un administrador activo.',
     PAYMENT_INVALID:'Revisa la tarifa, moneda, medio de pago y estado del cobro. No incluyas claves privadas en los datos públicos.',
@@ -77,6 +83,12 @@ const messages = {
     INTERNAL_ERROR: 'No se pudo completar la solicitud.',
   },
   en: {
+    LOCAL_AUTH_RATE_LIMITED:'Too many attempts. Wait a few minutes and try again.',
+    LOCAL_PASSWORD_WEAK:'Use a password between 15 and 128 characters.',
+    LOCAL_INVALID_CREDENTIALS:'The email or password is incorrect.',
+    LOCAL_EMAIL_UNVERIFIED:'Verify your email before signing in. You can request another verification message.',
+    LOCAL_LINK_INVALID:'This link is invalid, expired or already used. Request a new one.',
+    LOCAL_MAIL_UNAVAILABLE:'We could not send the email. Please try again in a few minutes.',
     ACCESS_SELF_REVOKE:'You cannot remove your own administrator access. Ask another administrator to make this change.',
     ACCESS_LAST_ADMIN:'The organization must retain at least one active administrator.',
     PAYMENT_INVALID:'Check the fee, currency, payment method and charge status. Never include private credentials in public details.',

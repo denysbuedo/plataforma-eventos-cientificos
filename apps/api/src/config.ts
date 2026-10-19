@@ -1,5 +1,6 @@
 export const APP_CONFIG = Symbol('APP_CONFIG');
 export interface AppConfig {
+  localAuth?:{origin:string;previewDirectory?:string};
   databaseUrl: string;
   authMode: 'development-token' | 'oidc';
   oidc?: { issuer: string; audience: string; jwksUrl: string; authorizedParty?: string; roleClientId: string; allowedClientRoles: string[] };
@@ -67,5 +68,15 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
     if(!localPlaintext&&port===465&&!secure)throw new Error('SMTP port 465 requires SMTP_SECURE=1');
     mail={host,port,secure,localPlaintext,user:env.SMTP_USER,password:env.SMTP_PASSWORD,from,adminOrigin:origin.origin,messageDomain:from.split('@')[1]};
   }
-  return { mail, databaseUrl: env.DATABASE_URL, authMode: env.AUTH_MODE as AppConfig['authMode'], oidc, google, orcid, tokens, port };
+  let localAuth:AppConfig['localAuth'];
+  if(env.SEP_LOCAL_LOGIN_ENABLED==='1'){
+    if(env.AUTH_MODE!=='oidc'||!env.SEP_ADMIN_ORIGIN)throw new Error('Local accounts require real authentication mode and a configured origin');
+    const origin=new URL(env.SEP_ADMIN_ORIGIN),loopback=['127.0.0.1','localhost'].includes(origin.hostname);
+    if(origin.username||origin.password||origin.pathname!=='/'||origin.search||origin.hash||origin.protocol!=='https:'&&!(origin.protocol==='http:'&&loopback&&env.OIDC_ALLOW_LOOPBACK_HTTP==='1'))throw new Error('Invalid local account origin');
+    const previewDirectory=env.SEP_LOCAL_AUTH_MAIL_DIRECTORY;
+    if(previewDirectory&&(!['development','test'].includes(env.NODE_ENV??'')||!loopback||! /^(?:[A-Za-z]:[\\/]|\/)/.test(previewDirectory)))throw new Error('Mail previews require an absolute private directory and a local development/test origin');
+    if(!mail&&!previewDirectory)throw new Error('Local accounts require SMTP or the explicit local test mail transport');
+    localAuth={origin:origin.origin,previewDirectory};
+  }
+  return { localAuth,mail, databaseUrl: env.DATABASE_URL, authMode: env.AUTH_MODE as AppConfig['authMode'], oidc, google, orcid, tokens, port };
 }

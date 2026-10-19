@@ -8,6 +8,7 @@ import { SignJWT } from 'jose';
 export const OIDC_FLOW_COOKIE = 'sep_oidc_flow';
 export const GOOGLE_FLOW_COOKIE = 'sep_google_flow';
 export function oidcEnabled(): boolean { return process.env.SEP_AUTH_MODE === 'oidc'; }
+export function localLoginEnabled():boolean{return oidcEnabled()&&process.env.SEP_LOCAL_LOGIN_ENABLED==='1'&&process.env.SEP_DEMO_MODE!=='1';}
 export function redunivLoginEnabled(): boolean { return oidcEnabled() && !!process.env.OIDC_ISSUER && !!process.env.OIDC_CLIENT_ID && !!process.env.OIDC_CLIENT_SECRET; }
 export function googleLoginEnabled(): boolean { return oidcEnabled() && process.env.SEP_GOOGLE_LOGIN_ENABLED === '1' && !!process.env.GOOGLE_CLIENT_ID && !!process.env.GOOGLE_CLIENT_SECRET && /^[0-9a-f]{64}$/i.test(process.env.GOOGLE_SESSION_SIGNING_KEY ?? '') && process.env.GOOGLE_SESSION_SIGNING_KEY !== process.env.SEP_SESSION_ENCRYPTION_KEY; }
 function transport(value: string): URL {
@@ -49,6 +50,8 @@ type Stored = { expires: number };
 interface Flow extends Stored { verifier: string; nonce: string; state: string; returnTo: string; provider: 'reduniv' | 'google' }
 interface Session extends Stored { provider?: 'reduniv'; accessToken: string; refreshToken?: string; idToken: string; subject: string; accessExpires: number }
 interface GoogleSession extends Stored { provider: 'google'; subject: string; name: string; email: string }
+interface LocalSession extends Stored {provider:'local';accessToken:string}
+type StoredSession=Session|GoogleSession|LocalSession;
 interface GoogleGrant { subject: string; name: string; email: string; maxAge: number; returnTo: string }
 type GrantedSession = Omit<Session, 'expires'> & { maxAge: number; returnTo: string };
 function file(id: string, kind: 'flow' | 'session') {
@@ -91,8 +94,9 @@ export function removeOidcValue(id: string | undefined, kind: 'flow' | 'session'
 }
 export async function oidcAccessToken(cookie: string | undefined): Promise<string | undefined> {
   if (!cookie) return undefined;
-  const initial = read<Session | GoogleSession>(cookie, 'session');
+  const initial = read<StoredSession>(cookie, 'session');
   if (!initial) return undefined;
+  if(initial.provider==='local')return localLoginEnabled()?initial.accessToken:undefined;
   if (initial.provider === 'google') return googleApiCredential(initial);
   if (initial.accessExpires > Date.now() + 30000) return initial.accessToken;
   if (!initial.refreshToken) { removeOidcValue(cookie); return undefined; }
@@ -103,8 +107,9 @@ export async function oidcAccessToken(cookie: string | undefined): Promise<strin
     catch (error) {
       if ((error as NodeJS.ErrnoException).code !== 'EEXIST') { removeOidcValue(cookie); return undefined; }
       await new Promise((done) => setTimeout(done, 50));
-      const current = read<Session | GoogleSession>(cookie, 'session');
+      const current = read<StoredSession>(cookie, 'session');
       if (!current) return undefined;
+      if(current.provider==='local')return localLoginEnabled()?current.accessToken:undefined;
       if (current.provider === 'google') return undefined;
       if (current.accessExpires > Date.now() + 30000) return current.accessToken;
     }
@@ -112,8 +117,9 @@ export async function oidcAccessToken(cookie: string | undefined): Promise<strin
   if (descriptor === undefined) { removeOidcValue(cookie); return undefined; }
   let temporary: string | undefined;
   try {
-    const current = read<Session | GoogleSession>(cookie, 'session');
+    const current = read<StoredSession>(cookie, 'session');
     if (!current) return undefined;
+    if(current.provider==='local')return localLoginEnabled()?current.accessToken:undefined;
     if (current.provider === 'google') return undefined;
     if (current.accessExpires > Date.now() + 30000) return current.accessToken;
     if (!current.refreshToken) throw new Error('Missing refresh token');
@@ -167,8 +173,17 @@ export function createOidcSession(session: GrantedSession): string {
   return save('session', { accessToken: session.accessToken, refreshToken: session.refreshToken, idToken: session.idToken,
     subject: session.subject, accessExpires: session.accessExpires, expires: Date.now() + session.maxAge * 1000 });
 }
+export function createLocalSession(accessToken:string,maxAge:number):string{
+ if(!localLoginEnabled()||!/^sep_local\.[A-Za-z0-9_-]{43}$/.test(accessToken)||!Number.isInteger(maxAge)||maxAge<1||maxAge>28800)throw new Error('Invalid local session');
+ return save('session',{provider:'local',accessToken,expires:Date.now()+maxAge*1000} satisfies LocalSession);
+}
 export async function oidcLogoutDestination(cookie: string | undefined, locale: 'es' | 'en'): Promise<string> {
-  const session = read<Session | GoogleSession>(cookie, 'session');
+  const session = read<StoredSession>(cookie, 'session');
+  if(session?.provider==='local'){
+    const response=await fetch(new URL('/api/v1/auth/local/logout',process.env.SEP_API_URL),{method:'POST',headers:{authorization:`Bearer ${session.accessToken}`},signal:AbortSignal.timeout(10000)});
+    if(!response.ok)throw new Error('Local session revocation unavailable');
+    removeOidcValue(cookie);return `${settings().origin}/${locale}`;
+  }
   removeOidcValue(cookie);
   if (session?.provider === 'google') return `${settings().origin}/${locale}`;
   try {

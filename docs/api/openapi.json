@@ -92,6 +92,163 @@
         ]
       }
     },
+    "/api/v1/auth/local/register": {
+      "post": {
+        "operationId": "LocalAuthController_register",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "local-identity"
+        ]
+      }
+    },
+    "/api/v1/auth/local/login": {
+      "post": {
+        "operationId": "LocalAuthController_login",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "local-identity"
+        ]
+      }
+    },
+    "/api/v1/auth/local/request-mail": {
+      "post": {
+        "operationId": "LocalAuthController_mail",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MailRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "local-identity"
+        ]
+      }
+    },
+    "/api/v1/auth/local/verify": {
+      "post": {
+        "operationId": "LocalAuthController_verify",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TicketDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "local-identity"
+        ]
+      }
+    },
+    "/api/v1/auth/local/reset": {
+      "post": {
+        "operationId": "LocalAuthController_reset",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResetDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "local-identity"
+        ]
+      }
+    },
+    "/api/v1/auth/local/logout": {
+      "post": {
+        "operationId": "LocalAuthController_logout",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "local-identity"
+        ]
+      }
+    },
+    "/api/v1/auth/local/mail/{id}": {
+      "get": {
+        "operationId": "LocalAuthController_preview",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "local-identity"
+        ]
+      }
+    },
     "/api/v1/me/access": {
       "get": {
         "operationId": "AccessController_mine",
@@ -35292,6 +35449,86 @@
         },
         "required": [
           "status"
+        ]
+      },
+      "RegisterDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string",
+            "writeOnly": true
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "email",
+          "password",
+          "name"
+        ]
+      },
+      "LoginDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string",
+            "writeOnly": true
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ]
+      },
+      "MailRequestDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "purpose": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "email",
+          "purpose"
+        ]
+      },
+      "TicketDto": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "writeOnly": true
+          }
+        },
+        "required": [
+          "token"
+        ]
+      },
+      "ResetDto": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "writeOnly": true
+          },
+          "password": {
+            "type": "string",
+            "writeOnly": true
+          }
+        },
+        "required": [
+          "token",
+          "password"
         ]
       },
       "ChangeAdministratorDto": {
