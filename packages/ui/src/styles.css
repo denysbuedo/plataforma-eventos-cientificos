@@ -252,6 +252,9 @@ dialog::backdrop { background:rgb(18 36 28 / 45%); }
 .profile-card-heading h2 { font-size:19px; line-height:1.4; }
 .profile-card-heading .button { flex-shrink:0; }
 .profile-help { color:var(--muted); font-size:13px; line-height:1.75; margin-top:7px; }
+.profile-validation-link { padding:0; border:0; background:transparent; color:inherit; font:inherit; text-align:left; text-decoration:underline; cursor:pointer; }
+#profile-validation-errors { background:transparent; box-shadow:none; }
+.profile-edit-form [aria-invalid="true"] { border-color:#b42318; }
 .profile-section { border-top:1px solid var(--line); margin-top:24px; padding-top:22px; }
 .profile-section-heading { display:flex; align-items:center; gap:10px; }
 .profile-section h3 { font-size:14px; }

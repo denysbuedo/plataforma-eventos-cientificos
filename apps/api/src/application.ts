@@ -9,6 +9,7 @@ import { AppModule } from './app.module.js';
 import type { AppConfig } from './config.js';
 import { MAX_WORK_BODY_BYTES } from '@sep/contracts';
 import { ApiException, ApiExceptionFilter, type SepRequest } from './common/http.js';
+import { validationIssues } from './common/validation.js';
 
 export async function createApplication(config: AppConfig) {
   const app = await NestFactory.create<NestExpressApplication>(AppModule.register(config), { logger: false });
@@ -29,7 +30,7 @@ export async function createApplication(config: AppConfig) {
   app.useBodyParser('json', { limit: MAX_WORK_BODY_BYTES });
   app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true, forbidNonWhitelisted: true,
     forbidUnknownValues: true, validationError: { target: false, value: false },
-    exceptionFactory: (errors) => new ApiException(400, 'VALIDATION_FAILED', errors.map((error) => ({ field: error.property, codes: Object.keys(error.constraints ?? {}) }))),
+    exceptionFactory: (errors) => new ApiException(400, 'VALIDATION_FAILED', validationIssues(errors)),
   }));
   const document = SwaggerModule.createDocument(app, new DocumentBuilder().setTitle('SEP API').setVersion('1.0.0')
     .setDescription('Eventos, sitios, equipos e invitaciones con permisos contextuales. Acceso RedUniv por OIDC y Google directo con sesión propia de SEP; adaptador exclusivo de desarrollo disponible por separado.')
