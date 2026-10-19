@@ -1,6 +1,6 @@
 # Identidad institucional: Keycloak de RedUniv
 
-Estado: integración implementada y compilada; cliente de desarrollo local configurado. El 18 de octubre de 2026 se comprobó que SEP inicia el flujo con `sep-admin-dev` y RedUniv muestra el formulario institucional. Falta completar la autenticación con una cuenta, el segundo factor y el retorno a SEP. Véase el [estado de activación local](reduniv-y-google.md#activación-local-de-reduniv--18-de-octubre-de-2026).
+Estado: acceso local validado por el propietario el 18 de octubre de 2026 con `sep-admin-dev`, autenticación institucional, segundo factor y retorno a SEP. Siguen pendientes las comprobaciones específicas de renovación, revocación y cierre central. Véase el [estado de activación local](reduniv-y-google.md#activación-local-de-reduniv--18-de-octubre-de-2026).
 
 Para usuarios internacionales, la [guía RedUniv y Google](reduniv-y-google.md) describe el acceso Google directo con callback y credenciales de SEP. Se mantienen dos opciones independientes; Google no se configura como broker en Keycloak ni requiere cuentas LDAP. Los detalles de esta guía corresponden al flujo RedUniv.
 

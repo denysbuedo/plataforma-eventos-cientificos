@@ -1,12 +1,12 @@
 # Dos accesos independientes: RedUniv y Google directo
 
-Estado: ambos flujos implementados en SEP. RedUniv está configurado y habilitado para desarrollo local con `sep-admin-dev`; Google sigue pendiente de credenciales y activación. La autenticación completa y el retorno de RedUniv requieren validación con una cuenta institucional. La propuesta anterior de Google mediante Keycloak queda retirada por indicación del propietario. No se ha modificado cursos-enlinea, Keycloak ni Google Cloud.
+Estado: ambos flujos implementados en SEP. El propietario completó correctamente el acceso local con RedUniv y segundo factor usando `sep-admin-dev`, tras ajustar el permiso general en Identidad; Google sigue pendiente de credenciales y activación. La propuesta anterior de Google mediante Keycloak queda retirada por indicación del propietario. No se ha modificado cursos-enlinea, Keycloak ni Google Cloud desde SEP.
 
 ## Activación local de RedUniv — 18 de octubre de 2026
 
 Identidad comunicó la creación de `sep-admin-dev` en el realm institucional, con callback `http://127.0.0.1:6789/api/auth/callback`. Sus parámetros se trasladaron a `.local/reduniv.env`, un archivo privado ignorado por Git. El documento de entrega `2FA-Reduniv.txt` también se excluye del repositorio porque contiene el secreto.
 
-Se verificaron el discovery y las claves públicas (HTTP 200), el inicio del flujo desde SEP (HTTP 303), PKCE S256, state, nonce y la cookie de transacción. RedUniv aceptó la solicitud y mostró su formulario de acceso sin errores de cliente o redirect URI. Estas comprobaciones no acreditan todavía el secreto, el segundo factor, los claims, la renovación o el retorno autenticado: falta completar el acceso con una cuenta institucional.
+Se verificaron el discovery y las claves públicas (HTTP 200), el inicio del flujo desde SEP (HTTP 303), PKCE S256, state, nonce y la cookie de transacción. El propietario completó después la autenticación institucional, incluido el segundo factor y el retorno a SEP. La referencia de diagnóstico permitió identificar un rechazo por falta del rol general del cliente antes del acceso satisfactorio. Siguen pendientes recorridos específicos de renovación, revocación y cierre central de sesión.
 
 El arranque local preparado se ejecuta desde la raíz con `node .local/start-reduniv.mjs`, requiere que siga disponible la base PostgreSQL local existente y que estén libres los puertos 6786, 6788 y 6789. Usa las compilaciones existentes y conserva los datos. El script no detiene PostgreSQL al cerrar. No ejecutar simultáneamente con `.local/resume-demo.mjs`, que inicia el modo demo en los mismos puertos.
 

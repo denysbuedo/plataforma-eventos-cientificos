@@ -1,6 +1,6 @@
 # Inicio de sesión, usuarios y roles
 
-Estado: acceso personal y administración de roles implementados. Los proveedores institucional/Google conservan su activación pendiente. La demo utiliza cuentas de prueba explícitas; no sustituye la autenticación de producción.
+Estado: acceso personal y administración de roles implementados. El acceso local con RedUniv fue validado por el propietario; Google conserva su activación pendiente. La demo utiliza cuentas de prueba explícitas; no sustituye la autenticación de producción.
 
 ## Entrar con una cuenta
 
@@ -8,9 +8,13 @@ El acceso real ofrece **RedUniv** y **Google** cuando están configurados. El pr
 
 La demo muestra nombres de cuentas independientes, leídos desde sus perfiles. Seleccionar una no crea roles. Las cuentas de revisión tampoco se convierten en revisoras de cualquier evento por entrar con ellas. En la instalación local los nombres pueden haber sido modificados durante pruebas; se muestran los actuales.
 
-Sin destino específico, la entrada muestra **Mis accesos**. Si se abrió un enlace a un evento/módulo, se conserva ese destino y el servidor valida sus permisos. La lengua elegida conserva el destino. Cerrar sesión sigue disponible en el menú de la cuenta.
+Sin destino específico, la entrada muestra **Inicio**, con las funciones disponibles según las responsabilidades actuales. Si se abrió un enlace a un evento/módulo, se conserva ese destino y el servidor valida sus permisos. La lengua elegida conserva el destino. Cerrar sesión sigue disponible en el menú de la cuenta.
 
-## Mis accesos
+## Inicio según responsabilidades
+
+La pantalla ofrece acciones concretas, sin explicaciones técnicas sobre asignaciones. El administrador ve gestión de eventos, usuarios, invitaciones y configuración de organización. El organizador dispone de gestión, trabajos recibidos, revisión científica y programa de sus eventos. Las personas invitadas o aceptadas como revisoras tienen su entrada de revisión; los acreditadores, la acreditación. Se combinan las opciones cuando la persona tiene varias responsabilidades. Las opciones personales incluyen trabajos, inscripción y certificados por evento; una cuenta sin eventos recibe una indicación y un enlace para completar su perfil.
+
+El nombre permanece en la cabecera de cuenta. La navegación personal usa **Inicio**, muestra la gestión únicamente cuando corresponde y oculta «Mis revisiones» si no existe invitación o participación en el comité. Ocultar enlaces no sustituye la autorización de la API. La ruta interna `tab=access` se conserva para mantener enlaces existentes.
 
 La cuenta consulta sus eventos de la organización actual y sus asignaciones vigentes, con enlaces a gestión, trabajos, revisiones y acreditación. La consulta incluye relaciones científicas e inscripciones propias aunque no exista una membresía artificial de gestión. No devuelve títulos privados de trabajos ni información de otras personas. El ámbito de otra organización se consulta desde su propio dominio; los enlaces A/B solo existen para la demo.
 

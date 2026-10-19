@@ -1,6 +1,6 @@
 'use client';
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from 'react';
-import type {SessionView} from '@sep/contracts';
+import type {MyAccess} from '@sep/contracts';
 import { Brand, Icon } from '@sep/ui';
 import { webCopy, type Locale } from '@sep/i18n';
 import AuthorshipNav from './authorship-nav';
@@ -26,19 +26,23 @@ export const participantCopy = {
   es: { space:'Mi espacio', account:'Opciones de mi cuenta', home:'SEP · Inicio de Mi espacio', navigation:'Participación en el evento', public:'Ir al portal público', noEvent:'Selecciona un evento desde su portal para consultar tus trabajos y autorías.' },
   en: { space:'My workspace', account:'My account options', home:'SEP · My workspace home', navigation:'Event participation', public:'Go to public portal', noEvent:'Select an event from its portal to view your works and authorship.' },
 } as const;
-export default function ParticipantShell({children,person,locale,contextKey,eventId,tab,publicUrl,busy=false,onNavigate,onCurrentWorks}: {
+export default function ParticipantShell({children,person,locale,contextKey,eventId,tab,publicUrl,busy=false,onNavigate,onCurrentWorks,initialAccess}: {
   children:ReactNode; person:{name:string}; locale:Locale; contextKey:string; eventId?:string|null; tab:'access'|'payments'|'sessions'|'posters'|'works'|'authorship'|'profile'|'reviews'|'participation'|'registration'|'accreditation'|'certificates'|'notifications'|'publications'|'attendance'; publicUrl:string;
   busy?:boolean; onNavigate?:Guard; onCurrentWorks?:()=>void;
+  initialAccess?:MyAccess;
 }) {
   const text=webCopy[locale], copy=participantCopy[locale];
-  const [canAccredit,setCanAccredit]=useState(false);
-  useEffect(()=>{let active=true;if(eventId)void fetch(`/api/backend/events/${eventId}/session?event=${encodeURIComponent(contextKey)}&lang=${locale}`).then(async response=>{if(response.ok){const session:SessionView=await response.json();if(active)setCanAccredit(!!session.canAccredit);}}).catch(()=>{});return()=>{active=false;};},[eventId,contextKey,locale]);
+  const [access,setAccess]=useState(initialAccess);
+  useEffect(()=>{if(initialAccess)return;const controller=new AbortController();void fetch(`/api/backend/me/access?event=${encodeURIComponent(contextKey)}&lang=${locale}`,{signal:controller.signal,cache:'no-store'}).then(async response=>{if(response.ok){const value:MyAccess=await response.json();if(!controller.signal.aborted)setAccess(value);}}).catch(()=>{});return()=>controller.abort();},[initialAccess,contextKey,locale]);
+  const currentEvent=access?.events.find(event=>event.id===eventId),canAccredit=!!currentEvent?.canAccredit;
+  const canReview=currentEvent?.reviewStatus==='accepted'||currentEvent?.reviewStatus==='invited';
+  const orgKey=['orgB','b1'].includes(contextKey)?'orgB':['orgA','a1','a2'].includes(contextKey)?'orgA':'org';
   const [signingOut,setSigningOut]=useState(false), [error,setError]=useState('');
   const registeredGuard=useRef<Guard|null>(null), account=useRef<HTMLDetailsElement>(null);
   const register=useCallback((guard:Guard|null)=>{registeredGuard.current=guard;},[]);
   const prefix=`/${locale}?event=${encodeURIComponent(contextKey)}&tab=`;
   const home=prefix+'access';
-  const pageName=tab==='access'?(locale==='es'?'Mis accesos':'My access'):tab==='payments'?(locale==='es'?'Mis pagos':'My payments'):tab==='sessions'?(locale==='es'?'Mis sesiones':'My sessions'):tab==='posters'?(locale==='es'?'Mis pósteres':'My posters'):tab==='attendance'?(locale==='es'?'Acreditación del evento':'Event accreditation'):tab==='publications'?editorialCopy[locale].mine:tab==='notifications'?communicationCopy[locale].notifications:tab==='certificates'?certificateCopy[locale].mine:tab==='accreditation'?attendanceCopy[locale].mine:tab==='registration'?registrationCopy[locale].mine:tab==='participation'?programCopy[locale].participation:tab==='reviews'?reviewCopy[locale].mine:tab==='profile'?text.myProfile:tab==='works'?text.myWorks:authorshipCopy[locale].title;
+  const pageName=tab==='access'?(locale==='es'?'Inicio':'Home'):tab==='payments'?(locale==='es'?'Mis pagos':'My payments'):tab==='sessions'?(locale==='es'?'Mis sesiones':'My sessions'):tab==='posters'?(locale==='es'?'Mis pósteres':'My posters'):tab==='attendance'?(locale==='es'?'Acreditación del evento':'Event accreditation'):tab==='publications'?editorialCopy[locale].mine:tab==='notifications'?communicationCopy[locale].notifications:tab==='certificates'?certificateCopy[locale].mine:tab==='accreditation'?attendanceCopy[locale].mine:tab==='registration'?registrationCopy[locale].mine:tab==='participation'?programCopy[locale].participation:tab==='reviews'?reviewCopy[locale].mine:tab==='profile'?text.myProfile:tab==='works'?text.myWorks:authorshipCopy[locale].title;
   const names=person.name.trim().split(/\s+/u);
   const initials=[names[0],...(names.length>1?[names.at(-1)!]:[])].map(name=>Array.from(name)[0]??'').join('').toLocaleUpperCase(locale);
   function guard(action:()=>void) { if(busy||signingOut)return; (onNavigate??registeredGuard.current??((next:()=>void)=>next()))(action); }
@@ -56,14 +60,17 @@ export default function ParticipantShell({children,person,locale,contextKey,even
   },[]);
   return <NavigationGuard.Provider value={register}><div className="admin-shell participant-shell"><a className="skip-link" href="#main">{text.skip}</a>
     <aside className="sidebar"><a className="participant-brand" href={home} aria-label={copy.home} onClick={event=>{event.preventDefault();if(tab==='works'&&onCurrentWorks)onCurrentWorks();else navigate(home);}}><Brand compact/></a><p className="workspace-label">{copy.space}</p>
-      <nav aria-label={copy.navigation}><a href={prefix+'access'} className={tab==='access'?'active':undefined} aria-current={tab==='access'?'page':undefined} onClick={event=>{event.preventDefault();navigate(prefix+'access');}}><Icon name="grid" size={18}/><span>{locale==='es'?'Mis accesos':'My access'}</span></a>{eventId?<>
+      <nav aria-label={copy.navigation}><a href={prefix+'access'} className={tab==='access'?'active':undefined} aria-current={tab==='access'?'page':undefined} onClick={event=>{event.preventDefault();navigate(prefix+'access');}}><Icon name="grid" size={18}/><span>{locale==='es'?'Inicio':'Home'}</span></a>
+        {access?.organizationAdmin&&<>{(['overview','access-admin','people','organization']as const).map((item,index)=><a key={item} href={`/${locale}?event=${orgKey}&tab=${item}`} onClick={event=>{event.preventDefault();navigate(`/${locale}?event=${orgKey}&tab=${item}`);}}><Icon name={index===0?'calendar':index===3?'settings':'book'} size={18}/><span>{(locale==='es'?['Gestionar eventos','Usuarios y roles','Personas e invitaciones','Organización']:['Manage events','Users and roles','People and invitations','Organization'])[index]}</span></a>)}</>}
+        {eventId?<>
+        {currentEvent?.canOrganize&&<a href={prefix+'overview'} onClick={event=>{event.preventDefault();navigate(prefix+'overview');}}><Icon name="settings" size={18}/><span>{locale==='es'?'Gestionar evento':'Manage event'}</span></a>}
         {canAccredit&&<a href={prefix+'attendance'} className={tab==='attendance'?'active':undefined} aria-current={tab==='attendance'?'page':undefined} onClick={event=>{event.preventDefault();navigate(prefix+'attendance');}}><Icon name="check" size={18}/><span>{locale==='es'?'Acreditación del evento':'Event accreditation'}</span></a>}
         <a href={prefix+'works'} className={tab==='works'?'active':undefined} aria-current={tab==='works'?'page':undefined} onClick={event=>{event.preventDefault();if(tab==='works'&&onCurrentWorks)onCurrentWorks();else navigate(prefix+'works');}}><Icon name="book" size={18}/><span><WorkNoticesNav eventId={eventId} contextKey={contextKey} locale={locale}/></span></a>
         <a href={prefix+'registration'} className={tab==='registration'?'active':undefined} aria-current={tab==='registration'?'page':undefined} onClick={event=>{event.preventDefault();navigate(prefix+'registration');}}><Icon name="check" size={18}/><span>{registrationCopy[locale].mine}</span></a>
         <a href={prefix+'accreditation'} className={tab==='accreditation'?'active':undefined} aria-current={tab==='accreditation'?'page':undefined} onClick={event=>{event.preventDefault();navigate(prefix+'accreditation');}}><Icon name="check" size={18}/><span>{attendanceCopy[locale].mine}</span></a>
         <a href={prefix+'certificates'} className={tab==='certificates'?'active':undefined} aria-current={tab==='certificates'?'page':undefined} onClick={event=>{event.preventDefault();navigate(prefix+'certificates');}}><Icon name="book" size={18}/><span>{certificateCopy[locale].mine}</span></a>
         <a href={prefix+'authorship'} className={tab==='authorship'?'active':undefined} aria-current={tab==='authorship'?'page':undefined} onClick={event=>{event.preventDefault();navigate(prefix+'authorship');}}><Icon name="check" size={18}/><span><AuthorshipNav eventId={eventId} contextKey={contextKey} locale={locale}/></span></a>
-        <a href={prefix+'reviews'} className={tab==='reviews'?'active':undefined} aria-current={tab==='reviews'?'page':undefined} onClick={event=>{event.preventDefault();navigate(prefix+'reviews');}}><Icon name="edit" size={18}/><span><ReviewNav eventId={eventId} contextKey={contextKey} locale={locale}/></span></a>
+        {canReview&&<a href={prefix+'reviews'} className={tab==='reviews'?'active':undefined} aria-current={tab==='reviews'?'page':undefined} onClick={event=>{event.preventDefault();navigate(prefix+'reviews');}}><Icon name="edit" size={18}/><span><ReviewNav eventId={eventId} contextKey={contextKey} locale={locale}/></span></a>}
         <a href={prefix+'participation'} className={tab==='participation'?'active':undefined} aria-current={tab==='participation'?'page':undefined} onClick={event=>{event.preventDefault();navigate(prefix+'participation');}}><Icon name="calendar" size={18}/><span>{programCopy[locale].participation}</span></a>
         <a href={prefix+'payments'} className={tab==='payments'?'active':undefined} aria-current={tab==='payments'?'page':undefined} onClick={event=>{event.preventDefault();navigate(prefix+'payments');}}><Icon name="check" size={18}/><span>{locale==='es'?'Mis pagos':'My payments'}</span></a>
         {(['sessions','posters']as const).map(k=><a key={k} href={prefix+k} className={tab===k?'active':undefined} aria-current={tab===k?'page':undefined} onClick={event=>{event.preventDefault();navigate(prefix+k);}}><Icon name={k==='sessions'?'calendar':'book'} size={18}/><span>{k==='sessions'?(locale==='es'?'Mis sesiones':'My sessions'):(locale==='es'?'Mis pósteres':'My posters')}</span></a>)}
