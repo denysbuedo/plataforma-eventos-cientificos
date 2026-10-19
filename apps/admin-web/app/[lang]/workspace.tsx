@@ -1,4 +1,5 @@
 'use client';
+import ParticipantShell from './participant-shell';
 import AccessAdmin from './access-admin';
 import PaymentsManager from './payments-workspace';
 import OperationsAdmin from './operations-admin';
@@ -9,7 +10,6 @@ import {sponsorshipCopy} from './sponsorship-common';
 import EditorialAdmin from './editorial-admin';
 import {editorialCopy} from './editorial-common';
 import CommunicationsAdmin from './communications-admin';
-import NotificationNav from './notification-nav';
 import {communicationCopy} from './communications-common';
 import CertificatesAdmin from './certificates-admin';
 import {certificateCopy} from './certificates-common';
@@ -23,17 +23,16 @@ import ReviewCommittee from './peer-review-committee';
 import {reviewCopy} from './peer-review-copy';
 import { useCallback,useRef,useState } from 'react';
 import { useRouter } from 'next/navigation';
-import type { SubmissionPage, ScientificCallDraft, EventConfiguration, EventPage, EventTeam, EventView, OrganizationSettings, PeopleDirectory, PublishedSite, SessionView, SiteContent, SiteDraft } from '@sep/contracts';
+import type { MyAccess, SubmissionPage, ScientificCallDraft, EventConfiguration, EventPage, EventTeam, EventView, OrganizationSettings, PeopleDirectory, PublishedSite, SessionView, SiteContent, SiteDraft } from '@sep/contracts';
 import { webCopy, type Locale } from '@sep/i18n';
-import { Brand, Icon, StatusBadge, type IconName } from '@sep/ui';
+import { Icon, StatusBadge } from '@sep/ui';
 import People from './people';
 import Organization from './organization';
 import Configuration from './event-configuration';
 import ScientificCall from './scientific-call';
-import { authorshipCopy } from './authorship-copy';
 import SubmissionsInbox from './submissions-inbox';
 
-type Props = { initialWorkId?:string; locale: Locale; contextKey: string; tab: string; session: SessionView | null; events: EventPage; site: SiteDraft | null; team: EventTeam | null; directory: PeopleDirectory | null; organization: OrganizationSettings | null; configuration: EventConfiguration | null; scientificCall: ScientificCallDraft | null; inbox: SubmissionPage | null;
+type Props = { initialAccess?:MyAccess; initialWorkId?:string; locale: Locale; contextKey: string; tab: string; session: SessionView | null; events: EventPage; site: SiteDraft | null; team: EventTeam | null; directory: PeopleDirectory | null; organization: OrganizationSettings | null; configuration: EventConfiguration | null; scientificCall: ScientificCallDraft | null; inbox: SubmissionPage | null;
   profile: { id: string; name: string } | null;
   denied: boolean; publicUrl: string; demo: boolean; contextHosts: Record<string, string>; contextEvents: Record<string, string> };
 type LocalizedField = 'kicker' | 'heroTitle' | 'summary' | 'about' | 'call' | 'venue';
@@ -101,12 +100,6 @@ export default function Workspace(props: Props) {
     catch (error) { setNotice({ error: true, message: error instanceof Error ? error.message : text.serviceHelp }); }
     finally { setBusy(null); }
   }
-  async function logout() {
-    if(['program','registrations','attendance','certification','communications','editorial','sponsorship','operations','gallery','reports','payments-admin','access-admin'].includes(currentTab)&&programGuard.current&&!programGuard.current.confirm())return;
-    try{const response=await fetch(`/api/auth/logout?lang=${locale}`,{method:'POST'});if(!response.ok)throw new Error(text.serviceHelp);const data=await response.json();window.location.assign(data.redirectTo??`/${locale}`);}
-    catch{programGuard.current?.reset();setNotice({error:true,message:text.serviceHelp});}
-  }
-
   async function assignOrganizer(personId: string) {
     if (!site || !personId) return;
     setBusy('team'); setNotice(null);
@@ -125,26 +118,14 @@ export default function Workspace(props: Props) {
     catch (error) { setNotice({ error: true, message: error instanceof Error ? error.message : text.serviceHelp }); }
     finally { setBusy(null); }
   }
-  const navigation: { id: string; label: string; icon: IconName }[] = [
-    {id:'access',label:locale==='es'?'Inicio':'Home',icon:'grid' as const},{ id: 'profile', label: text.myProfile, icon: 'settings' as const }, ...(session?.eventId ? [{ id: 'works', label: text.myWorks, icon: 'book' as const }, { id:'authorship',label:authorshipCopy[locale].title,icon:'book' as const },{id:'accreditation',label:attendanceCopy[locale].mine,icon:'check' as const},{id:'registration',label:registrationCopy[locale].mine,icon:'check' as const},{id:'publications',label:editorialCopy[locale].mine,icon:'book' as const},{id:'notifications',label:communicationCopy[locale].notifications,icon:'book' as const},{id:'participation',label:programCopy[locale].participation,icon:'calendar' as const}] : []), ...(session?.canEdit ? [{id:'payments-admin',label:locale==='es'?'Cobros y pagos':'Charges and payments',icon:'check' as const},{id:'operations',label:locale==='es'?'Logística y sesiones':'Logistics and sessions',icon:'calendar' as const},{id:'gallery',label:locale==='es'?'Galería de pósteres':'Poster gallery',icon:'book' as const},{id:'reports',label:locale==='es'?'Indicadores e informes':'Indicators and reports',icon:'grid' as const},{id:'sponsorship',label:sponsorshipCopy[locale].title,icon:'globe' as const},{ id: 'submissions', label: text.receivedWorks, icon: 'book' as const },{id:'review',label:reviewCopy[locale].committee,icon:'check' as const},{id:'editorial',label:editorialCopy[locale].title,icon:'book' as const},{id:'communications',label:communicationCopy[locale].title,icon:'book' as const},{id:'certification',label:certificateCopy[locale].title,icon:'book' as const},{id:'attendance',label:attendanceCopy[locale].title,icon:'check' as const},{id:'registrations',label:registrationCopy[locale].title,icon:'check' as const},{id:'program',label:programCopy[locale].title,icon:'calendar' as const}] : []), { id: 'overview', label: text.overview, icon: 'grid' }, { id: 'call', label: text.scientificCall, icon: 'book' }, { id: 'content', label: text.content, icon: 'edit' },
-    { id: 'appearance', label: text.appearance, icon: 'palette' }, { id: 'data', label: text.eventData, icon: 'settings' },
-    ...(session?.organizationAdmin && site ? [{ id: 'team', label: text.team, icon: 'grid' as const }] : []),
-    ...(session?.organizationAdmin ? [{id:'access-admin',label:locale==='es'?'Usuarios y roles':'Users and roles',icon:'lock' as const},{ id: 'people', label: text.people, icon: 'book' as const }] : []),
-    ...(session?.organizationAdmin ? [{ id: 'organization', label: text.organization, icon: 'settings' as const }] : []),
-  ];
-  const contextNames: Record<string, string> = { a1: 'Biosfera 2026', a2: locale === 'es' ? 'Ciencia Abierta 2027' : 'Open Science 2027', b1: 'Horizontes 2026', orgA: locale === 'es' ? 'Organización A' : 'Organization A' };
-  if (site && !Object.hasOwn(contextNames, contextKey)) contextNames[contextKey] = locale === 'es' ? site.event.nameEs : site.event.nameEn;
   function change(field: keyof SiteContent, value: string | string[]) { setContent((current) => current ? { ...current, [field]: value } : current); }
   const localizedKey = (field: LocalizedField) => `${field}${editLanguage === 'es' ? 'Es' : 'En'}` as keyof SiteContent;
   const heading = currentTab==='access-admin'?[locale==='es'?'Usuarios y roles':'Users and roles',locale==='es'?'Gestiona la administración de la organización y consulta las asignaciones por evento.':'Manage organization administrators and view assignments per event.']:currentTab==='payments-admin'?[locale==='es'?'Cobros y pagos':'Charges and payments',locale==='es'?'Tarifas, medios de pago y verificación de cobros por moneda.':'Fees, payment methods and charge verification by currency']:currentTab==='operations'?[locale==='es'?'Logística y sesiones':'Logistics and sessions',locale==='es'?'Recursos, cupos y accesos privados.':'Resources, capacity and private access.']:currentTab==='gallery'?[locale==='es'?'Galería de pósteres':'Poster gallery',locale==='es'?'Revisa y publica los documentos autorizados.':'Review and publish authorized documents.']:currentTab==='reports'?[locale==='es'?'Indicadores e informes':'Indicators and reports',locale==='es'?'Estado del evento y exportaciones para su seguimiento.':'Event status and tracking exports.']:currentTab==='sponsorship'?[sponsorshipCopy[locale].title,sponsorshipCopy[locale].help]:currentTab==='editorial'?[editorialCopy[locale].title,editorialCopy[locale].help]:currentTab==='communications'?[communicationCopy[locale].title,communicationCopy[locale].help]:currentTab==='certification'?[certificateCopy[locale].title,certificateCopy[locale].help]:currentTab==='attendance'?[attendanceCopy[locale].title,attendanceCopy[locale].help]:currentTab==='registrations'?[registrationCopy[locale].title,registrationCopy[locale].help]:currentTab==='program'?[programCopy[locale].title,programCopy[locale].help]:currentTab === 'review'?[reviewCopy[locale].committee,reviewCopy[locale].committeeHelp]:currentTab === 'submissions' ? [text.receivedWorks, text.staffScopeHelp] : currentTab === 'call' ? [text.scientificCallTitle, text.scientificCallHelp] : currentTab === 'organization' ? [text.organizationTitle, text.organizationHelp] : currentTab === 'people' ? [text.peopleTitle, text.peopleHelp] : currentTab === 'team' ? [text.teamTitle, text.teamHelp] : currentTab === 'content' ? [text.editorialTitle, text.editorialHelp] : currentTab === 'appearance' ? [text.paletteTitle, text.paletteHelp] : currentTab === 'data' ? [text.dataTitle, text.dataHelp] : [text.hello, text.overviewHelp];
   const field = (kind: LocalizedField, label: string, multiline = false) => content && <Field key={kind} label={label} value={content[localizedKey(kind)] as string} onChange={(value) => change(localizedKey(kind), value)} disabled={!canEdit} multiline={multiline} />;
-  return <div className="admin-shell"><a href="#main" className="skip-link">{text.skip}</a><aside className="sidebar"><Brand compact /><p className="workspace-label">{text.workspace}</p>
-    <nav aria-label={text.workspace}>{navigation.filter((item) => ['access','access-admin','overview', 'people', 'organization', 'works', 'profile'].includes(item.id) || !!site).map((item) => <a key={item.id} href={`/${locale}?event=${['access-admin','people', 'organization'].includes(item.id) ? demo ? 'orgA' : 'org' : contextKey}&tab=${item.id}`} className={currentTab === item.id ? 'active' : ''} aria-label={item.label}><Icon name={item.icon} size={18} /><span>{item.id==='notifications'&&site?<NotificationNav eventId={site.event.id} contextKey={contextKey} locale={locale}/>:item.label}</span></a>)}</nav>
-    <div className="sidebar-bottom"><a href={siteUrl}><Icon name="external" size={16} /><span>{text.publicPortal}</span></a><button onClick={logout} aria-label={text.logout}><Icon name="logout" size={16} /><span>{text.logout}</span></button>{demo && <small>{text.demo}</small>}</div>
-  </aside><div className="admin-area"><header className="admin-topbar"><div className="breadcrumb">{text.workspace} <strong>/ {navigation.find((item) => item.id === currentTab)?.label ?? text.overview}</strong></div><div className="topbar-right"><div className="language-switch"><a href={`/es?event=${contextKey}&tab=${currentTab}`} className={locale === 'es' ? 'active' : ''}>ES</a><a href={`/en?event=${contextKey}&tab=${currentTab}`} className={locale === 'en' ? 'active' : ''}>EN</a></div>{session?.eventId&&<NotificationNav eventId={session.eventId} contextKey={contextKey} locale={locale} variant="bell" onNavigate={href=>{if(programGuard.current&&!programGuard.current.confirm())return;window.location.assign(href);}}/>}<div className="user-chip"><span className="avatar">{person?.name.slice(0, 2).toUpperCase() ?? 'SE'}</span><span>{person?.name ?? 'SEP'}</span></div></div></header>
-    <main id="main" className="admin-main"><div className="context-row">{demo && <label className="context-select"><span>{text.search}</span><select value={contextKey} onChange={(e) => {if(['program','registrations','attendance','certification','communications','editorial','sponsorship','operations','gallery','reports','payments-admin','access-admin'].includes(currentTab)&&programGuard.current&&!programGuard.current.confirm())return;router.push(`/${locale}?event=${e.target.value}&tab=overview`);}}>{Object.entries(contextNames).map(([key, name]) => <option key={key} value={key}>{name}</option>)}</select></label>}{site && <StatusBadge status={site.event.status} label={text[site.event.status]} />}</div>
+  return <ParticipantShell person={person??{name:'SEP'}} initialAccess={props.initialAccess} locale={locale} contextKey={contextKey} eventId={session?.eventId} tab={currentTab} pageLabel={!site&&currentTab==='overview'?(locale==='es'?'Gestionar eventos':'Manage events'):heading[0]} publicUrl={siteUrl} busy={!!busy||configurationStatus.busy} fallbackGuard={next=>{if(programGuard.current&&!programGuard.current.confirm())return;if((dirty||metadataUnsaved)&&!window.confirm(locale==='es'?'Tienes cambios sin guardar. ¿Quieres descartarlos y salir?':'You have unsaved changes. Discard them and leave?')){programGuard.current?.reset();return;}next();}}>
+      {site&&<div className="context-row"><StatusBadge status={site.event.status} label={text[site.event.status]}/></div>}
       {denied ? <div className="empty-state"><Icon name="lock" size={40} /><h1>{!session && person ? text.accountNotLinked : session && !session.roles.length ? text.awaitingAssignment : text.accessTitle}</h1><p>{!session && person ? text.accountNotLinkedHelp : session && !session.roles.length ? text.awaitingAssignmentHelp : text.accessHelp}</p><a href={siteUrl} className="button button-primary">{text.publicPortal}<Icon name="arrow" size={15} /></a></div> : <>
-      <div className="admin-heading"><div><span className="eyebrow">{site?.event.nameEs ?? text.platform}</span><h1>{heading[0]}</h1><p>{heading[1]}</p></div>{currentTab === 'overview' && session?.organizationAdmin && !session.eventId && <button onClick={() => setCreating(!creating)} className="button button-primary"><Icon name="plus" size={16} />{text.createEvent}</button>}{currentTab !== 'overview' && site?.publishedAt && <a href={siteUrl} target="_blank" rel="noreferrer" className="button button-outline">{text.viewSite}<Icon name="external" size={14} /></a>}</div>
+      <div className="admin-heading"><div><span className="eyebrow">{site?.event.nameEs ?? text.platform}</span><h1>{!site&&currentTab==='overview'?(locale==='es'?'Gestionar eventos':'Manage events'):heading[0]}</h1><p>{heading[1]}</p></div>{currentTab === 'overview' && session?.organizationAdmin && !session.eventId && <button onClick={() => setCreating(!creating)} className="button button-primary"><Icon name="plus" size={16} />{text.createEvent}</button>}{currentTab !== 'overview' && site?.publishedAt && <a href={siteUrl} target="_blank" rel="noreferrer" className="button button-outline">{text.viewSite}<Icon name="external" size={14} /></a>}</div>
       {notice && <div className={`notice ${notice.error ? 'notice-error' : ''}`} role={notice.error ? 'alert' : 'status'}>{notice.message}</div>}
       {currentTab==='access-admin'&&session?.organizationAdmin&&<AccessAdmin onGuardChange={registerProgramGuard} locale={locale} contextKey={contextKey} contextEvents={contextEvents}/>}
       {currentTab === 'people' && props.directory && <People initial={props.directory} locale={locale} contextKey={contextKey} />}
@@ -193,5 +174,5 @@ export default function Workspace(props: Props) {
         </section><aside className="panel editor-aside"><div className={`mini-preview ${content.theme}`}><small>{content.acronym}</small><strong>{locale === 'es' ? content.heroTitleEs : content.heroTitleEn}</strong></div><h3>{text.publicPortal}</h3><p>{text.editorialHelp}</p>{site.publishedAt && <a href={siteUrl} target="_blank" rel="noreferrer" className="button button-outline">{text.viewSite}<Icon name="external" size={13} /></a>}<div className="revision-info"><span>{text.revision}: {site.revision}</span><span>{text.lastPublication}: {site.publishedAt ? new Intl.DateTimeFormat(locale).format(new Date(site.publishedAt)) : text.notPublished}</span></div></aside></div>
       </>}
     </>}
-    </main></div></div>;
+    </ParticipantShell>;
 }

@@ -436,6 +436,9 @@
                           "status": {
                             "type": "string"
                           },
+                          "personal": {
+                            "type": "boolean"
+                          },
                           "roles": {
                             "type": "array",
                             "items": {
@@ -458,6 +461,7 @@
                           "nameEs",
                           "nameEn",
                           "status",
+                          "personal",
                           "roles",
                           "reviewStatus",
                           "canOrganize",

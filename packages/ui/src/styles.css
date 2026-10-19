@@ -811,3 +811,9 @@ dialog::backdrop { background:rgb(18 36 28 / 45%); }
 
 .access-roster-filters { display:grid; grid-template-columns:minmax(0,2fr) minmax(0,1fr); gap:16px; margin-block:20px; }
 @media(max-width:640px) { .access-roster-filters { grid-template-columns:1fr; } }
+
+.sidebar-group-label { margin:16px 12px 4px; color:#afcbbb; font-size:10px; text-transform:uppercase; letter-spacing:.08em; }
+@media(min-width:581px) { .participant-shell>.sidebar>nav { display:flex; flex-direction:column; flex:1; min-height:0; overflow-y:auto; overscroll-behavior:contain; scrollbar-width:thin; } .participant-shell>.sidebar>.sidebar-bottom { flex-shrink:0; margin-top:18px; } }
+@media(max-width:850px) { .sidebar-group-label { display:none; } }
+
+.participant-overview .panel>.panel-heading { padding:22px 24px; }

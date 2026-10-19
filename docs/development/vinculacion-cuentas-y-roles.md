@@ -58,7 +58,9 @@ El listado permite buscar por nombre o correo y filtrar por administración, org
 
 Reincorporar una membresía de organización inactiva desactiva su administración anterior antes de reactivarla; la asignación debe concederse de nuevo expresamente. Los permisos en eventos se conservan y la limpieza de los permisos anteriores queda en el historial de incorporación. La operación se coordina con las asignaciones de administración mediante el bloqueo de organización.
 
-Inicio permite al administrador descubrir todos los eventos de su organización sin otorgarle organización científica. Mi espacio muestra el contexto del evento y permite cambiar entre los eventos disponibles respetando la confirmación de cambios pendientes. Las funciones de varios roles se acumulan; no se cambia de identidad para pasar de autor a revisor u organizador. Las autorizaciones de la API se vuelven a comprobar en cada petición.
+Inicio es personal y común para todas las cuentas: perfil y eventos con actividad propia. El campo `personal` de cada evento distingue participaciones de los eventos visibles únicamente por administración. Inicio no presenta roles, permisos ni accesos de gestión. El administrador encuentra el catálogo completo en **Gestionar eventos**, desde el lateral, sin recibir organización científica automáticamente.
+
+Las páginas personales y de gestión comparten `ParticipantShell`: mismo lateral, cabecera, selector de idioma y menú de cuenta. **Mi perfil** y **Cerrar sesión** permanecen en ese menú superior, nunca reaparecen como elementos del lateral al cambiar de página. El lateral añade las secciones de organización y gestión del evento según las asignaciones; los elementos personales conservan su orden. El contexto del evento permite cambiar entre los eventos disponibles fuera de Inicio y respeta los cambios pendientes. Las funciones de varios roles se acumulan; no se cambia de identidad para pasar de autor a revisor u organizador. Las autorizaciones de la API se vuelven a comprobar en cada petición.
 
 ## Correo principal para notificaciones
 

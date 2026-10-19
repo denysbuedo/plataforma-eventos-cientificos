@@ -50,6 +50,7 @@ export default async function AdminPage({ params, searchParams }: { params: Prom
   let profile: { id: string; name: string } | null = null;
   let session: SessionView | null = null; let events: EventPage = { data: [], limit: 20, offset: 0 }; let site: SiteDraft | null = null; let denied = false;
   let binding;
+  let initialAccess:MyAccess|undefined;
   let team: EventTeam | null = null;
   let directory: PeopleDirectory | null = null;
   let organization: OrganizationSettings | null = null;
@@ -116,6 +117,7 @@ export default async function AdminPage({ params, searchParams }: { params: Prom
       if(access.canAccredit&&!access.canRead){const person=(await apiRequest<{person:AuthorAccount}>(binding,'me',{token,locale})).person;return <ParticipantShell person={person} locale={locale} contextKey={contextKey} eventId={binding.eventId} tab="attendance" publicUrl={publicUrl?`${publicUrl}/${locale}?event=${encodeURIComponent(contextKey)}`:''}><div className="admin-heading"><div><h1>{locale==='es'?'Acreditación del evento':'Event accreditation'}</h1><p>{locale==='es'?'Consulta participantes y confirma entradas.':'Look up participants and confirm entries.'}</p></div></div><AttendanceAdmin eventId={binding.eventId} contextKey={contextKey} locale={locale}/></ParticipantShell>;}
     }
     if (institutional) profile = (await apiRequest<{ person: { id: string; name: string } }>(binding, 'me', { token, locale })).person;
+    initialAccess=await apiRequest<MyAccess>(binding,'me/access',{token,locale});
     session = await apiRequest<SessionView>(binding, binding.eventId ? `events/${binding.eventId}/session` : 'session', { token, locale });
     if (!session.canRead) denied = true;
     else {
@@ -133,6 +135,6 @@ export default async function AdminPage({ params, searchParams }: { params: Prom
     if (error instanceof ApiTransportError && [403, 404].includes(error.status)) denied = true;
     else return <main className="public-empty"><div className="empty-state"><h1>{text.serviceTitle}</h1><p>{text.serviceHelp}</p><a href={`/${locale}`} className="button button-primary">{text.retry}</a></div></main>;
   }
-  return <Dashboard key={contextKey} locale={locale} contextKey={contextKey} tab={query.tab ?? 'overview'} initialWorkId={query.work} session={session} profile={profile}
+  return <Dashboard initialAccess={initialAccess} key={contextKey} locale={locale} contextKey={contextKey} tab={query.tab ?? 'overview'} initialWorkId={query.work} session={session} profile={profile}
     events={events} site={site} team={team} directory={directory} organization={organization} configuration={configuration} scientificCall={scientificCall} inbox={inbox} denied={denied} publicUrl={publicUrl} demo={!!config} contextHosts={config?.hosts ?? {}} contextEvents={config?.events ?? {}} />;
 }
