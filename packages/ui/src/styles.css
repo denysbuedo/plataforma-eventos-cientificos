@@ -258,11 +258,14 @@ dialog::backdrop { background:rgb(18 36 28 / 45%); }
 .profile-section { border-top:1px solid var(--line); margin-top:24px; padding-top:22px; }
 .profile-section-heading { display:flex; align-items:center; gap:10px; }
 .profile-section h3 { font-family:inherit; font-size:17px; font-weight:650; line-height:1.5; margin:0; }
+.profile-subsection { margin-top:20px; }
+.profile-subsection+.profile-subsection { border-top:1px solid var(--line); padding-top:20px; }
+.profile-subsection h4 { font-family:inherit; font-size:15px; font-weight:650; line-height:1.5; margin:0; }
 .profile-count { display:inline-flex; font-size:11px; padding:2px 7px; background:#f0f3ed; color:var(--muted); border-radius:99px; }
 .profile-affiliations { list-style:none; display:grid; gap:12px; margin:16px 0 0; padding:0; }
 .profile-affiliations li { display:flex; gap:14px; align-items:flex-start; padding:16px; border:1px solid #e5ebe2; border-radius:9px; }
 .profile-affiliations li>div { min-width:0; overflow-wrap:anywhere; }
-.profile-affiliations strong { font-size:15px; font-weight:500; line-height:1.6; }
+.profile-affiliations strong { font-size:14px; font-weight:500; line-height:1.6; }
 .profile-affiliations p { display:flex; align-items:center; gap:6px; font-size:12px; color:var(--muted); margin-top:5px; }
 .profile-affiliation-icon,.profile-note-icon { display:inline-grid; place-items:center; flex-shrink:0; width:36px; height:36px; border-radius:9px; background:#eef3e9; color:var(--green); }
 .profile-empty { text-align:center; padding:30px 20px; margin-top:16px; background:#f8faf6; border:1px dashed var(--line); border-radius:9px; }
@@ -415,7 +418,7 @@ dialog::backdrop { background:rgb(18 36 28 / 45%); }
 .profile-qualification-title{grid-column:1/-1}
 .profile-qualification{display:flex;flex-direction:column;gap:.3rem;padding:.85rem 0;border-bottom:1px solid var(--line);overflow-wrap:anywhere}
 .profile-qualification:last-child{border-bottom:0;padding-bottom:0}
-.profile-qualification strong{font-size:15px;font-weight:500;line-height:1.6}
+.profile-qualification strong{font-size:14px;font-weight:500;line-height:1.6}
 .profile-qualification span{font-size:13px;line-height:1.65;color:var(--muted,#596579)}
 .profile-entry-label{font-size:13px;font-weight:600;line-height:1.5;color:var(--muted)}
 .profile-legacy{margin:1rem 0;padding:1rem;border:1px solid var(--line);border-radius:12px}
