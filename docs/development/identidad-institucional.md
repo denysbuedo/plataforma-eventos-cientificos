@@ -1,6 +1,6 @@
 # Identidad institucional: Keycloak de RedUniv
 
-Estado: integración implementada y compilada; conexión funcional pendiente. Las nuevas pruebas se posponen por indicación del propietario.
+Estado: integración implementada y compilada; cliente de desarrollo local configurado. El 18 de octubre de 2026 se comprobó que SEP inicia el flujo con `sep-admin-dev` y RedUniv muestra el formulario institucional. Falta completar la autenticación con una cuenta, el segundo factor y el retorno a SEP. Véase el [estado de activación local](reduniv-y-google.md#activación-local-de-reduniv--18-de-octubre-de-2026).
 
 Para usuarios internacionales, la [guía RedUniv y Google](reduniv-y-google.md) describe el acceso Google directo con callback y credenciales de SEP. Se mantienen dos opciones independientes; Google no se configura como broker en Keycloak ni requiere cuentas LDAP. Los detalles de esta guía corresponden al flujo RedUniv.
 
@@ -14,7 +14,7 @@ Configuración ajustada a la guía institucional [Entrar con RedUniv](../referen
 4. Audience de la API, distinta del Client ID web. El cliente debe emitir access tokens JWT con esa audience y los claims `sub`, `exp`, `iat`, `name` o `preferred_username`, `email` y `email_verified`.
 5. Roles generales del cliente: se exige uno de `OIDC_ALLOWED_CLIENT_ROLES`, dentro de `resource_access[OIDC_ROLE_CLIENT_ID].roles`. La propuesta permite ROLE_USER o ROLE_ADMIN. Ninguno concede automáticamente administración de organizaciones o eventos.
 
-Clientes propuestos por ambiente: `sep-admin-dev`, `sep-admin-test` y `sep-admin-prod`; audience propuesta: `sep-api`. Son nombres para solicitar a Identidad, no clientes comprobados en el proveedor. Cada ambiente tendrá secreto, URLs y sesiones independientes.
+Cliente local comunicado por Identidad: `sep-admin-dev`, con audience `sep-api`; el proveedor acepta la solicitud de autorización con su retorno local. `sep-admin-test` y `sep-admin-prod` siguen siendo propuestas. Cada ambiente tendrá secreto, URLs y sesiones independientes.
 
 ## Preparar el cliente para revisión
 

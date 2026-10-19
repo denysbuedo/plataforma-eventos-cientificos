@@ -1,6 +1,6 @@
 # Solicitud de incorporación de SEP a RedUniv
 
-Preparado para revisión; no acredita que los clientes ya existan. Referencia: [Entrar con RedUniv](../reference/entrar-con-reduniv.md).
+Identidad comunicó el 18 de octubre de 2026 la creación de `sep-admin-dev` con el retorno local indicado. SEP ya inicia el flujo y obtiene el formulario institucional; falta validar la autenticación completa con una cuenta. Los clientes de pruebas compartidas y producción siguen siendo propuestas. Referencia: [Entrar con RedUniv](../reference/entrar-con-reduniv.md).
 
 Proveedor: `https://identidad.reduniv.edu.cu/realms/reduniv-institucional`.
 

@@ -1,6 +1,16 @@
 # Dos accesos independientes: RedUniv y Google directo
 
-Estado: ambos flujos implementados en SEP y pendientes de credenciales, activación y validación funcional. La propuesta anterior de Google mediante Keycloak queda retirada por indicación del propietario. No se ha modificado cursos-enlinea, Keycloak ni Google Cloud.
+Estado: ambos flujos implementados en SEP. RedUniv está configurado y habilitado para desarrollo local con `sep-admin-dev`; Google sigue pendiente de credenciales y activación. La autenticación completa y el retorno de RedUniv requieren validación con una cuenta institucional. La propuesta anterior de Google mediante Keycloak queda retirada por indicación del propietario. No se ha modificado cursos-enlinea, Keycloak ni Google Cloud.
+
+## Activación local de RedUniv — 18 de octubre de 2026
+
+Identidad comunicó la creación de `sep-admin-dev` en el realm institucional, con callback `http://127.0.0.1:6789/api/auth/callback`. Sus parámetros se trasladaron a `.local/reduniv.env`, un archivo privado ignorado por Git. El documento de entrega `2FA-Reduniv.txt` también se excluye del repositorio porque contiene el secreto.
+
+Se verificaron el discovery y las claves públicas (HTTP 200), el inicio del flujo desde SEP (HTTP 303), PKCE S256, state, nonce y la cookie de transacción. RedUniv aceptó la solicitud y mostró su formulario de acceso sin errores de cliente o redirect URI. Estas comprobaciones no acreditan todavía el secreto, el segundo factor, los claims, la renovación o el retorno autenticado: falta completar el acceso con una cuenta institucional.
+
+El arranque local preparado se ejecuta desde la raíz con `node .local/start-reduniv.mjs`, requiere que siga disponible la base PostgreSQL local existente y que estén libres los puertos 6786, 6788 y 6789. Usa las compilaciones existentes y conserva los datos. El script no detiene PostgreSQL al cerrar. No ejecutar simultáneamente con `.local/resume-demo.mjs`, que inicia el modo demo en los mismos puertos.
+
+En modo real no se aceptan cuentas demo. Una identidad institucional nueva no hereda roles ni trabajos de una cuenta de demostración por coincidencia de nombre o correo; requiere asignación explícita de permisos en SEP. La cuenta necesita además un rol general permitido de `sep-admin-dev` (`ROLE_USER` o `ROLE_ADMIN`) en el token de acceso. Google permanece deshabilitado hasta disponer de su configuración propia.
 
 ## Referencia revisada
 
@@ -68,6 +78,6 @@ Las invitaciones exigen correo verificado coincidente tanto para Google como par
 
 Cerrar una sesión Google elimina la sesión local; no cierra la cuenta global de Google. Las credenciales internas ya emitidas pueden durar hasta cinco minutos después de cerrar sesión. Cambios o revocaciones en Google se comprueban al volver a autenticar; no se consulta continuamente Google durante la sesión propia de ocho horas. Esta política es distinta de RedUniv, que conserva renovación y logout central según la guía institucional.
 
-Faltan configuración real de clientes, secretos, orígenes compartidos/productivos y validación de extremo a extremo, pospuesta por solicitud del propietario. Google cubre personas con cuenta Google; admitir personas sin Google o RedUniv requerirá otro método posterior. El enlace explícito de identidades y la conservación de una sola persona entre proveedores también quedan pendientes.
+Faltan las credenciales y activación de Google, los orígenes y clientes compartidos/productivos y la validación de extremo a extremo de ambos proveedores. Google cubre personas con cuenta Google; admitir personas sin Google o RedUniv requerirá otro método posterior. El enlace explícito de identidades y la conservación de una sola persona entre proveedores también quedan pendientes.
 
 Referencias: [OIDC de Google](https://developers.google.com/identity/openid-connect), [OAuth web de Google](https://developers.google.com/identity/protocols/oauth2/web-server), [openid-client](https://github.com/panva/openid-client).

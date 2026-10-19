@@ -19,6 +19,7 @@ test-results/
 .aws/
 *.key
 *.pem
+/2FA-Reduniv.txt
 
 # Registros, archivos temporales y herramientas locales
 *.log
