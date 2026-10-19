@@ -435,7 +435,7 @@ No comprometer plazos hasta dimensionar equipo y pilotos. Equipo mínimo por cap
 
 # 20. Criterio de producto y primeras decisiones
 
-Nombre provisional: **Scientific Events Platform (SEP)**; no fijar marca comercial. Definición: *Plataforma para gestionar integralmente el ciclo de vida de eventos científicos, académicos y profesionales, multitenant, con identidad digital, procesos editoriales, publicación de resultados, extensiones logísticas y APIs interoperables.*
+Nombre provisional: **Plataforma de Eventos Científicos (SEP)**; no fijar marca comercial. Definición: *Plataforma para gestionar integralmente el ciclo de vida de eventos científicos, académicos y profesionales, multitenant, con identidad digital, procesos editoriales, publicación de resultados, extensiones logísticas y APIs interoperables.*
 
 Referentes a imitar por función: **Indico** (integral/extensible); **EasyChair/CMT** (rigurosidad científica); **pretalx** (convocatoria y programa); **Fourwaves/Oxford Abstracts** (pósteres y experiencia digital); **Ex Ordo** (continuidad científica-operativa); **Cvent** (logística y acreditación); **pretix/Open Event** (operación/API).
 

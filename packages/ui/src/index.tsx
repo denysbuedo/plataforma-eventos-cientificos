@@ -15,7 +15,7 @@ export function Icon({ name, size = 20 }: { name: IconName; size?: number }) {
   return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d={paths[name]} /></svg>;
 }
 export function Brand({ compact = false }: { compact?: boolean }) {
-  return <span className="brand"><span className="brand-mark"><svg viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="m16 3 12 7v13l-12 7-12-7V10l12-7Zm0 0v14m12-7-12 7L4 10m12 7v13" stroke="currentColor" strokeWidth="1.7" /><path d="m10 6 12 7v13M22 6 10 13v13" stroke="currentColor" strokeOpacity=".4" /></svg></span><span>SEP{!compact && <small>Scientific Events Platform</small>}</span></span>;
+  return <span className="brand"><span className="brand-mark"><svg viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="m16 3 12 7v13l-12 7-12-7V10l12-7Zm0 0v14m12-7-12 7L4 10m12 7v13" stroke="currentColor" strokeWidth="1.7" /><path d="m10 6 12 7v13M22 6 10 13v13" stroke="currentColor" strokeOpacity=".4" /></svg></span><span>SEP{!compact && <small>Plataforma de Eventos Científicos</small>}</span></span>;
 }
 export function ScienceArt({ theme, year = '26' }: { theme: 'forest' | 'ocean'; year?: string }) {
   return <div className={`science-art art-${theme}`} aria-hidden="true">

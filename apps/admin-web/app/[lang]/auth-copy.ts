@@ -1,0 +1,26 @@
+export const authCopy = {
+  es: {
+    community: 'Comunidad científica', title: 'El conocimiento crece\ncuando nos encontramos.',
+    story: 'Presenta tus trabajos, participa en encuentros y comparte nuevas ideas con la comunidad científica.',
+    storyFooter: 'Congresos · Simposios · Encuentros', login: 'Iniciar sesión', register: 'Crear cuenta',
+    loginHelp: 'Elige cómo quieres entrar a tu espacio.', registerHelp: 'Elige cómo quieres crear tu cuenta en SEP.',
+    registrationNote: 'Al acceder por primera vez se creará tu cuenta. Después podrás completar tu perfil.',
+    newAccount: '¿Todavía no tienes cuenta?', existingAccount: '¿Ya tienes una cuenta?',
+    googleRegister: 'Registrarse con Google', redunivRegister: 'Registrarse con RedUniv',
+    googleUnavailable: 'El acceso con Google estará disponible próximamente.',
+    redunivUnavailable: 'El acceso con RedUniv no está disponible por el momento.',
+    accountNavigation: 'Acceso a tu cuenta', language: 'Idioma',
+  },
+  en: {
+    community: 'Scientific community', title: 'Knowledge grows\nwhen we come together.',
+    story: 'Submit your work, take part in events and share new ideas with the scientific community.',
+    storyFooter: 'Conferences · Symposia · Meetings', login: 'Sign in', register: 'Create account',
+    loginHelp: 'Choose how to sign in to your workspace.', registerHelp: 'Choose how to create your SEP account.',
+    registrationNote: 'Your account will be created the first time you sign in. You can then complete your profile.',
+    newAccount: 'Don’t have an account yet?', existingAccount: 'Already have an account?',
+    googleRegister: 'Sign up with Google', redunivRegister: 'Sign up with RedUniv',
+    googleUnavailable: 'Google sign-in will be available soon.',
+    redunivUnavailable: 'RedUniv sign-in is currently unavailable.',
+    accountNavigation: 'Account access', language: 'Language',
+  },
+} as const;

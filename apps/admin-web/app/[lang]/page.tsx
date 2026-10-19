@@ -32,7 +32,7 @@ import type { AuthorAccount } from '@sep/contracts';
 
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = { title: 'SEP · Workspace', robots: { index: false, follow: false } };
-export default async function AdminPage({ params, searchParams }: { params: Promise<{ lang: string }>; searchParams: Promise<{ event?: string; work?:string; tab?: string; authError?: string; authRef?: string; logoutError?: string; orcidError?: string }> }) {
+export default async function AdminPage({ params, searchParams }: { params: Promise<{ lang: string }>; searchParams: Promise<{ event?: string; work?:string; tab?: string; mode?: string; authError?: string; authRef?: string; logoutError?: string; orcidError?: string }> }) {
   const { lang } = await params;
   if (lang !== 'es' && lang !== 'en') notFound();
   const locale: Locale = lang; const text = webCopy[locale];
@@ -45,7 +45,7 @@ export default async function AdminPage({ params, searchParams }: { params: Prom
   const accounts:{id:string;name:string}[]=[];
   if(config&&!token){const binding=bindingFor((await headers()).get('host')??'',query.event??'orgA');const loaded=await Promise.all(Object.keys(config.tokens).filter(id=>['mixed','operator','admin','outsider','reviewer','reviewer2'].includes(id)).map(async id=>{try{const v=await apiRequest<{person:{name:string}}>(binding,'me',{token:config.tokens[id],locale});return {id,name:v.person.name};}catch{return null;}}));accounts.push(...loaded.filter((v):v is {id:string;name:string}=>!!v));}
   const authReference = /^[0-9a-f-]{36}$/.test(query.authRef ?? '') ? query.authRef : undefined;
-  const login = <Login locale={locale} publicUrl={publicUrl} enabled={!!config} preserveContext={!!query.event||!!query.tab} accounts={accounts} institutional={institutional} googleEnabled={googleLoginEnabled()} redunivEnabled={redunivLoginEnabled()} returnTo={returnTo} authError={!!query.authError} authReference={authReference} logoutError={!!query.logoutError} />;
+  const login = <Login locale={locale} publicUrl={publicUrl} enabled={!!config} preserveContext={!!query.event||!!query.tab} accounts={accounts} institutional={institutional} googleEnabled={googleLoginEnabled()} redunivEnabled={redunivLoginEnabled()} returnTo={returnTo} authError={!!query.authError} authReference={authReference} logoutError={!!query.logoutError} register={query.mode==='register'} />;
   if (!token) return login;
   let profile: { id: string; name: string } | null = null;
   let session: SessionView | null = null; let events: EventPage = { data: [], limit: 20, offset: 0 }; let site: SiteDraft | null = null; let denied = false;

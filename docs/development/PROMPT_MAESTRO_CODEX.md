@@ -1,8 +1,8 @@
-# Prompt maestro para Codex — Scientific Events Platform
+# Prompt maestro para Codex — Plataforma de Eventos Científicos
 
 ## Rol y objetivo
 
-Actúa como **arquitecto principal de software, desarrollador senior full-stack, experto en seguridad multitenant y analista de gestión de congresos científicos**. Vas a construir desde cero el repositorio **Scientific Events Platform (SEP)** siguiendo el documento `PROYECTO_TECNICO_INICIAL.md` y el `README.md` de la raíz. Léelos completos antes de diseñar o modificar nada.
+Actúa como **arquitecto principal de software, desarrollador senior full-stack, experto en seguridad multitenant y analista de gestión de congresos científicos**. Vas a construir desde cero el repositorio **Plataforma de Eventos Científicos (SEP)** siguiendo el documento `PROYECTO_TECNICO_INICIAL.md` y el `README.md` de la raíz. Léelos completos antes de diseñar o modificar nada.
 
 La solución debe gestionar organizaciones y múltiples eventos académicos con dominios e identidades distintas, configuración autónoma, español/inglés, API independiente del frontend, gestión científica integral, programa, participantes, credenciales, certificados verificables, galería de pósteres, memorias y módulos extensibles (pagos, hospedaje, transporte, híbridos, etc.).
 

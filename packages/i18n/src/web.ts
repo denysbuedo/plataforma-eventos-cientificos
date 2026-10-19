@@ -209,7 +209,7 @@ export const webCopy = {
     aboutLabel: 'A SPACE TO CONNECT', topics: 'Conversations that matter', callLabel: 'THE NEXT CONVERSATION STARTS WITH YOU',
     callTitle: 'Share your perspective.', contact: 'Contact the organizers', venueTitle: 'Let’s meet here.',
     connected: 'Knowledge beyond borders.', demo: 'Demonstration · all events and data are fictional',
-    platform: 'Scientific Events Platform', rights: 'A place for science and the people who make it possible.',
+    platform: 'Plataforma de Eventos Científicos', rights: 'A place for science and the people who make it possible.',
     scientificMeeting: 'SCIENTIFIC MEETING', science: 'Science', community: 'Community', future: 'Future',
     loginTitle: 'Your next meeting\nstarts here.', loginSubtitle: 'A space to organize, share, and move knowledge forward.',
     loginCard: 'Enter your workspace', loginHelp: 'Choose a profile to explore this demonstration.',

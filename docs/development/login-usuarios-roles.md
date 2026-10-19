@@ -6,6 +6,10 @@ Estado: acceso personal y administración de roles implementados. El acceso loca
 
 El acceso real ofrece **RedUniv** y **Google** cuando están configurados. El proveedor autentica a la persona. Los permisos de SEP se consultan después en la plataforma y dependen de cada organización/evento; no se elige ser administrador o revisor al iniciar sesión.
 
+La pantalla distingue **Iniciar sesión** y **Crear cuenta** (`mode=register`). Ambos usan los proveedores configurados; no solicitan contraseñas institucionales dentro de SEP. La primera autenticación válida crea la identidad de SEP. El acceso desde Crear cuenta lleva a Mi perfil, conservando el contexto de evento; usarlo con una identidad existente no crea otra cuenta. No es un registro local con correo y contraseña, que sigue pendiente. Google se muestra con su icono oficial y un aviso cuando falta su configuración; RedUniv usa el logo entregado por el propietario. Los recursos se sirven desde la aplicación, sin fuentes o imágenes remotas en la pantalla.
+
+El nombre visible del producto es **Plataforma de Eventos Científicos**, también al cambiar el idioma de la interfaz. Se conserva la sigla provisional **SEP**.
+
 La demo muestra nombres de cuentas independientes, leídos desde sus perfiles. Seleccionar una no crea roles. Las cuentas de revisión tampoco se convierten en revisoras de cualquier evento por entrar con ellas. En la instalación local los nombres pueden haber sido modificados durante pruebas; se muestran los actuales.
 
 Sin destino específico, la entrada muestra **Inicio**, con las funciones disponibles según las responsabilidades actuales. Si se abrió un enlace a un evento/módulo, se conserva ese destino y el servidor valida sus permisos. La lengua elegida conserva el destino. Cerrar sesión sigue disponible en el menú de la cuenta.

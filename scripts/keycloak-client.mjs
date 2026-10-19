@@ -8,7 +8,7 @@ if (!['dev', 'test', 'prod'].includes(environment)) throw new Error('SEP_DEPLOYM
 const clientId = process.env.OIDC_CLIENT_ID ?? `sep-admin-${environment}`;
 const audience = process.env.OIDC_AUDIENCE ?? 'sep-api';
 const configuration = {
-  clientId, name: 'Scientific Events Platform', protocol: 'openid-connect', enabled: true,
+  clientId, name: 'Plataforma de Eventos Científicos', protocol: 'openid-connect', enabled: true,
   publicClient: false, clientAuthenticatorType: 'client-secret', standardFlowEnabled: true,
   implicitFlowEnabled: false, directAccessGrantsEnabled: false, serviceAccountsEnabled: false,
   rootUrl: origin.origin, baseUrl: origin.origin, redirectUris: [`${origin.origin}/api/auth/callback`], webOrigins: [origin.origin],
