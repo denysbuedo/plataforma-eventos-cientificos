@@ -4,8 +4,10 @@ import { webCopy, type Locale } from '@sep/i18n';
 import { Icon } from '@sep/ui';
 import Image from 'next/image';
 import ResearcherDetails from './researcher-profile';
+import CompleteProfile from './complete-profile';
 import { profileCopy } from './profile-copy';
-export default function Profile({person,locale,contextKey,error,eventId,publicUrl}:{person:AuthorAccount;locale:Locale;contextKey:string;error:boolean;eventId?:string|null;publicUrl:string}) {
+export default function Profile({person,locale,contextKey,error,eventId,publicUrl,completion=false}:{person:AuthorAccount;locale:Locale;contextKey:string;error:boolean;eventId?:string|null;publicUrl:string;completion?:boolean}) {
+  if(completion)return <ParticipantShell person={person} locale={locale} contextKey={contextKey} eventId={eventId} tab="profile" publicUrl={publicUrl}><CompleteProfile person={person} locale={locale} contextKey={contextKey}/></ParticipantShell>;
   const text=webCopy[locale], copy=profileCopy[locale];
   const names=person.name.trim().split(/\s+/u);
   const initials=[names[0],...(names.length>1?[names.at(-1)!]:[])].map(name=>Array.from(name)[0]??'').join('').toLocaleUpperCase(locale);

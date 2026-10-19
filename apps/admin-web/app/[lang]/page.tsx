@@ -62,7 +62,7 @@ export default async function AdminPage({ params, searchParams }: { params: Prom
     }
     if (query.tab === 'profile') {
       const person=(await apiRequest<{person:AuthorAccount}>(binding,'me',{token,locale})).person;
-      return <Profile person={person} locale={locale} contextKey={contextKey} eventId={binding.eventId} publicUrl={publicUrl?`${publicUrl}/${locale}?event=${encodeURIComponent(contextKey)}`:''} error={!!query.orcidError}/>;
+      return <Profile person={person} completion={query.mode==='complete-profile'} locale={locale} contextKey={contextKey} eventId={binding.eventId} publicUrl={publicUrl?`${publicUrl}/${locale}?event=${encodeURIComponent(contextKey)}`:''} error={!!query.orcidError}/>;
     }
     if((query.tab==='sessions'||query.tab==='posters'||query.tab==='payments')&&binding.eventId){
       const person=(await apiRequest<{person:AuthorAccount}>(binding,'me',{token,locale})).person;
