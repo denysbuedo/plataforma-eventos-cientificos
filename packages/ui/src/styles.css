@@ -819,3 +819,68 @@ dialog::backdrop { background:rgb(18 36 28 / 45%); }
 .participant-overview .panel>.panel-heading { padding:22px 24px; }
 
 .event-removal-trigger { border:0; background:none; color:#9d2929; cursor:pointer; padding:8px; font:inherit; font-size:12px; }
+
+/* Organization administration: consistent padding, compact rows and no card shadows. */
+.event-removal-dialog h2 { font-family:inherit; font-size:22px; margin:0 0 16px; }
+.event-removal-dialog form { margin-top:24px; }
+.event-removal-dialog fieldset { display:grid; gap:20px; border:0; padding:0; min-width:0; }
+.event-removal-dialog .field { display:grid; gap:8px; }
+.event-removal-dialog .editor-actions { margin-top:4px; }
+.organization-people,.organization-settings { display:grid; gap:24px; min-width:0; }
+.participant-main .directory-panel>.panel-heading { padding:20px 24px; border-bottom:1px solid var(--line); align-items:center; flex-wrap:wrap; }
+.directory-panel h2,.organization-settings h2 { font-family:inherit; font-size:19px; line-height:1.4; margin:0; }
+.directory-content { padding:20px 24px; min-width:0; }
+.directory-panel .event-table th:first-child,.directory-panel .event-table td:first-child { padding-left:24px; }
+.directory-panel .event-table td { overflow-wrap:anywhere; }
+.directory-search { max-width:540px; margin-bottom:20px; }
+.person-card-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr)); gap:16px; }
+.person-card { display:flex; flex-direction:column; align-items:start; gap:10px; min-width:0; border:1px solid var(--line); border-radius:10px; padding:18px; background:white; box-shadow:none; }
+.person-card h3,.person-summary h3 { font-family:inherit; font-size:16px; line-height:1.4; margin:0; }
+.person-card p { margin:0; overflow-wrap:anywhere; font-size:13px; line-height:1.5; }
+.person-card .button { margin-top:auto; }
+.person-card-identity { display:flex; align-items:center; gap:12px; min-width:0; }
+.person-card-identity>div { min-width:0; }
+.person-initials { display:grid; place-items:center; flex-shrink:0; width:38px; height:38px; border:1px solid var(--line); border-radius:50%; font-size:13px; font-weight:600; color:var(--green); }
+.person-summary-profile { display:grid; grid-template-columns:1fr 1fr; gap:24px; border-bottom:1px solid var(--line); padding-bottom:20px; margin-bottom:20px; }
+.person-summary-profile section { min-width:0; overflow-wrap:anywhere; }
+.person-summary dl { font-size:14px; } .person-summary dt { font-size:12px; color:var(--muted); margin-top:12px; } .person-summary dd { margin:4px 0 0; } .person-summary p { line-height:1.6; }
+.person-biography { white-space:pre-wrap; }
+.person-event-summary { border:1px solid var(--line); border-radius:8px; padding:18px; margin-top:16px; }
+.person-event-summary h4 { font-family:inherit; font-size:15px; margin:0 0 14px; }
+.person-activity-grid { display:grid; grid-template-columns:1fr 2fr 2fr; gap:20px; }
+.person-activity-grid section { min-width:0; overflow-wrap:anywhere; }
+.person-activity-grid h5 { font-family:inherit; font-size:12px; font-weight:600; margin:0 0 10px; color:var(--muted); }
+.person-activity-grid strong { font-size:14px; font-weight:500; }
+.person-activity-grid p { font-size:13px; margin:4px 0 12px; }
+.access-admin-workspace .program-tabs { margin-bottom:20px; }
+.access-add-person { border:1px solid var(--line); border-radius:8px; padding:14px 16px; margin-bottom:16px; }
+.access-add-person>summary { cursor:pointer; font-size:14px; font-weight:600; }
+.access-add-person .registered-member { border:0; margin:16px 0 0; padding:0; }
+.access-admin-workspace .access-event-picker { padding:0 0 16px; }
+.access-person-row { padding:14px 0; border-top:1px solid var(--line); }
+.access-person-row .registration-line { align-items:center; gap:16px; }
+.access-person-row h3 { font-family:inherit; font-size:15px; line-height:1.4; margin:0; }
+.access-person-row p { margin:3px 0; font-size:12px; line-height:1.5; overflow-wrap:anywhere; }
+.access-person-roles { color:var(--green); font-weight:500; }
+.access-person-row .access-assignment-details { margin:8px 0 0; }
+.access-person-row .access-event-row { padding:10px 0; }
+.access-person-row .button { padding:8px 12px; min-height:36px; font-size:12px; }
+.access-role-catalog>h3 { font-family:inherit; font-size:18px; }
+.access-role-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr)); gap:16px; margin:20px 0; }
+.access-role-grid article { padding:18px; border:1px solid var(--line); border-radius:8px; background:white; box-shadow:none; }
+.access-role-grid h4 { font-family:inherit; font-size:16px; line-height:1.4; margin:0; }
+.access-role-grid p { font-size:13px; line-height:1.6; margin:10px 0 0; }
+.access-role-grid .access-role-scope { color:var(--green); font-size:12px; }
+.organization-introduction { padding:24px; }
+.organization-introduction>p { max-width:85ch; font-size:14px; line-height:1.6; }
+.organization-facts { display:flex; flex-wrap:wrap; gap:24px; font-size:13px; margin-top:16px; }
+.organization-facts strong { font-size:18px; margin-right:4px; }
+.organization-profile>h2 { margin-bottom:20px; }
+.organization-profile form { max-width:900px; }
+.organization-profile .button,.organization-domains form>.button { justify-self:start; }
+.participant-main .organization-domains>.panel-heading { padding:0 0 16px; }
+.organization-domain-card { padding:20px 0; border-top:1px solid var(--line); margin-top:20px; min-width:0; }
+.participant-main .organization-domain-card .panel-heading { padding:0 0 12px; flex-wrap:wrap; }
+.organization-domain-card h3 { font-family:inherit; font-size:16px; overflow-wrap:anywhere; margin:0; }
+.organization-domain-card .field { margin-top:14px; }
+@media(max-width:700px) { .person-summary-profile,.person-activity-grid { grid-template-columns:1fr; gap:16px; } .directory-content { padding:16px; } .participant-main .directory-panel>.panel-heading { padding:18px 16px; } .access-person-row .registration-line { flex-wrap:wrap; } }

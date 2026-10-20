@@ -71,5 +71,28 @@ test('identity, access discovery and organization administrator lifecycle',async
   assert((await account()).history.some(h=>h.kind==='event_deleted'&&h.reason===body.reason));
   await assert.rejects(admin.query("INSERT INTO author_works(id,organization_id,event_id,owner_id,title,language,track_id,contribution_type_id,call_snapshot,status) VALUES('70000000-0000-4000-8000-000000000090',$1,$2,$3,'Invalido','es','70000000-0000-4000-8000-000000000091','70000000-0000-4000-8000-000000000092','{}','draft')",[fixture.organizations.a,id,fixture.people.outsider]),{code:'23514'});
  });
+ await t.test('people cards and summary expose only current-organization activity and never personal drafts or credentials',async()=>{
+  const options={host:fixture.hosts.orgA,user:'admin'};
+  const directory=await call('/people',options);ok(directory);
+  const member=directory.body.people.find(p=>p.personId===fixture.people.outsider);assert(member);assert.equal(member.email,'registrada@example.test');assert(Array.isArray(member.affiliations));
+  await admin.query("INSERT INTO researcher_profiles(person_id,affiliations,background) VALUES($1,'[{\"institution\":\"Universidad de prueba\",\"countryCode\":\"CU\"}]','{\"position\":\"Investigador\",\"researchInterests\":[\"Ciencia abierta\"]}') ON CONFLICT(person_id) DO UPDATE SET affiliations=excluded.affiliations,background=excluded.background",[fixture.people.outsider]);
+  const work='70000000-0000-4000-8000-000000000001';
+  let summary=await call('/people/'+fixture.people.outsider,options);ok(summary);assert(!JSON.stringify(summary.body).includes('Borrador privado'));assert.equal(summary.body.affiliations[0].institution,'Universidad de prueba');assert.equal(summary.body.position,'Investigador');
+  await admin.query("UPDATE author_works SET status='submitted',submitted_at=now(),title='Trabajo enviado visible' WHERE id=$1",[work]);
+  summary=await call('/people/'+fixture.people.outsider,options);ok(summary);assert(summary.body.events.find(e=>e.id===event).works.some(w=>w.id===work&&w.relationship==='submitter'));assert(summary.body.events.every(e=>e.id!==fixture.events.b1));
+  await admin.query("INSERT INTO registration_entries(id,organization_id,event_id,person_id,name,affiliations,category,modality,status,policy) VALUES($1,$2,$3,$4,'Persona inscrita','[]','{}','in_person','confirmed','{}'),($5,$6,$7,$4,'Persona en otra organización','[]','{}','virtual','confirmed','{}')",['70000000-0000-4000-8000-000000000080',fixture.organizations.a,event,fixture.people.outsider,'70000000-0000-4000-8000-000000000081',fixture.organizations.b,fixture.events.b1]);
+  await admin.query("INSERT INTO author_works(id,organization_id,event_id,owner_id,title,language,track_id,contribution_type_id,call_snapshot,status,submitted_at) VALUES('70000000-0000-4000-8000-000000000082',$1,$2,$3,'Trabajo de otra organización','es','70000000-0000-4000-8000-000000000002','70000000-0000-4000-8000-000000000003','{}','submitted',now())",[fixture.organizations.b,fixture.events.b1,fixture.people.outsider]);
+  summary=await call('/people/'+fixture.people.outsider,options);ok(summary);assert.equal(summary.body.events.find(e=>e.id===event).registrations[0].status,'confirmed');assert(!JSON.stringify(summary.body).includes('Trabajo de otra organización'));assert(!summary.body.events.some(e=>e.id===fixture.events.b1));
+  // A submitted paper does not prove another person's authorship until it is confirmed.
+  await admin.query("UPDATE author_works SET authors=$2::jsonb WHERE id=$1",[work,JSON.stringify([{personId:fixture.people.operator,authorshipConfirmed:false}])]);
+  let coauthor=await call('/people/'+fixture.people.operator,options);ok(coauthor);assert(!coauthor.body.events.flatMap(e=>e.works).some(w=>w.id===work));
+  await admin.query("UPDATE author_works SET authors=$2::jsonb WHERE id=$1",[work,JSON.stringify([{personId:fixture.people.operator,authorshipConfirmed:true}])]);
+  coauthor=await call('/people/'+fixture.people.operator,options);ok(coauthor);assert(coauthor.body.events.flatMap(e=>e.works).some(w=>w.id===work&&w.relationship==='author'));
+  const forbidden=await call('/people/'+fixture.people.outsider,{host:fixture.hosts.orgA,user:'operator'});assert([403,404].includes(forbidden.status));
+  const foreign=await call('/people/'+fixture.people.outsider,{host:fixture.hosts.orgB,user:'admin'});assert([403,404].includes(foreign.status));
+  ok(await call('/people/70000000-0000-4000-8000-000000000098',options),404);ok(await call('/people/not-an-id',options),400);
+  const serialized=JSON.stringify(summary.body);for(const key of ['passwordHash','password_hash','verified_emails','state_hash','issuer','subject','evaluation','token'])assert(!serialized.includes('"'+key+'"'));
+  const reviewer=await call('/people/'+fixture.people.operator,options);ok(reviewer);assert.equal(reviewer.body.events.find(e=>e.id===event).reviewStatus,'accepted');
+ });
  await t.test('expired event roles are not shown as management access and history is immutable',async()=>{await admin.query(`UPDATE role_assignments SET valid_until='2021-01-01' WHERE id=$1`,[fixture.roles.mixedA1]);const r=await call('/me/access');ok(r);assert.equal(r.body.events[0].canOrganize,false);const roster=await account();assert(roster.people.find(p=>p.personId===fixture.people.mixed).assignments.some(a=>a.role==='organizer'&&a.status==='expired'));await assert.rejects(admin.query('DELETE FROM access_history'),{code:'42501'});assert.equal((await admin.query(`SELECT count(*)::integer AS n FROM audit_entries WHERE action LIKE 'access.admin.%'`)).rows[0].n,4);});
 });

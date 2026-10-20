@@ -50,7 +50,7 @@ Los cambios se serializan por organización, se auditan y conservan evidencia in
 | Gestor compartido de un trabajo | Responsable del envío, mediante invitación aceptada | Trabajo → Gestión compartida |
 | Inscrito / asistente | Solicitud y decisión de inscripción / acreditación | Mi inscripción / acreditación |
 
-El código histórico `participant` representa participación básica en un evento; no acredita inscripción confirmada o asistencia. Aceptar ser revisor no asigna por sí mismo todos los trabajos. Las delegaciones de acreditación no conceden acceso científico o financiero. El administrador de organización debe asignarse explícitamente como organizador si necesita operar un evento.
+El código histórico `participant` representa participación básica en un evento; no acredita inscripción confirmada o asistencia. Aceptar ser revisor no asigna por sí mismo todos los trabajos. Las delegaciones de acreditación no conceden acceso científico o financiero. El administrador de organización puede gestionar todos sus eventos sin otra asignación de organizador.
 
 ## Activación real y límites
 
@@ -69,3 +69,13 @@ Comprobaciones: `npm run test:identity`, suite base de API, compilación y recor
 La migración 0087 permite eliminar borradores sin publicaciones, trabajos, inscripciones, evaluadores, certificados, cobros, reservas u otros registros de actividad. En Gestionar eventos, Eliminar abre una confirmación con el nombre exacto y un motivo. La acción requiere administración vigente de la organización, se valida nuevamente en PostgreSQL y queda en el historial administrativo y la auditoría.
 
 La eliminación es lógica: conserva el evento y sus auditorías, lo oculta de las consultas ordinarias, desactiva sus dominios y membresías del evento. Los borradores internos se conservan como evidencia técnica. Un evento publicado o con actividad no se elimina. Los disparadores serializan nuevas evidencias con la operación y rechazan insertarlas en eventos eliminados. La columna de eliminación no se modifica directamente con el rol de ejecución.
+
+## Directorio y organización
+
+Usuarios y roles separa usuarios, catálogo de roles y auditoría. Las filas compactas despliegan la vigencia y los eventos; las delegaciones de revisión y acreditación permanecen en sus módulos.
+
+La organización es la entidad responsable de uno o varios eventos. No equivale a una afiliación académica ni exige una organización nueva por evento. Su pantalla separa datos institucionales y dominios de los eventos.
+
+La migración 0088 amplía la proyección administrativa, sin acceso directo del rol de ejecución a perfiles ajenos. `GET /people` devuelve nombre, correo de contacto confirmado, afiliaciones declaradas, cargo y ORCID conectado (indicando sandbox). `GET /people/:personId` devuelve además formación y actividad por evento de la organización actual: inscripciones, trabajos enviados propios o con autoría confirmada y estados de revisiones. Exige administrador vigente, contexto sin evento y pertenencia activa del destinatario a la misma organización. Excluye borradores personales, comentarios de evaluación, credenciales e historiales de vinculación.
+
+El perfil aún no distingue afiliación principal: el directorio muestra las afiliaciones declaradas sin convertir arbitrariamente la primera en principal. Las tarjetas permiten buscar por nombre, correo e institución y abrir un resumen de actividad.

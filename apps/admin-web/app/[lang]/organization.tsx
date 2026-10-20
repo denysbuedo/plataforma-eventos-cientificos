@@ -7,6 +7,8 @@ import { webCopy, type Locale } from '@sep/i18n';
 export default function Organization({ initial, events, locale, contextKey }: {
   initial: OrganizationSettings; events: EventView[]; locale: Locale; contextKey: string;
 }) {
+  const es=locale==='es',t=(a:string,b:string)=>es?a:b;
+  const [tab,setTab]=useState<'profile'|'domains'>('profile');
   const text = webCopy[locale]; const router = useRouter();
   const [settings, setSettings] = useState(initial); const [profile, setProfile] = useState(initial.organization);
   const [hostname, setHostname] = useState(''); const [eventId, setEventId] = useState('');
@@ -44,9 +46,11 @@ export default function Organization({ initial, events, locale, contextKey }: {
   function status(domain: ManagedDomain) {
     return domain.active ? text.domainActive : domain.verified ? domain.tlsReady ? text.domainReady : text.domainAwaitingTls : text.domainAwaitingDns;
   }
-  return <>
+  return <div className="organization-settings">
+    <section className="panel organization-introduction"><h2>{settings.organization.name}</h2><p>{t('Esta es la institución o entidad responsable de administrar los eventos. Una organización puede gestionar varios eventos; no necesitas crear una por cada encuentro.','This is the institution or entity responsible for administering events. An organization can manage several events; you do not need a new one for each meeting.')}</p><p className="profile-help">{t('Pertenecer a su equipo no cambia las afiliaciones académicas declaradas por cada persona.','Membership of its team does not change a person’s declared academic affiliations.')}</p><div className="organization-facts"><span><strong>{events.length}</strong> {t('eventos','events')}</span><span><strong>{settings.domains.filter(d=>d.eventId).length}</strong> {t('dominios de eventos','event domains')}</span></div></section>
+    <nav className="program-tabs" aria-label={t('Configuración de la organización','Organization settings')}><button className="button button-outline" aria-pressed={tab==='profile'} onClick={()=>setTab('profile')}>{t('Datos institucionales','Institutional details')}</button><button className="button button-outline" aria-pressed={tab==='domains'} onClick={()=>setTab('domains')}>{t('Dominios de los eventos','Event domains')}</button></nav>
     {notice && <div className={`notice ${notice.error ? 'notice-error' : ''}`} role={notice.error ? 'alert' : 'status'}>{notice.message}</div>}
-    <section className="panel form-panel"><h2>{text.organizationData}</h2>
+    {tab==='profile'&&<section className="panel form-panel organization-profile"><h2>{text.organizationData}</h2>
       <form onSubmit={(event) => { event.preventDefault(); void save(); }} className="form-fields">
         <label className="field"><span>{text.organizationName}</span><input required minLength={3} maxLength={200} value={profile.name} disabled={busy} onChange={(event) => setProfile({ ...profile, name: event.target.value })} /></label>
         <div className="field-row"><label className="field"><span>{text.email}</span><input type="email" maxLength={254} value={profile.contactEmail} disabled={busy} onChange={(event) => setProfile({ ...profile, contactEmail: event.target.value })} /></label>
@@ -54,15 +58,15 @@ export default function Organization({ initial, events, locale, contextKey }: {
         <label className="field"><span>{text.organizationDescription}</span><textarea maxLength={2000} rows={4} value={profile.description} disabled={busy} onChange={(event) => setProfile({ ...profile, description: event.target.value })} /></label>
         <button className="button button-primary" disabled={busy || !dirty} type="submit">{busy ? text.saving : text.saveData}</button>
       </form>
-    </section>
-    <section className="panel form-panel"><div className="panel-heading"><h2>{text.organizationDomains}</h2><button className="button button-outline" disabled={busy} onClick={() => run(async () => { setSettings(await request('', 'GET')); }, text.domainsReloaded)}>{text.reloadDomains}</button></div><p className="muted">{text.domainsHelp}</p>
+    </section>}
+    {tab==='domains'&&<section className="panel form-panel organization-domains"><div className="panel-heading"><h2>{text.organizationDomains}</h2><button className="button button-outline" disabled={busy} onClick={() => run(async () => { setSettings(await request('', 'GET')); }, text.domainsReloaded)}>{text.reloadDomains}</button></div><p className="muted">{text.domainsHelp}</p>
       <form className="form-fields" onSubmit={(event) => { event.preventDefault(); void register(); }}>
         <div className="field-row"><label className="field"><span>{text.domainHostname}</span><input required maxLength={235} placeholder="congreso.example.org" value={hostname} disabled={busy} onChange={(event) => setHostname(event.target.value)} /></label>
           <label className="field"><span>{text.event}</span><select required value={eventId} disabled={busy} onChange={(event) => setEventId(event.target.value)}><option value="">{text.selectEvent}</option>{events.filter((event) => event.status !== 'archived').map((event) => <option key={event.id} value={event.id}>{locale === 'es' ? event.nameEs : event.nameEn}</option>)}</select></label></div>
         <button type="submit" className="button button-primary" disabled={busy || !eventId || !hostname.trim()}>{text.registerDomain}</button>
       </form>
       {!settings.domains.length && <p className="muted">{text.noDomains}</p>}
-      {settings.domains.map((domain) => <article key={domain.id} className="panel form-panel" style={{ marginTop: '1rem' }}>
+      {settings.domains.map((domain) => <article key={domain.id} className="organization-domain-card">
         <div className="panel-heading"><div><h3>{domain.hostname}</h3><p>{domain.eventId ? events.find((event) => event.id === domain.eventId)?.[locale === 'es' ? 'nameEs' : 'nameEn'] ?? text.event : text.organizationIngress}</p></div><span>{status(domain)}</span></div>
         {!domain.eventId ? <p className="muted small">{text.organizationIngressHelp}</p> : <>
           {domain.verificationToken && <><p className="muted small">{text.dnsInstructions}</p><label className="field"><span>{text.dnsRecordName}</span><input readOnly value={`_sep-verification.${domain.hostname}`} /></label><label className="field"><span>{text.dnsRecordValue}</span><input readOnly value={`sep-domain-verification=${domain.verificationToken}`} /></label></>}
@@ -74,6 +78,6 @@ export default function Organization({ initial, events, locale, contextKey }: {
           </div>
         </>}
       </article>)}
-    </section>
-  </>;
+    </section>}
+  </div>;
 }

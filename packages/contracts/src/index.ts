@@ -46,7 +46,13 @@ export interface EventTeam {
   organizers: { personId: string; name: string }[];
   candidates: { personId: string; name: string }[];
 }
-export interface OrganizationPerson { personId: string; name: string; eventCount: number }
+export interface OrganizationPerson { personId: string; name: string; eventCount: number; email?:string|null; affiliations?:WorkAffiliation[]; position?:string; orcid?:{id:string;environment:string}|null }
+export interface OrganizationPersonDetail extends OrganizationPerson {
+ background:ResearcherBackground|null;
+ events:{id:string;nameEs:string;nameEn:string;registrations:{id:string;status:string;modality:string}[];
+ works:{id:string;title:string;status:string;relationship:'submitter'|'author'}[];
+ reviews:{id:string;title:string;status:string}[];reviewStatus:string|null}[];
+}
 export interface OrganizationInvitation {
   id: string; name: string; email: string; status: 'pending' | 'accepted' | 'revoked' | 'expired';
   createdAt: string; expiresAt: string; acceptedAt: string | null;

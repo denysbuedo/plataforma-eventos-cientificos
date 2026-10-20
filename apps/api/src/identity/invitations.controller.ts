@@ -4,7 +4,7 @@ import { IsEmail, IsString, Matches, MaxLength, MinLength, isUUID } from 'class-
 import { Transform } from 'class-transformer';
 import { createHash, randomBytes, randomUUID } from 'node:crypto';
 import { and, desc, eq, sql } from 'drizzle-orm';
-import type { CreatedInvitation, OrganizationInvitation, PeopleDirectory } from '@sep/contracts';
+import type { CreatedInvitation, OrganizationInvitation, OrganizationPerson, OrganizationPersonDetail, PeopleDirectory } from '@sep/contracts';
 import { DatabaseService } from '../database/database.service.js';
 import { memberships, organizationInvitations, people } from '../database/schema.js';
 import { AuthorizationService } from './authorization.service.js';
@@ -25,8 +25,28 @@ class InvitationDto implements OrganizationInvitation {
   @ApiProperty({ format: 'date-time' }) createdAt!: string; @ApiProperty({ format: 'date-time' }) expiresAt!: string;
   @ApiProperty({ nullable: true, format: 'date-time' }) acceptedAt!: string | null;
 }
+class PersonAffiliationDto { @ApiProperty() institution!:string; @ApiProperty() countryCode!:string }
+class PersonOrcidDto { @ApiProperty() id!:string; @ApiProperty({enum:['production','sandbox']}) environment!:string }
 class OrganizationPersonDto {
   @ApiProperty({ format: 'uuid' }) personId!: string; @ApiProperty() name!: string; @ApiProperty() eventCount!: number;
+  @ApiProperty({type:String,nullable:true}) email!:string|null;
+  @ApiProperty({type:[PersonAffiliationDto]}) affiliations!:PersonAffiliationDto[];
+  @ApiProperty() position!:string;
+  @ApiProperty({type:PersonOrcidDto,nullable:true}) orcid!:PersonOrcidDto|null;
+}
+class PersonRegistrationDto { @ApiProperty({format:'uuid'}) id!:string; @ApiProperty() status!:string; @ApiProperty({enum:['in_person','virtual']}) modality!:string }
+class PersonWorkDto { @ApiProperty({format:'uuid'}) id!:string; @ApiProperty() title!:string; @ApiProperty() status!:string; @ApiProperty({enum:['submitter','author']}) relationship!:string }
+class PersonReviewDto { @ApiProperty({format:'uuid'}) id!:string; @ApiProperty() title!:string; @ApiProperty() status!:string }
+class PersonEventDto {
+ @ApiProperty({format:'uuid'}) id!:string; @ApiProperty() nameEs!:string; @ApiProperty() nameEn!:string;
+ @ApiProperty({type:[PersonRegistrationDto]}) registrations!:PersonRegistrationDto[];
+ @ApiProperty({type:[PersonWorkDto]}) works!:PersonWorkDto[];
+ @ApiProperty({type:[PersonReviewDto]}) reviews!:PersonReviewDto[];
+ @ApiProperty({type:String,nullable:true}) reviewStatus!:string|null;
+}
+class OrganizationPersonDetailDto extends OrganizationPersonDto {
+ @ApiProperty({type:'object',additionalProperties:true,nullable:true}) background!:OrganizationPersonDetail['background'];
+ @ApiProperty({type:[PersonEventDto]}) events!:PersonEventDto[];
 }
 class PeopleDirectoryDto {
   @ApiProperty({ type: [OrganizationPersonDto] }) people!: OrganizationPersonDto[];
@@ -47,14 +67,18 @@ export class InvitationsService {
   constructor(private readonly database: DatabaseService, private readonly authorization: AuthorizationService, private readonly audit: AuditService) {}
   list(context: RequestContext): Promise<PeopleDirectory> {
     return this.authorization.run(context, 'people-manage', async (tx) => {
-      const directory = await tx.select({ personId: people.id, name: people.name,
-        eventCount: sql<number>`count(distinct ${memberships.eventId})::int` }).from(people)
-        .innerJoin(memberships, eq(memberships.personId, people.id))
-        .where(and(eq(memberships.organizationId, context.organizationId), eq(memberships.active, true), eq(people.active, true)))
-        .groupBy(people.id, people.name).orderBy(people.name).limit(200);
+      const projection=await tx.execute(sql`SELECT sep_registered_member('directory','{}'::jsonb) AS value`);
+      const directory=projection.rows[0].value as OrganizationPerson[];
       const invitations = await tx.select().from(organizationInvitations).where(eq(organizationInvitations.organizationId, context.organizationId))
         .orderBy(desc(organizationInvitations.createdAt)).limit(200);
       return { people: directory, invitations: invitations.map(view) };
+    });
+  }
+  detail(context:RequestContext,id:string):Promise<OrganizationPersonDetail>{
+    return this.authorization.run(context,'people-manage',async tx=>{
+      const result=await tx.execute(sql`SELECT sep_registered_member('person',${JSON.stringify({personId:id})}::jsonb) AS value`);
+      if(!result.rows[0].value)throw new ApiException(404,'NOT_FOUND');
+      return result.rows[0].value as OrganizationPersonDetail;
     });
   }
   create(context: RequestContext, dto: InvitePersonDto): Promise<CreatedInvitation> {
@@ -111,6 +135,8 @@ export class InvitationsController {
   constructor(private readonly service: InvitationsService) {}
   @Get('people') @Access('people-manage') @ApiOkResponse({ type: PeopleDirectoryDto })
   list(@Req() request: SepRequest) { return this.service.list(request.security); }
+  @Get('people/:personId') @Access('people-manage') @ApiOkResponse({type:OrganizationPersonDetailDto,description:'Organization-scoped academic profile and participation summary; excludes private drafts and review comments.'})
+  detail(@Req() request:SepRequest,@Param('personId') id:string){if(!isUUID(id))throw new ApiException(400,'VALIDATION_FAILED');return this.service.detail(request.security,id);}
   @Post('invitations') @Access('people-manage') @ApiCreatedResponse({ type: CreatedInvitationDto })
   create(@Req() request: SepRequest, @Body() dto: InvitePersonDto) { return this.service.create(request.security, dto); }
   @Post('invitations/:invitationId/revoke') @Access('people-manage') @ApiCreatedResponse({ type: InvitationDto })

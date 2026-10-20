@@ -84,6 +84,7 @@ export const events = pgTable('events', {
   unique().on(t.organizationId, t.id), index('events_organization_idx').on(t.organizationId),
   foreignKey({ columns: [t.organizationId, t.editionId], foreignColumns: [editions.organizationId, editions.id] }),
   check('events_status_check', sql`${t.status} IN ('draft', 'published', 'archived')`),
+  pgPolicy('organization_people_events',{for:'select',to:accountLinkOwner,using:sql`current_setting('sep.account_link',true)='true' AND ${organizationScope(sql`${t.organizationId}`)} AND ${t.deletedAt} IS NULL`}),
   pgPolicy('event_not_deleted',{as:'restrictive',for:'select',to:runtime,using:sql`${t.deletedAt} IS NULL`}),
   policy(eventScope(sql`${t.organizationId}`, sql`${t.id}`)),
   pgPolicy('review_registry',{for:'select',to:registryOwner,using:sql`current_setting('sep.review_rpc',true)='true' AND ${organizationScope(sql`${t.organizationId}`)} AND ${t.id}=nullif(current_setting('sep.event_id',true),'')::uuid`}),

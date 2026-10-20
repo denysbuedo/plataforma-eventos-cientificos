@@ -1569,6 +1569,111 @@
         ]
       }
     },
+    "/api/v1/people/{personId}": {
+      "get": {
+        "operationId": "InvitationsController_detail",
+        "parameters": [
+          {
+            "name": "personId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Organization-scoped academic profile and participation summary; excludes private drafts and review comments.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrganizationPersonDetailDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Error normalizado; mensaje según Accept-Language, código estable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "people"
+        ]
+      }
+    },
     "/api/v1/invitations": {
       "post": {
         "operationId": "InvitationsController_create",
@@ -36989,6 +37094,40 @@
           "organizationAdmin"
         ]
       },
+      "PersonAffiliationDto": {
+        "type": "object",
+        "properties": {
+          "institution": {
+            "type": "string"
+          },
+          "countryCode": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "institution",
+          "countryCode"
+        ]
+      },
+      "PersonOrcidDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "environment": {
+            "type": "string",
+            "enum": [
+              "production",
+              "sandbox"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "environment"
+        ]
+      },
       "OrganizationPersonDto": {
         "type": "object",
         "properties": {
@@ -37001,12 +37140,38 @@
           },
           "eventCount": {
             "type": "number"
+          },
+          "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "affiliations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PersonAffiliationDto"
+            }
+          },
+          "position": {
+            "type": "string"
+          },
+          "orcid": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PersonOrcidDto"
+              }
+            ]
           }
         },
         "required": [
           "personId",
           "name",
-          "eventCount"
+          "eventCount",
+          "email",
+          "affiliations",
+          "position",
+          "orcid"
         ]
       },
       "InvitationDto": {
@@ -37075,6 +37240,183 @@
         "required": [
           "people",
           "invitations"
+        ]
+      },
+      "PersonRegistrationDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "status": {
+            "type": "string"
+          },
+          "modality": {
+            "type": "string",
+            "enum": [
+              "in_person",
+              "virtual"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "status",
+          "modality"
+        ]
+      },
+      "PersonWorkDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "relationship": {
+            "type": "string",
+            "enum": [
+              "submitter",
+              "author"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "status",
+          "relationship"
+        ]
+      },
+      "PersonReviewDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "status"
+        ]
+      },
+      "PersonEventDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "nameEs": {
+            "type": "string"
+          },
+          "nameEn": {
+            "type": "string"
+          },
+          "registrations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PersonRegistrationDto"
+            }
+          },
+          "works": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PersonWorkDto"
+            }
+          },
+          "reviews": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PersonReviewDto"
+            }
+          },
+          "reviewStatus": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "nameEs",
+          "nameEn",
+          "registrations",
+          "works",
+          "reviews",
+          "reviewStatus"
+        ]
+      },
+      "OrganizationPersonDetailDto": {
+        "type": "object",
+        "properties": {
+          "personId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "eventCount": {
+            "type": "number"
+          },
+          "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "affiliations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PersonAffiliationDto"
+            }
+          },
+          "position": {
+            "type": "string"
+          },
+          "orcid": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PersonOrcidDto"
+              }
+            ]
+          },
+          "background": {
+            "type": "object",
+            "additionalProperties": true,
+            "nullable": true
+          },
+          "events": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PersonEventDto"
+            }
+          }
+        },
+        "required": [
+          "personId",
+          "name",
+          "eventCount",
+          "email",
+          "affiliations",
+          "position",
+          "orcid",
+          "background",
+          "events"
         ]
       },
       "InvitePersonDto": {
