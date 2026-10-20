@@ -55,7 +55,7 @@ test('communications: durable inbox, scoped permissions and SMTP recovery',async
   assert.equal((await call(root+'/notifications',{user:null})).status,401);
   assert.equal((await call(root+'/communications/deliveries',{user:'outsider'})).status,404);
   assert.equal((await call(root+'/communications/templates',{user:'outsider'})).status,404);
-  assert.equal((await call(root+'/communications/deliveries',{user:'admin'})).status,403);
+  assert.equal((await call(root+'/communications/deliveries',{user:'admin'})).status,200);
   assert.equal((await call(root+'/notifications/'+id+'/read',{user:'outsider',method:'POST',body:{read:false}})).status,200);
   assert.equal((await call(root+'/notifications?filter=unread',{user:'outsider'})).body.total,1);
  });

@@ -817,3 +817,5 @@ dialog::backdrop { background:rgb(18 36 28 / 45%); }
 @media(max-width:850px) { .sidebar-group-label { display:none; } }
 
 .participant-overview .panel>.panel-heading { padding:22px 24px; }
+
+.event-removal-trigger { border:0; background:none; color:#9d2929; cursor:pointer; padding:8px; font:inherit; font-size:12px; }

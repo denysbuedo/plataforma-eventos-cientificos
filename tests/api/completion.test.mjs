@@ -26,7 +26,7 @@ test('gallery, payments and management reports',async t=>{
  let permissionRevision=0,release;
  const permission={authorized:true,license:'CC-BY-4.0',showDownload:true,thumbnail:null,altText:'',attested:true,reason};
  await t.test('gallery requires explicit owner consent and staff approval',async()=>{
-  ok(await call(gallery,{user:'admin'}),403);ok(await call(gallery+'/mine/'+work,{method:'PUT',body:{...permission,revision:0}}),404);
+  ok(await call(gallery,{user:'admin'}),200);ok(await call(gallery+'/mine/'+work,{method:'PUT',body:{...permission,revision:0}}),404);
   ok(await call(gallery+'/mine/'+work,{user:'outsider',method:'PUT',body:{...permission,attested:false,revision:0}}),409);
   ok(await call(gallery+'/mine/'+work,{user:'outsider',method:'PUT',body:{...permission,revision:0}}));permissionRevision=1;
   ok(await call(gallery+'/'+work+'/publish',{method:'POST',body:{revision:1,requestId:randomUUID(),reason}}),409);
@@ -46,7 +46,7 @@ test('gallery, payments and management reports',async t=>{
  });
  const settings={enabled:true,instructions:'Datos de prueba, no realizar transferencias reales.',methods:[{id:cash,name:'Efectivo',kind:'cash',currencies:['CUP','USD','EUR'],active:true,checkoutUrl:'',instructions:'Caja del evento',fields:[]},{id:transfer,name:'Transfermóvil',kind:'gateway',currencies:['CUP'],active:true,checkoutUrl:'',instructions:'Solo demostración',fields:[{label:'Comercio',value:'Institución de prueba'}]},{id:enzona,name:'Enzona',kind:'gateway',currencies:['CUP'],active:true,checkoutUrl:'https://example.org/test-checkout',instructions:'Solo demostración',fields:[]}],fees:[{id:fee,name:'Inscripción de prueba',description:'No realizar pagos reales.',active:true,prices:[{currency:'CUP',amount:'1250.25'},{currency:'USD',amount:'50.10'},{currency:'EUR',amount:'45.20'}]},{id:otherFee,name:'Taller opcional',description:'No realizar pagos reales.',active:true,prices:[{currency:'CUP',amount:'100.15'}]}]};
  await t.test('finance enforces organizer access, disabled default and safe public configuration',async()=>{
-  ok(await call(payments,{user:'outsider'}),404);ok(await call(payments,{user:'admin'}),403);
+  ok(await call(payments,{user:'outsider'}),404);ok(await call(payments,{user:'admin'}),200);
   ok(await call(payments+'/mine',{user:'outsider'}));assert.equal((await call(payments+'/mine',{user:'outsider'})).body.settings.enabled,false);
   ok(await call(payments+'/mine',{method:'POST',user:'outsider',body:{requestId:chargeId,registrationId:registration,feeId:fee,currency:'CUP',reason}}),409);
   const bad=structuredClone(settings);bad.methods[0].fields=[{label:'Client secret',value:'PRIVATE_KEY'}];ok(await call(payments+'/settings',{method:'PUT',body:{revision:0,content:bad,reason}}),400);
@@ -79,7 +79,7 @@ test('gallery, payments and management reports',async t=>{
  });
  await t.test('reports aggregate without private reviews, export escaped CSV and enforce scope',async()=>{
   const root=`/events/${event}/reports`,r=await call(root);ok(r);assert(r.body.groups.some(g=>g.id==='payments'));assert(!r.text.includes('PRIVATE_'));
-  ok(await call(root,{user:'outsider'}),404);ok(await call(root,{user:'admin'}),403);ok(await call(root,{host:fixture.hosts.b1}),404);
+  ok(await call(root,{user:'outsider'}),404);ok(await call(root,{user:'admin'}),200);ok(await call(root,{host:fixture.hosts.b1}),404);
   const csv=await call(root+'/export?dataset=registrations');ok(csv);assert(csv.body.csv.startsWith('\uFEFF'.replace('\\uFEFF','\uFEFF'))||csv.body.csv.charCodeAt(0)===0xFEFF);assert(csv.body.csv.includes("'=IMPORTXML"));
   assert.equal((await admin.query(`SELECT count(*)::integer n FROM audit_entries WHERE event_id=$1 AND action='reports.exported'`,[event])).rows[0].n,1);
   ok(await call(root+'/export?dataset=private_reviews'),400);

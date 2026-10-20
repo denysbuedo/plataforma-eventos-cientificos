@@ -4,9 +4,9 @@ import { DatabaseService, type DbTransaction } from '../database/database.servic
 import { memberships, people, roleAssignments, attendanceOperators } from '../database/schema.js';
 import { ApiException, type RequestContext } from '../common/http.js';
 
-export type Capability = 'event-read' | 'event-update' | 'event-create' | 'session-read' | 'site-read' | 'site-update' | 'site-publish' | 'organizers-manage' | 'people-manage' | 'organization-manage' | 'invitation-accept' | 'identity-read' | 'submissions-manage' | 'registrations-manage' | 'attendance-team-manage' | 'attendance-manage' | 'certificates-manage' | 'communications-manage' | 'publications-manage' | 'sponsorship-manage' | 'operations-manage' | 'reports-read' | 'gallery-manage' | 'finance-manage';
+export type Capability = 'event-delete' | 'event-read' | 'event-update' | 'event-create' | 'session-read' | 'site-read' | 'site-update' | 'site-publish' | 'organizers-manage' | 'people-manage' | 'organization-manage' | 'invitation-accept' | 'identity-read' | 'submissions-manage' | 'registrations-manage' | 'attendance-team-manage' | 'attendance-manage' | 'certificates-manage' | 'communications-manage' | 'publications-manage' | 'sponsorship-manage' | 'operations-manage' | 'reports-read' | 'gallery-manage' | 'finance-manage';
 export interface ContextPermissions {
-  accreditor: boolean; organizer: boolean; organizationAdmin: boolean; personName: string; roles: string[];
+  eventManager:boolean; accreditor: boolean; organizer: boolean; organizationAdmin: boolean; personName: string; roles: string[];
 }
 @Injectable()
 export class AuthorizationService {
@@ -25,6 +25,7 @@ export class AuthorizationService {
           context.eventId ? or(isNull(memberships.eventId), eq(memberships.eventId, context.eventId)) : isNull(memberships.eventId)));
       const organizationAdmin = grants.some((grant) => grant.eventId === null && grant.role === 'organization_admin');
       const organizer = grants.some((grant) => grant.eventId === context.eventId && grant.eventId !== null && grant.role === 'organizer');
+      const eventManager=!!context.eventId&&(organizer||organizationAdmin);
       if (!grants.length) {
         const [membership] = await tx.select({ id: memberships.id }).from(memberships).where(and(eq(memberships.personId, context.personId),
           eq(memberships.organizationId, context.organizationId), eq(memberships.active, true),
@@ -34,15 +35,15 @@ export class AuthorizationService {
       const [delegation]=context.eventId?await tx.select().from(attendanceOperators).where(and(eq(attendanceOperators.organizationId,context.organizationId),eq(attendanceOperators.eventId,context.eventId),eq(attendanceOperators.personId,context.personId),eq(attendanceOperators.active,true))):[];
       const [eventMembership]=delegation?await tx.select({id:memberships.id}).from(memberships).where(and(eq(memberships.personId,context.personId),eq(memberships.organizationId,context.organizationId),eq(memberships.eventId,context.eventId!),eq(memberships.active,true))):[];
       const accreditor=!!delegation&&!!eventMembership;
-      const permitted = ['people-manage', 'organization-manage'].includes(capability) ? organizationAdmin && context.hostEventId === null && context.eventId === null
+      const permitted = capability==='event-delete'?organizationAdmin&&!!context.eventId:['people-manage', 'organization-manage'].includes(capability) ? organizationAdmin && context.hostEventId === null && context.eventId === null
         : capability === 'organizers-manage' ? organizationAdmin
         : capability === 'event-create' ? organizationAdmin && context.hostEventId === null && context.eventId === null
-        : capability === 'attendance-manage' ? organizer || accreditor
-        : ['event-update', 'site-update', 'site-publish', 'submissions-manage', 'registrations-manage', 'attendance-team-manage', 'certificates-manage', 'communications-manage', 'publications-manage','sponsorship-manage','operations-manage','reports-read','gallery-manage','finance-manage'].includes(capability) ? organizer
+        : capability === 'attendance-manage' ? eventManager || accreditor
+        : ['event-update', 'site-update', 'site-publish', 'submissions-manage', 'registrations-manage', 'attendance-team-manage', 'certificates-manage', 'communications-manage', 'publications-manage','sponsorship-manage','operations-manage','reports-read','gallery-manage','finance-manage'].includes(capability) ? eventManager
         : capability === 'session-read' ? true : organizationAdmin || organizer;
       if (!permitted) throw new ApiException(403, 'FORBIDDEN');
       await tx.execute(sql`SELECT set_config('sep.finance_staff',${capability==='finance-manage'?'true':'false'},true),set_config('sep.reports_read',${capability==='reports-read'?'true':'false'},true),set_config('sep.gallery_staff',${capability==='gallery-manage'?'true':'false'},true),set_config('sep.operations_staff',${capability==='operations-manage'?'true':'false'},true),set_config('sep.sponsorship_staff',${capability==='sponsorship-manage'?'true':'false'},true),set_config('sep.attendance_team',${capability==='attendance-team-manage'?'true':'false'},true),set_config('sep.editorial_staff',${capability==='publications-manage'?'true':'false'},true),set_config('sep.communication_staff',${capability==='communications-manage'?'true':'false'},true),set_config('sep.certificate_staff',${capability==='certificates-manage'?'true':'false'},true),set_config('sep.attendance_staff',${capability==='attendance-manage'?'true':'false'},true),set_config('sep.registration_staff',${capability==='registrations-manage'?'true':'false'},true),set_config('sep.submissions_staff', ${capability === 'submissions-manage' ? 'true' : 'false'}, true), set_config('sep.organization_admin', ${organizationAdmin ? 'true' : 'false'}, true)`);
-      return action(tx, { accreditor, organizer, organizationAdmin, personName: principal[0].name, roles: grants.map((grant) => grant.role) });
+      return action(tx, { eventManager, accreditor, organizer, organizationAdmin, personName: principal[0].name, roles: grants.map((grant) => grant.role) });
     });
   }
 }

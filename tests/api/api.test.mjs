@@ -91,10 +91,10 @@ test('SEP API over real PostgreSQL and HTTP', async (t) => {
     assert.equal((await call(`/api/v1/events/${fixture.events.b1}`, { host: fixture.hosts.b1 })).status, 403);
     assert.equal((await call(`/api/v1/events/${fixture.events.b1}`, { host: fixture.hosts.b1, method: 'PATCH', body: { nameEs: 'Forbidden' } })).status, 403);
   });
-  await t.test('organization admin sees own metadata but cannot edit without event role', async () => {
+  await t.test('organization admin manages own events without an extra organizer assignment', async () => {
     const result = await call('/api/v1/events', { user: 'admin', host: fixture.hosts.orgA });
     assert.equal(result.status, 200); assert.deepEqual(result.body.data.map((event) => event.id), [fixture.events.a1, fixture.events.a2]);
-    assert.equal((await call(`/api/v1/events/${fixture.events.a1}`, { user: 'admin', host: fixture.hosts.orgA, method: 'PATCH', body: { nameEs: 'Forbidden' } })).status, 403);
+    assert.equal((await call(`/api/v1/events/${fixture.events.a1}`, { user: 'admin', host: fixture.hosts.orgA, method: 'PATCH', body: { nameEs: result.body.data[0].nameEs } })).status, 200);
     assert.equal((await call(`/api/v1/events/${fixture.events.b1}`, { user: 'admin', host: fixture.hosts.orgA })).status, 404);
   });
   await t.test('query IDs and pagination cannot widen scope; unknown fields are rejected', async () => {
@@ -220,7 +220,7 @@ test('SEP API over real PostgreSQL and HTTP', async (t) => {
     }
     const path = `/api/v1/events/${fixture.events.a1}/site`;
     assert.equal((await call(path, { user: 'admin', host: fixture.hosts.orgA })).status, 200);
-    assert.equal((await call(path, { user: 'admin', host: fixture.hosts.orgA, method: 'PUT', body: { revision: 1, content: siteContents.a1 } })).status, 403);
+    assert.equal((await call(path, { user: 'admin', host: fixture.hosts.orgA, method: 'PUT', body: { revision: 99999, content: siteContents.a1 } })).status, 409);
     assert.equal((await call(`/api/v1/events/${fixture.events.b1}/site`, { host: fixture.hosts.b1 })).status, 403);
     assert.deepEqual((await runtime.query('SELECT * FROM site_drafts')).rows, []);
     assert.deepEqual((await runtime.query('SELECT * FROM site_publications')).rows, []);

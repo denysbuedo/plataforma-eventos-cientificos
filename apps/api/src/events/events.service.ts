@@ -1,3 +1,4 @@
+import {sql} from 'drizzle-orm';
 import { randomUUID } from 'node:crypto';
 import { Injectable } from '@nestjs/common';
 import type { EventPage, EventView, PublicEventView } from '@sep/contracts';
@@ -39,6 +40,14 @@ export class EventsService {
       if (!event) throw new ApiException(404, 'NOT_FOUND');
       await this.audit.record(tx, context, 'event.updated', event.id);
       return event;
+    });
+  }
+  remove(context:RequestContext,id:string,dto:{confirmationName:string;reason:string}){
+    return this.authorization.run(context,'event-delete',async tx=>{
+      const result=await tx.execute(sql`SELECT sep_event_remove(${id}::uuid,${dto.confirmationName},${dto.reason},${context.requestId}::uuid) AS value`);
+      const value=result.rows[0].value as {removed?:boolean;error?:'EVENT_DELETE_BLOCKED'|'EVENT_DELETE_CONFIRMATION'|'NOT_FOUND'};
+      if(value.error)throw new ApiException(value.error==='NOT_FOUND'?404:409,value.error);
+      await this.audit.record(tx,context,'event.deleted',id);return value;
     });
   }
   publicEvent(context: RequestContext): Promise<PublicEventView> {

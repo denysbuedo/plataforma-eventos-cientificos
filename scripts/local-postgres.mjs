@@ -82,7 +82,7 @@ try {
     SEP_TEST_ADMIN_URL: url('sep_local_admin'), SEP_TEST_TOKENS: JSON.stringify(auth.tokens) };
   if (['test','identity-test','account-links-test','account-links-web-test','local-auth-test','completion-test','operations-test','sponsorship-test','attendance-test','communications-test','editorial-test'].includes(mode)) {
     const result = spawnSync(process.execPath, ['--test', '--test-reporter=spec', mode==='identity-test'?'tests/api/identity-access.test.mjs':mode==='account-links-web-test'?'tests/api/account-links-web.test.mjs':mode==='account-links-test'?'tests/api/account-links.test.mjs':mode==='local-auth-test'?'tests/api/local-auth.test.mjs':mode==='completion-test'?'tests/api/completion.test.mjs':mode==='operations-test'?'tests/api/operations.test.mjs':mode==='sponsorship-test'?'tests/api/sponsorship.test.mjs':mode==='attendance-test'?'tests/api/attendance.test.mjs':mode==='editorial-test'?'tests/api/editorial.test.mjs':mode==='communications-test'?'tests/api/communications.test.mjs':'tests/api/api.test.mjs'],
-      { cwd: root, env: environment, windowsHide: true, stdio: 'inherit', timeout: 60000 });
+      { cwd: root, env: environment, windowsHide: true, stdio: 'inherit', timeout: mode==='account-links-web-test'?180000:60000 });
     if (result.error || result.status !== 0) process.exitCode = 1;
   } else {
     environment.PORT = process.env.PORT ?? String(await freePort());

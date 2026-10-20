@@ -14,15 +14,16 @@ La demo muestra nombres de cuentas independientes, leídos desde sus perfiles. S
 
 Sin destino específico, la entrada muestra **Inicio**, con las funciones disponibles según las responsabilidades actuales. Si se abrió un enlace a un evento/módulo, se conserva ese destino y el servidor valida sus permisos. La lengua elegida conserva el destino. Cerrar sesión sigue disponible en el menú de la cuenta.
 
-## Inicio según responsabilidades
+## Inicio personal y funciones adicionales
 
-La pantalla ofrece acciones concretas, sin explicaciones técnicas sobre asignaciones. El administrador ve gestión de eventos, usuarios, invitaciones y configuración de organización. El organizador dispone de gestión, trabajos recibidos, revisión científica y programa de sus eventos. Las personas invitadas o aceptadas como revisoras tienen su entrada de revisión; los acreditadores, la acreditación. Se combinan las opciones cuando la persona tiene varias responsabilidades. Las opciones personales incluyen trabajos, inscripción y certificados por evento; una cuenta sin eventos recibe una indicación para incorporarse a uno y, solo si no ha guardado sus datos básicos, un enlace para completar su perfil. Después muestra Ver mi perfil, también al recargar o iniciar otra sesión.
+Inicio es el mismo espacio personal para todas las cuentas: datos propios y participaciones. Las responsabilidades administrativas añaden funciones al lateral. Mi perfil y Cerrar sesión permanecen en el menú superior de cuenta en todas las páginas.
 
-El nombre permanece en la cabecera de cuenta. La navegación personal usa **Inicio**, muestra la gestión únicamente cuando corresponde y oculta «Mis revisiones» si no existe invitación o participación en el comité. Ocultar enlaces no sustituye la autorización de la API. La ruta interna `tab=access` se conserva para mantener enlaces existentes.
+Inicio vuelve al contexto general de organización y limpia el evento seleccionado. Las entradas de organización permanecen al principio del lateral al gestionar un evento. El selector incluye Vista general y el enlace Todos los eventos permite volver al catálogo.
 
-La cuenta consulta sus eventos de la organización actual y sus asignaciones vigentes, con enlaces a gestión, trabajos, revisiones y acreditación. La consulta incluye relaciones científicas e inscripciones propias aunque no exista una membresía artificial de gestión. No devuelve títulos privados de trabajos ni información de otras personas. El ámbito de otra organización se consulta desde su propio dominio; los enlaces A/B solo existen para la demo.
+El administrador de organización puede gestionar los eventos de su organización, incluidos contenido, convocatoria, trabajos, revisión, programa, inscripciones, acreditación, certificados, publicaciones, comunicaciones, cobros y logística. No necesita una segunda asignación de organizador y no se generan roles artificiales. Los organizadores gestionan solamente sus eventos asignados. Los revisores conservan su invitación y sus evaluaciones asignadas; los acreditadores tienen la delegación operativa. Autorías, consentimiento, conflictos de interés, plazos y estados de publicación mantienen sus reglas propias.
 
-El administrador dispone además de accesos a eventos, personas/invitaciones y usuarios/roles de su organización. Tener ese rol no concede automáticamente gestión científica de todos sus eventos.
+La autorización se valida en cada solicitud con membresías y roles activos y vigentes. Otra organización, un rol vencido o una membresía inactiva no concede acceso. La API, el resumen de sesión y el menú usan la misma capacidad efectiva de gestión. La función SQL de autorías aplica también esta regla. Administrar no equivale a participar como organizador para obtener un certificado: esos certificados siguen requiriendo la asignación científica expresa.
+
 
 ## Administración
 
@@ -62,3 +63,9 @@ No se incluye un constructor libre de roles/permisos, roles delegados de caja/se
 API: `GET /me/access`, `GET /organization/access`, `POST /organization/access/admins/:id`. La administración exige contexto de organización sin evento y rol de administrador vigente. [OpenAPI](../api/openapi.json).
 
 Comprobaciones: `npm run test:identity`, suite base de API, compilación y recorrido de navegador del acceso y de la concesión/retirada. La validación con los proveedores reales depende de su activación.
+
+## Eliminación de eventos
+
+La migración 0087 permite eliminar borradores sin publicaciones, trabajos, inscripciones, evaluadores, certificados, cobros, reservas u otros registros de actividad. En Gestionar eventos, Eliminar abre una confirmación con el nombre exacto y un motivo. La acción requiere administración vigente de la organización, se valida nuevamente en PostgreSQL y queda en el historial administrativo y la auditoría.
+
+La eliminación es lógica: conserva el evento y sus auditorías, lo oculta de las consultas ordinarias, desactiva sus dominios y membresías del evento. Los borradores internos se conservan como evidencia técnica. Un evento publicado o con actividad no se elimina. Los disparadores serializan nuevas evidencias con la operación y rechazan insertarlas en eventos eliminados. La columna de eliminación no se modifica directamente con el rol de ejecución.

@@ -55,8 +55,8 @@ export class SessionController {
     const context = request.security;
     return this.authorization.run(context, 'session-read', async (_tx, permissions) => ({
       person: { id: context.personId!, name: permissions.personName }, organizationId: context.organizationId, eventId: context.eventId,
-      roles: [...permissions.roles,...(permissions.accreditor?['accreditor']:[])], canAccredit:permissions.organizer||permissions.accreditor, canRead: permissions.organizationAdmin || permissions.organizer,
-      canEdit: permissions.organizer, organizationAdmin: permissions.organizationAdmin,
+      roles: [...permissions.roles,...(permissions.accreditor?['accreditor']:[])], canAccredit:permissions.eventManager||permissions.accreditor, canRead: permissions.organizationAdmin || permissions.organizer,
+      canEdit: permissions.eventManager, organizationAdmin: permissions.organizationAdmin,
     }));
   }
 }
