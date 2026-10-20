@@ -94,5 +94,21 @@ test('identity, access discovery and organization administrator lifecycle',async
   const serialized=JSON.stringify(summary.body);for(const key of ['passwordHash','password_hash','verified_emails','state_hash','issuer','subject','evaluation','token'])assert(!serialized.includes('"'+key+'"'));
   const reviewer=await call('/people/'+fixture.people.operator,options);ok(reviewer);assert.equal(reviewer.body.events.find(e=>e.id===event).reviewStatus,'accepted');
  });
+ await t.test('people directory searches and paginates beyond two hundred without loading academic activity',async()=>{
+  await admin.query("WITH added AS (INSERT INTO people(id,name) SELECT gen_random_uuid(),'Persona directorio '||lpad(n::text,3,'0') FROM generate_series(1,235) n RETURNING id) INSERT INTO memberships(id,organization_id,person_id) SELECT gen_random_uuid(),$1,id FROM added",[fixture.organizations.a]);
+  const options={host:fixture.hosts.orgA,user:'admin'};
+  const first=await call('/people?q=Persona%20directorio&limit=20&offset=0',options);ok(first);assert.equal(first.body.total,235);assert.equal(first.body.people.length,20);assert.equal(first.body.offset,0);assert.equal(first.body.people[0].name,'Persona directorio 001');
+  const next=await call('/people?q=Persona%20directorio&limit=20&offset=20',options);ok(next);assert.equal(next.body.people[0].name,'Persona directorio 021');assert(next.body.people.every(p=>!first.body.people.some(previous=>previous.personId===p.personId)));assert(next.body.people.every(p=>p.events===undefined&&p.background===undefined));
+  const last=await call('/people?q=Persona%20directorio&limit=20&offset=220',options);ok(last);assert.equal(last.body.people.length,15);assert.equal(last.body.total,235);
+  const literal=await call('/people?q=%25',options);ok(literal);assert.equal(literal.body.total,0);
+  ok(await call('/people?limit=101',options),400);ok(await call('/people?offset=-1',options),400);
+  await admin.query("UPDATE researcher_profiles SET affiliations='[{\"institution\":\"Institución secundaria\",\"countryCode\":\"ES\"},{\"institution\":\"Institución principal\",\"countryCode\":\"CU\"}]',background=jsonb_set(background,'{primaryAffiliationIndex}','1') WHERE person_id=$1",[fixture.people.outsider]);
+  const search=await call('/people?q=Instituci%C3%B3n%20secundaria',options);ok(search);assert.equal(search.body.total,1);assert.equal(search.body.people[0].primaryAffiliation.institution,'Institución principal');assert.deepEqual(search.body.people[0].affiliations,[search.body.people[0].primaryAffiliation]);
+  const me=(await call('/me',{host:fixture.hosts.orgA,user:'outsider'})).body.person.researcherProfile;
+  const invalid=await call('/me/researcher-profile',{host:fixture.hosts.orgA,user:'outsider',method:'PUT',body:{...me,background:{...me.background,primaryAffiliationIndex:4}}});ok(invalid,400);assert(invalid.body.error.issues.some(i=>i.field==='background.primaryAffiliationIndex'));
+  const updated=await call('/me/researcher-profile',{host:fixture.hosts.orgA,user:'outsider',method:'PUT',body:{...me,background:{...me.background,primaryAffiliationIndex:0}}});ok(updated);assert.equal(updated.body.background.primaryAffiliationIndex,0);
+  const noChoice={...updated.body.background};delete noChoice.primaryAffiliationIndex;
+  const preserved=await call('/me/researcher-profile',{host:fixture.hosts.orgA,user:'outsider',method:'PUT',body:{...updated.body,background:noChoice}});ok(preserved);assert.equal(preserved.body.background.primaryAffiliationIndex,0);
+ });
  await t.test('expired event roles are not shown as management access and history is immutable',async()=>{await admin.query(`UPDATE role_assignments SET valid_until='2021-01-01' WHERE id=$1`,[fixture.roles.mixedA1]);const r=await call('/me/access');ok(r);assert.equal(r.body.events[0].canOrganize,false);const roster=await account();assert(roster.people.find(p=>p.personId===fixture.people.mixed).assignments.some(a=>a.role==='organizer'&&a.status==='expired'));await assert.rejects(admin.query('DELETE FROM access_history'),{code:'42501'});assert.equal((await admin.query(`SELECT count(*)::integer AS n FROM audit_entries WHERE action LIKE 'access.admin.%'`)).rows[0].n,4);});
 });

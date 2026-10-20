@@ -624,6 +624,13 @@
       "when": 1792493414620,
       "tag": "0088_organization_people_summary",
       "breakpoints": true
+    },
+    {
+      "idx": 89,
+      "version": "7",
+      "when": 1792495641711,
+      "tag": "0089_people_pagination_primary_affiliation",
+      "breakpoints": true
     }
   ]
 }

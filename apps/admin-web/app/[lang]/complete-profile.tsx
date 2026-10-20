@@ -14,7 +14,7 @@ const copy={
 
 export default function CompleteProfile({person,locale,contextKey}:{person:AuthorAccount;locale:Locale;contextKey:string}){
  const text=copy[locale],router=useRouter(),profile=person.researcherProfile;
- const initial={name:profile?.name??person.name,position:profile?.background?.position??'',affiliations:profile?.affiliations.length?profile.affiliations:[{institution:'',countryCode:''}]};
+ const initial={primary:profile?.background?.primaryAffiliationIndex??0,name:profile?.name??person.name,position:profile?.background?.position??'',affiliations:profile?.affiliations.length?profile.affiliations:[{institution:'',countryCode:''}]};
  const [form,setForm]=useState(initial),[busy,setBusy]=useState(false),[issues,setIssues]=useState<ValidationIssue[]>([]),[error,setError]=useState(''),[closing,setClosing]=useState(false);
  const dialog=useRef<HTMLDialogElement>(null),pending=useRef<(()=>void)|null>(null),warn=useRef(false),formElement=useRef<HTMLFormElement>(null);
  const dirty=JSON.stringify(initial)!==JSON.stringify(form),home=`/${locale}?event=${encodeURIComponent(contextKey)}&tab=access`,fullProfile=`/${locale}?event=${encodeURIComponent(contextKey)}&tab=profile`;
@@ -29,7 +29,8 @@ export default function CompleteProfile({person,locale,contextKey}:{person:Autho
  async function save(){
   if(busy)return;setError('');
   // Preserve the complete profile: this short form only updates the displayed fields.
-  const payload:ResearcherProfile={name:form.name,affiliations:form.affiliations.filter(item=>item.institution.trim()||item.countryCode),discoverable:profile?.discoverable??false,revision:profile?.revision??0,background:{...emptyResearcherBackground(),...profile?.background,position:form.position}};
+  const filled=form.affiliations.map((item,index)=>({item,index})).filter(({item})=>item.institution.trim()||item.countryCode),principal=filled.findIndex(row=>row.index===form.primary);
+  const payload:ResearcherProfile={name:form.name,affiliations:form.affiliations.filter(item=>item.institution.trim()||item.countryCode),discoverable:profile?.discoverable??false,revision:profile?.revision??0,background:{...emptyResearcherBackground(),...profile?.background,position:form.position,primaryAffiliationIndex:principal>=0?principal:null}};
   // Keep original row indices when highlighting partially filled affiliation rows.
   const validation=profileIssues(payload).map(issue=>{const match=issue.field.match(/^affiliations\.(\d+)\.(.+)$/u);if(!match)return issue;const row=form.affiliations.map((item,index)=>({item,index})).filter(({item})=>item.institution.trim()||item.countryCode)[Number(match[1])];return {...issue,field:`affiliations.${row.index}.${match[2]}`};});
   setIssues(validation);if(validation.length){requestAnimationFrame(()=>focus(validation[0].field));return;}
@@ -46,11 +47,11 @@ export default function CompleteProfile({person,locale,contextKey}:{person:Autho
     <div className="profile-setup-basics"><label className="field"><span>{text.name}</span><input name="name" required autoComplete="name" maxLength={150} value={form.name} disabled={busy} aria-invalid={!!fieldError('name')} onChange={event=>{setForm({...form,name:event.target.value});setIssues([]);}}/></label>
     <label className="field"><span>{text.position} <small>{text.optional}</small></span><input name="background.position" autoComplete="organization-title" maxLength={150} placeholder={text.positionExample} value={form.position} disabled={busy} aria-invalid={!!fieldError('background.position')} onChange={event=>{setForm({...form,position:event.target.value});setIssues([]);}}/></label>
     </div>
-    <fieldset className="profile-setup-affiliations"><legend>{text.affiliations} <small>{text.optional}</small></legend><p className="profile-help">{text.affiliationHelp}</p>
-     {form.affiliations.map((item,index)=><div className="profile-setup-affiliation" key={index}><div className="field-row">
+    <fieldset className="profile-setup-affiliations"><legend>{text.affiliations} <small>{text.optional}</small></legend><p className="profile-help">{text.affiliationHelp} {locale==='es'?'Marca una afiliación principal. El cargo actual corresponde a esa institución.':'Select one primary affiliation. Your current position belongs to that institution.'}</p>
+     {form.affiliations.map((item,index)=><div className="profile-setup-affiliation" key={index}><label className="profile-primary-choice"><input type="radio" name="primaryAffiliation" checked={form.primary===index} disabled={busy} onChange={()=>setForm({...form,primary:index})}/>{locale==='es'?'Afiliación principal':'Primary affiliation'}</label><div className="field-row">
       <label className="field"><span>{text.institution}</span><input name={`affiliations.${index}.institution`} autoComplete="organization" maxLength={250} value={item.institution} disabled={busy} aria-invalid={!!fieldError(`affiliations.${index}.institution`)} onChange={event=>changeAffiliation(index,{institution:event.target.value})}/></label>
       <label className="field"><span>{text.country}</span><select name={`affiliations.${index}.countryCode`} value={item.countryCode} disabled={busy} aria-invalid={!!fieldError(`affiliations.${index}.countryCode`)} onChange={event=>changeAffiliation(index,{countryCode:event.target.value})}><option value="">{text.choose}</option>{countries.map(country=><option key={country.code} value={country.code}>{country.name}</option>)}</select></label>
-     </div>{form.affiliations.length>1&&<button type="button" className="button button-outline profile-remove" disabled={busy} aria-label={`${text.remove} ${text.institution.toLowerCase()} ${index+1}`} onClick={()=>{setForm({...form,affiliations:form.affiliations.filter((_,i)=>i!==index)});setIssues([]);}}>{text.remove}</button>}</div>)}
+     </div>{form.affiliations.length>1&&<button type="button" className="button button-outline profile-remove" disabled={busy} aria-label={`${text.remove} ${text.institution.toLowerCase()} ${index+1}`} onClick={()=>{setForm({...form,affiliations:form.affiliations.filter((_,i)=>i!==index),primary:form.primary===index?0:form.primary>index?form.primary-1:form.primary});setIssues([]);}}>{text.remove}</button>}</div>)}
      <button type="button" className="profile-setup-add" disabled={busy||form.affiliations.length>=5} onClick={()=>setForm({...form,affiliations:[...form.affiliations,{institution:'',countryCode:''}]})}><Icon name="plus" size={15}/>{text.add}</button>
     </fieldset>
     <p className="profile-setup-later">{text.later}</p>

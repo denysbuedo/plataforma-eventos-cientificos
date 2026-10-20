@@ -46,7 +46,7 @@ export interface EventTeam {
   organizers: { personId: string; name: string }[];
   candidates: { personId: string; name: string }[];
 }
-export interface OrganizationPerson { personId: string; name: string; eventCount: number; email?:string|null; affiliations?:WorkAffiliation[]; position?:string; orcid?:{id:string;environment:string}|null }
+export interface OrganizationPerson { personId: string; name: string; eventCount: number; email?:string|null; primaryAffiliation?:WorkAffiliation|null; affiliations?:WorkAffiliation[]; position?:string; orcid?:{id:string;environment:string}|null }
 export interface OrganizationPersonDetail extends OrganizationPerson {
  background:ResearcherBackground|null;
  events:{id:string;nameEs:string;nameEn:string;registrations:{id:string;status:string;modality:string}[];
@@ -57,7 +57,7 @@ export interface OrganizationInvitation {
   id: string; name: string; email: string; status: 'pending' | 'accepted' | 'revoked' | 'expired';
   createdAt: string; expiresAt: string; acceptedAt: string | null;
 }
-export interface PeopleDirectory { people: OrganizationPerson[]; invitations: OrganizationInvitation[] }
+export interface PeopleDirectory { people: OrganizationPerson[]; invitations: OrganizationInvitation[]; total?:number; limit?:number; offset?:number; q?:string }
 export interface CreatedInvitation { invitation: OrganizationInvitation; token: string }
 
 export interface OrganizationProfile { id: string; name: string; contactEmail: string; website: string; description: string; revision: number }
@@ -95,6 +95,8 @@ export const EDUCATION_LEVELS = ['', 'short_cycle', 'bachelor', 'master', 'docto
 export const QUALIFICATION_TYPES = ['university_title','postgraduate_specialization','masters','other_title','research_doctorate','higher_doctorate','other_scientific_degree'] as const;
 export interface ResearcherQualification { type:typeof QUALIFICATION_TYPES[number]; title:string; countryCode:string }
 export interface ResearcherBackground {
+  /** Explicitly selected affiliation in the ordered profile array; null/omitted means not yet selected. */
+  primaryAffiliationIndex?:number|null;
   qualifications?:ResearcherQualification[];
   /** Legacy declarations retained without guessing their qualification type. */
   educationLevel:typeof EDUCATION_LEVELS[number]; degreeTitle:string; position:string;

@@ -32,7 +32,7 @@ import type { AuthorAccount } from '@sep/contracts';
 
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = { title: 'SEP · Workspace', robots: { index: false, follow: false } };
-export default async function AdminPage({ params, searchParams }: { params: Promise<{ lang: string }>; searchParams: Promise<{ event?: string; work?:string; tab?: string; mode?: string; authError?: string; authRef?: string; logoutError?: string; orcidError?: string }> }) {
+export default async function AdminPage({ params, searchParams }: { params: Promise<{ lang: string }>; searchParams: Promise<{ event?: string; work?:string; q?:string;offset?:string;view?:string;tab?: string; mode?: string; authError?: string; authRef?: string; logoutError?: string; orcidError?: string }> }) {
   const { lang } = await params;
   if (lang !== 'es' && lang !== 'en') notFound();
   const locale: Locale = lang; const text = webCopy[locale];
@@ -127,7 +127,7 @@ export default async function AdminPage({ params, searchParams }: { params: Prom
       if (session.eventId && query.tab === 'call') scientificCall = await apiRequest<ScientificCallDraft>(binding, `events/${session.eventId}/call`, { token, locale });
       if (session.eventId && query.tab === 'submissions') inbox = await apiRequest<SubmissionPage>(binding, `events/${session.eventId}/submissions`, { token, locale });
       if (session.eventId && session.organizationAdmin) team = await apiRequest<EventTeam>(binding, `events/${session.eventId}/organizers`, { token, locale });
-      if (!session.eventId && session.organizationAdmin && query.tab === 'people') directory = await apiRequest<PeopleDirectory>(binding, 'people', { token, locale });
+      if (!session.eventId && session.organizationAdmin && query.tab === 'people') directory = await apiRequest<PeopleDirectory>(binding, `people?${new URLSearchParams({limit:'20',offset:query.offset??'0',q:query.q??''})}`, { token, locale });
       if (!session.eventId && session.organizationAdmin && query.tab === 'organization') organization = await apiRequest<OrganizationSettings>(binding, 'organization', { token, locale });
     }
   } catch (error) {

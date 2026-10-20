@@ -17,6 +17,8 @@ class ResearcherQualificationDto implements ResearcherQualification {
   @ApiProperty({enum:COUNTRY_CODES}) @IsIn(COUNTRY_CODES) countryCode!:string;
 }
 class ResearcherBackgroundDto implements ResearcherBackground {
+  @ApiPropertyOptional({type:Number,nullable:true,minimum:0,maximum:4,description:'Índice de la afiliación principal elegida; null indica que aún no se ha definido.'})
+  @ValidateIf((_,value)=>value!==undefined&&value!==null) @IsInt() @Min(0) @Max(4) primaryAffiliationIndex?:number|null;
   @ApiPropertyOptional({type:[ResearcherQualificationDto],maxItems:10,description:'Títulos y grados obtenidos, independientes y sin equivalencia automática. Omitir conserva los existentes.'})
   @ValidateIf((_,value)=>value!==undefined) @IsArray() @ArrayMaxSize(10) @IsObject({each:true}) @ValidateNested({each:true}) @Type(()=>ResearcherQualificationDto) qualifications?:ResearcherQualificationDto[];
   @ApiProperty({deprecated:true,enum:EDUCATION_LEVELS,default:''}) @IsIn(EDUCATION_LEVELS) educationLevel:ResearcherBackground['educationLevel']='';
@@ -70,6 +72,10 @@ export class ResearchersService {
     if(dto.discoverable&&!dto.affiliations.length)throw new ApiException(400,'RESEARCHER_AFFILIATION_REQUIRED');
     const keys=dto.affiliations.map(item=>`${item.institution.trim().normalize('NFC').toLowerCase()}:${item.countryCode}`);if(new Set(keys).size!==keys.length)throw new ApiException(400,'AUTHOR_AFFILIATION_DUPLICATE');
     const background=dto.background?{...dto.background,qualifications:dto.background.qualifications??before?.background?.qualifications??[]}:before?.background??emptyResearcherBackground();
+    const sameAffiliations=before?.affiliations.length===dto.affiliations.length&&before.affiliations.every((item,i)=>item.institution===dto.affiliations[i].institution&&item.countryCode===dto.affiliations[i].countryCode);
+    if(dto.background?.primaryAffiliationIndex===undefined&&before?.background.primaryAffiliationIndex!==undefined)background.primaryAffiliationIndex=sameAffiliations?before.background.primaryAffiliationIndex:null;
+    const index=background.primaryAffiliationIndex;
+    if(index!==undefined&&index!==null&&index>=dto.affiliations.length)throw new ApiException(400,'VALIDATION_FAILED',[{field:'background.primaryAffiliationIndex',codes:['isIn']}]);
     const values={affiliations:dto.affiliations,discoverable:dto.discoverable,revision:dto.revision+1,background};
     await tx.insert(researcherProfiles).values({personId:context.personId!,...values}).onConflictDoUpdate({target:researcherProfiles.personId,set:values});
     await tx.update(people).set({name:dto.name}).where(eq(people.id,context.personId!));

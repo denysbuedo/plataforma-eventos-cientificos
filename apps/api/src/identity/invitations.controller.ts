@@ -1,10 +1,10 @@
-import { Body, Controller, Get, Injectable, Param, Post, Req } from '@nestjs/common';
-import { ApiBearerAuth, ApiCreatedResponse, ApiOkResponse, ApiProperty, ApiTags } from '@nestjs/swagger';
-import { IsEmail, IsString, Matches, MaxLength, MinLength, isUUID } from 'class-validator';
-import { Transform } from 'class-transformer';
+import { Body, Controller, Get, Injectable, Param, Post, Query, Req } from '@nestjs/common';
+import { ApiBearerAuth, ApiCreatedResponse, ApiOkResponse, ApiProperty, ApiPropertyOptional, ApiTags } from '@nestjs/swagger';
+import { IsEmail, IsInt, IsOptional, Min, Max, IsString, Matches, MaxLength, MinLength, isUUID } from 'class-validator';
+import { Transform, Type } from 'class-transformer';
 import { createHash, randomBytes, randomUUID } from 'node:crypto';
 import { and, desc, eq, sql } from 'drizzle-orm';
-import type { CreatedInvitation, OrganizationInvitation, OrganizationPerson, OrganizationPersonDetail, PeopleDirectory } from '@sep/contracts';
+import type { CreatedInvitation, OrganizationInvitation, OrganizationPersonDetail, PeopleDirectory } from '@sep/contracts';
 import { DatabaseService } from '../database/database.service.js';
 import { memberships, organizationInvitations, people } from '../database/schema.js';
 import { AuthorizationService } from './authorization.service.js';
@@ -13,6 +13,11 @@ import { AuditService } from '../common/audit.service.js';
 import { ApiErrors } from '../common/openapi.js';
 import { Access } from '../platform/context.guard.js';
 
+class PeopleQueryDto {
+ @ApiPropertyOptional({default:20,minimum:1,maximum:100}) @Type(()=>Number) @IsInt() @Min(1) @Max(100) limit=20;
+ @ApiPropertyOptional({default:0,minimum:0,maximum:2147483647}) @Type(()=>Number) @IsInt() @Min(0) @Max(2147483647) offset=0;
+ @ApiPropertyOptional({maxLength:100}) @IsOptional() @Transform(({value})=>typeof value==='string'?value.trim():value) @IsString() @MaxLength(100) q?:string;
+}
 class InvitePersonDto {
   @ApiProperty() @Transform(({ value }) => typeof value === 'string' ? value.trim() : value) @IsString() @MinLength(2) @MaxLength(120) name!: string;
   @ApiProperty({ format: 'email' }) @Transform(({ value }) => typeof value === 'string' ? value.trim().toLowerCase() : value) @IsEmail() @MaxLength(254) email!: string;
@@ -32,6 +37,7 @@ class OrganizationPersonDto {
   @ApiProperty({type:String,nullable:true}) email!:string|null;
   @ApiProperty({type:[PersonAffiliationDto]}) affiliations!:PersonAffiliationDto[];
   @ApiProperty() position!:string;
+  @ApiProperty({type:PersonAffiliationDto,nullable:true}) primaryAffiliation!:PersonAffiliationDto|null;
   @ApiProperty({type:PersonOrcidDto,nullable:true}) orcid!:PersonOrcidDto|null;
 }
 class PersonRegistrationDto { @ApiProperty({format:'uuid'}) id!:string; @ApiProperty() status!:string; @ApiProperty({enum:['in_person','virtual']}) modality!:string }
@@ -49,6 +55,7 @@ class OrganizationPersonDetailDto extends OrganizationPersonDto {
  @ApiProperty({type:[PersonEventDto]}) events!:PersonEventDto[];
 }
 class PeopleDirectoryDto {
+  @ApiProperty() total!:number; @ApiProperty() limit!:number; @ApiProperty() offset!:number; @ApiProperty() q!:string;
   @ApiProperty({ type: [OrganizationPersonDto] }) people!: OrganizationPersonDto[];
   @ApiProperty({ type: [InvitationDto] }) invitations!: InvitationDto[];
 }
@@ -65,13 +72,13 @@ function view(invitation: typeof organizationInvitations.$inferSelect): Organiza
 @Injectable()
 export class InvitationsService {
   constructor(private readonly database: DatabaseService, private readonly authorization: AuthorizationService, private readonly audit: AuditService) {}
-  list(context: RequestContext): Promise<PeopleDirectory> {
+  list(context: RequestContext,query:PeopleQueryDto): Promise<PeopleDirectory> {
     return this.authorization.run(context, 'people-manage', async (tx) => {
-      const projection=await tx.execute(sql`SELECT sep_registered_member('directory','{}'::jsonb) AS value`);
-      const directory=projection.rows[0].value as OrganizationPerson[];
+      const projection=await tx.execute(sql`SELECT sep_registered_member('directory_page',${JSON.stringify(query)}::jsonb) AS value`);
+      const directory=projection.rows[0].value as Pick<PeopleDirectory,'people'|'total'>;
       const invitations = await tx.select().from(organizationInvitations).where(eq(organizationInvitations.organizationId, context.organizationId))
         .orderBy(desc(organizationInvitations.createdAt)).limit(200);
-      return { people: directory, invitations: invitations.map(view) };
+      return { ...directory,limit:query.limit,offset:query.offset,q:query.q??'',invitations: invitations.map(view) };
     });
   }
   detail(context:RequestContext,id:string):Promise<OrganizationPersonDetail>{
@@ -134,7 +141,7 @@ export class InvitationsService {
 export class InvitationsController {
   constructor(private readonly service: InvitationsService) {}
   @Get('people') @Access('people-manage') @ApiOkResponse({ type: PeopleDirectoryDto })
-  list(@Req() request: SepRequest) { return this.service.list(request.security); }
+  list(@Req() request: SepRequest,@Query()query:PeopleQueryDto) { return this.service.list(request.security,query); }
   @Get('people/:personId') @Access('people-manage') @ApiOkResponse({type:OrganizationPersonDetailDto,description:'Organization-scoped academic profile and participation summary; excludes private drafts and review comments.'})
   detail(@Req() request:SepRequest,@Param('personId') id:string){if(!isUUID(id))throw new ApiException(400,'VALIDATION_FAILED');return this.service.detail(request.security,id);}
   @Post('invitations') @Access('people-manage') @ApiCreatedResponse({ type: CreatedInvitationDto })

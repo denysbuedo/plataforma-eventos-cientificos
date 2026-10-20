@@ -1476,7 +1476,47 @@
     "/api/v1/people": {
       "get": {
         "operationId": "InvitationsController_list",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20,
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Object"
+                }
+              ]
+            }
+          },
+          {
+            "name": "offset",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 0,
+              "maximum": 2147483647,
+              "default": 0,
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Object"
+                }
+              ]
+            }
+          },
+          {
+            "name": "q",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "maxLength": 100,
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "",
@@ -36865,6 +36905,13 @@
       "ResearcherBackgroundDto": {
         "type": "object",
         "properties": {
+          "primaryAffiliationIndex": {
+            "type": "number",
+            "nullable": true,
+            "minimum": 0,
+            "maximum": 4,
+            "description": "Índice de la afiliación principal elegida; null indica que aún no se ha definido."
+          },
           "qualifications": {
             "maxItems": 10,
             "description": "Títulos y grados obtenidos, independientes y sin equivalencia automática. Omitir conserva los existentes.",
@@ -37094,6 +37141,10 @@
           "organizationAdmin"
         ]
       },
+      "Object": {
+        "type": "object",
+        "properties": {}
+      },
       "PersonAffiliationDto": {
         "type": "object",
         "properties": {
@@ -37154,6 +37205,15 @@
           "position": {
             "type": "string"
           },
+          "primaryAffiliation": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PersonAffiliationDto"
+              }
+            ]
+          },
           "orcid": {
             "nullable": true,
             "type": "object",
@@ -37171,6 +37231,7 @@
           "email",
           "affiliations",
           "position",
+          "primaryAffiliation",
           "orcid"
         ]
       },
@@ -37224,6 +37285,18 @@
       "PeopleDirectoryDto": {
         "type": "object",
         "properties": {
+          "total": {
+            "type": "number"
+          },
+          "limit": {
+            "type": "number"
+          },
+          "offset": {
+            "type": "number"
+          },
+          "q": {
+            "type": "string"
+          },
           "people": {
             "type": "array",
             "items": {
@@ -37238,6 +37311,10 @@
           }
         },
         "required": [
+          "total",
+          "limit",
+          "offset",
+          "q",
           "people",
           "invitations"
         ]
@@ -37386,6 +37463,15 @@
           "position": {
             "type": "string"
           },
+          "primaryAffiliation": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PersonAffiliationDto"
+              }
+            ]
+          },
           "orcid": {
             "nullable": true,
             "type": "object",
@@ -37414,6 +37500,7 @@
           "email",
           "affiliations",
           "position",
+          "primaryAffiliation",
           "orcid",
           "background",
           "events"
@@ -40107,10 +40194,6 @@
           "action",
           "revision"
         ]
-      },
-      "Object": {
-        "type": "object",
-        "properties": {}
       },
       "TrackingItemDto": {
         "type": "object",

@@ -10,6 +10,8 @@ export function profileIssues(profile: ResearcherProfile): ValidationIssue[] {
   };
   length('name', profile.name, 2, 150);
   const background = profile.background ?? emptyResearcherBackground();
+  const primary=background.primaryAffiliationIndex;
+  if(profile.affiliations.length&&(primary===undefined||primary===null||!Number.isInteger(primary)||primary<0||primary>=profile.affiliations.length))add('background.primaryAffiliationIndex','required');
   length('background.position', background.position, 0, 150);
   length('background.degreeTitle', background.degreeTitle, 0, 150);
   length('background.biography', background.biography, 0, 1500);
@@ -47,6 +49,7 @@ export function profileIssues(profile: ResearcherProfile): ValidationIssue[] {
 
 export function profileIssueMessage(issue: ValidationIssue, locale: Locale): string {
   const es = locale === 'es', field = issue.field, codes = issue.codes;
+  if(field==='background.primaryAffiliationIndex')return es?'Afiliación principal: selecciona la institución a la que corresponde tu cargo actual.':'Primary affiliation: select the institution associated with your current position.';
   if (field.startsWith('background.researchInterests')) {
     if (codes.includes('arrayUnique')) return es ? 'Áreas de investigación: hay áreas repetidas. Escribe cada área una sola vez.' : 'Research interests: remove repeated interests.';
     if (codes.includes('arrayMaxSize')) return es ? 'Áreas de investigación: puedes indicar hasta 10 áreas.' : 'Research interests: enter up to 10 interests.';

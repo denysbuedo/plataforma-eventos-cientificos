@@ -884,3 +884,26 @@ dialog::backdrop { background:rgb(18 36 28 / 45%); }
 .organization-domain-card h3 { font-family:inherit; font-size:16px; overflow-wrap:anywhere; margin:0; }
 .organization-domain-card .field { margin-top:14px; }
 @media(max-width:700px) { .person-summary-profile,.person-activity-grid { grid-template-columns:1fr; gap:16px; } .directory-content { padding:16px; } .participant-main .directory-panel>.panel-heading { padding:18px 16px; } .access-person-row .registration-line { flex-wrap:wrap; } }
+
+/* Directory pages and the primary institutional appointment. */
+.access-event-picker-help { grid-column:1/-1; flex-basis:100%; }
+.access-event-picker-help h3 { font-family:inherit; font-size:15px; margin:0 0 8px; }
+.directory-toolbar { display:flex; flex-wrap:wrap; align-items:end; justify-content:space-between; gap:16px; margin-bottom:20px; }
+.directory-search-form { display:flex; align-items:end; flex-wrap:wrap; gap:10px; flex:1; }
+.directory-search-form .field { flex:1; min-width:min(100%,240px); max-width:480px; }
+.directory-view-switch { display:flex; gap:8px; }
+.directory-view-switch [aria-pressed="true"] { border-color:var(--green); color:var(--green); font-weight:600; background:white; box-shadow:none; }
+.person-card-affiliation { display:grid; gap:5px; }
+.person-card-affiliation>span { color:var(--muted); font-size:11px; }
+.directory-list td { vertical-align:middle; font-size:13px; }
+.directory-list td:first-child { min-width:220px; }
+.directory-list td p { margin:4px 0 0; overflow-wrap:anywhere; }
+.directory-list .button { padding:8px 12px; min-height:36px; white-space:nowrap; }
+.directory-pagination { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:16px; padding-top:20px; margin-top:20px; border-top:1px solid var(--line); font-size:13px; }
+.directory-pagination>div { display:flex; gap:10px; }
+.person-summary h1 { font-family:inherit; font-size:24px; line-height:1.4; margin:0; }
+.person-summary:focus { outline:none; }
+.profile-primary-label { display:inline-block; font-size:11px; font-weight:500; color:var(--green); border:1px solid var(--line); border-radius:4px; padding:2px 6px; margin-left:10px; }
+.profile-primary-choice { display:flex; align-items:center; gap:8px; font-size:12px; margin-bottom:12px; }
+.profile-primary-choice input { width:16px; height:16px; margin:0; accent-color:var(--green); }
+@media(max-width:600px) { .directory-search-form { width:100%; } .directory-search-form .field { flex-basis:100%; max-width:none; } .directory-list { min-width:700px; } }
