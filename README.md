@@ -159,6 +159,7 @@ El informe completo [PROYECTO_TECNICO_INICIAL.md](PROYECTO_TECNICO_INICIAL.md) e
 - [Plan de trabajo de Fase 0](docs/functional/fase-0.md).
 - [Fase 1: portales y CMS](docs/functional/fase-1.md) y [ADR-005](docs/adr/ADR-005-portales-y-publicacion.md).
 - [Desarrollo local y demo](docs/development/desarrollo-local.md).
+- [Validación manual por roles desde un entorno limpio](docs/development/validacion-manual-por-roles.md), con [guía HTML paso a paso](apps/admin-web/public/guias/validacion-roles.html).
 - [Contrato API mínimo](docs/api/fase-0.md).
 - [Evidencia del incremento API](docs/architecture/evidencia-api-fase-0.md).
 - [Prompt maestro para Codex](docs/development/PROMPT_MAESTRO_CODEX.md).
